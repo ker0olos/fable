@@ -5,7 +5,10 @@ import { stub } from '$std/testing/mock.ts';
 
 import db, { kv } from '~/db/mod.ts';
 
-import { initStats, upgradeStats } from '~/db/assignStats.ts';
+import {
+  initStats,
+  //  upgradeStats
+} from '~/db/assignStats.ts';
 
 import { CharacterCombat } from '~/db/schema.ts';
 
@@ -200,347 +203,347 @@ Deno.test('initStats', async (test) => {
   });
 });
 
-Deno.test('upgradeStats', async (test) => {
-  await test.step('upgrade attack', async () => {
-    const inventory = { _id: 'inventory_id' };
-    const characterId = 'someCharacterId';
-    const type = 'atk';
-    const amount = 5;
+// Deno.test('upgradeStats', async (test) => {
+//   await test.step('upgrade attack', async () => {
+//     const inventory = { _id: 'inventory_id' };
+//     const characterId = 'someCharacterId';
+//     const type = 'atk';
+//     const amount = 5;
 
-    const getValueAndTimestampStub = stub(
-      db,
-      'getValueAndTimestamp',
-      () =>
-        Promise.resolve({
-          value: {
-            inventory: 'inventory_id',
-            combat: {
-              baseStats: { attack: 10, defense: 0, speed: 0 },
-              curStats: { attack: 10, defense: 0, speed: 0 },
-              unclaimedStatsPoints: 10,
-            } satisfies CharacterCombat,
-          },
-          versionstamp: '_',
-        } as any),
-    );
+//     const getValueAndTimestampStub = stub(
+//       db,
+//       'getValueAndTimestamp',
+//       () =>
+//         Promise.resolve({
+//           value: {
+//             inventory: 'inventory_id',
+//             combat: {
+//               baseStats: { attack: 10, defense: 0, speed: 0 },
+//               curStats: { attack: 10, defense: 0, speed: 0 },
+//               unclaimedStatsPoints: 10,
+//             } satisfies CharacterCombat,
+//           },
+//           versionstamp: '_',
+//         } as any),
+//     );
 
-    const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
+//     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const atomicMock = {
-      check: () => atomicMock,
-      set: () => atomicMock,
-      commit: () => Promise.resolve({ ok: true }),
-    };
+//     const atomicMock = {
+//       check: () => atomicMock,
+//       set: () => atomicMock,
+//       commit: () => Promise.resolve({ ok: true }),
+//     };
 
-    const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
+//     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
-    try {
-      const updatedCharacter = await upgradeStats(
-        inventory as any,
-        characterId,
-        type,
-        amount,
-      );
+//     try {
+//       const updatedCharacter = await upgradeStats(
+//         inventory as any,
+//         characterId,
+//         type,
+//         amount,
+//       );
 
-      assertEquals(updatedCharacter.combat?.curStats?.attack, 15);
-    } finally {
-      getValueAndTimestampStub.restore();
-      getValueStub.restore();
-      atomicStub.restore();
-    }
-  });
+//       assertEquals(updatedCharacter.combat?.curStats?.attack, 15);
+//     } finally {
+//       getValueAndTimestampStub.restore();
+//       getValueStub.restore();
+//       atomicStub.restore();
+//     }
+//   });
 
-  await test.step('upgrade defense', async () => {
-    const inventory = { _id: 'inventory_id' };
-    const characterId = 'someCharacterId';
-    const type = 'def';
-    const amount = 5;
+//   await test.step('upgrade defense', async () => {
+//     const inventory = { _id: 'inventory_id' };
+//     const characterId = 'someCharacterId';
+//     const type = 'def';
+//     const amount = 5;
 
-    const getValueAndTimestampStub = stub(
-      db,
-      'getValueAndTimestamp',
-      () =>
-        Promise.resolve({
-          value: {
-            inventory: 'inventory_id',
-            combat: {
-              baseStats: { defense: 10, attack: 0, speed: 0 },
-              curStats: { defense: 10, attack: 0, speed: 0 },
-              unclaimedStatsPoints: 10,
-            } satisfies CharacterCombat,
-          },
-          versionstamp: '_',
-        } as any),
-    );
+//     const getValueAndTimestampStub = stub(
+//       db,
+//       'getValueAndTimestamp',
+//       () =>
+//         Promise.resolve({
+//           value: {
+//             inventory: 'inventory_id',
+//             combat: {
+//               baseStats: { defense: 10, attack: 0, speed: 0 },
+//               curStats: { defense: 10, attack: 0, speed: 0 },
+//               unclaimedStatsPoints: 10,
+//             } satisfies CharacterCombat,
+//           },
+//           versionstamp: '_',
+//         } as any),
+//     );
 
-    const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
+//     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const atomicMock = {
-      check: () => atomicMock,
-      set: () => atomicMock,
-      commit: () => Promise.resolve({ ok: true }),
-    };
+//     const atomicMock = {
+//       check: () => atomicMock,
+//       set: () => atomicMock,
+//       commit: () => Promise.resolve({ ok: true }),
+//     };
 
-    const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
+//     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
-    try {
-      const updatedCharacter = await upgradeStats(
-        inventory as any,
-        characterId,
-        type,
-        amount,
-      );
+//     try {
+//       const updatedCharacter = await upgradeStats(
+//         inventory as any,
+//         characterId,
+//         type,
+//         amount,
+//       );
 
-      assertEquals(updatedCharacter.combat?.curStats?.defense, 15);
-    } finally {
-      getValueAndTimestampStub.restore();
-      getValueStub.restore();
-      atomicStub.restore();
-    }
-  });
+//       assertEquals(updatedCharacter.combat?.curStats?.defense, 15);
+//     } finally {
+//       getValueAndTimestampStub.restore();
+//       getValueStub.restore();
+//       atomicStub.restore();
+//     }
+//   });
 
-  await test.step('upgrade speed', async () => {
-    const inventory = { _id: 'inventory_id' };
-    const characterId = 'someCharacterId';
-    const type = 'spd';
-    const amount = 5;
+//   await test.step('upgrade speed', async () => {
+//     const inventory = { _id: 'inventory_id' };
+//     const characterId = 'someCharacterId';
+//     const type = 'spd';
+//     const amount = 5;
 
-    const getValueAndTimestampStub = stub(
-      db,
-      'getValueAndTimestamp',
-      () =>
-        Promise.resolve({
-          value: {
-            inventory: 'inventory_id',
-            combat: {
-              baseStats: { speed: 10, defense: 0, attack: 0 },
-              curStats: { speed: 10, defense: 0, attack: 0 },
-              unclaimedStatsPoints: 10,
-            } satisfies CharacterCombat,
-          },
-          versionstamp: '_',
-        } as any),
-    );
+//     const getValueAndTimestampStub = stub(
+//       db,
+//       'getValueAndTimestamp',
+//       () =>
+//         Promise.resolve({
+//           value: {
+//             inventory: 'inventory_id',
+//             combat: {
+//               baseStats: { speed: 10, defense: 0, attack: 0 },
+//               curStats: { speed: 10, defense: 0, attack: 0 },
+//               unclaimedStatsPoints: 10,
+//             } satisfies CharacterCombat,
+//           },
+//           versionstamp: '_',
+//         } as any),
+//     );
 
-    const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
+//     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const atomicMock = {
-      check: () => atomicMock,
-      set: () => atomicMock,
-      commit: () => Promise.resolve({ ok: true }),
-    };
+//     const atomicMock = {
+//       check: () => atomicMock,
+//       set: () => atomicMock,
+//       commit: () => Promise.resolve({ ok: true }),
+//     };
 
-    const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
+//     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
-    try {
-      const updatedCharacter = await upgradeStats(
-        inventory as any,
-        characterId,
-        type,
-        amount,
-      );
+//     try {
+//       const updatedCharacter = await upgradeStats(
+//         inventory as any,
+//         characterId,
+//         type,
+//         amount,
+//       );
 
-      assertEquals(updatedCharacter.combat?.curStats?.speed, 15);
-    } finally {
-      getValueAndTimestampStub.restore();
-      getValueStub.restore();
-      atomicStub.restore();
-    }
-  });
+//       assertEquals(updatedCharacter.combat?.curStats?.speed, 15);
+//     } finally {
+//       getValueAndTimestampStub.restore();
+//       getValueStub.restore();
+//       atomicStub.restore();
+//     }
+//   });
 
-  await test.step('not enough unclaimed stat points', async () => {
-    const inventory = { _id: 'inventory_id' };
-    const characterId = 'someCharacterId';
-    const type = 'atk';
-    const amount = 5;
+//   await test.step('not enough unclaimed stat points', async () => {
+//     const inventory = { _id: 'inventory_id' };
+//     const characterId = 'someCharacterId';
+//     const type = 'atk';
+//     const amount = 5;
 
-    const getValueAndTimestampStub = stub(
-      db,
-      'getValueAndTimestamp',
-      () =>
-        Promise.resolve({
-          value: {
-            inventory: 'inventory_id',
-            combat: {
-              baseStats: { attack: 10, defense: 0, speed: 0 },
-              curStats: { attack: 10, defense: 0, speed: 0 },
-              unclaimedStatsPoints: 0,
-            } satisfies CharacterCombat,
-          },
-          versionstamp: '_',
-        } as any),
-    );
+//     const getValueAndTimestampStub = stub(
+//       db,
+//       'getValueAndTimestamp',
+//       () =>
+//         Promise.resolve({
+//           value: {
+//             inventory: 'inventory_id',
+//             combat: {
+//               baseStats: { attack: 10, defense: 0, speed: 0 },
+//               curStats: { attack: 10, defense: 0, speed: 0 },
+//               unclaimedStatsPoints: 0,
+//             } satisfies CharacterCombat,
+//           },
+//           versionstamp: '_',
+//         } as any),
+//     );
 
-    const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
+//     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const atomicMock = {
-      check: () => atomicMock,
-      set: () => atomicMock,
-      commit: () => Promise.resolve({ ok: true }),
-    };
+//     const atomicMock = {
+//       check: () => atomicMock,
+//       set: () => atomicMock,
+//       commit: () => Promise.resolve({ ok: true }),
+//     };
 
-    const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
+//     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
-    try {
-      await assertRejects(
-        () =>
-          upgradeStats(
-            inventory as any,
-            characterId,
-            type,
-            amount,
-          ),
-        Error,
-        'NOT_ENOUGH_UNCLAIMED',
-      );
-    } finally {
-      getValueAndTimestampStub.restore();
-      getValueStub.restore();
-      atomicStub.restore();
-    }
-  });
+//     try {
+//       await assertRejects(
+//         () =>
+//           upgradeStats(
+//             inventory as any,
+//             characterId,
+//             type,
+//             amount,
+//           ),
+//         Error,
+//         'NOT_ENOUGH_UNCLAIMED',
+//       );
+//     } finally {
+//       getValueAndTimestampStub.restore();
+//       getValueStub.restore();
+//       atomicStub.restore();
+//     }
+//   });
 
-  await test.step('unknown stat type', async () => {
-    const inventory = { _id: 'inventory_id' };
-    const characterId = 'someCharacterId';
-    const type = 'faketype';
-    const amount = 5;
+//   await test.step('unknown stat type', async () => {
+//     const inventory = { _id: 'inventory_id' };
+//     const characterId = 'someCharacterId';
+//     const type = 'faketype';
+//     const amount = 5;
 
-    const getValueAndTimestampStub = stub(
-      db,
-      'getValueAndTimestamp',
-      () =>
-        Promise.resolve({
-          value: {
-            inventory: 'inventory_id',
-            combat: {
-              baseStats: { attack: 10, defense: 0, speed: 0 },
-              curStats: { attack: 10, defense: 0, speed: 0 },
-              unclaimedStatsPoints: 0,
-            } satisfies CharacterCombat,
-          },
-          versionstamp: '_',
-        } as any),
-    );
+//     const getValueAndTimestampStub = stub(
+//       db,
+//       'getValueAndTimestamp',
+//       () =>
+//         Promise.resolve({
+//           value: {
+//             inventory: 'inventory_id',
+//             combat: {
+//               baseStats: { attack: 10, defense: 0, speed: 0 },
+//               curStats: { attack: 10, defense: 0, speed: 0 },
+//               unclaimedStatsPoints: 0,
+//             } satisfies CharacterCombat,
+//           },
+//           versionstamp: '_',
+//         } as any),
+//     );
 
-    const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
+//     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const atomicMock = {
-      check: () => atomicMock,
-      set: () => atomicMock,
-      commit: () => Promise.resolve({ ok: true }),
-    };
+//     const atomicMock = {
+//       check: () => atomicMock,
+//       set: () => atomicMock,
+//       commit: () => Promise.resolve({ ok: true }),
+//     };
 
-    const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
+//     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
-    try {
-      await assertRejects(
-        () =>
-          upgradeStats(
-            inventory as any,
-            characterId,
-            type,
-            amount,
-          ),
-        Error,
-        'UNKNOWN_STAT_TYPE',
-      );
-    } finally {
-      getValueAndTimestampStub.restore();
-      getValueStub.restore();
-      atomicStub.restore();
-    }
-  });
+//     try {
+//       await assertRejects(
+//         () =>
+//           upgradeStats(
+//             inventory as any,
+//             characterId,
+//             type,
+//             amount,
+//           ),
+//         Error,
+//         'UNKNOWN_STAT_TYPE',
+//       );
+//     } finally {
+//       getValueAndTimestampStub.restore();
+//       getValueStub.restore();
+//       atomicStub.restore();
+//     }
+//   });
 
-  await test.step('character not initiated', async () => {
-    const inventory = { _id: 'inventory_id' };
-    const characterId = 'someCharacterId';
-    const type = 'atk';
-    const amount = 5;
+//   await test.step('character not initiated', async () => {
+//     const inventory = { _id: 'inventory_id' };
+//     const characterId = 'someCharacterId';
+//     const type = 'atk';
+//     const amount = 5;
 
-    const getValueAndTimestampStub = stub(
-      db,
-      'getValueAndTimestamp',
-      () =>
-        Promise.resolve({
-          value: {
-            inventory: 'inventory_id',
-          },
-          versionstamp: '_',
-        } as any),
-    );
+//     const getValueAndTimestampStub = stub(
+//       db,
+//       'getValueAndTimestamp',
+//       () =>
+//         Promise.resolve({
+//           value: {
+//             inventory: 'inventory_id',
+//           },
+//           versionstamp: '_',
+//         } as any),
+//     );
 
-    const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
+//     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const atomicMock = {
-      check: () => atomicMock,
-      set: () => atomicMock,
-      commit: () => Promise.resolve({ ok: true }),
-    };
+//     const atomicMock = {
+//       check: () => atomicMock,
+//       set: () => atomicMock,
+//       commit: () => Promise.resolve({ ok: true }),
+//     };
 
-    const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
+//     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
-    try {
-      await assertRejects(
-        () =>
-          upgradeStats(
-            inventory as any,
-            characterId,
-            type,
-            amount,
-          ),
-        Error,
-        'CHARACTER_NOT_INITIATED',
-      );
-    } finally {
-      getValueAndTimestampStub.restore();
-      getValueStub.restore();
-      atomicStub.restore();
-    }
-  });
+//     try {
+//       await assertRejects(
+//         () =>
+//           upgradeStats(
+//             inventory as any,
+//             characterId,
+//             type,
+//             amount,
+//           ),
+//         Error,
+//         'CHARACTER_NOT_INITIATED',
+//       );
+//     } finally {
+//       getValueAndTimestampStub.restore();
+//       getValueStub.restore();
+//       atomicStub.restore();
+//     }
+//   });
 
-  await test.step('character not found', async () => {
-    const inventory = { _id: 'inventory_id' };
-    const characterId = 'someCharacterId';
-    const type = 'atk';
-    const amount = 5;
+//   await test.step('character not found', async () => {
+//     const inventory = { _id: 'inventory_id' };
+//     const characterId = 'someCharacterId';
+//     const type = 'atk';
+//     const amount = 5;
 
-    const getValueAndTimestampStub = stub(
-      db,
-      'getValueAndTimestamp',
-      () =>
-        Promise.resolve({
-          value: undefined,
-          versionstamp: '_',
-        } as any),
-    );
+//     const getValueAndTimestampStub = stub(
+//       db,
+//       'getValueAndTimestamp',
+//       () =>
+//         Promise.resolve({
+//           value: undefined,
+//           versionstamp: '_',
+//         } as any),
+//     );
 
-    const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
+//     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const atomicMock = {
-      check: () => atomicMock,
-      set: () => atomicMock,
-      commit: () => Promise.resolve({ ok: true }),
-    };
+//     const atomicMock = {
+//       check: () => atomicMock,
+//       set: () => atomicMock,
+//       commit: () => Promise.resolve({ ok: true }),
+//     };
 
-    const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
+//     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
-    try {
-      await assertRejects(
-        () =>
-          upgradeStats(
-            inventory as any,
-            characterId,
-            type,
-            amount,
-          ),
-        Error,
-        'CHARACTER_NOT_FOUND',
-      );
-    } finally {
-      getValueAndTimestampStub.restore();
-      getValueStub.restore();
-      atomicStub.restore();
-    }
-  });
-});
+//     try {
+//       await assertRejects(
+//         () =>
+//           upgradeStats(
+//             inventory as any,
+//             characterId,
+//             type,
+//             amount,
+//           ),
+//         Error,
+//         'CHARACTER_NOT_FOUND',
+//       );
+//     } finally {
+//       getValueAndTimestampStub.restore();
+//       getValueStub.restore();
+//       atomicStub.restore();
+//     }
+//   });
+// });

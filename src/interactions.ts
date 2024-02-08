@@ -1151,30 +1151,30 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          case 'stats': {
-            // deno-lint-ignore no-non-null-assertion
-            const type = customValues![0];
+          // case 'stats': {
+          //   // deno-lint-ignore no-non-null-assertion
+          //   const type = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![1];
+          //   // deno-lint-ignore no-non-null-assertion
+          //   const userId = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
-            const characterId = customValues![2];
+          //   // deno-lint-ignore no-non-null-assertion
+          //   const characterId = customValues![2];
 
-            if (userId === member.user.id) {
-              return (await stats.update({
-                type,
-                token,
-                guildId,
-                characterId,
-                userId: member.user.id,
-              }))
-                .setType(discord.MessageType.Update)
-                .send();
-            }
+          //   if (userId === member.user.id) {
+          //     return (await stats.update({
+          //       type,
+          //       token,
+          //       guildId,
+          //       characterId,
+          //       userId: member.user.id,
+          //     }))
+          //       .setType(discord.MessageType.Update)
+          //       .send();
+          //   }
 
-            throw new NoPermissionError();
-          }
+          //   throw new NoPermissionError();
+          // }
           case 'cacquire': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];

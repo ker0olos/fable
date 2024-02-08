@@ -187,7 +187,8 @@
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
-  "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
+  "leveled-up": "**{0}** leveled up{1}and gained {2} {3}.",
+  "leveled-up-old": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
 
   "help-page1-before-anything": "Before anything: You will need characters.",

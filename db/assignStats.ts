@@ -67,7 +67,7 @@ export async function initStats(
     character.combat ??= {};
     character.combat.skills = {};
 
-    character.combat.unclaimedStatsPoints ??= 0;
+    // character.combat.unclaimedStatsPoints ??= 0;
 
     character.combat.baseStats = { attack, defense, speed };
     character.combat.curStats = { attack, defense, speed };
@@ -121,92 +121,92 @@ export async function initStats(
   throw new KvError('failed to update character');
 }
 
-export async function upgradeStats(
-  inventory: Schema.Inventory,
-  characterId: string,
-  type: string,
-  amount: number,
-): Promise<Schema.Character> {
-  let retries = 0;
+// export async function upgradeStats(
+//   inventory: Schema.Inventory,
+//   characterId: string,
+//   type: string,
+//   amount: number,
+// ): Promise<Schema.Character> {
+//   let retries = 0;
 
-  while (retries < 5) {
-    const response = await db.getValueAndTimestamp<Schema.Character>([
-      ...charactersByInstancePrefix(inventory.instance),
-      characterId,
-    ]);
+//   while (retries < 5) {
+//     const response = await db.getValueAndTimestamp<Schema.Character>([
+//       ...charactersByInstancePrefix(inventory.instance),
+//       characterId,
+//     ]);
 
-    if (!response?.value || !response.versionstamp) {
-      throw new Error('CHARACTER_NOT_FOUND');
-    }
+//     if (!response?.value || !response.versionstamp) {
+//       throw new Error('CHARACTER_NOT_FOUND');
+//     }
 
-    const character = response.value;
+//     const character = response.value;
 
-    if (character.inventory !== inventory._id) {
-      throw new Error('CHARACTER_NOT_OWNED');
-    }
+//     if (character.inventory !== inventory._id) {
+//       throw new Error('CHARACTER_NOT_OWNED');
+//     }
 
-    if (
-      !character.combat ||
-      !character.combat?.baseStats ||
-      !character.combat?.curStats
-    ) {
-      throw new Error('CHARACTER_NOT_INITIATED');
-    }
+//     if (
+//       !character.combat ||
+//       !character.combat?.baseStats ||
+//       !character.combat?.curStats
+//     ) {
+//       throw new Error('CHARACTER_NOT_INITIATED');
+//     }
 
-    character.combat.unclaimedStatsPoints ??= 0;
+//     character.combat.unclaimedStatsPoints ??= 0;
 
-    switch (type) {
-      case 'atk':
-        character.combat.curStats.attack += amount;
-        break;
-      case 'def':
-        character.combat.curStats.defense += amount;
-        break;
-      case 'spd':
-        character.combat.curStats.speed += amount;
-        break;
-      default:
-        throw new Error('UNKNOWN_STAT_TYPE');
-    }
+//     switch (type) {
+//       case 'atk':
+//         character.combat.curStats.attack += amount;
+//         break;
+//       case 'def':
+//         character.combat.curStats.defense += amount;
+//         break;
+//       case 'spd':
+//         character.combat.curStats.speed += amount;
+//         break;
+//       default:
+//         throw new Error('UNKNOWN_STAT_TYPE');
+//     }
 
-    if (character.combat.unclaimedStatsPoints - amount < 0) {
-      throw new Error('NOT_ENOUGH_UNCLAIMED');
-    }
+//     if (character.combat.unclaimedStatsPoints - amount < 0) {
+//       throw new Error('NOT_ENOUGH_UNCLAIMED');
+//     }
 
-    character.combat.unclaimedStatsPoints -= amount;
+//     character.combat.unclaimedStatsPoints -= amount;
 
-    const update = await kv.atomic()
-      .check(response)
-      .set(['characters', character._id], character)
-      .set(
-        [
-          ...charactersByInstancePrefix(character.instance),
-          character.id,
-        ],
-        character,
-      )
-      .set(
-        [
-          ...charactersByInventoryPrefix(character.inventory),
-          character._id,
-        ],
-        character,
-      )
-      .set(
-        [
-          ...charactersByMediaIdPrefix(character.instance, character.mediaId),
-          character._id,
-        ],
-        character,
-      )
-      .commit();
+//     const update = await kv.atomic()
+//       .check(response)
+//       .set(['characters', character._id], character)
+//       .set(
+//         [
+//           ...charactersByInstancePrefix(character.instance),
+//           character.id,
+//         ],
+//         character,
+//       )
+//       .set(
+//         [
+//           ...charactersByInventoryPrefix(character.inventory),
+//           character._id,
+//         ],
+//         character,
+//       )
+//       .set(
+//         [
+//           ...charactersByMediaIdPrefix(character.instance, character.mediaId),
+//           character._id,
+//         ],
+//         character,
+//       )
+//       .commit();
 
-    if (update.ok) {
-      return character;
-    }
+//     if (update.ok) {
+//       return character;
+//     }
 
-    retries += 1;
-  }
+//     retries += 1;
+//   }
 
-  throw new KvError('failed to update character');
-}
+//   throw new KvError('failed to update character');
+// }

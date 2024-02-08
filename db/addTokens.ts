@@ -110,9 +110,9 @@ export async function addGuarantee(
   user.guarantees ??= [];
   user.availableTokens ??= 0;
 
-  if (cost > user.availableTokens) {
-    throw new Error('INSUFFICIENT_TOKENS');
-  }
+  // if (cost > user.availableTokens) {
+  //   throw new Error('INSUFFICIENT_TOKENS');
+  // }
 
   user.availableTokens = user.availableTokens - cost;
 

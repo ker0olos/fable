@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals, assertRejects } from '$std/assert/mod.ts';
+import { assertEquals } from '$std/assert/mod.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
@@ -14,8 +14,6 @@ import stats from '~/src/stats.ts';
 import config from '~/src/config.ts';
 
 import db from '~/db/mod.ts';
-
-import { NonFetalError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -69,7 +67,7 @@ Deno.test('/stats', async (test) => {
             combat: {
               level: 2,
               exp: 10,
-              unclaimedStatsPoints: 1,
+              // unclaimedStatsPoints: 1,
               curStats: {
                 attack: 1,
                 defense: 2,
@@ -141,39 +139,38 @@ Deno.test('/stats', async (test) => {
                 },
                 {
                   name: 'Stats',
-                  value:
-                    'Skill Points: 0\nStat Points: 1\nAttack: 1\nDefense: 2\nSpeed: 3',
+                  value: 'Skill Points: 0\nAttack: 1\nDefense: 2\nSpeed: 3',
                 },
               ],
             },
           ],
           components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'stats=atk=user_id=id:1',
-                  disabled: false,
-                  label: '+1 ATK',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'stats=def=user_id=id:1',
-                  disabled: false,
-                  label: '+1 DEF',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'stats=spd=user_id=id:1',
-                  disabled: false,
-                  label: '+1 SPD',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
+            // {
+            //   type: 1,
+            //   components: [
+            //     {
+            //       custom_id: 'stats=atk=user_id=id:1',
+            //       disabled: false,
+            //       label: '+1 ATK',
+            //       style: 2,
+            //       type: 2,
+            //     },
+            //     {
+            //       custom_id: 'stats=def=user_id=id:1',
+            //       disabled: false,
+            //       label: '+1 DEF',
+            //       style: 2,
+            //       type: 2,
+            //     },
+            //     {
+            //       custom_id: 'stats=spd=user_id=id:1',
+            //       disabled: false,
+            //       label: '+1 SPD',
+            //       style: 2,
+            //       type: 2,
+            //     },
+            //   ],
+            // },
           ],
         },
       );
@@ -241,7 +238,7 @@ Deno.test('/stats', async (test) => {
             combat: {
               skillPoints: 2,
               skills: { 'crit': { level: 2 }, 'dodge': { level: 3 } },
-              unclaimedStatsPoints: 0,
+              // unclaimedStatsPoints: 0,
               curStats: {
                 attack: 1,
                 defense: 2,
@@ -317,39 +314,38 @@ Deno.test('/stats', async (test) => {
                 },
                 {
                   name: 'Stats',
-                  value:
-                    'Skill Points: 2\nStat Points: 0\nAttack: 1\nDefense: 2\nSpeed: 3',
+                  value: 'Skill Points: 2\nAttack: 1\nDefense: 2\nSpeed: 3',
                 },
               ],
             },
           ],
           components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'stats=atk=user_id=id:1',
-                  disabled: true,
-                  label: '+1 ATK',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'stats=def=user_id=id:1',
-                  disabled: true,
-                  label: '+1 DEF',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'stats=spd=user_id=id:1',
-                  disabled: true,
-                  label: '+1 SPD',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
+            // {
+            //   type: 1,
+            //   components: [
+            //     {
+            //       custom_id: 'stats=atk=user_id=id:1',
+            //       disabled: true,
+            //       label: '+1 ATK',
+            //       style: 2,
+            //       type: 2,
+            //     },
+            //     {
+            //       custom_id: 'stats=def=user_id=id:1',
+            //       disabled: true,
+            //       label: '+1 DEF',
+            //       style: 2,
+            //       type: 2,
+            //     },
+            //     {
+            //       custom_id: 'stats=spd=user_id=id:1',
+            //       disabled: true,
+            //       label: '+1 SPD',
+            //       style: 2,
+            //       type: 2,
+            //     },
+            //   ],
+            // },
           ],
         },
       );
@@ -500,120 +496,120 @@ Deno.test('/stats', async (test) => {
   });
 });
 
-Deno.test('update stats', async (test) => {
-  await test.step('not found', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+// Deno.test('update stats', async (test) => {
+//   await test.step('not found', async () => {
+//     const getUserStub = stub(
+//       db,
+//       'getUser',
+//       () => 'user' as any,
+//     );
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+//     const getGuildStub = stub(
+//       db,
+//       'getGuild',
+//       () => 'guild' as any,
+//     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
+//     const getInstanceStub = stub(
+//       db,
+//       'getInstance',
+//       () => 'instance' as any,
+//     );
 
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ inventory: 'inventory' }) as any,
-    );
+//     const getInventoryStub = stub(
+//       db,
+//       'getInventory',
+//       () => ({ inventory: 'inventory' }) as any,
+//     );
 
-    const upgradeStatsStub = stub(
-      db,
-      'upgradeStats',
-      () => {
-        throw new NonFetalError('CHARACTER_NOT_FOUND');
-      },
-    );
+//     const upgradeStatsStub = stub(
+//       db,
+//       'upgradeStats',
+//       () => {
+//         throw new NonFetalError('CHARACTER_NOT_FOUND');
+//       },
+//     );
 
-    const statsStub = stub(stats, 'view', () => undefined as any);
+//     const statsStub = stub(stats, 'view', () => undefined as any);
 
-    try {
-      await assertRejects(
-        () =>
-          stats.update({
-            token: 'test_token',
-            userId: 'user_id',
-            guildId: 'guild_id',
-            characterId: 'character_id',
-            type: 'attack',
-          }),
-        NonFetalError,
-        "Character hasn't been found by anyone yet",
-      );
-    } finally {
-      getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
-      getInventoryStub.restore();
-      upgradeStatsStub.restore();
-      statsStub.restore();
-    }
-  });
+//     try {
+//       await assertRejects(
+//         () =>
+//           stats.update({
+//             token: 'test_token',
+//             userId: 'user_id',
+//             guildId: 'guild_id',
+//             characterId: 'character_id',
+//             type: 'attack',
+//           }),
+//         NonFetalError,
+//         "Character hasn't been found by anyone yet",
+//       );
+//     } finally {
+//       getUserStub.restore();
+//       getGuildStub.restore();
+//       getInstanceStub.restore();
+//       getInventoryStub.restore();
+//       upgradeStatsStub.restore();
+//       statsStub.restore();
+//     }
+//   });
 
-  await test.step('not owned', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+//   await test.step('not owned', async () => {
+//     const getUserStub = stub(
+//       db,
+//       'getUser',
+//       () => 'user' as any,
+//     );
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+//     const getGuildStub = stub(
+//       db,
+//       'getGuild',
+//       () => 'guild' as any,
+//     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
+//     const getInstanceStub = stub(
+//       db,
+//       'getInstance',
+//       () => 'instance' as any,
+//     );
 
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ inventory: 'inventory' }) as any,
-    );
+//     const getInventoryStub = stub(
+//       db,
+//       'getInventory',
+//       () => ({ inventory: 'inventory' }) as any,
+//     );
 
-    const upgradeStatsStub = stub(
-      db,
-      'upgradeStats',
-      () => {
-        throw new NonFetalError('CHARACTER_NOT_OWNED');
-      },
-    );
+//     const upgradeStatsStub = stub(
+//       db,
+//       'upgradeStats',
+//       () => {
+//         throw new NonFetalError('CHARACTER_NOT_OWNED');
+//       },
+//     );
 
-    const statsStub = stub(stats, 'view', () => undefined as any);
+//     const statsStub = stub(stats, 'view', () => undefined as any);
 
-    try {
-      await assertRejects(
-        () =>
-          stats.update({
-            token: 'test_token',
-            userId: 'user_id',
-            guildId: 'guild_id',
-            characterId: 'character_id',
-            type: 'attack',
-          }),
-        NonFetalError,
-        "You don't have permission to complete this interaction!",
-      );
-    } finally {
-      getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
-      getInventoryStub.restore();
-      upgradeStatsStub.restore();
-      statsStub.restore();
-    }
-  });
-});
+//     try {
+//       await assertRejects(
+//         () =>
+//           stats.update({
+//             token: 'test_token',
+//             userId: 'user_id',
+//             guildId: 'guild_id',
+//             characterId: 'character_id',
+//             type: 'attack',
+//           }),
+//         NonFetalError,
+//         "You don't have permission to complete this interaction!",
+//       );
+//     } finally {
+//       getUserStub.restore();
+//       getGuildStub.restore();
+//       getInstanceStub.restore();
+//       getInventoryStub.restore();
+//       upgradeStatsStub.restore();
+//       statsStub.restore();
+//     }
+//   });
+// });

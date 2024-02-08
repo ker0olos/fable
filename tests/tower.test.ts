@@ -6,20 +6,20 @@ import { FakeTime } from '$std/testing/time.ts';
 
 import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 
-import tower, { getFloorExp, MAX_FLOORS } from '../src/tower.ts';
+import tower, { getFloorExp, MAX_FLOORS } from '~/src/tower.ts';
 
-import db from '../db/mod.ts';
-import utils from '../src/utils.ts';
-import config from '../src/config.ts';
+import db from '~/db/mod.ts';
+import utils from '~/src/utils.ts';
+import config from '~/src/config.ts';
 
-import { experienceToNextLevel } from '../db/gainExp.ts';
+import { experienceToNextLevel } from '~/db/gainExp.ts';
 
-import { MediaType } from '../src/types.ts';
+import { MediaType } from '~/src/types.ts';
 
-import type { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+import type { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
 Deno.test('max floors', () => {
-  assertEquals(MAX_FLOORS, 20);
+  assertEquals(MAX_FLOORS, 10);
 });
 
 Deno.test('experience to next level', () => {
@@ -676,11 +676,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:undiscoveredfloor:1128724910609551481> Floor 20 - Undiscovered',
-                '<:currentfloor:1128724907245711452> Floor 19 - Current',
-                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
+                '<:undiscoveredfloor:1128724910609551481> Floor 10 - Undiscovered',
+                '<:currentfloor:1128724907245711452> Floor 9 - Current',
+                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
               ].join('\n'),
             },
           ],
@@ -808,11 +808,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:currentfloor:1128724907245711452> Floor 20 - Current',
-                '<:clearedfloor:1131872032456446053> Floor 19 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
+                '<:currentfloor:1128724907245711452> Floor 10 - Current',
+                '<:clearedfloor:1131872032456446053> Floor 9 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
               ].join('\n'),
             },
           ],
@@ -940,11 +940,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:clearedfloor:1131872032456446053> Floor 20 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 19 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 10 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 9 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
               ].join('\n'),
             },
           ],
@@ -1470,11 +1470,11 @@ Deno.test('/sweep', async (test) => {
               type: 'rich',
               title: 'Floor 1',
               description:
-                '**name 1** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
-                '**name 2** leveled up and gained 3 stat points and 1 skill point.\n' +
-                '**name 3** leveled up and gained 3 stat points and 1 skill point.\n' +
-                '**name 4** leveled up and gained 3 stat points and 1 skill point.\n' +
-                '**name 5** leveled up and gained 3 stat points and 1 skill point.',
+                '**name 1** leveled up 2x and gained 2 skill points.\n' +
+                '**name 2** leveled up and gained 1 skill point.\n' +
+                '**name 3** leveled up and gained 1 skill point.\n' +
+                '**name 4** leveled up and gained 1 skill point.\n' +
+                '**name 5** leveled up and gained 1 skill point.',
             },
           ],
           components: [

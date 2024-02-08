@@ -1,20 +1,20 @@
-import _user from './user.ts';
-import packs from './packs.ts';
+import _user from '~/src/user.ts';
+import packs from '~/src/packs.ts';
 
-import utils from './utils.ts';
-import i18n from './i18n.ts';
+import utils from '~/src/utils.ts';
+import i18n from '~/src/i18n.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
-import type * as Schema from '../db/schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
-export const MAX_FLOORS = 20;
+export const MAX_FLOORS = 10;
 
 const calculateMultipleOfTen = (num: number): number => {
   return Math.max(1, num % 10 === 0 ? num / 10 : Math.floor(num / 10) + 1);
@@ -269,7 +269,13 @@ function sweep({ token, guildId, userId }: {
           });
 
           const statusText = status.map(
-            ({ levelUp, skillPoints, statPoints, exp, expToLevel }, index) => {
+            ({
+              levelUp,
+              skillPoints,
+              // statPoints,
+              exp,
+              expToLevel,
+            }, index) => {
               if (levelUp >= 1) {
                 return i18n.get(
                   'leveled-up',
@@ -278,8 +284,8 @@ function sweep({ token, guildId, userId }: {
                     // deno-lint-ignore no-non-null-assertion
                     packs.aliasToArray(characters[index]!.name)[0],
                   levelUp === 1 ? ' ' : ` ${levelUp}x `,
-                  statPoints,
-                  i18n.get('stat-points').toLowerCase(),
+                  // statPoints,
+                  // i18n.get('stat-points').toLowerCase(),
                   skillPoints,
                   i18n.get(skillPoints === 1 ? 'skill-point' : 'skill-points')
                     .toLowerCase(),
@@ -415,7 +421,10 @@ async function onSuccess(
   });
 
   const statusText = status.map(
-    ({ levelUp, skillPoints, statPoints }, index) => {
+    ({
+      levelUp,
+      skillPoints, //  statPoints
+    }, index) => {
       if (levelUp >= 1) {
         return i18n.get(
           'leveled-up',
@@ -424,8 +433,11 @@ async function onSuccess(
             // deno-lint-ignore no-non-null-assertion
             packs.aliasToArray(characters[index]!.name)[0],
           levelUp === 1 ? ' ' : ` ${levelUp}x `,
-          statPoints,
+          // statPoints,
+          // i18n.get('stat-points').toLowerCase(),
           skillPoints,
+          i18n.get(skillPoints === 1 ? 'skill-point' : 'skill-points')
+            .toLowerCase(),
         );
       } else {
         return undefined;

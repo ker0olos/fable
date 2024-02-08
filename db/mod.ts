@@ -61,7 +61,11 @@ import {
   unassignCharacter,
 } from '~/db/assignParty.ts';
 
-import { initStats, upgradeStats } from '~/db/assignStats.ts';
+import {
+  initStats,
+  //  upgradeStats
+} from '~/db/assignStats.ts';
+
 import { acquireSkill } from '~/db/acquireSkill.ts';
 
 import { gainExp, MAX_LEVEL } from '~/db/gainExp.ts';
@@ -79,6 +83,7 @@ import { createVoteRef, resolveVoteRef } from '~/db/voteRef.ts';
 import { getFromBlob, setAsBlob } from '~/db/blob.ts';
 
 export const kv = await Deno.openKv(
+  ':memory:',
   // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
 );
 
@@ -253,7 +258,7 @@ const db = {
   unassignCharacter,
   //
   initStats,
-  upgradeStats,
+  // upgradeStats,
   acquireSkill,
   //
   gainExp,
