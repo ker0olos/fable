@@ -1,16 +1,9 @@
 // deno-lint-ignore-file
 
-import { assertEquals, assertRejects } from '$std/assert/mod.ts';
+import { assertEquals } from '$std/assert/mod.ts';
 import { stub } from '$std/testing/mock.ts';
 
 import db, { kv } from '~/db/mod.ts';
-
-import {
-  initStats,
-  //  upgradeStats
-} from '~/db/assignStats.ts';
-
-import { CharacterCombat } from '~/db/schema.ts';
 
 Deno.test('initStats', async (test) => {
   await test.step('1*', async () => {
@@ -33,7 +26,7 @@ Deno.test('initStats', async (test) => {
     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
     try {
-      const result = await initStats('instance' as any, 'character_id');
+      const result = await db.initStats('instance' as any, 'character_id');
 
       assertEquals(result.character.combat?.baseStats, {
         attack: 1,
@@ -70,7 +63,7 @@ Deno.test('initStats', async (test) => {
     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
     try {
-      const result = await initStats('instance' as any, 'character_id');
+      const result = await db.initStats('instance' as any, 'character_id');
 
       assertEquals(result.character.combat?.baseStats, {
         attack: 3,
@@ -107,7 +100,7 @@ Deno.test('initStats', async (test) => {
     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
     try {
-      const result = await initStats('instance' as any, 'character_id');
+      const result = await db.initStats('instance' as any, 'character_id');
 
       assertEquals(result.character.combat?.baseStats, {
         attack: 4,
@@ -144,7 +137,7 @@ Deno.test('initStats', async (test) => {
     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
     try {
-      const result = await initStats('instance' as any, 'character_id');
+      const result = await db.initStats('instance' as any, 'character_id');
 
       assertEquals(result.character.combat?.baseStats, {
         attack: 6,
@@ -183,7 +176,7 @@ Deno.test('initStats', async (test) => {
     const atomicStub = stub(kv, 'atomic', () => atomicMock as any);
 
     try {
-      const result = await initStats('instance' as any, 'character_id');
+      const result = await db.initStats('instance' as any, 'character_id');
 
       assertEquals(result.character.combat?.baseStats, {
         attack: 7,

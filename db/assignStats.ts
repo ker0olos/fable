@@ -26,10 +26,45 @@ const newUnclaimed = (rating: number): number => {
   return 3 * rating;
 };
 
+export function unsureInitStats(character: Schema.Character): Schema.Character {
+  if (character.combat?.baseStats !== undefined) {
+    return character;
+  }
+
+  const total = newUnclaimed(character.rating);
+  const slots = newSkills(character.rating);
+
+  //
+
+  const attack = Math.floor(Math.random() * total);
+  const defense = Math.floor(Math.random() * (total - attack));
+  const speed = total - attack - defense;
+
+  character.combat ??= {};
+  character.combat.skills = {};
+
+  // character.combat.unclaimedStatsPoints ??= 0;
+
+  character.combat.baseStats = { attack, defense, speed };
+  character.combat.curStats = { attack, defense, speed };
+
+  //
+
+  const skillsPool = Object.values(skills.pool);
+
+  for (let i = 0; i < slots; i++) {
+    const index = Math.floor(Math.random() * skillsPool.length);
+    const [skill] = skillsPool.splice(index, 1);
+
+    character.combat.skills[skill.key] = { level: 1 };
+  }
+
+  return character;
+}
+
 export async function initStats(
   instance: Schema.Instance,
   characterId: string,
-  op?: Deno.AtomicOperation,
 ): Promise<{ character: Schema.Character; user: Schema.User }> {
   let retries = 0;
 
@@ -43,7 +78,7 @@ export async function initStats(
       throw new Error('CHARACTER_NOT_FOUND');
     }
 
-    const character = response.value;
+    let character = response.value;
 
     const user = await db.getValue<Schema.User>(['users', character.user]);
 
@@ -51,41 +86,14 @@ export async function initStats(
       throw new Error('CHARACTER_NOT_FOUND');
     }
 
+    //return if stats are already initialized
     if (character.combat?.baseStats !== undefined) {
       return { character, user };
     }
 
-    const total = newUnclaimed(character.rating);
-    const slots = newSkills(character.rating);
+    character = unsureInitStats(character);
 
-    //
-
-    const attack = Math.floor(Math.random() * total);
-    const defense = Math.floor(Math.random() * (total - attack));
-    const speed = total - attack - defense;
-
-    character.combat ??= {};
-    character.combat.skills = {};
-
-    // character.combat.unclaimedStatsPoints ??= 0;
-
-    character.combat.baseStats = { attack, defense, speed };
-    character.combat.curStats = { attack, defense, speed };
-
-    //
-
-    const skillsPool = Object.values(skills.pool);
-
-    for (let i = 0; i < slots; i++) {
-      const index = Math.floor(Math.random() * skillsPool.length);
-      const [skill] = skillsPool.splice(index, 1);
-
-      character.combat.skills[skill.key] = { level: 1 };
-    }
-
-    //
-
-    const update = await (op ?? kv.atomic())
+    const update = await kv.atomic()
       .check(response)
       .set(['characters', character._id], character)
       .set(
