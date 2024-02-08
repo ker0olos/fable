@@ -1,20 +1,20 @@
-import config from "~/src/config.ts";
+import config from '~/src/config.ts';
 
-import i18n from "~/src/i18n.ts";
-import utils from "~/src/utils.ts";
+import i18n from '~/src/i18n.ts';
+import utils from '~/src/utils.ts';
 
-import user from "~/src/user.ts";
-import packs from "~/src/packs.ts";
+import user from '~/src/user.ts';
+import packs from '~/src/packs.ts';
 
-import Rating from "~/src/rating.ts";
+import Rating from '~/src/rating.ts';
 
-import db from "~/db/mod.ts";
+import db from '~/db/mod.ts';
 
-import { default as srch } from "~/src/search.ts";
+import { default as srch } from '~/src/search.ts';
 
-import * as discord from "~/src/discord.ts";
+import * as discord from '~/src/discord.ts';
 
-import * as Schema from "~/db/schema.ts";
+import * as Schema from '~/db/schema.ts';
 
 import type { Character } from '~/src/types.ts';
 
