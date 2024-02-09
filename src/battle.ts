@@ -113,7 +113,7 @@ function challengeTower({ token, guildId, userId }: {
 
       const floor = inventory.floorsCleared || 1;
 
-      if (floor <= MAX_FLOORS) {
+      if (MAX_FLOORS <= floor) {
         throw new NonFetalError(i18n.get('max-floor-cleared', locale));
       }
 
@@ -295,9 +295,12 @@ async function startCombat(
 
   const battleDataStream = kv.watch<[BattleData]>([battleKey]);
 
-  for await (const [newData] of battleDataStream) {
-    battleData = newData.value;
-  }
+  // watch for any changes to the battle data
+  (async () => {
+    for await (const [newData] of battleDataStream) {
+      battleData = newData.value;
+    }
+  })().catch(console.error);
 
   while (true) {
     // switch initiative
@@ -408,6 +411,8 @@ async function startCombat(
 
       battleData?.playing && await utils.sleep(MESSAGE_DELAY);
       await message.patch(token);
+
+      await battleDataStream.cancel();
 
       return [character1Stats.hp > 0, message];
     }
