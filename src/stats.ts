@@ -110,8 +110,6 @@ function view({ token, character, characterSchema, userId, guildId }: {
       ]);
     })
     .then(async ([character, existing]) => {
-      // const charId = `${character.packId}:${character.id}`;
-
       if (!existing?.character) {
         const message = new discord.Message();
 
@@ -152,6 +150,7 @@ function view({ token, character, characterSchema, userId, guildId }: {
           nickname: existing.character.nickname,
           rating: existing.character.rating,
         },
+        userId: existing.user?.id,
         suffix: `${i18n.get('level', locale)} ${level}\n${exp}/${expToLevel}`,
         media: { title: false },
         description: false,
@@ -192,6 +191,8 @@ function view({ token, character, characterSchema, userId, guildId }: {
         });
 
       // if (characterSchema || existing.user?.id === userId) {
+      //   const charId = `${character.packId}:${character.id}`;
+      //
       //   message.addComponents([
       //     new discord.Component()
       //       .setLabel(`+1 ${i18n.get('atk', locale)}`)
