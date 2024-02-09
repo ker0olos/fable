@@ -3,7 +3,7 @@ import packs from '~/src/packs.ts';
 import utils from '~/src/utils.ts';
 import i18n from '~/src/i18n.ts';
 
-import db from '~/db/mod.ts';
+import db, { kv } from '~/db/mod.ts';
 
 import * as dynImages from '~/dyn-images/mod.ts';
 
@@ -11,15 +11,11 @@ import * as discord from '~/src/discord.ts';
 
 import config from '~/src/config.ts';
 
-import gacha from '~/src/gacha.ts';
-
-import tower, { getEnemyRating, getEnemyStats } from '~/src/tower.ts';
-
-import skills from '~/src/skills.ts';
+import tower, { getEnemyCharacter, getEnemyStats } from '~/src/tower.ts';
 
 import * as Schema from '~/db/schema.ts';
 
-import { NonFetalError, PoolError } from '~/src/errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
 import type {
   Character,
@@ -30,11 +26,8 @@ import type {
 
 type BattleData = { playing: boolean };
 
-// 2 seconds
-const MESSAGE_DELAY = 2;
-
-// 3 minutes
-const MAX_TIME = 3 * 60 * 1000;
+const MESSAGE_DELAY = 2; // 2 seconds
+const MAX_TIME = 3 * 60 * 1000; // 3 minutes
 
 const getStats = (char: Schema.Character): CharacterTracking => {
   return {
@@ -64,9 +57,9 @@ const addEmbed = (message: discord.Message, {
 }) => {
   damage = damage || 0;
 
-  const uuid = crypto.randomUUID();
-
   let _state = state ?? discord.empty;
+
+  const uuid = crypto.randomUUID();
 
   if (damage > 0) {
     _state = `-${damage}`;
@@ -94,161 +87,6 @@ const addEmbed = (message: discord.Message, {
   message.addEmbed(embed);
 };
 
-function attack(
-  char: CharacterTracking,
-  target: CharacterTracking,
-): SkillOutput {
-  let damage = 0;
-
-  // activate character skills
-  Object.entries(char.skills).map(([key, s]) => {
-    const skill = skills.pool[key];
-
-    if (skill.activationTurn === 'user') {
-      const outcome = skill.activation(char, target, s.level);
-
-      if (outcome.damage) {
-        damage += Math.round(outcome.damage);
-      }
-    }
-  });
-
-  damage += Math.max(char.attack - target.defense, 1);
-
-  // activate enemy/target skills
-  Object.entries(target.skills).map(([key, s]) => {
-    const skill = skills.pool[key];
-
-    if (skill.activationTurn === 'enemy') {
-      const outcome = skill.activation(char, target, s.level);
-
-      if (outcome.dodge) {
-        damage = 0;
-      }
-    }
-  });
-
-  target.hp = Math.max(target.hp - damage, 0);
-
-  return { damage };
-}
-
-// function challengeFriend({ token, guildId, userId, targetId }: {
-//   token: string;
-//   guildId: string;
-//   userId: string;
-//   targetId: string;
-// }): discord.Message {
-//   const locale = _user.cachedUsers[userId]?.locale;
-
-//   if (!config.combat) {
-//     throw new NonFetalError(
-//       i18n.get('maintenance-combat', locale),
-//     );
-//   }
-
-//   if (userId === targetId) {
-//     throw new NonFetalError(
-//       i18n.get('battle-yourself', locale),
-//     );
-//   }
-
-//   Promise.resolve()
-//     .then(async () => {
-//       const guild = await db.getGuild(guildId);
-//       const instance = await db.getInstance(guild);
-
-//       const [_user, _target] = [
-//         await db.getUser(userId),
-//         await db.getUser(targetId),
-//       ];
-
-//       const [{ inventory: userInventory }, { inventory: targetInventory }] = [
-//         await db.getInventory(instance, _user),
-//         await db.getInventory(instance, _target),
-//       ];
-
-//       const [userParty, targetParty] = [
-//         await db.getUserParty(userInventory),
-//         await db.getUserParty(targetInventory),
-//       ];
-
-//       const party1 = [
-//         userParty?.member1,
-//         userParty?.member2,
-//         userParty?.member3,
-//         userParty?.member4,
-//         userParty?.member5,
-//       ].filter(Boolean) as Schema.Character[];
-
-//       const party2 = [
-//         targetParty?.member1,
-//         targetParty?.member2,
-//         targetParty?.member3,
-//         targetParty?.member4,
-//         targetParty?.member5,
-//       ].filter(Boolean) as Schema.Character[];
-
-//       if (party1.length <= 0) {
-//         throw new NonFetalError(i18n.get('your-party-empty', locale));
-//       } else if (party2.length <= 0) {
-//         throw new NonFetalError(
-//           i18n.get('user-party-empty', locale, `<@${targetId}>'s`),
-//         );
-//       }
-
-//       const [characters] = await Promise.all([
-//         packs.characters({ guildId, ids: [party1[0].id, party2[0].id] }),
-//       ]);
-
-//       const [userCharacter, targetCharacter] = [
-//         characters.find(({ packId, id }) => party1[0].id === `${packId}:${id}`),
-//         characters.find(({ packId, id }) => party2[0].id === `${packId}:${id}`),
-//       ];
-
-//       if (!userCharacter || !targetCharacter) {
-//         throw new NonFetalError(i18n.get('some-characters-disabled', locale));
-//       }
-
-//       await startCombat({
-//         token,
-//         locale,
-//         userId,
-//         targetId,
-//         character1: userCharacter,
-//         character2: targetCharacter,
-//         character1Existing: party1[0],
-//         character2Existing: party2[0],
-//         character1Stats: getStats(party1[0]),
-//         character2Stats: getStats(party2[0]),
-//       });
-//     })
-//     .catch(async (err) => {
-//       if (err instanceof NonFetalError) {
-//         return await new discord.Message()
-//           .addEmbed(new discord.Embed().setDescription(err.message))
-//           .patch(token);
-//       }
-
-//       if (!config.sentry) {
-//         throw err;
-//       }
-
-//       const refId = utils.captureException(err);
-
-//       await discord.Message.internal(refId).patch(token);
-//     });
-
-//   const loading = new discord.Message()
-//     .addEmbed(
-//       new discord.Embed().setImage(
-//         { url: `${config.origin}/assets/spinner3.gif` },
-//       ),
-//     );
-
-//   return loading;
-// }
-
 function challengeTower({ token, guildId, userId }: {
   token: string;
   guildId: string;
@@ -271,92 +109,38 @@ function challengeTower({ token, guildId, userId }: {
 
       const { inventory } = await db.getInventory(instance, _user);
 
-      const floor = (inventory.floorsCleared ?? 0) + 1;
+      const floor = inventory.floorsCleared || 1;
 
       const seed = `${guildId}${floor}`;
 
-      const random = new utils.LehmerRNG(seed);
+      const _party = await db.getUserParty(inventory);
 
-      const party = await db.getUserParty(inventory);
+      const party = Object.values(_party)
+        .filter(Boolean) as Schema.Character[];
 
-      const party1 = [
-        party?.member1,
-        party?.member2,
-        party?.member3,
-        party?.member4,
-        party?.member5,
-      ].filter(Boolean) as Schema.Character[];
-
-      if (party1.length <= 0) {
+      if (party.length <= 0) {
         throw new NonFetalError(i18n.get('your-party-empty', locale));
+      } else if (
+        party.some((char) => !char.combat?.baseStats || !char.combat?.curStats)
+      ) {
+        throw new Error('non-stats initialized characters are in the party');
       }
 
-      const characters = await packs.characters({
+      const characters = await packs.aggregatedCharacters({
         guildId,
-        ids: [party1[0].id],
+        ids: party.map(({ id }) => id),
       });
 
-      const userCharacter = characters.find(({ packId, id }) =>
-        party1[0].id === `${packId}:${id}`
-      );
+      const userParty = party.map((member) =>
+        characters.find(({ packId, id }) => member.id === `${packId}:${id}`)
+      ).filter(Boolean) as Character[];
 
-      if (!userCharacter) {
+      if (!userParty.length) {
         throw new NonFetalError(i18n.get('character-disabled', locale));
       }
 
-      const userCharacterStats = getStats(party1[0]);
-
-      const { pool, validate } = await gacha.guaranteedPool({
-        seed,
-        guarantee: getEnemyRating(floor),
-        guildId,
-      });
-
-      let enemyCharacter: Character | undefined = undefined;
-      // let enemyMedia: Media | undefined = undefined;
-
-      while (pool.length > 0) {
-        const i = Math.floor(random.nextFloat() * pool.length);
-
-        const characterId = pool.splice(i, 1)[0].id;
-
-        if (packs.isDisabled(characterId, guildId)) {
-          continue;
-        }
-
-        const results = await packs.characters({ guildId, ids: [characterId] });
-
-        if (!results.length || !validate(results[0])) {
-          continue;
-        }
-
-        const candidate = await packs.aggregate<Character>({
-          guildId,
-          character: results[0],
-          end: 1,
-        });
-
-        const edge = candidate.media?.edges?.[0];
-
-        if (!edge || !validate(candidate) || !candidate?.images?.length) {
-          continue;
-        }
-
-        if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
-          continue;
-        }
-
-        // enemyMedia = edge.node;
-        enemyCharacter = candidate;
-
-        break;
-      }
-
-      if (!enemyCharacter) {
-        throw new PoolError();
-      }
-
-      const enemyStats: CharacterTracking = getEnemyStats(floor, seed);
+      const enemyStats = getEnemyStats(floor, seed);
+      const enemyCharacter = await getEnemyCharacter(floor, seed, guildId);
 
       const [userWon, _lastMessage] = await startCombat({
         token,
@@ -364,11 +148,11 @@ function challengeTower({ token, guildId, userId }: {
         userId,
         title: `${i18n.get('floor', locale)} ${floor}`,
         targetName: packs.aliasToArray(enemyCharacter.name)[0],
-        character1: userCharacter,
+        character1: userParty[0],
         character2: enemyCharacter,
-        character1Existing: party1[0],
+        character1Existing: party[0],
         character2Existing: undefined,
-        character1Stats: userCharacterStats,
+        character1Stats: getStats(party[0]),
         character2Stats: enemyStats,
       });
 
@@ -378,17 +162,12 @@ function challengeTower({ token, guildId, userId }: {
           userId,
           guildId,
           message: _lastMessage,
-          party: party1,
+          party: party,
           inventory,
           locale,
         });
       } else {
-        tower.onFail({
-          token,
-          message: _lastMessage,
-          userId,
-          locale,
-        });
+        tower.onFail({ token, message: _lastMessage, userId, locale });
       }
     })
     .catch(async (err) => {
@@ -417,6 +196,45 @@ function challengeTower({ token, guildId, userId }: {
   return loading;
 }
 
+function attack(
+  char: CharacterTracking,
+  target: CharacterTracking,
+): SkillOutput {
+  let damage = 0;
+
+  // activate character skills
+  // Object.entries(char.skills).map(([key, s]) => {
+  //   const skill = skills.pool[key];
+
+  //   if (skill.activationTurn === 'user') {
+  //     const outcome = skill.activation(char, target, s.level);
+
+  //     if (outcome.damage) {
+  //       damage += Math.round(outcome.damage);
+  //     }
+  //   }
+  // });
+
+  damage += Math.max(char.attack - target.defense, 1);
+
+  // activate enemy/target skills
+  // Object.entries(target.skills).map(([key, s]) => {
+  //   const skill = skills.pool[key];
+
+  //   if (skill.activationTurn === 'enemy') {
+  //     const outcome = skill.activation(char, target, s.level);
+
+  //     if (outcome.dodge) {
+  //       damage = 0;
+  //     }
+  //   }
+  // });
+
+  target.hp = Math.max(target.hp - damage, 0);
+
+  return { damage };
+}
+
 async function startCombat(
   {
     token,
@@ -434,7 +252,7 @@ async function startCombat(
   }: {
     token: string;
     title?: string;
-    character1: Character | DisaggregatedCharacter;
+    character1: Character;
     character2: Character | DisaggregatedCharacter;
     character1Existing: Schema.Character;
     character2Existing?: Schema.Character;
@@ -453,10 +271,9 @@ async function startCombat(
   const battleId = utils.nanoid(5);
   const battleKey = ['active_battle', battleId];
 
-  // add battle to db to allow skip functionality
-  db.setValue(battleKey, {
-    playing: true,
-  } as BattleData, { expireIn: MAX_TIME });
+  let battleData: BattleData = { playing: true };
+
+  db.setValue(battleKey, battleData, { expireIn: MAX_TIME });
 
   // skip button
   message.addComponents([
@@ -465,7 +282,13 @@ async function startCombat(
       .setLabel(i18n.get('skip', locale)),
   ]);
 
-  const data = () => db.getValue<BattleData>(battleKey);
+  const battleDataStream = kv.watch<[BattleData]>([battleKey]);
+
+  for await (const [newData] of battleDataStream) {
+    if (newData.value) {
+      battleData = newData.value;
+    }
+  }
 
   while (true) {
     // switch initiative
@@ -517,8 +340,8 @@ async function startCombat(
 
     stateUX.forEach((func) => func());
 
-    (await data())?.playing && await utils.sleep(MESSAGE_DELAY);
-    (await data())?.playing && await message.patch(token);
+    battleData.playing && await utils.sleep(MESSAGE_DELAY);
+    battleData.playing && await message.patch(token);
 
     const { damage } = attack(attackerStats, defenderStats);
 
@@ -554,8 +377,8 @@ async function startCombat(
 
     damageUX.forEach((func) => func());
 
-    (await data())?.playing && await utils.sleep(MESSAGE_DELAY);
-    (await data())?.playing && await message.patch(token);
+    battleData.playing && await utils.sleep(MESSAGE_DELAY);
+    battleData.playing && await message.patch(token);
 
     // battle end message (if hp <= 0)
 
@@ -593,8 +416,7 @@ async function startCombat(
           ),
       );
 
-      (await data())?.playing && await utils.sleep(MESSAGE_DELAY);
-
+      battleData.playing && await utils.sleep(MESSAGE_DELAY);
       await message.patch(token);
 
       return [character1Stats.hp > 0, message];
@@ -605,7 +427,7 @@ async function startCombat(
 async function skipBattle(battleId: string): Promise<void> {
   const battleKey = ['active_battle', battleId];
 
-  await db.setValue(battleKey, { playing: false } as BattleData, {
+  await db.setValue(battleKey, { playing: false } satisfies BattleData, {
     expireIn: MAX_TIME,
   });
 }

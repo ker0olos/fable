@@ -4,6 +4,7 @@ import packs from '~/src/packs.ts';
 import utils from '~/src/utils.ts';
 import i18n from '~/src/i18n.ts';
 
+import gacha from '~/src/gacha.ts';
 import skills from '~/src/skills.ts';
 
 import db from '~/db/mod.ts';
@@ -12,11 +13,11 @@ import * as discord from '~/src/discord.ts';
 
 import config from '~/src/config.ts';
 
-import { NonFetalError } from '~/src/errors.ts';
+import { NonFetalError, PoolError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type { CharacterTracking } from '~/src/types.ts';
+import type { Character, CharacterTracking } from '~/src/types.ts';
 
 export const MAX_FLOORS = 10;
 
@@ -157,6 +158,63 @@ export const getEnemyStats = (
 
   return stats;
 };
+
+export async function getEnemyCharacter(
+  floor: number,
+  seed: string,
+  guildId: string,
+): Promise<Character> {
+  const random = new utils.LehmerRNG(seed);
+
+  const { pool, validate } = await gacha.guaranteedPool({
+    seed,
+    guildId,
+    guarantee: getEnemyRating(floor),
+  });
+
+  let character: Character | undefined = undefined;
+
+  while (pool.length > 0) {
+    const i = Math.floor(random.nextFloat() * pool.length);
+
+    const characterId = pool.splice(i, 1)[0].id;
+
+    if (packs.isDisabled(characterId, guildId)) {
+      continue;
+    }
+
+    const results = await packs.aggregatedCharacters({
+      guildId,
+      ids: [characterId],
+    });
+
+    if (!results.length || !validate(results[0])) {
+      continue;
+    }
+
+    const media = results[0].media?.edges?.[0];
+
+    if (!media || !validate(results[0]) || !results[0]?.images?.length) {
+      continue;
+    }
+
+    if (
+      packs.isDisabled(`${media.node.packId}:${media.node.id}`, guildId)
+    ) {
+      continue;
+    }
+
+    character = results[0];
+
+    break;
+  }
+
+  if (!character) {
+    throw new PoolError();
+  }
+
+  return character;
+}
 
 function getMessage(
   cleared: number,

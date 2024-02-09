@@ -84,7 +84,7 @@ import { createVoteRef, resolveVoteRef } from '~/db/voteRef.ts';
 import { getFromBlob, setAsBlob } from '~/db/blob.ts';
 
 export const kv = await Deno.openKv(
-  // ':memory:',
+  'temp1',
   // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
 );
 
