@@ -4,6 +4,8 @@ import packs from '~/src/packs.ts';
 import utils from '~/src/utils.ts';
 import i18n from '~/src/i18n.ts';
 
+import skills from '~/src/skills.ts';
+
 import db from '~/db/mod.ts';
 
 import * as discord from '~/src/discord.ts';
@@ -13,6 +15,8 @@ import config from '~/src/config.ts';
 import { NonFetalError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
+
+import type { CharacterTracking } from '~/src/types.ts';
 
 export const MAX_FLOORS = 10;
 
@@ -49,6 +53,109 @@ export const getFloorExp = (floor: number): number => {
   }
 
   return exp * base;
+};
+
+export const getEnemyRating = (floor: number): number => {
+  switch (floor % 10) {
+    case 1:
+    case 2:
+    case 3:
+      return 1;
+    case 4:
+    case 6:
+      return 2;
+    case 7:
+    case 8:
+    case 9:
+      return 3;
+    case 5:
+      return 4;
+    // 10nth floor
+    case 0:
+      return 5;
+    default:
+      throw new Error('');
+  }
+};
+
+export const getEnemySkillSlots = (floor: number): number => {
+  const skillsPool = Object.keys(skills.pool);
+  return Math.min(Math.floor(floor / 10), skillsPool.length);
+};
+
+export const getEnemyMaxSkillLevel = (floor: number): number => {
+  return Math.max(Math.floor(floor / 5), 1);
+};
+
+export const getEnemyStats = (
+  floor: number,
+  seed: string,
+): CharacterTracking => {
+  const rng = new utils.LehmerRNG(seed);
+  const skillRng = new utils.LehmerRNG(seed);
+
+  // same as player characters
+  const totalStats = 3 * getEnemyRating(floor);
+
+  const _skills: CharacterTracking['skills'] = {};
+
+  const skillsPool = Object.values(skills.pool);
+  const skillsSlots = getEnemySkillSlots(floor);
+  const maxSkillLevel = getEnemyMaxSkillLevel(floor);
+
+  for (let i = 0; i < skillsSlots; i++) {
+    const randomSkill = skillsPool[
+      Math.floor(skillRng.nextFloat() * skillsPool.length)
+    ];
+
+    _skills[randomSkill.key] = {
+      level: Math.min(
+        maxSkillLevel,
+        randomSkill.stats.slice(-1)[0].scale.length,
+      ),
+    };
+  }
+
+  const stats: CharacterTracking = {
+    skills: _skills,
+    attack: 0,
+    defense: 0,
+    speed: 0,
+    hp: 0,
+    maxHP: 0,
+  };
+
+  for (let i = 0; i < totalStats; i++) {
+    const rand = Math.floor(rng.nextFloat() * 3);
+
+    if (rand === 0) {
+      stats.attack += 1;
+    } else if (rand === 1) {
+      stats.defense += 1;
+    } else {
+      stats.speed += 1;
+    }
+  }
+
+  const multiplier = 0.5;
+  const base = floor;
+
+  stats.attack = Math.round(
+    stats.attack * Math.pow(base, multiplier),
+  );
+
+  stats.defense = stats.maxHP = stats.hp = Math.max(
+    Math.round(
+      stats.defense * Math.pow(base, multiplier),
+    ),
+    1,
+  );
+
+  stats.speed = Math.round(
+    stats.speed * Math.pow(base, multiplier),
+  );
+
+  return stats;
 };
 
 function getMessage(

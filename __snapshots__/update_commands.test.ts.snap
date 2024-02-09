@@ -3572,35 +3572,6 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Battle against another player to test your party",
-        description_localizations: {
-          "es-ES": undefined,
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "friend",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user to battle against",
-            description_localizations: {
-              "es-ES": "el usuario contra el que pelearás",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "versus",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-      {
-        autocomplete: undefined,
-        choices: undefined,
         description: "Climb the tower to glory and become a fable",
         description_localizations: {
           "es-ES": undefined,
@@ -3624,35 +3595,6 @@ snapshot[`commands 1`] = `
     dm_permission: false,
     name: "bt",
     options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Battle against another player to test your party",
-        description_localizations: {
-          "es-ES": undefined,
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "friend",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user to battle against",
-            description_localizations: {
-              "es-ES": "el usuario contra el que pelearás",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "versus",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
       {
         autocomplete: undefined,
         choices: undefined,

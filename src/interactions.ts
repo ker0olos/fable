@@ -810,19 +810,21 @@ export const handler = async (r: Request) => {
                 })
                   .send();
               }
+              // default is used to respond to users context-menu "Battle" option
               default:
-              case 'friend': {
-                const targetId = options['versus'] as string ??
-                  options['user'] as string;
+                // case 'friend': {
+                //   const targetId = options['versus'] as string ??
+                //     options['user'] as string;
 
-                return battle.challengeFriend({
-                  token,
-                  guildId,
-                  userId: member.user.id,
-                  targetId: targetId,
-                })
-                  .send();
-              }
+                //   return battle.challengeFriend({
+                //     token,
+                //     guildId,
+                //     userId: member.user.id,
+                //     targetId: targetId,
+                //   })
+                //     .send();
+                // }
+                break;
             }
             break;
           }

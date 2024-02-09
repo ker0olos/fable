@@ -926,28 +926,28 @@ export const commands = [
       }),
     ],
   }),
-  ...Command({
-    name: 'Battle',
-    type: CommandType.USER,
-  }),
+  // ...Command({
+  //   name: 'Battle',
+  //   type: CommandType.USER,
+  // }),
   ...Command({
     name: 'battle',
     description: 'battle/combat commands',
     aliases: ['bt'],
     options: [
-      Option({
-        name: 'friend',
-        description: '/battle friend',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'versus',
-            description: '$versus',
-            type: Type.USER,
-          }),
-        ],
-      }),
+      // Option({
+      //   name: 'friend',
+      //   description: '/battle friend',
+      //   type: Type.SUB_COMMAND,
+      //   optional: true,
+      //   options: [
+      //     Option({
+      //       name: 'versus',
+      //       description: '$versus',
+      //       type: Type.USER,
+      //     }),
+      //   ],
+      // }),
       Option({
         name: 'tower',
         description: '/battle tower',

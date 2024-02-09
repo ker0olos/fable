@@ -12,7 +12,9 @@ import * as discord from '~/src/discord.ts';
 import config from '~/src/config.ts';
 
 import gacha from '~/src/gacha.ts';
-import tower from '~/src/tower.ts';
+
+import tower, { getEnemyRating, getEnemyStats } from '~/src/tower.ts';
+
 import skills from '~/src/skills.ts';
 
 import * as Schema from '~/db/schema.ts';
@@ -21,7 +23,7 @@ import { NonFetalError, PoolError } from '~/src/errors.ts';
 
 import type {
   Character,
-  CharacterLive,
+  CharacterTracking,
   DisaggregatedCharacter,
   SkillOutput,
 } from './types.ts';
@@ -34,116 +36,15 @@ const MESSAGE_DELAY = 2;
 // 3 minutes
 const MAX_TIME = 3 * 60 * 1000;
 
-export const getEnemyRating = (floor: number): number => {
-  switch (floor % 10) {
-    case 1:
-    case 2:
-    case 3:
-      return 1;
-    case 4:
-    case 6:
-      return 2;
-    case 7:
-    case 8:
-    case 9:
-      return 3;
-    case 5:
-      return 4;
-    case 0:
-      return 5;
-    default:
-      throw new Error('');
-  }
-};
-
-const getStats = (char: Schema.Character): CharacterLive => {
+const getStats = (char: Schema.Character): CharacterTracking => {
   return {
     skills: char.combat?.skills ?? {},
-    //
     attack: char.combat?.curStats?.attack ?? 0,
     speed: char.combat?.curStats?.speed ?? 1,
     defense: char.combat?.curStats?.defense ?? 1,
-    //
     hp: char.combat?.curStats?.defense ?? 1,
     maxHP: char.combat?.curStats?.defense ?? 1,
   };
-};
-
-export const getEnemySkillSlots = (floor: number): number => {
-  const skillsPool = Object.keys(skills.pool);
-  return Math.min(Math.floor(floor / 10), skillsPool.length);
-};
-
-export const getEnemyMaxSkillLevel = (floor: number): number => {
-  return Math.max(Math.floor(floor / 5), 1);
-};
-
-const getEnemyStats = (floor: number, seed: string): CharacterLive => {
-  const rng = new utils.LehmerRNG(seed);
-  const skillRng = new utils.LehmerRNG(seed);
-
-  // same as player characters
-  const totalStats = 3 * getEnemyRating(floor);
-
-  const _skills: CharacterLive['skills'] = {};
-
-  const skillsPool = Object.values(skills.pool);
-  const skillsSlots = getEnemySkillSlots(floor);
-  const maxSkillLevel = getEnemyMaxSkillLevel(floor);
-
-  for (let i = 0; i < skillsSlots; i++) {
-    const randomSkill = skillsPool[
-      Math.floor(skillRng.nextFloat() * skillsPool.length)
-    ];
-
-    _skills[randomSkill.key] = {
-      level: Math.min(
-        maxSkillLevel,
-        randomSkill.stats.slice(-1)[0].scale.length,
-      ),
-    };
-  }
-
-  const stats: CharacterLive = {
-    skills: _skills,
-    attack: 0,
-    defense: 0,
-    speed: 0,
-    hp: 0,
-    maxHP: 0,
-  };
-
-  for (let i = 0; i < totalStats; i++) {
-    const rand = Math.floor(rng.nextFloat() * 3);
-
-    if (rand === 0) {
-      stats.attack += 1;
-    } else if (rand === 1) {
-      stats.defense += 1;
-    } else {
-      stats.speed += 1;
-    }
-  }
-
-  const multiplier = 0.5;
-  const base = floor;
-
-  stats.attack = Math.round(
-    stats.attack * Math.pow(base, multiplier),
-  );
-
-  stats.defense = stats.maxHP = stats.hp = Math.max(
-    Math.round(
-      stats.defense * Math.pow(base, multiplier),
-    ),
-    1,
-  );
-
-  stats.speed = Math.round(
-    stats.speed * Math.pow(base, multiplier),
-  );
-
-  return stats;
 };
 
 const addEmbed = (message: discord.Message, {
@@ -155,7 +56,7 @@ const addEmbed = (message: discord.Message, {
   color,
 }: {
   character: Character | DisaggregatedCharacter;
-  stats: CharacterLive;
+  stats: CharacterTracking;
   existing?: Schema.Character;
   damage?: number;
   state?: string;
@@ -194,8 +95,8 @@ const addEmbed = (message: discord.Message, {
 };
 
 function attack(
-  char: CharacterLive,
-  target: CharacterLive,
+  char: CharacterTracking,
+  target: CharacterTracking,
 ): SkillOutput {
   let damage = 0;
 
@@ -232,121 +133,121 @@ function attack(
   return { damage };
 }
 
-function challengeFriend({ token, guildId, userId, targetId }: {
-  token: string;
-  guildId: string;
-  userId: string;
-  targetId: string;
-}): discord.Message {
-  const locale = _user.cachedUsers[userId]?.locale;
+// function challengeFriend({ token, guildId, userId, targetId }: {
+//   token: string;
+//   guildId: string;
+//   userId: string;
+//   targetId: string;
+// }): discord.Message {
+//   const locale = _user.cachedUsers[userId]?.locale;
 
-  if (!config.combat) {
-    throw new NonFetalError(
-      i18n.get('maintenance-combat', locale),
-    );
-  }
+//   if (!config.combat) {
+//     throw new NonFetalError(
+//       i18n.get('maintenance-combat', locale),
+//     );
+//   }
 
-  if (userId === targetId) {
-    throw new NonFetalError(
-      i18n.get('battle-yourself', locale),
-    );
-  }
+//   if (userId === targetId) {
+//     throw new NonFetalError(
+//       i18n.get('battle-yourself', locale),
+//     );
+//   }
 
-  Promise.resolve()
-    .then(async () => {
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+//   Promise.resolve()
+//     .then(async () => {
+//       const guild = await db.getGuild(guildId);
+//       const instance = await db.getInstance(guild);
 
-      const [_user, _target] = [
-        await db.getUser(userId),
-        await db.getUser(targetId),
-      ];
+//       const [_user, _target] = [
+//         await db.getUser(userId),
+//         await db.getUser(targetId),
+//       ];
 
-      const [{ inventory: userInventory }, { inventory: targetInventory }] = [
-        await db.getInventory(instance, _user),
-        await db.getInventory(instance, _target),
-      ];
+//       const [{ inventory: userInventory }, { inventory: targetInventory }] = [
+//         await db.getInventory(instance, _user),
+//         await db.getInventory(instance, _target),
+//       ];
 
-      const [userParty, targetParty] = [
-        await db.getUserParty(userInventory),
-        await db.getUserParty(targetInventory),
-      ];
+//       const [userParty, targetParty] = [
+//         await db.getUserParty(userInventory),
+//         await db.getUserParty(targetInventory),
+//       ];
 
-      const party1 = [
-        userParty?.member1,
-        userParty?.member2,
-        userParty?.member3,
-        userParty?.member4,
-        userParty?.member5,
-      ].filter(Boolean) as Schema.Character[];
+//       const party1 = [
+//         userParty?.member1,
+//         userParty?.member2,
+//         userParty?.member3,
+//         userParty?.member4,
+//         userParty?.member5,
+//       ].filter(Boolean) as Schema.Character[];
 
-      const party2 = [
-        targetParty?.member1,
-        targetParty?.member2,
-        targetParty?.member3,
-        targetParty?.member4,
-        targetParty?.member5,
-      ].filter(Boolean) as Schema.Character[];
+//       const party2 = [
+//         targetParty?.member1,
+//         targetParty?.member2,
+//         targetParty?.member3,
+//         targetParty?.member4,
+//         targetParty?.member5,
+//       ].filter(Boolean) as Schema.Character[];
 
-      if (party1.length <= 0) {
-        throw new NonFetalError(i18n.get('your-party-empty', locale));
-      } else if (party2.length <= 0) {
-        throw new NonFetalError(
-          i18n.get('user-party-empty', locale, `<@${targetId}>'s`),
-        );
-      }
+//       if (party1.length <= 0) {
+//         throw new NonFetalError(i18n.get('your-party-empty', locale));
+//       } else if (party2.length <= 0) {
+//         throw new NonFetalError(
+//           i18n.get('user-party-empty', locale, `<@${targetId}>'s`),
+//         );
+//       }
 
-      const [characters] = await Promise.all([
-        packs.characters({ guildId, ids: [party1[0].id, party2[0].id] }),
-      ]);
+//       const [characters] = await Promise.all([
+//         packs.characters({ guildId, ids: [party1[0].id, party2[0].id] }),
+//       ]);
 
-      const [userCharacter, targetCharacter] = [
-        characters.find(({ packId, id }) => party1[0].id === `${packId}:${id}`),
-        characters.find(({ packId, id }) => party2[0].id === `${packId}:${id}`),
-      ];
+//       const [userCharacter, targetCharacter] = [
+//         characters.find(({ packId, id }) => party1[0].id === `${packId}:${id}`),
+//         characters.find(({ packId, id }) => party2[0].id === `${packId}:${id}`),
+//       ];
 
-      if (!userCharacter || !targetCharacter) {
-        throw new NonFetalError(i18n.get('some-characters-disabled', locale));
-      }
+//       if (!userCharacter || !targetCharacter) {
+//         throw new NonFetalError(i18n.get('some-characters-disabled', locale));
+//       }
 
-      await startCombat({
-        token,
-        locale,
-        userId,
-        targetId,
-        character1: userCharacter,
-        character2: targetCharacter,
-        character1Existing: party1[0],
-        character2Existing: party2[0],
-        character1Stats: getStats(party1[0]),
-        character2Stats: getStats(party2[0]),
-      });
-    })
-    .catch(async (err) => {
-      if (err instanceof NonFetalError) {
-        return await new discord.Message()
-          .addEmbed(new discord.Embed().setDescription(err.message))
-          .patch(token);
-      }
+//       await startCombat({
+//         token,
+//         locale,
+//         userId,
+//         targetId,
+//         character1: userCharacter,
+//         character2: targetCharacter,
+//         character1Existing: party1[0],
+//         character2Existing: party2[0],
+//         character1Stats: getStats(party1[0]),
+//         character2Stats: getStats(party2[0]),
+//       });
+//     })
+//     .catch(async (err) => {
+//       if (err instanceof NonFetalError) {
+//         return await new discord.Message()
+//           .addEmbed(new discord.Embed().setDescription(err.message))
+//           .patch(token);
+//       }
 
-      if (!config.sentry) {
-        throw err;
-      }
+//       if (!config.sentry) {
+//         throw err;
+//       }
 
-      const refId = utils.captureException(err);
+//       const refId = utils.captureException(err);
 
-      await discord.Message.internal(refId).patch(token);
-    });
+//       await discord.Message.internal(refId).patch(token);
+//     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
+//   const loading = new discord.Message()
+//     .addEmbed(
+//       new discord.Embed().setImage(
+//         { url: `${config.origin}/assets/spinner3.gif` },
+//       ),
+//     );
 
-  return loading;
-}
+//   return loading;
+// }
 
 function challengeTower({ token, guildId, userId }: {
   token: string;
@@ -455,7 +356,7 @@ function challengeTower({ token, guildId, userId }: {
         throw new PoolError();
       }
 
-      const enemyStats: CharacterLive = getEnemyStats(floor, seed);
+      const enemyStats: CharacterTracking = getEnemyStats(floor, seed);
 
       const [userWon, _lastMessage] = await startCombat({
         token,
@@ -537,8 +438,8 @@ async function startCombat(
     character2: Character | DisaggregatedCharacter;
     character1Existing: Schema.Character;
     character2Existing?: Schema.Character;
-    character1Stats: CharacterLive;
-    character2Stats: CharacterLive;
+    character1Stats: CharacterTracking;
+    character2Stats: CharacterTracking;
     userId: string;
     targetId?: string;
     targetName?: string;
@@ -710,7 +611,7 @@ async function skipBattle(battleId: string): Promise<void> {
 }
 
 const battle = {
-  challengeFriend,
+  // challengeFriend,
   challengeTower,
   skipBattle,
 };
