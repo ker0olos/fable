@@ -810,6 +810,14 @@ export const handler = async (r: Request) => {
                 })
                   .send();
               }
+              case 'challenge': {
+                return battle.challengeTower({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                })
+                  .send();
+              }
               // case 'friend':
               default: { // default is used to respond to users context-menu "Battle" option
                 //   const targetId = options['versus'] as string ??

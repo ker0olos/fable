@@ -644,6 +644,8 @@ const tower = {
   sweep,
   onFail,
   onSuccess,
+  getEnemyCharacter,
+  getEnemyStats,
 };
 
 export default tower;

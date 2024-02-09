@@ -935,22 +935,15 @@ export const commands = [
     description: 'battle/combat commands',
     aliases: ['bt'],
     options: [
-      // Option({
-      //   name: 'friend',
-      //   description: '/battle friend',
-      //   type: Type.SUB_COMMAND,
-      //   optional: true,
-      //   options: [
-      //     Option({
-      //       name: 'versus',
-      //       description: '$versus',
-      //       type: Type.USER,
-      //     }),
-      //   ],
-      // }),
       Option({
         name: 'tower',
         description: '/battle tower',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
+        name: 'challenge',
+        description: '/battle challenge',
         type: Type.SUB_COMMAND,
         optional: true,
       }),

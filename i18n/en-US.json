@@ -186,6 +186,7 @@
   "skill-is-maxed": "Skill is maxed",
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
+  "max-floor-cleared": "You already cleared the hightest floor in the tower",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
   "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
@@ -308,6 +309,7 @@
 
   "/battle friend": "Battle against another player to test your party",
   "/battle tower": "Climb the tower to glory and become a fable",
+  "/battle challenge": "Challenge the tower's next floor",
 
   "/sweep": "Sweep your current battle tower floor for exp",
 

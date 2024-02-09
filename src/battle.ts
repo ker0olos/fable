@@ -11,7 +11,9 @@ import * as discord from '~/src/discord.ts';
 
 import config from '~/src/config.ts';
 
-import tower, { getEnemyCharacter, getEnemyStats } from '~/src/tower.ts';
+import tower from '~/src/tower.ts';
+
+import { MAX_FLOORS } from '~/src/tower.ts';
 
 import * as Schema from '~/db/schema.ts';
 
@@ -111,6 +113,10 @@ function challengeTower({ token, guildId, userId }: {
 
       const floor = inventory.floorsCleared || 1;
 
+      if (floor <= MAX_FLOORS) {
+        throw new NonFetalError(i18n.get('max-floor-cleared', locale));
+      }
+
       const seed = `${guildId}${floor}`;
 
       const _party = await db.getUserParty(inventory);
@@ -131,29 +137,34 @@ function challengeTower({ token, guildId, userId }: {
         ids: party.map(({ id }) => id),
       });
 
-      const userParty = party.map((member) =>
+      const userPartyCharacters = party.map((member) =>
         characters.find(({ packId, id }) => member.id === `${packId}:${id}`)
       ).filter(Boolean) as Character[];
 
-      if (!userParty.length) {
+      if (!userPartyCharacters.length) {
         throw new NonFetalError(i18n.get('character-disabled', locale));
       }
 
-      const enemyStats = getEnemyStats(floor, seed);
-      const enemyCharacter = await getEnemyCharacter(floor, seed, guildId);
+      const enemyStats = tower.getEnemyStats(floor, seed);
+
+      const enemyCharacter = await tower.getEnemyCharacter(
+        floor,
+        seed,
+        guildId,
+      );
 
       const [userWon, _lastMessage] = await startCombat({
         token,
         locale,
         userId,
         title: `${i18n.get('floor', locale)} ${floor}`,
-        targetName: packs.aliasToArray(enemyCharacter.name)[0],
-        character1: userParty[0],
+        character1: userPartyCharacters[0],
         character2: enemyCharacter,
         character1Existing: party[0],
         character2Existing: undefined,
         character1Stats: getStats(party[0]),
         character2Stats: enemyStats,
+        targetName: packs.aliasToArray(enemyCharacter.name)[0],
       });
 
       if (userWon) {
@@ -264,30 +275,28 @@ async function startCombat(
     locale: discord.AvailableLocales;
   },
 ): Promise<[boolean, discord.Message]> {
+  const battleId = utils.nanoid(5);
+
+  const message = new discord.Message()
+    // skip button
+    .addComponents([
+      new discord.Component()
+        .setId(discord.join('sbattle', battleId, userId))
+        .setLabel(i18n.get('skip', locale)),
+    ]);
+
   let initiative = 0;
 
-  const message = new discord.Message();
-
-  const battleId = utils.nanoid(5);
   const battleKey = ['active_battle', battleId];
 
-  let battleData: BattleData = { playing: true };
+  let battleData: BattleData | null = { playing: true };
 
-  db.setValue(battleKey, battleData, { expireIn: MAX_TIME });
-
-  // skip button
-  message.addComponents([
-    new discord.Component()
-      .setId(discord.join('sbattle', battleId, userId))
-      .setLabel(i18n.get('skip', locale)),
-  ]);
+  await db.setValue(battleKey, battleData, { expireIn: MAX_TIME });
 
   const battleDataStream = kv.watch<[BattleData]>([battleKey]);
 
   for await (const [newData] of battleDataStream) {
-    if (newData.value) {
-      battleData = newData.value;
-    }
+    battleData = newData.value;
   }
 
   while (true) {
@@ -340,8 +349,8 @@ async function startCombat(
 
     stateUX.forEach((func) => func());
 
-    battleData.playing && await utils.sleep(MESSAGE_DELAY);
-    battleData.playing && await message.patch(token);
+    battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+    battleData?.playing && await message.patch(token);
 
     const { damage } = attack(attackerStats, defenderStats);
 
@@ -377,32 +386,13 @@ async function startCombat(
 
     damageUX.forEach((func) => func());
 
-    battleData.playing && await utils.sleep(MESSAGE_DELAY);
-    battleData.playing && await message.patch(token);
+    battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+    battleData?.playing && await message.patch(token);
 
-    // battle end message (if hp <= 0)
+    // if hp <= 0
+    // end battle & send end message
 
     if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
-      // const message = new discord.Message();
-
-      // if (title) {
-      //   message.addEmbed(
-      //     new discord.Embed().setTitle(title),
-      //   );
-      // }
-
-      // addEmbed(message, {
-      //   character: character1,
-      //   existing: character1Existing,
-      //   stats: character1Stats,
-      // });
-
-      // addEmbed(message, {
-      //   character: character2,
-      //   existing: character2Existing,
-      //   stats: character2Stats,
-      // });
-
       message.clearComponents();
 
       message.addEmbed(
@@ -416,7 +406,7 @@ async function startCombat(
           ),
       );
 
-      battleData.playing && await utils.sleep(MESSAGE_DELAY);
+      battleData?.playing && await utils.sleep(MESSAGE_DELAY);
       await message.patch(token);
 
       return [character1Stats.hp > 0, message];
@@ -425,11 +415,11 @@ async function startCombat(
 }
 
 async function skipBattle(battleId: string): Promise<void> {
-  const battleKey = ['active_battle', battleId];
+  // await db.setValue(['active_battle', battleId], { playing: false } satisfies BattleData, {
+  //   expireIn: MAX_TIME,
+  // });
 
-  await db.setValue(battleKey, { playing: false } satisfies BattleData, {
-    expireIn: MAX_TIME,
-  });
+  await kv.delete(['active_battle', battleId]);
 }
 
 const battle = {

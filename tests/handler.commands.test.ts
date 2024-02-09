@@ -4,32 +4,32 @@ import { assertEquals } from '$std/assert/mod.ts';
 
 import { assertSpyCall, spy, stub } from '$std/testing/mock.ts';
 
-import * as discord from '../src/discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import utils from '../src/utils.ts';
-import config from '../src/config.ts';
+import utils from '~/src/utils.ts';
+import config from '~/src/config.ts';
 
-import { handler } from '../src/interactions.ts';
+import { handler } from '~/src/interactions.ts';
 
-import search from '../src/search.ts';
-import party from '../src/party.ts';
-import gacha from '../src/gacha.ts';
-import user from '../src/user.ts';
-import packs from '../src/packs.ts';
-import trade from '../src/trade.ts';
-import steal from '../src/steal.ts';
-import shop from '../src/shop.ts';
-import stats from '../src/stats.ts';
-import battle from '../src/battle.ts';
-import tower from '../src/tower.ts';
-import help from '../src/help.ts';
-import skills from '../src/skills.ts';
+import search from '~/src/search.ts';
+import party from '~/src/party.ts';
+import gacha from '~/src/gacha.ts';
+import user from '~/src/user.ts';
+import packs from '~/src/packs.ts';
+import trade from '~/src/trade.ts';
+import steal from '~/src/steal.ts';
+import shop from '~/src/shop.ts';
+import stats from '~/src/stats.ts';
+import battle from '~/src/battle.ts';
+import tower from '~/src/tower.ts';
+import help from '~/src/help.ts';
+import skills from '~/src/skills.ts';
 
-import merge from '../src/merge.ts';
+import merge from '~/src/merge.ts';
 
-import { NonFetalError, NoPermissionError } from '../src/errors.ts';
+import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
-import type { Manifest } from '../src/types.ts';
+import type { Manifest } from '~/src/types.ts';
 
 config.global = true;
 
@@ -8107,104 +8107,6 @@ Deno.test('battle', async (test) => {
     }
   });
 
-  // await test.step('battle friend', async () => {
-  //   const body = JSON.stringify({
-  //     id: 'id',
-  //     token: 'token',
-  //     type: discord.InteractionType.Command,
-  //     guild_id: 'guild_id',
-  //     member: {
-  //       user: {
-  //         id: 'user_id',
-  //       },
-  //     },
-  //     data: {
-  //       name: 'battle',
-  //       resolved: {
-  //         users: {
-  //           'another_user_id': {
-  //             id: 'another_user_id',
-  //           },
-  //         },
-  //       },
-  //       options: [{
-  //         type: 1,
-  //         name: `friend`,
-  //         options: [
-  //           {
-  //             name: 'versus',
-  //             value: 'another_user_id',
-  //           },
-  //         ],
-  //       }],
-  //     },
-  //   });
-
-  //   const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-  //   const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-  //     valid: true,
-  //     body,
-  //   } as any));
-
-  //   const battleStub = stub(battle, 'challengeFriend', () =>
-  //     ({
-  //       send: () => true,
-  //     }) as any);
-
-  //   config.publicKey = 'publicKey';
-
-  //   try {
-  //     const request = new Request('http://localhost:8000', {
-  //       body,
-  //       method: 'POST',
-  //       headers: {
-  //         'X-Signature-Ed25519': 'ed25519',
-  //         'X-Signature-Timestamp': 'timestamp',
-  //       },
-  //     });
-
-  //     const response = await handler(request);
-
-  //     assertSpyCall(validateStub, 0, {
-  //       args: [
-  //         request,
-  //         {
-  //           POST: {
-  //             headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-  //           },
-  //         },
-  //       ],
-  //     });
-
-  //     assertSpyCall(signatureStub, 0, {
-  //       args: [{
-  //         body,
-  //         signature: 'ed25519',
-  //         timestamp: 'timestamp',
-  //         publicKey: 'publicKey',
-  //       }],
-  //     });
-
-  //     assertSpyCall(battleStub, 0, {
-  //       args: [{
-  //         token: 'token',
-  //         guildId: 'guild_id',
-  //         userId: 'user_id',
-  //         targetId: 'another_user_id',
-  //       }],
-  //     });
-
-  //     assertEquals(response, true as any);
-  //   } finally {
-  //     delete config.publicKey;
-
-  //     battleStub.restore();
-  //     validateStub.restore();
-  //     signatureStub.restore();
-  //   }
-  // });
-
   await test.step('bt tower', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -8289,103 +8191,173 @@ Deno.test('battle', async (test) => {
     }
   });
 
-  // await test.step('bt friend', async () => {
-  //   const body = JSON.stringify({
-  //     id: 'id',
-  //     token: 'token',
-  //     type: discord.InteractionType.Command,
-  //     guild_id: 'guild_id',
-  //     member: {
-  //       user: {
-  //         id: 'user_id',
-  //       },
-  //     },
-  //     data: {
-  //       name: 'bt',
-  //       resolved: {
-  //         users: {
-  //           'another_user_id': {
-  //             id: 'another_user_id',
-  //           },
-  //         },
-  //       },
-  //       options: [{
-  //         type: 1,
-  //         name: `friend`,
-  //         options: [
-  //           {
-  //             name: 'versus',
-  //             value: 'another_user_id',
-  //           },
-  //         ],
-  //       }],
-  //     },
-  //   });
+  await test.step('battle tower', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'battle',
+        options: [{
+          type: 1,
+          name: `challenge`,
+        }],
+      },
+    });
 
-  //   const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
 
-  //   const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-  //     valid: true,
-  //     body,
-  //   } as any));
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
 
-  //   const battleStub = stub(battle, 'challengeFriend', () =>
-  //     ({
-  //       send: () => true,
-  //     }) as any);
+    const battleStub = stub(battle, 'challengeTower', () =>
+      ({
+        send: () => true,
+      }) as any);
 
-  //   config.publicKey = 'publicKey';
+    config.publicKey = 'publicKey';
 
-  //   try {
-  //     const request = new Request('http://localhost:8000', {
-  //       body,
-  //       method: 'POST',
-  //       headers: {
-  //         'X-Signature-Ed25519': 'ed25519',
-  //         'X-Signature-Timestamp': 'timestamp',
-  //       },
-  //     });
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
 
-  //     const response = await handler(request);
+      const response = await handler(request);
 
-  //     assertSpyCall(validateStub, 0, {
-  //       args: [
-  //         request,
-  //         {
-  //           POST: {
-  //             headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-  //           },
-  //         },
-  //       ],
-  //     });
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
 
-  //     assertSpyCall(signatureStub, 0, {
-  //       args: [{
-  //         body,
-  //         signature: 'ed25519',
-  //         timestamp: 'timestamp',
-  //         publicKey: 'publicKey',
-  //       }],
-  //     });
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
 
-  //     assertSpyCall(battleStub, 0, {
-  //       args: [{
-  //         token: 'token',
-  //         guildId: 'guild_id',
-  //         userId: 'user_id',
-  //         targetId: 'another_user_id',
-  //       }],
-  //     });
+      assertSpyCall(battleStub, 0, {
+        args: [{
+          token: 'token',
+          guildId: 'guild_id',
+          userId: 'user_id',
+        }],
+      });
 
-  //     assertEquals(response, true as any);
-  //   } finally {
-  //     delete config.publicKey;
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
 
-  //     battleStub.restore();
-  //     validateStub.restore();
-  //     signatureStub.restore();
-  //   }
-  // });
+      battleStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('bt challenge', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'bt',
+        options: [{
+          type: 1,
+          name: `challenge`,
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const battleStub = stub(battle, 'challengeTower', () =>
+      ({
+        send: () => true,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(battleStub, 0, {
+        args: [{
+          token: 'token',
+          guildId: 'guild_id',
+          userId: 'user_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      battleStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
 });
 
 Deno.test('skills', async (test) => {
