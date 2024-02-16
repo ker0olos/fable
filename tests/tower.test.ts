@@ -18,21 +18,12 @@ import db from '~/db/mod.ts';
 import utils from '~/src/utils.ts';
 import config from '~/src/config.ts';
 
-import { experienceToNextLevel } from '~/db/gainExp.ts';
-
 import { MediaType } from '~/src/types.ts';
 
 import type { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
 Deno.test('max floors', () => {
   assertEquals(MAX_FLOORS, 10);
-});
-
-Deno.test('experience to next level', () => {
-  assertEquals(experienceToNextLevel(1), 10);
-  assertEquals(experienceToNextLevel(2), 20);
-  assertEquals(experienceToNextLevel(10), 100);
-  assertEquals(experienceToNextLevel(20), 200);
 });
 
 Deno.test('exp gained amount floors 1-10', () => {
@@ -1243,15 +1234,15 @@ Deno.test('/sweep', async (test) => {
         }) as any,
     );
 
-    const t = {
-      set: () => t,
+    const atomicMock = {
+      set: () => atomicMock,
       commit: () => ({ ok: true }),
     };
 
     const atomicStub = stub(
       db.kv,
       'atomic',
-      () => t as any,
+      () => atomicMock as any,
     );
 
     config.combat = true;

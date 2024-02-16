@@ -17,7 +17,7 @@ import { NonFetalError, PoolError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type { Character, CharacterTracking } from '~/src/types.ts';
+import type { Character, CharacterState } from '~/src/types.ts';
 
 export const MAX_FLOORS = 10;
 
@@ -88,17 +88,17 @@ export const getEnemyMaxSkillLevel = (floor: number): number => {
   return Math.max(Math.floor(floor / 5), 1);
 };
 
-export const getEnemyStats = (
+export const createEnemyState = (
   floor: number,
   seed: string,
-): CharacterTracking => {
+): CharacterState => {
   const rng = new utils.LehmerRNG(seed);
   const skillRng = new utils.LehmerRNG(seed);
 
   // same as player characters
   const totalStats = 3 * getEnemyRating(floor);
 
-  const _skills: CharacterTracking['skills'] = {};
+  const _skills: CharacterState['skills'] = {};
 
   const skillsPool = Object.values(skills.pool);
   const skillsSlots = getEnemySkillSlots(floor);
@@ -117,7 +117,7 @@ export const getEnemyStats = (
     };
   }
 
-  const stats: CharacterTracking = {
+  const state: CharacterState = {
     skills: _skills,
     attack: 0,
     defense: 0,
@@ -130,33 +130,33 @@ export const getEnemyStats = (
     const rand = Math.floor(rng.nextFloat() * 3);
 
     if (rand === 0) {
-      stats.attack += 1;
+      state.attack += 1;
     } else if (rand === 1) {
-      stats.defense += 1;
+      state.defense += 1;
     } else {
-      stats.speed += 1;
+      state.speed += 1;
     }
   }
 
   const multiplier = 0.5;
   const base = floor;
 
-  stats.attack = Math.round(
-    stats.attack * Math.pow(base, multiplier),
+  state.attack = Math.round(
+    state.attack * Math.pow(base, multiplier),
   );
 
-  stats.defense = stats.maxHP = stats.hp = Math.max(
+  state.defense = state.maxHP = state.hp = Math.max(
     Math.round(
-      stats.defense * Math.pow(base, multiplier),
+      state.defense * Math.pow(base, multiplier),
     ),
     1,
   );
 
-  stats.speed = Math.round(
-    stats.speed * Math.pow(base, multiplier),
+  state.speed = Math.round(
+    state.speed * Math.pow(base, multiplier),
   );
 
-  return stats;
+  return state;
 };
 
 export async function getEnemyCharacter(
@@ -520,7 +520,7 @@ function sweep({ token, guildId, userId }: {
 }
 
 async function onFail(
-  { token, userId, message, locale }: {
+  { token, message, userId, locale }: {
     token: string;
     userId: string;
     message: discord.Message;
@@ -611,27 +611,26 @@ async function onSuccess(
     },
   ).filter(Boolean).join('\n');
 
+  message.addEmbed(
+    new discord.Embed()
+      .setTitle(i18n.get('you-succeeded', locale))
+      .setDescription(statusText),
+  );
+
+  // next floor challenge button
+  message.addComponents([
+    new discord.Component()
+      .setId(discord.join('tchallenge', userId))
+      .setLabel(i18n.get('next-floor', locale)),
+  ]);
+
   let retires = 0;
 
   while (retires < 5) {
     const update = await op.commit();
 
     if (update.ok) {
-      message.addEmbed(
-        new discord.Embed()
-          .setTitle(i18n.get('you-succeeded', locale))
-          .setDescription(statusText),
-      );
-
-      // next floor challenge button
-      message.addComponents([
-        new discord.Component()
-          .setId(discord.join('tchallenge', userId))
-          .setLabel(i18n.get('next-floor', locale)),
-      ]);
-
       await message.patch(token);
-
       return;
     }
 
@@ -645,7 +644,7 @@ const tower = {
   onFail,
   onSuccess,
   getEnemyCharacter,
-  getEnemyStats,
+  createEnemyState,
 };
 
 export default tower;

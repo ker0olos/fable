@@ -20,8 +20,8 @@ type Status = {
   expToLevel: number;
 };
 
-export const experienceToNextLevel = (level: number): number => {
-  return level * 10;
+export const experienceToNextLevel = (level?: number): number => {
+  return (level || 0) * 10;
 };
 
 export function distributeNewStats(
@@ -120,55 +120,55 @@ export function gainExp(
   character.combat.level ??= 1;
   character.combat.skillPoints ??= 0;
 
+  character.combat.exp += gainExp;
+
   // character.combat.unclaimedStatsPoints ??= 0;
 
   if (character.combat.level >= MAX_LEVEL) {
     return status;
-  }
+  } else {
+    while (
+      character.combat.exp >= experienceToNextLevel(character.combat.level)
+    ) {
+      character.combat.exp -= experienceToNextLevel(character.combat.level);
 
-  character.combat.exp += gainExp;
-
-  while (
-    character.combat.exp >= experienceToNextLevel(character.combat.level)
-  ) {
-    character.combat.exp -= experienceToNextLevel(character.combat.level);
-
-    character.combat.level += 1;
-    character.combat.skillPoints += 1;
-    // character.combat.unclaimedStatsPoints! += 3;
-
-    status.levelUp += 1;
-    status.skillPoints += 1;
-    status.statPoints += 3;
-
-    // extra skill points based on level
-    if (character.combat.level >= 10) {
+      character.combat.level += 1;
       character.combat.skillPoints += 1;
+      // character.combat.unclaimedStatsPoints! += 3;
+
+      status.levelUp += 1;
       status.skillPoints += 1;
+      status.statPoints += 3;
 
-      // character.combat.unclaimedStatsPoints! += 3 * 2;
-      status.statPoints += 3 * 2;
-    } else if (character.combat.level >= 20) {
-      character.combat.skillPoints += 2;
-      status.skillPoints += 2;
+      // extra skill points based on level
+      if (character.combat.level >= 10) {
+        character.combat.skillPoints += 1;
+        status.skillPoints += 1;
 
-      // character.combat.unclaimedStatsPoints! += 3 * 3;
-      status.statPoints += 3 * 3;
-    } else if (character.combat.level >= 40) {
-      character.combat.skillPoints += 3;
-      status.skillPoints += 3;
+        // character.combat.unclaimedStatsPoints! += 3 * 2;
+        status.statPoints += 3 * 2;
+      } else if (character.combat.level >= 20) {
+        character.combat.skillPoints += 2;
+        status.skillPoints += 2;
 
-      // character.combat.unclaimedStatsPoints! += 3 * 5;
-      status.statPoints += 3 * 5;
+        // character.combat.unclaimedStatsPoints! += 3 * 3;
+        status.statPoints += 3 * 3;
+      } else if (character.combat.level >= 40) {
+        character.combat.skillPoints += 3;
+        status.skillPoints += 3;
+
+        // character.combat.unclaimedStatsPoints! += 3 * 5;
+        status.statPoints += 3 * 5;
+      }
+    }
+
+    if (status.statPoints > 0) {
+      character = db.distributeNewStats(character, status.statPoints);
     }
   }
 
-  status.exp = character.combat.exp;
-  status.expToLevel = experienceToNextLevel(character.combat.level);
-
-  if (status.statPoints > 0) {
-    character = db.distributeNewStats(character, status.statPoints);
-  }
+  status.exp = character.combat?.exp || 0;
+  status.expToLevel = experienceToNextLevel(character.combat?.level);
 
   op
     .set(['characters', character._id], character)

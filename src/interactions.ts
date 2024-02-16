@@ -814,7 +814,7 @@ export const handler = async (r: Request) => {
                 return battle.challengeTower({
                   token,
                   guildId,
-                  userId: member.user.id,
+                  user: member.user,
                 })
                   .send();
               }
@@ -1242,11 +1242,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            return battle.challengeTower({
-              token,
-              guildId,
-              userId: member.user.id,
-            })
+            return battle.challengeTower({ token, guildId, user: member.user })
               .setType(
                 userId === member.user.id
                   ? discord.MessageType.Update

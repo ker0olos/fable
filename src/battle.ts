@@ -19,82 +19,42 @@ import * as Schema from '~/db/schema.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
 
-import type {
-  Character,
-  CharacterTracking,
-  DisaggregatedCharacter,
-  SkillOutput,
-} from './types.ts';
+import type { Character, CharacterState } from './types.ts';
 
 type BattleData = { playing: boolean };
 
 const MESSAGE_DELAY = 2; // 2 seconds
 const MAX_TIME = 3 * 60 * 1000; // 3 minutes
 
-const getStats = (char: Schema.Character): CharacterTracking => {
+function skipBattle(battleId: string): Promise<void> {
+  return kv.delete(['active_battle', battleId]);
+}
+
+type PartyMember = {
+  character: Character;
+  state: CharacterState;
+  existing?: Schema.Character;
+};
+
+const getStats = (char: Schema.Character): CharacterState => {
   return {
     skills: char.combat?.skills ?? {},
+    //
     attack: char.combat?.curStats?.attack ?? 0,
     speed: char.combat?.curStats?.speed ?? 1,
+    //
     defense: char.combat?.curStats?.defense ?? 1,
     hp: char.combat?.curStats?.defense ?? 1,
     maxHP: char.combat?.curStats?.defense ?? 1,
   };
 };
 
-const addEmbed = (message: discord.Message, {
-  character,
-  existing,
-  stats,
-  damage,
-  state,
-  color,
-}: {
-  character: Character | DisaggregatedCharacter;
-  stats: CharacterTracking;
-  existing?: Schema.Character;
-  damage?: number;
-  state?: string;
-  color?: string;
-}) => {
-  damage = damage || 0;
-
-  let _state = state ?? discord.empty;
-
-  const uuid = crypto.randomUUID();
-
-  if (damage > 0) {
-    _state = `-${damage}`;
-  }
-
-  const embed = new discord.Embed()
-    .setColor(damage > 0 ? '#DE2626' : color)
-    .setThumbnail({ url: existing?.image ?? character.images?.[0]?.url })
-    .setImage({ url: `attachment://${uuid}.png` })
-    .setDescription(
-      `## ${
-        existing?.nickname ?? packs.aliasToArray(character.name)[0]
-      }\n_${_state}_\n${stats.hp}/${stats.maxHP}`,
-    );
-
-  const percent = Math.round((stats.hp / stats.maxHP) * 100);
-  const _damage = Math.round((damage / stats.maxHP) * 100);
-
-  message.addAttachment({
-    type: 'image/png',
-    arrayBuffer: dynImages.hp(percent, _damage).buffer,
-    filename: `${uuid}.png`,
-  });
-
-  message.addEmbed(embed);
-};
-
-function challengeTower({ token, guildId, userId }: {
+function challengeTower({ token, guildId, user }: {
   token: string;
   guildId: string;
-  userId: string;
+  user: discord.User;
 }): discord.Message {
-  const locale = _user.cachedUsers[userId]?.locale;
+  const locale = _user.cachedUsers[user.id]?.locale;
 
   if (!config.combat) {
     throw new NonFetalError(
@@ -107,7 +67,7 @@ function challengeTower({ token, guildId, userId }: {
       const guild = await db.getGuild(guildId);
       const instance = await db.getInstance(guild);
 
-      const _user = await db.getUser(userId);
+      const _user = await db.getUser(user.id);
 
       const { inventory } = await db.getInventory(instance, _user);
 
@@ -132,20 +92,20 @@ function challengeTower({ token, guildId, userId }: {
         throw new Error('non-stats initialized characters are in the party');
       }
 
-      const characters = await packs.aggregatedCharacters({
+      const _characters = await packs.characters({
         guildId,
         ids: party.map(({ id }) => id),
       });
 
-      const userPartyCharacters = party.map((member) =>
-        characters.find(({ packId, id }) => member.id === `${packId}:${id}`)
+      const characters = party.map((member) =>
+        _characters.find(({ packId, id }) => member.id === `${packId}:${id}`)
       ).filter(Boolean) as Character[];
 
-      if (!userPartyCharacters.length) {
+      if (!characters.length) {
         throw new NonFetalError(i18n.get('character-disabled', locale));
       }
 
-      const enemyStats = tower.getEnemyStats(floor, seed);
+      const enemyState = tower.createEnemyState(floor, seed);
 
       const enemyCharacter = await tower.getEnemyCharacter(
         floor,
@@ -153,32 +113,39 @@ function challengeTower({ token, guildId, userId }: {
         guildId,
       );
 
-      const [userWon, _lastMessage] = await startCombat({
+      const { winnerId, lastMessage } = await startCombat({
+        user,
+        floor,
         token,
         locale,
-        userId,
-        title: `${i18n.get('floor', locale)} ${floor}`,
-        character1: userPartyCharacters[0],
-        character2: enemyCharacter,
-        character1Existing: party[0],
-        character2Existing: undefined,
-        character1Stats: getStats(party[0]),
-        character2Stats: enemyStats,
-        targetName: packs.aliasToArray(enemyCharacter.name)[0],
+        party1: party.map((existing, idx) => ({
+          existing,
+          character: characters[idx],
+          state: getStats(existing),
+        })),
+        party2: [{
+          character: enemyCharacter,
+          state: enemyState,
+        }],
       });
 
-      if (userWon) {
-        tower.onSuccess({
+      if (winnerId === user.id) {
+        await tower.onSuccess({
           token,
-          userId,
           guildId,
-          message: _lastMessage,
-          party: party,
+          userId: user.id,
+          message: lastMessage,
+          party,
           inventory,
           locale,
         });
       } else {
-        tower.onFail({ token, message: _lastMessage, userId, locale });
+        await tower.onFail({
+          token,
+          userId: user.id,
+          message: lastMessage,
+          locale,
+        });
       }
     })
     .catch(async (err) => {
@@ -207,85 +174,26 @@ function challengeTower({ token, guildId, userId }: {
   return loading;
 }
 
-function attack(
-  char: CharacterTracking,
-  target: CharacterTracking,
-): SkillOutput {
-  let damage = 0;
-
-  // activate character skills
-  // Object.entries(char.skills).map(([key, s]) => {
-  //   const skill = skills.pool[key];
-
-  //   if (skill.activationTurn === 'user') {
-  //     const outcome = skill.activation(char, target, s.level);
-
-  //     if (outcome.damage) {
-  //       damage += Math.round(outcome.damage);
-  //     }
-  //   }
-  // });
-
-  damage += Math.max(char.attack - target.defense, 1);
-
-  // activate enemy/target skills
-  // Object.entries(target.skills).map(([key, s]) => {
-  //   const skill = skills.pool[key];
-
-  //   if (skill.activationTurn === 'enemy') {
-  //     const outcome = skill.activation(char, target, s.level);
-
-  //     if (outcome.dodge) {
-  //       damage = 0;
-  //     }
-  //   }
-  // });
-
-  target.hp = Math.max(target.hp - damage, 0);
-
-  return { damage };
-}
-
 async function startCombat(
   {
     token,
-    title,
-    character1,
-    character2,
-    character1Existing,
-    character2Existing,
-    character1Stats,
-    character2Stats,
-    userId,
-    targetId,
-    targetName,
+    user,
+    target,
+    party1,
+    party2,
     locale,
+    floor,
   }: {
     token: string;
-    title?: string;
-    character1: Character;
-    character2: Character | DisaggregatedCharacter;
-    character1Existing: Schema.Character;
-    character2Existing?: Schema.Character;
-    character1Stats: CharacterTracking;
-    character2Stats: CharacterTracking;
-    userId: string;
-    targetId?: string;
-    targetName?: string;
+    user: discord.User;
+    target?: discord.User;
+    party1: PartyMember[];
+    party2: PartyMember[];
     locale: discord.AvailableLocales;
+    floor?: number;
   },
-): Promise<[boolean, discord.Message]> {
+): Promise<{ winnerId?: string; lastMessage: discord.Message }> {
   const battleId = utils.nanoid(5);
-
-  const message = new discord.Message()
-    // skip button
-    .addComponents([
-      new discord.Component()
-        .setId(discord.join('sbattle', battleId, userId))
-        .setLabel(i18n.get('skip', locale)),
-    ]);
-
-  let initiative = 0;
 
   const battleKey = ['active_battle', battleId];
 
@@ -293,144 +201,247 @@ async function startCombat(
 
   await db.setValue(battleKey, battleData, { expireIn: MAX_TIME });
 
-  const battleDataStream = kv.watch<[BattleData]>([battleKey]);
+  const battleDataReader = kv
+    .watch<[BattleData]>([battleKey])
+    .getReader();
 
-  // watch for any changes to the battle data
-  (async () => {
-    for await (const [newData] of battleDataStream) {
-      battleData = newData.value;
+  // written this way instead of the recommend for of loop
+  // to allow the stream reader to be disposed at the end of the battle
+  type Stream = ReadableStreamReadResult<[Deno.KvEntryMaybe<BattleData>]>;
+
+  const read = (result: Stream): Promise<Stream | void> => {
+    if (result.done || !battleData?.playing) {
+      return Promise.resolve();
     }
-  })().catch(console.error);
+
+    battleData = result.value?.[0]?.value;
+
+    return battleDataReader.read().then(read);
+  };
+
+  battleDataReader.read()
+    .then(read)
+    .catch(console.error);
+
+  const message = new discord.Message()
+    .addComponents([
+      new discord.Component()
+        .setId(discord.join('sbattle', battleId, user.id))
+        .setLabel(i18n.get('skip', locale)),
+    ]);
+
+  if (floor) {
+    message.addEmbed(
+      new discord.Embed().setTitle(`${i18n.get('floor', locale)} ${floor}`),
+    );
+  }
 
   while (true) {
-    // switch initiative
+    // returns the first alive party member of each party
+    const party1Character = party1.find(({ state }) => state.hp > 0);
+    const party2Character = party2.find(({ state }) => state.hp > 0);
 
-    initiative = initiative === 0 ? 1 : 0;
-
-    const [attacker, defender] = initiative === 0
-      ? [character1, character2]
-      : [character2, character1];
-
-    const [attackerExisting, defenderExisting] = initiative === 0
-      ? [character1Existing, character2Existing]
-      : [character2Existing, character1Existing];
-
-    const [attackerStats, defenderStats] = initiative === 0
-      ? [character1Stats, character2Stats]
-      : [character2Stats, character1Stats];
-
-    // state message
-
-    message.clearEmbedsAndAttachments();
-
-    if (title) {
-      message.addEmbed(
-        new discord.Embed().setTitle(title),
-      );
+    // no one is still alive
+    if (!party1Character || !party2Character) {
+      break;
     }
 
-    const stateUX = [
-      () =>
-        addEmbed(message, {
-          character: defender,
-          existing: defenderExisting,
-          stats: defenderStats,
-        }),
-      () =>
-        addEmbed(message, {
-          color: '#5d56c7',
-          character: attacker,
-          existing: attackerExisting,
-          stats: attackerStats,
-          state: i18n.get('attacking', locale),
-        }),
+    const fastestCharacter = determineFastest(party1Character, party2Character);
+
+    const speedDiffPercent =
+      ((party1Character.state.speed - party2Character.state.speed) /
+        party2Character.state.speed) * 100;
+
+    const extraTurnsBonus = calculateExtraTurns(speedDiffPercent);
+
+    const turns: ReturnType<typeof determineFastest>[] = [
+      fastestCharacter,
+      ...Array(extraTurnsBonus).fill(fastestCharacter),
+      fastestCharacter === 'party1' ? 'party2' : 'party1',
     ];
 
-    if (initiative === 1) {
-      stateUX.reverse();
-    }
+    for (let i = 0; i < turns.length; i++) {
+      const turn = turns[i];
+      const _prev = i > 0 ? turns[i - 1] : undefined;
 
-    stateUX.forEach((func) => func());
+      if (party1Character.state.hp <= 0 || party2Character.state.hp <= 0) {
+        break;
+      }
 
-    battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-    battleData?.playing && await message.patch(token);
+      const attacking = turn === 'party1' ? party1Character : party2Character;
+      const receiving = turn === 'party1' ? party2Character : party1Character;
 
-    const { damage } = attack(attackerStats, defenderStats);
-
-    // damage message
-
-    message.clearEmbedsAndAttachments();
-
-    if (title) {
-      message.addEmbed(
-        new discord.Embed().setTitle(title),
-      );
-    }
-
-    const damageUX = [
-      () =>
-        addEmbed(message, {
-          character: defender,
-          existing: defenderExisting,
-          stats: defenderStats,
-          damage,
-        }),
-      () =>
-        addEmbed(message, {
-          character: attacker,
-          existing: attackerExisting,
-          stats: attackerStats,
-        }),
-    ];
-
-    if (initiative === 1) {
-      damageUX.reverse();
-    }
-
-    damageUX.forEach((func) => func());
-
-    battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-    battleData?.playing && await message.patch(token);
-
-    // if hp <= 0
-    // end battle & send end message
-
-    if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
-      message.clearComponents();
-
-      message.addEmbed(
-        new discord.Embed()
-          .setDescription(
-            `### ${
-              character1Stats.hp <= 0
-                ? (targetName ?? `<@${targetId}>`)
-                : `<@${userId}>`
-            } ${i18n.get('won', locale)}`,
-          ),
-      );
+      // purely visual to show the user who's attacking
+      prepRound({
+        message,
+        attacking,
+        receiving,
+        same: _prev === turn,
+        locale,
+      });
 
       battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-      await message.patch(token);
+      battleData?.playing && await message.patch(token);
 
-      await battleDataStream.cancel();
+      actionRound({
+        message,
+        attacking,
+        receiving,
+        locale,
+      });
 
-      return [character1Stats.hp > 0, message];
+      battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+      battleData?.playing && await message.patch(token);
     }
   }
+
+  const party1Win = party1.some(({ state }) => state.hp > 0);
+
+  battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+
+  // dispose of the database watch stream
+  battleDataReader.cancel();
+
+  return {
+    lastMessage: message.clearComponents(),
+    winnerId: party1Win ? user.id : target?.id,
+  };
 }
 
-async function skipBattle(battleId: string): Promise<void> {
-  // await db.setValue(['active_battle', battleId], { playing: false } satisfies BattleData, {
-  //   expireIn: MAX_TIME,
-  // });
-
-  await kv.delete(['active_battle', battleId]);
+function determineFastest(
+  party1Character: PartyMember,
+  party2Character: PartyMember,
+): 'party1' | 'party2' {
+  return party1Character.state.speed > party2Character.state.speed
+    ? 'party1'
+    : 'party2';
 }
 
-const battle = {
-  // challengeFriend,
-  challengeTower,
-  skipBattle,
+function calculateExtraTurns(speedDiffPercent: number): number {
+  return Math.min(Math.floor(speedDiffPercent / 50), 2);
+}
+
+function prepRound(
+  { message, attacking, receiving, same, locale }: {
+    message: discord.Message;
+    attacking: PartyMember;
+    receiving: PartyMember;
+    same: boolean;
+    locale: discord.AvailableLocales;
+  },
+): void {
+  message.clearEmbedsAndAttachments(1);
+
+  addEmbed({ message, type: 'normal', character: receiving, locale });
+
+  addEmbed({
+    message,
+    character: attacking,
+    type: 'attacking',
+    locale,
+    subtitle: same ? i18n.get('attacking-again', locale) : undefined,
+  });
+}
+
+function actionRound(
+  { message, attacking, receiving, locale }: {
+    message: discord.Message;
+    attacking: PartyMember;
+    receiving: PartyMember;
+    locale: discord.AvailableLocales;
+  },
+): void {
+  const damage = Math.max(
+    attacking.state.attack - receiving.state.defense,
+    0,
+  );
+
+  receiving.state.hp = Math.max(receiving.state.hp - damage, 0);
+
+  message.clearEmbedsAndAttachments(1);
+
+  addEmbed({
+    message,
+    character: receiving,
+    type: 'hit',
+    diff: -damage,
+    locale,
+  });
+
+  addEmbed({ message, type: 'normal', character: attacking, locale });
+}
+
+const addEmbed = ({
+  subtitle,
+  character,
+  diff,
+  type,
+  locale,
+  message,
+}: {
+  message: discord.Message;
+  subtitle?: string;
+  character: PartyMember;
+  type: 'normal' | 'attacking' | 'hit' | 'heal';
+  diff?: number;
+  locale: discord.AvailableLocales;
+}) => {
+  diff ??= 0;
+
+  let state = discord.empty;
+
+  const embed = new discord.Embed();
+
+  const uuid = crypto.randomUUID();
+
+  switch (type) {
+    case 'attacking':
+      embed.setColor('#5D56C7');
+      state = i18n.get('attacking', locale);
+      break;
+    case 'heal':
+      embed.setColor('#2BB540');
+      state = `+${diff}`;
+      break;
+    case 'hit':
+      embed.setColor('#DE2626');
+      state = `${diff}`;
+      break;
+    default:
+      break;
+  }
+
+  embed
+    .setThumbnail({
+      url: character.existing?.image ?? character.character.images?.[0]?.url,
+    })
+    .setDescription(
+      [
+        `## ${
+          character?.existing?.nickname ??
+            packs.aliasToArray(character.character.name)[0]
+        }`,
+        state,
+        subtitle ? `*${subtitle}*` : undefined,
+      ].filter(Boolean).join('\n'),
+    )
+    .setImage({ url: `attachment://${uuid}.png` })
+    .setFooter({
+      text: `${character.state.hp}/${character.state.maxHP}`,
+    });
+
+  const left = Math.round((character.state.hp / character.state.maxHP) * 100);
+  const _diff = Math.round((Math.abs(diff) / character.state.maxHP) * 100);
+
+  message.addAttachment({
+    type: 'image/png',
+    filename: `${uuid}.png`,
+    arrayBuffer: dynImages.hp(left, diff < 0 ? -_diff : _diff).buffer,
+  });
+
+  message.addEmbed(embed);
 };
+
+const battle = { challengeTower, skipBattle };
 
 export default battle;

@@ -741,10 +741,12 @@ export class Message {
     return this;
   }
 
-  clearEmbedsAndAttachments(): Message {
+  clearEmbedsAndAttachments(offset?: number): Message {
     this.#files = [];
-    this.#data.embeds = [];
     this.#data.attachments = [];
+    this.#data.embeds = typeof offset === 'number'
+      ? this.#data.embeds.slice(offset - 1, offset)
+      : [];
     return this;
   }
 

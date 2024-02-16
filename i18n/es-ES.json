@@ -265,10 +265,6 @@
   "$party-swap-2": "el segundo objetivo del intercambio",
   "$party-remove-spot": "el puesto a liberar",
 
-  "$versus": "el usuario contra el que pelearás",
-
-  "$distribution": "establece las stats de tu personaje rápidamente (formato: FUE-RES-AGI)",
-
   "$pack-id": "el id del pack",
 
   "$help-page": "especifica la página que quieres ver",

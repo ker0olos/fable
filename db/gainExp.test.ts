@@ -1,10 +1,20 @@
 // deno-lint-ignore-file
 
 import { assertEquals } from '$std/assert/mod.ts';
+import { stub } from '$std/testing/mock.ts';
 
 import db from '~/db/mod.ts';
 
-import type * as Schema from '~/db/schema.ts';
+import { experienceToNextLevel, gainExp } from '~/db/gainExp.ts';
+
+import type { CharacterCombat } from '~/db/schema.ts';
+
+Deno.test('experience to next level', () => {
+  assertEquals(experienceToNextLevel(1), 10);
+  assertEquals(experienceToNextLevel(2), 20);
+  assertEquals(experienceToNextLevel(10), 100);
+  assertEquals(experienceToNextLevel(20), 200);
+});
 
 Deno.test('distribute new stat points', async (test) => {
   await test.step('1-0-0 (add 1 new point)', () => {
@@ -270,4 +280,95 @@ Deno.test('distribute new stat points', async (test) => {
       assertEquals(updatedCharacter.combat?.curStats?.speed, 0);
     });
   });
+});
+
+Deno.test('level up', async (test) => {
+  await test.step('x1', () => {
+    const distributeStub = stub(db, 'distributeNewStats', (char) => char);
+
+    try {
+      const atomicMock = {
+        set: () => atomicMock,
+        commit: () => ({ ok: true }),
+      };
+
+      const status = gainExp(
+        atomicMock as any,
+        'inventory' as any,
+        {} as any,
+        10,
+      );
+
+      assertEquals(status, {
+        exp: 0,
+        expToLevel: 20,
+        levelUp: 1,
+        skillPoints: 1,
+        statPoints: 3,
+      });
+    } finally {
+      distributeStub.restore();
+    }
+  });
+
+  await test.step('x3', () => {
+    const distributeStub = stub(db, 'distributeNewStats', (char) => char);
+
+    try {
+      const atomicMock = {
+        set: () => atomicMock,
+        commit: () => ({ ok: true }),
+      };
+
+      const status = gainExp(
+        atomicMock as any,
+        'inventory' as any,
+        {} as any,
+        65,
+      );
+
+      assertEquals(status, {
+        exp: 5,
+        expToLevel: 40,
+        levelUp: 3,
+        skillPoints: 3,
+        statPoints: 9,
+      });
+    } finally {
+      distributeStub.restore();
+    }
+  });
+});
+
+Deno.test.ignore('extra skill points at level  10', () => {
+  const distributeStub = stub(db, 'distributeNewStats', (char) => char);
+
+  try {
+    const atomicMock = {
+      set: () => atomicMock,
+      commit: () => ({ ok: true }),
+    };
+
+    const status = gainExp(
+      atomicMock as any,
+      'inventory' as any,
+      {
+        combat: {
+          level: 10,
+          exp: 1,
+        } satisfies CharacterCombat,
+      } as any,
+      1,
+    );
+
+    assertEquals(status, {
+      exp: 0,
+      expToLevel: 0,
+      levelUp: 0,
+      skillPoints: 0,
+      statPoints: 0,
+    });
+  } finally {
+    distributeStub.restore();
+  }
 });

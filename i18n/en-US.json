@@ -45,6 +45,7 @@
 
   "skip": "Skip",
   "attacking": "Attacking",
+  "attacking-again": "Again",
   "won": "Won",
 
   "sweep": "Sweep",
@@ -153,7 +154,6 @@
 
   "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
   "not-enough-unclaimed": "Character doesn't have enough unclaimed points left",
-  "incorrect-distribution": "Incorrect distribution format!\n\n**Correct:** STR-STA-AGI\n**Example:** 1-2-3",
 
   "battle-yourself": "You can't battle yourself",
 
@@ -307,7 +307,6 @@
 
   "/stats": "manage your characters stat points and skills",
 
-  "/battle friend": "Battle against another player to test your party",
   "/battle tower": "Climb the tower to glory and become a fable",
   "/battle challenge": "Challenge the tower's next floor",
 
@@ -347,10 +346,6 @@
   "$party-swap-1": "the first target of the swap",
   "$party-swap-2": "the second target of the swap",
   "$party-remove-spot": "the spot to empty",
-
-  "$versus": "the user to battle against",
-
-  "$distribution": "quickly set your character stats in one command (format: str-sta-agi)",
 
   "$pack-id": "the id of the pack",
 

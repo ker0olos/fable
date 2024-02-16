@@ -169,7 +169,7 @@ export interface Manifest {
 
 // Combat
 
-export type CharacterTracking = CharacterStats & {
+export type CharacterState = CharacterStats & {
   skills: Record<string, AcquiredCharacterSkill>;
   hp: number;
   maxHP: number;
@@ -188,8 +188,8 @@ export interface CharacterSkill {
 
   activationTurn: 'user' | 'enemy';
   activation: (
-    char: CharacterTracking,
-    target: CharacterTracking,
+    char: CharacterState,
+    target: CharacterState,
     lvl: number,
   ) => SkillOutput;
 
