@@ -21,19 +21,16 @@ const pool: Record<string, CharacterSkill> = {
     cost: 2,
     key: 'crit',
     descKey: 'crit-desc',
-    activationTurn: 'user',
     activation: function (char, _target, lvl): SkillOutput {
       const [critChance, critDamageMultiplier] = this.stats;
 
       const isCrit = Math.random() * 100 <= critChance.scale[lvl - 1];
 
-      if (isCrit) {
-        return {
-          damage: char.attack * (critDamageMultiplier.scale[lvl - 1] / 100),
-        };
-      }
-
-      return {};
+      return {
+        damage: isCrit
+          ? char.attack * (critDamageMultiplier.scale[lvl - 1] / 100)
+          : undefined,
+      };
     },
     stats: [{
       key: 'crit-chance',
@@ -45,30 +42,30 @@ const pool: Record<string, CharacterSkill> = {
       suffix: '%',
     }],
   },
-  'dodge': {
-    cost: 3,
-    key: 'dodge',
-    descKey: 'dodge-desc',
-    activationTurn: 'enemy',
-    activation: function (_char, _target, lvl): SkillOutput {
-      const [dodgeChance] = this.stats;
+  // 'dodge': {
+  //   cost: 3,
+  //   key: 'dodge',
+  //   descKey: 'dodge-desc',
+  //   activationTurn: 'enemy',
+  //   activation: function (_char, _target, lvl): SkillOutput {
+  //     const [dodgeChance] = this.stats;
 
-      const isDodged = Math.random() * 100 <= dodgeChance.scale[lvl - 1];
+  //     const isDodged = Math.random() * 100 <= dodgeChance.scale[lvl - 1];
 
-      if (isDodged) {
-        return {
-          dodge: true,
-        };
-      }
+  //     if (isDodged) {
+  //       return {
+  //         dodge: true,
+  //       };
+  //     }
 
-      return {};
-    },
-    stats: [{
-      key: 'dodge-chance',
-      scale: [0.5, 5, 15],
-      suffix: '%',
-    }],
-  },
+  //     return {};
+  //   },
+  //   stats: [{
+  //     key: 'dodge-chance',
+  //     scale: [0.5, 5, 15],
+  //     suffix: '%',
+  //   }],
+  // },
 };
 
 const format = (

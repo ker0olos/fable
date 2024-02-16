@@ -176,7 +176,6 @@ export type CharacterState = CharacterStats & {
 };
 
 export interface SkillOutput {
-  dodge?: boolean;
   damage?: number;
 }
 
@@ -186,10 +185,9 @@ export interface CharacterSkill {
 
   cost: number;
 
-  activationTurn: 'user' | 'enemy';
   activation: (
-    char: CharacterState,
-    target: CharacterState,
+    attacking: CharacterState,
+    receiving: CharacterState,
     lvl: number,
   ) => SkillOutput;
 

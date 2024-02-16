@@ -13,6 +13,8 @@ import config from '~/src/config.ts';
 
 import tower from '~/src/tower.ts';
 
+import skills from '~/src/skills.ts';
+
 import { MAX_FLOORS } from '~/src/tower.ts';
 
 import * as Schema from '~/db/schema.ts';
@@ -351,10 +353,27 @@ function actionRound(
     locale: discord.AvailableLocales;
   },
 ): void {
-  const damage = Math.max(
+  let damage = Math.max(
     attacking.state.attack - receiving.state.defense,
     0,
   );
+
+  let subtitle: string | undefined = undefined;
+
+  if (attacking.state.skills['crit']?.level) {
+    const lvl = attacking.state.skills['crit'].level;
+
+    const { damage: extraDamage } = skills.pool['crit'].activation(
+      attacking.state,
+      receiving.state,
+      lvl,
+    );
+
+    if (extraDamage) {
+      damage += extraDamage;
+      subtitle = i18n.get('crit', locale);
+    }
+  }
 
   receiving.state.hp = Math.max(receiving.state.hp - damage, 0);
 
@@ -362,6 +381,7 @@ function actionRound(
 
   addEmbed({
     message,
+    subtitle,
     character: receiving,
     type: 'hit',
     diff: -damage,
