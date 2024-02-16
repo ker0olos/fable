@@ -8261,7 +8261,7 @@ Deno.test('battle', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          userId: 'user_id',
+          user: { id: 'user_id' } as any,
         }],
       });
 
@@ -8345,7 +8345,7 @@ Deno.test('battle', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          userId: 'user_id',
+          user: { id: 'user_id' } as any,
         }],
       });
 
