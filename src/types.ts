@@ -189,18 +189,19 @@ export interface CharacterSkill {
 
   cost: number;
 
-  activation: (
+  activation?: (
     attacking: CharacterState,
     receiving: CharacterState,
     lvl: number,
   ) => SkillOutput;
 
-  stats: CharacterAdditionalStat[];
+  stats?: CharacterAdditionalStat[];
 }
 
 export interface CharacterAdditionalStat {
   key: Keys;
-  scale: number[];
+  scale?: number[];
+  factor?: number;
   prefix?: string;
   suffix?: string;
 }

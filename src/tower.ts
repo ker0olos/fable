@@ -18,7 +18,12 @@ import { NonFetalError, PoolError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type { Character, CharacterState } from '~/src/types.ts';
+import type {
+  Character,
+  CharacterAdditionalStat,
+  CharacterState,
+  SkillKey,
+} from '~/src/types.ts';
 
 export const MAX_FLOORS = 10;
 
@@ -101,19 +106,26 @@ export const createEnemyState = (
 
   const _skills: CharacterState['skills'] = {};
 
-  const skillsPool = Object.values(skills);
+  const skillsPool = Object.keys(skills) as SkillKey[];
+
   const skillsSlots = getEnemySkillSlots(floor);
   const maxSkillLevel = getEnemyMaxSkillLevel(floor);
 
   for (let i = 0; i < skillsSlots; i++) {
-    const randomSkill = skillsPool[
-      Math.floor(skillRng.nextFloat() * skillsPool.length)
-    ];
+    if (!skillsPool.length) {
+      break;
+    }
 
-    _skills[randomSkill.key] = {
+    const randomSkillKey = skillsPool.splice(
+      Math.floor(skillRng.nextFloat() * skillsPool.length),
+      1,
+    )[0];
+
+    _skills[randomSkillKey] = {
       level: Math.min(
         maxSkillLevel,
-        randomSkill.stats.slice(-1)[0].scale.length,
+        (skills[randomSkillKey].stats?.[0] as CharacterAdditionalStat).scale
+          ?.length ?? maxSkillLevel,
       ),
     };
   }

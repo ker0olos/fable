@@ -184,6 +184,7 @@
   "costs-n-points": "Costs {0} {1}",
   "character-not-enough-skill-points": "Character doesn't have enough skill points left",
   "skill-is-maxed": "Skill is maxed",
+  "maxed-skill-slots": "This character already has the max number of skills possible, and can't acquire new skills",
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "max-floor-cleared": "You already cleared the hightest floor in the tower",
@@ -364,5 +365,11 @@
   "crit": "Critical Hit",
   "crit-desc": "The art of performing the traditional critical hit.",
   "crit-chance": "Crit Chance",
-  "crit-damage": "Crit Damage"
+  "crit-damage": "Crit Damage",
+
+  "boost": "Boost by",
+  "speed-boost": "Speed Boost",
+  "speed-boost-desc": "Boost the speed of all party members (Not stackable)",
+  "defense-boost": "Defense Boost",
+  "defense-boost-desc": "Boost the defense and max health of all party members (Not stackable)"
 }

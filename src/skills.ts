@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-non-null-assertion
+
 import _user from '~/src/user.ts';
 
 import i18n from '~/src/i18n.ts';
@@ -14,7 +16,11 @@ import * as discord from '~/src/discord.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
 
-import type { CharacterSkill, SkillOutput } from '~/src/types.ts';
+import type {
+  CharacterAdditionalStat,
+  CharacterSkill,
+  SkillOutput,
+} from '~/src/types.ts';
 
 type SkillKey = keyof typeof skills;
 
@@ -24,13 +30,13 @@ const skills = {
     key: 'crit',
     descKey: 'crit-desc',
     activation: function (char, _target, lvl): SkillOutput {
-      const [critChance, critDamageMultiplier] = this.stats;
+      const [critChance, critDamageMultiplier] = this.stats!;
 
-      const isCrit = Math.random() * 100 <= critChance.scale[lvl - 1];
+      const isCrit = Math.random() * 100 <= critChance.scale![lvl - 1];
 
       return {
         damage: isCrit
-          ? char.attack * (critDamageMultiplier.scale[lvl - 1] / 100)
+          ? char.attack * (critDamageMultiplier.scale![lvl - 1] / 100)
           : undefined,
       };
     },
@@ -44,27 +50,58 @@ const skills = {
       suffix: '%',
     }],
   },
+  speed: {
+    key: 'speed-boost',
+    descKey: 'speed-boost-desc',
+    cost: 1,
+    stats: [{
+      key: 'boost',
+      suffix: '%',
+      factor: 1,
+    }],
+  },
+  defense: {
+    key: 'defense-boost',
+    descKey: 'defense-boost-desc',
+    cost: 1,
+    stats: [{
+      key: 'boost',
+      suffix: '%',
+      factor: 1,
+    }],
+  },
 } satisfies Record<string, CharacterSkill>;
 
 const format = (
   skill: CharacterSkill,
   locale?: discord.AvailableLocales,
-  options?: {
-    maxed?: boolean;
-    lvl?: number;
-  },
+  options?: { maxed?: boolean; lvl?: number },
 ): string => {
-  const stats = skill.stats.map((s, index) =>
-    `${index + 1}. _${i18n.get(s.key, locale)} (${
-      s.scale
-        .slice(
-          Math.max(options?.lvl ? options?.lvl - 2 : 0, 0),
-          options?.lvl ? options?.lvl : undefined,
-        )
-        .map((t) => `${s.prefix ?? ''}${t}${s.suffix ?? ''}`)
-        .join(options?.lvl ? ` ${discord.emotes.rightArrow} ` : ', ')
-    })_`
-  );
+  function generateStatsString(
+    s: CharacterAdditionalStat,
+    options?: { lvl?: number },
+  ): string {
+    const { scale, prefix, suffix, factor } = s;
+    const startIndex = Math.max(options?.lvl ? options?.lvl - 2 : 0, 0);
+    const endIndex = options?.lvl ? options?.lvl : undefined;
+
+    const stats = scale
+      ? scale.slice(startIndex, endIndex).map((t) =>
+        `${prefix ?? ''}${t}${suffix ?? ''}`
+      )
+      : [1, 2, 3].slice(startIndex, endIndex).map((lvl) =>
+        `${prefix ?? ''}${factor! * lvl}${suffix ?? ''}`
+      );
+
+    return stats.join(options?.lvl ? ` ${discord.emotes.rightArrow} ` : ', ');
+  }
+
+  const stats =
+    skill.stats?.map((s, index) =>
+      `${index + 1}. _${i18n.get(s.key, locale)} (${
+        generateStatsString(s, options)
+      })_`
+    ) ?? [];
 
   const cost = options?.maxed
     ? ` **(${i18n.get('lvl', locale)} ${i18n.get('max', locale)})**`
@@ -188,11 +225,13 @@ function preAcquire(
 
       message.addEmbed(embed);
 
-      const skill = skills[skillKey];
+      const skill: CharacterSkill = skills[skillKey];
 
-      const existingSkill = existing[0].combat?.skills?.[skill.key];
+      const existingSkill = existing[0].combat?.skills?.[skillKey];
 
-      const maxed = skill.stats[0].scale.length <= (existingSkill?.level ?? 1);
+      const maxed = !!skill.stats?.length ||
+        (skill.stats![0]! as CharacterAdditionalStat).scale!.length <=
+          (existingSkill?.level ?? 1);
 
       const formatted = format(skill, locale, {
         maxed,
@@ -333,6 +372,10 @@ async function acquire(
       case 'SKILL_MAXED':
         throw new NonFetalError(
           i18n.get('skill-is-maxed', locale),
+        );
+      case 'CHARACTER_HAS_MAX_SKILLS_SLOTS':
+        throw new NonFetalError(
+          i18n.get('maxed-skill-slots', locale),
         );
       case 'NOT_ENOUGH_SKILL_POINTS':
         throw new NonFetalError(

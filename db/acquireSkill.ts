@@ -2,16 +2,19 @@ import {
   charactersByInstancePrefix,
   charactersByInventoryPrefix,
   charactersByMediaIdPrefix,
-} from './indices.ts';
+} from '~/db/indices.ts';
 
-import db, { kv } from './mod.ts';
+import db, { kv } from '~/db/mod.ts';
 
-import { KvError } from '../src/errors.ts';
+import { KvError } from '~/src/errors.ts';
 
-import type * as Schema from './schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
-import type { CharacterSkill } from '../src/types.ts';
-import { SkillKey } from '~/src/types.ts';
+import type { CharacterSkill } from '~/src/types.ts';
+
+import type { SkillKey } from '~/src/types.ts';
+
+export const MAX_SKILL_SLOTS = 5;
 
 export async function acquireSkill(
   inventory: Schema.Inventory,
@@ -39,6 +42,10 @@ export async function acquireSkill(
     character.combat ??= {};
     character.combat.skillPoints ??= 0;
     character.combat.skills ??= {};
+
+    if (Object.keys(character.combat.skills).length >= MAX_SKILL_SLOTS) {
+      throw new Error('CHARACTER_HAS_MAX_SKILLS_SLOTS');
+    }
 
     character.combat.skillPoints -= skill.cost;
 
