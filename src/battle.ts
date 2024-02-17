@@ -13,7 +13,7 @@ import config from '~/src/config.ts';
 
 import tower from '~/src/tower.ts';
 
-import skills from '~/src/skills.ts';
+import { skills } from '~/src/skills.ts';
 
 import { MAX_FLOORS } from '~/src/tower.ts';
 
@@ -273,7 +273,6 @@ async function startCombat(
       const attacking = turn === 'party1' ? party1Character : party2Character;
       const receiving = turn === 'party1' ? party2Character : party1Character;
 
-      // purely visual to show the user who's attacking
       prepRound({
         message,
         attacking,
@@ -360,10 +359,10 @@ function actionRound(
 
   let subtitle: string | undefined = undefined;
 
-  if (attacking.state.skills['crit']?.level) {
-    const lvl = attacking.state.skills['crit'].level;
+  if (attacking.state.skills.crit?.level) {
+    const lvl = attacking.state.skills.crit.level;
 
-    const { damage: extraDamage } = skills.pool['crit'].activation(
+    const { damage: extraDamage } = skills.crit.activation(
       attacking.state,
       receiving.state,
       lvl,

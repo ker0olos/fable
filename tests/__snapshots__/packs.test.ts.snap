@@ -2,926 +2,926 @@ export const snapshot = {};
 
 snapshot[`list > anilist 1`] = `
 {
-  _id: "_",
+  _id: [32m"_"[39m,
   manifest: {
-    author: "Fable",
-    description: "A pack powered by [AniList](https://anilist.co).
+    author: [32m"Fable"[39m,
+    description: [32m"A pack powered by [AniList](https://anilist.co).
 
-Contains over 100K of anime and manga characters.",
-    id: "anilist",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png",
-    title: "AniList",
+Contains over 100K of anime and manga characters."[39m,
+    id: [32m"anilist"[39m,
+    image: [32m"https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png"[39m,
+    title: [32m"AniList"[39m,
   },
 }
 `;
 
 snapshot[`list > vtubers 1`] = `
 {
-  _id: "_",
+  _id: [32m"_"[39m,
   manifest: {
-    author: "Fable",
+    author: [32m"Fable"[39m,
     characters: {
       new: [
         {
-          age: "Between 9,000-10,000",
-          description: \`A descendant of the Lost City of Atlantis, who swam to Earth while saying, "It's so boring down there LOLOLOL!"
+          age: [32m"Between 9,000-10,000"[39m,
+          description: [32m\`A descendant of the Lost City of Atlantis, who swam to Earth while saying, "It's so boring down there LOLOLOL!"
 
 Gura bought her clothes (and her shark hat) in the human world and she really loves them. In her spare time, she enjoys talking to marine life.
 
-_Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from industry pioneer Kizuna AI in 2021. As of January 2023, Gura has over 4 million YouTube subscribers._\`,
+_Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from industry pioneer Kizuna AI in 2021. As of January 2023, Gura has over 4 million YouTube subscribers._\`[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=dBK0gKW61NU",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=dBK0gKW61NU"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@gawrgura",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@gawrgura"[39m,
             },
           ],
-          gender: "Female",
-          id: "gura",
+          gender: [32m"Female"[39m,
+          id: [32m"gura"[39m,
           images: [
             {
-              url: "https://i.imgur.com/SbKAczR.jpeg",
+              url: [32m"https://i.imgur.com/SbKAczR.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holomyth",
-              role: "MAIN",
+              mediaId: [32m"holomyth"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "gura",
-              "shork",
-              "goorUH",
+              [32m"gura"[39m,
+              [32m"shork"[39m,
+              [32m"goorUH"[39m,
             ],
-            english: "Gawr Gura",
-            native: "がうる・ぐら",
+            english: [32m"Gawr Gura"[39m,
+            native: [32m"がうる・ぐら"[39m,
           },
-          popularity: 4000000,
+          popularity: [33m4000000[39m,
         },
         {
-          description: "The Grim Reaper's first apprentice. Because the world's medical system advanced so dramatically, she became a Vtuber to collect souls. It seems that the lost souls vaporized by the wholesome relationships of Vtubers flow through her as well.
+          description: [32m"The Grim Reaper's first apprentice. Because the world's medical system advanced so dramatically, she became a Vtuber to collect souls. It seems that the lost souls vaporized by the wholesome relationships of Vtubers flow through her as well.
 
-In the end, she's a gentle-hearted girl whose sweet voice contradicts the morbid things she tends to say, as well as her hardcore vocals.",
+In the end, she's a gentle-hearted girl whose sweet voice contradicts the morbid things she tends to say, as well as her hardcore vocals."[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=M1_GeIfn48M",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=M1_GeIfn48M"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@MoriCalliope",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@MoriCalliope"[39m,
             },
           ],
-          gender: "Female",
-          id: "calliope",
+          gender: [32m"Female"[39m,
+          id: [32m"calliope"[39m,
           images: [
             {
-              url: "https://i.imgur.com/dvoMqTL.jpeg",
+              url: [32m"https://i.imgur.com/dvoMqTL.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holomyth",
-              role: "MAIN",
+              mediaId: [32m"holomyth"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "calli",
-              "Dad",
-              "Kawaiiope",
+              [32m"calli"[39m,
+              [32m"Dad"[39m,
+              [32m"Kawaiiope"[39m,
             ],
-            english: "Mori Calliope",
-            native: "森カリオペ",
+            english: [32m"Mori Calliope"[39m,
+            native: [32m"森カリオペ"[39m,
           },
-          popularity: 2000000,
+          popularity: [33m2000000[39m,
         },
         {
-          age: "15 mins-4 days on average",
-          description: "An idol whose dream is to become a fast food shop owner. She is a phoenix, NOT a chicken or turkey. (Very important)
+          age: [32m"15 mins-4 days on average"[39m,
+          description: [32m"An idol whose dream is to become a fast food shop owner. She is a phoenix, NOT a chicken or turkey. (Very important)
 
-She works extremely hard since she will be reborn from ashes anyway.",
+She works extremely hard since she will be reborn from ashes anyway."[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=uObh73QZUvg",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=uObh73QZUvg"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@TakanashiKiara",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@TakanashiKiara"[39m,
             },
           ],
-          gender: "Female",
-          id: "kiara",
+          gender: [32m"Female"[39m,
+          id: [32m"kiara"[39m,
           images: [
             {
               artist: {
-                url: "https://www.pixiv.net/en/users/341433",
-                username: "Nardack",
+                url: [32m"https://www.pixiv.net/en/users/341433"[39m,
+                username: [32m"Nardack"[39m,
               },
-              url: "https://i.imgur.com/vzrtcqP.jpeg",
+              url: [32m"https://i.imgur.com/vzrtcqP.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holomyth",
-              role: "MAIN",
+              mediaId: [32m"holomyth"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "kiara",
-              "birb",
-              "kusotori",
-              "Tenchou",
-              "Kiwawa",
+              [32m"kiara"[39m,
+              [32m"birb"[39m,
+              [32m"kusotori"[39m,
+              [32m"Tenchou"[39m,
+              [32m"Kiwawa"[39m,
             ],
-            english: "Takanashi Kiara",
-            native: "小鳥遊キアラ",
+            english: [32m"Takanashi Kiara"[39m,
+            native: [32m"小鳥遊キアラ"[39m,
           },
-          popularity: 1400000,
+          popularity: [33m1400000[39m,
         },
         {
-          age: "████",
-          description: "Despite her looks, Ina'nis is actually a priestess of the Ancient Ones. One day, she picked up a strange book and then started to gain the power of controlling tentacles. To her, tentacles are just a part in her ordinary life; it has never been a big deal for her. However, her girly mind does want to get them dressed up and stay pretty.
+          age: [32m"████"[39m,
+          description: [32m"Despite her looks, Ina'nis is actually a priestess of the Ancient Ones. One day, she picked up a strange book and then started to gain the power of controlling tentacles. To her, tentacles are just a part in her ordinary life; it has never been a big deal for her. However, her girly mind does want to get them dressed up and stay pretty.
 
-After gaining power, she started hearing Ancient Whispers and Revelations. Hence, she began her VTuber activities to deliver random sanity checks on humanity, as an ordinary girl.",
+After gaining power, she started hearing Ancient Whispers and Revelations. Hence, she began her VTuber activities to deliver random sanity checks on humanity, as an ordinary girl."[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=ujCxiHpVYmg",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=ujCxiHpVYmg"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@NinomaeInanis",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@NinomaeInanis"[39m,
             },
           ],
-          gender: "Female",
-          id: "ina",
+          gender: [32m"Female"[39m,
+          id: [32m"ina"[39m,
           images: [
             {
               artist: {
-                url: "www.patreon.com/HongBsWs",
-                username: "hongbsws",
+                url: [32m"www.patreon.com/HongBsWs"[39m,
+                username: [32m"hongbsws"[39m,
               },
-              url: "https://i.imgur.com/6u78uMl.jpeg",
+              url: [32m"https://i.imgur.com/6u78uMl.jpeg"[39m,
             },
             {
               artist: {
-                url: "https://www.pixiv.net/en/users/1104770",
-                username: "Satchel",
+                url: [32m"https://www.pixiv.net/en/users/1104770"[39m,
+                username: [32m"Satchel"[39m,
               },
-              url: "https://i.imgur.com/g1D5Gka.jpeg",
+              url: [32m"https://i.imgur.com/g1D5Gka.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holomyth",
-              role: "MAIN",
+              mediaId: [32m"holomyth"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "ina",
-              "tako",
+              [32m"ina"[39m,
+              [32m"tako"[39m,
             ],
-            english: "Ninomae Ina'nis",
-            native: "一伊那尓栖",
+            english: [32m"Ninomae Ina'nis"[39m,
+            native: [32m"一伊那尓栖"[39m,
           },
-          popularity: 1500000,
+          popularity: [33m1500000[39m,
         },
         {
-          description: \`Amelia heard strange rumors online surrounding hololive: talking foxes, magical squirrels, superhuman dogs, and more. Soon after beginning her investigation on hololive, and just out of interest, she decided to become an idol herself!
+          description: [32m\`Amelia heard strange rumors online surrounding hololive: talking foxes, magical squirrels, superhuman dogs, and more. Soon after beginning her investigation on hololive, and just out of interest, she decided to become an idol herself!
 
-She loves to pass her time training her reflexes with FPS games, and challenging herself with puzzle games. "It's elementary, right?"\`,
+She loves to pass her time training her reflexes with FPS games, and challenging herself with puzzle games. "It's elementary, right?"\`[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=MXrFrkIlE-0",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=MXrFrkIlE-0"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@WatsonAmelia",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@WatsonAmelia"[39m,
             },
           ],
-          gender: "Female",
-          id: "watson",
+          gender: [32m"Female"[39m,
+          id: [32m"watson"[39m,
           images: [
             {
               artist: {
-                url: "https://www.pixiv.net/en/users/801146",
-                username: "イコモチ",
+                url: [32m"https://www.pixiv.net/en/users/801146"[39m,
+                username: [32m"イコモチ"[39m,
               },
-              url: "https://i.imgur.com/OaLrF6u.jpeg",
+              url: [32m"https://i.imgur.com/OaLrF6u.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holomyth",
-              role: "MAIN",
+              mediaId: [32m"holomyth"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "ame",
-              "watson",
+              [32m"ame"[39m,
+              [32m"watson"[39m,
             ],
-            english: "Watson Amelia",
-            native: "ワトソン・アメリア",
+            english: [32m"Watson Amelia"[39m,
+            native: [32m"ワトソン・アメリア"[39m,
           },
-          popularity: 1700000,
+          popularity: [33m1700000[39m,
         },
         {
-          age: "1.34",
-          description: "None may escape the sands of time and, indeed, most men do not even wish to be freed from her captivity (true). Her emotionally distant personality has never changed over the ages, but she developed a ~~little~~ bit of arrogance and sadistic tendencies along the way...",
+          age: [32m"1.34"[39m,
+          description: [32m"None may escape the sands of time and, indeed, most men do not even wish to be freed from her captivity (true). Her emotionally distant personality has never changed over the ages, but she developed a ~~little~~ bit of arrogance and sadistic tendencies along the way..."[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=W3oVrq94mGM",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=W3oVrq94mGM"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@OuroKronii",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@OuroKronii"[39m,
             },
           ],
-          gender: "Female",
-          id: "kronii",
+          gender: [32m"Female"[39m,
+          id: [32m"kronii"[39m,
           images: [
             {
               artist: {
-                url: "https://www.reddit.com/r/Joshi_Kosei/",
-                username: "Joshi_Kosei",
+                url: [32m"https://www.reddit.com/r/Joshi_Kosei/"[39m,
+                username: [32m"Joshi_Kosei"[39m,
               },
-              url: "https://i.redd.it/bbdebvztknm71.png",
+              url: [32m"https://i.redd.it/bbdebvztknm71.png"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holocouncil",
-              role: "MAIN",
+              mediaId: [32m"holocouncil"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "kronii",
+              [32m"kronii"[39m,
             ],
-            english: "Ouro Kronii",
-            native: "オーロ・クロニー",
+            english: [32m"Ouro Kronii"[39m,
+            native: [32m"オーロ・クロニー"[39m,
           },
-          popularity: 800000,
+          popularity: [33m800000[39m,
         },
         {
-          description: 'For some reason, she seems to project a rather pitiable aura. Perhaps this is in part thanks to the loneliness she has often felt in her ever lasting travels. That is what gave her the idea of making her own friend out of a material that was indispensable to the development of human civilization "paper"',
+          description: [32m'For some reason, she seems to project a rather pitiable aura. Perhaps this is in part thanks to the loneliness she has often felt in her ever lasting travels. That is what gave her the idea of making her own friend out of a material that was indispensable to the development of human civilization "paper"'[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=M2gwJ-7s0Zo",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=M2gwJ-7s0Zo"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@NanashiMumei",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@NanashiMumei"[39m,
             },
           ],
-          gender: "Female",
-          id: "mumei",
+          gender: [32m"Female"[39m,
+          id: [32m"mumei"[39m,
           images: [
             {
               artist: {
-                url: "https://www.pixiv.net/en/users/6204916",
-                username: "Akaike",
+                url: [32m"https://www.pixiv.net/en/users/6204916"[39m,
+                username: [32m"Akaike"[39m,
               },
-              url: "https://i.imgur.com/1SSyHuC.jpeg",
+              url: [32m"https://i.imgur.com/1SSyHuC.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holocouncil",
-              role: "MAIN",
+              mediaId: [32m"holocouncil"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "mumei",
+              [32m"mumei"[39m,
             ],
-            english: "Nanashi Mumei",
-            native: "七詩ムメイ",
+            english: [32m"Nanashi Mumei"[39m,
+            native: [32m"七詩ムメイ"[39m,
           },
-          popularity: 700000,
+          popularity: [33m700000[39m,
         },
         {
-          description: "She believes that rules are not the be-all and end-all, which is why she has come to ~~break them all~~ sign a slave contract with Cover.",
+          description: [32m"She believes that rules are not the be-all and end-all, which is why she has come to ~~break them all~~ sign a slave contract with Cover."[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=mJwpVT1WvLg",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=mJwpVT1WvLg"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@HakosBaelz",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@HakosBaelz"[39m,
             },
           ],
-          gender: "Female",
-          id: "chaos",
+          gender: [32m"Female"[39m,
+          id: [32m"chaos"[39m,
           images: [
             {
-              url: "https://i.imgur.com/KzEStRI.jpg",
+              url: [32m"https://i.imgur.com/KzEStRI.jpg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holocouncil",
-              role: "MAIN",
+              mediaId: [32m"holocouncil"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "bae",
-              "chaos",
+              [32m"bae"[39m,
+              [32m"chaos"[39m,
             ],
-            english: "Hakos Baelz",
-            native: "ハコス・ベールズ",
+            english: [32m"Hakos Baelz"[39m,
+            native: [32m"ハコス・ベールズ"[39m,
           },
-          popularity: 600000,
+          popularity: [33m600000[39m,
         },
         {
-          age: "4.54 billion",
-          description: "green
+          age: [32m"4.54 billion"[39m,
+          description: [32m"green
 
-cute...",
+cute..."[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=iICu7NcUK4o",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=iICu7NcUK4o"[39m,
             },
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@CeresFauna",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@CeresFauna"[39m,
             },
           ],
-          gender: "Female",
-          id: "fauna",
+          gender: [32m"Female"[39m,
+          id: [32m"fauna"[39m,
           images: [
             {
               artist: {
-                url: "https://www.pixiv.net/en/users/23030728",
-                username: "たくぼん",
+                url: [32m"https://www.pixiv.net/en/users/23030728"[39m,
+                username: [32m"たくぼん"[39m,
               },
-              url: "https://i.imgur.com/SoLX2B2.jpeg",
+              url: [32m"https://i.imgur.com/SoLX2B2.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holocouncil",
-              role: "MAIN",
+              mediaId: [32m"holocouncil"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "fauna",
-              "faufau",
+              [32m"fauna"[39m,
+              [32m"faufau"[39m,
             ],
-            english: "Ceres Fauna",
-            native: "セレス・ファウナ",
+            english: [32m"Ceres Fauna"[39m,
+            native: [32m"セレス・ファウナ"[39m,
           },
-          popularity: 600000,
+          popularity: [33m600000[39m,
         },
         {
-          description: "Space is near infinite, and so was Sana's misfortune. 
+          description: [32m"Space is near infinite, and so was Sana's misfortune. 
 
- _due to luck, horrible management, and bad choices, Sana retired after just 11 months in her carrier, with a subscriber count that even rivals holostars._",
+ _due to luck, horrible management, and bad choices, Sana retired after just 11 months in her carrier, with a subscriber count that even rivals holostars._"[39m,
           externalLinks: [
             {
-              site: "Debut Stream",
-              url: "https://www.youtube.com/watch?v=3Tv5GyebhQo",
+              site: [32m"Debut Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=3Tv5GyebhQo"[39m,
             },
             {
-              site: "Retirement Stream",
-              url: "https://www.youtube.com/watch?v=t8vPcBsVIqY",
+              site: [32m"Retirement Stream"[39m,
+              url: [32m"https://www.youtube.com/watch?v=t8vPcBsVIqY"[39m,
             },
           ],
-          gender: "Female",
-          id: "sana",
+          gender: [32m"Female"[39m,
+          id: [32m"sana"[39m,
           images: [
             {
-              url: "https://i.imgur.com/rSmCkhB.jpeg",
+              url: [32m"https://i.imgur.com/rSmCkhB.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "holocouncil",
-              role: "MAIN",
+              mediaId: [32m"holocouncil"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "sana",
+              [32m"sana"[39m,
             ],
-            english: "Tsukumo Sana",
-            native: "九十九 佐命",
+            english: [32m"Tsukumo Sana"[39m,
+            native: [32m"九十九 佐命"[39m,
           },
-          popularity: 200000,
+          popularity: [33m200000[39m,
         },
         {
-          age: "17",
-          description: "The manager of an MMA club and an E-sports club. A supremely spirited, cheerful, and lively girl who can talk to anyone without breaking a sweat. She's currently practicing her pro-gamer skills.",
+          age: [32m"17"[39m,
+          description: [32m"The manager of an MMA club and an E-sports club. A supremely spirited, cheerful, and lively girl who can talk to anyone without breaking a sweat. She's currently practicing her pro-gamer skills."[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@OozoraSubaru",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@OozoraSubaru"[39m,
             },
           ],
-          gender: "Female",
-          id: "subaru",
+          gender: [32m"Female"[39m,
+          id: [32m"subaru"[39m,
           images: [
             {
-              url: "https://i.imgur.com/MpJ2wRL.jpeg",
+              url: [32m"https://i.imgur.com/MpJ2wRL.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "hologen2",
-              role: "MAIN",
+              mediaId: [32m"hologen2"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "subaru",
-              "shuba",
+              [32m"subaru"[39m,
+              [32m"shuba"[39m,
             ],
-            english: "Oozora Subaru",
-            native: "大空スバル",
+            english: [32m"Oozora Subaru"[39m,
+            native: [32m"大空スバル"[39m,
           },
-          popularity: 1510000,
+          popularity: [33m1510000[39m,
         },
         {
-          age: "1500+",
-          description: "An Oni girl from the Underworld Academy. She loves to prank people. Many may not realize it, but she is actually the president of the student council.",
+          age: [32m"1500+"[39m,
+          description: [32m"An Oni girl from the Underworld Academy. She loves to prank people. Many may not realize it, but she is actually the president of the student council."[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@NakiriAyame",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@NakiriAyame"[39m,
             },
           ],
-          gender: "Female",
-          id: "ayame",
+          gender: [32m"Female"[39m,
+          id: [32m"ayame"[39m,
           images: [
             {
-              url: "https://i.imgur.com/d2PcZKU.jpeg",
+              url: [32m"https://i.imgur.com/d2PcZKU.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "hologen2",
-              role: "MAIN",
+              mediaId: [32m"hologen2"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "ayame",
+              [32m"ayame"[39m,
             ],
-            english: "Nakiri Ayame",
-            native: "百鬼あやめ",
+            english: [32m"Nakiri Ayame"[39m,
+            native: [32m"百鬼あやめ"[39m,
           },
-          popularity: 1420000,
+          popularity: [33m1420000[39m,
         },
         {
-          description: "A child that randomly appears around the Underworld Academy... though she's actually an adult (or so she says). A self-proclaimed talented dark magician of noble birth (or so she says).",
+          description: [32m"A child that randomly appears around the Underworld Academy... though she's actually an adult (or so she says). A self-proclaimed talented dark magician of noble birth (or so she says)."[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@MurasakiShion",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@MurasakiShion"[39m,
             },
           ],
-          gender: "Female",
-          id: "shion",
+          gender: [32m"Female"[39m,
+          id: [32m"shion"[39m,
           images: [
             {
-              url: "https://i.imgur.com/YRRpmZQ.jpeg",
+              url: [32m"https://i.imgur.com/YRRpmZQ.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "hologen2",
-              role: "MAIN",
+              mediaId: [32m"hologen2"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "shion",
+              [32m"shion"[39m,
             ],
-            english: "Murasaki Shion",
-            native: "紫咲シオン",
+            english: [32m"Murasaki Shion"[39m,
+            native: [32m"紫咲シオン"[39m,
           },
-          popularity: 1140000,
+          popularity: [33m1140000[39m,
         },
         {
-          age: "102 in fox years",
-          description: "A mysterious white-haired fox that appered one day out of nowhere claming to be a school girl.",
+          age: [32m"102 in fox years"[39m,
+          description: [32m"A mysterious white-haired fox that appered one day out of nowhere claming to be a school girl."[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@ShirakamiFubuki",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@ShirakamiFubuki"[39m,
             },
           ],
-          gender: "Female",
-          id: "fubuki",
+          gender: [32m"Female"[39m,
+          id: [32m"fubuki"[39m,
           images: [
             {
-              url: "https://i.imgur.com/QE8UQVS.jpeg",
+              url: [32m"https://i.imgur.com/QE8UQVS.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "hologamers",
-              role: "MAIN",
+              mediaId: [32m"hologamers"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "fubuki",
-              "FBK",
+              [32m"fubuki"[39m,
+              [32m"FBK"[39m,
             ],
-            english: "Shirakami Fubuki",
-            native: "白上フブキ",
+            english: [32m"Shirakami Fubuki"[39m,
+            native: [32m"白上フブキ"[39m,
           },
-          popularity: 2170000,
+          popularity: [33m2170000[39m,
         },
         {
-          age: "80 in cat years",
-          description: "A cat being raised by an old lady that runs an onigiri store. She streams from a computer she stolen from the old lady.",
+          age: [32m"80 in cat years"[39m,
+          description: [32m"A cat being raised by an old lady that runs an onigiri store. She streams from a computer she stolen from the old lady."[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@NekomataOkayu",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@NekomataOkayu"[39m,
             },
           ],
-          gender: "Female",
-          id: "okayu",
+          gender: [32m"Female"[39m,
+          id: [32m"okayu"[39m,
           images: [
             {
-              url: "https://i.imgur.com/103Dsz2.jpeg",
+              url: [32m"https://i.imgur.com/103Dsz2.jpeg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "hologamers",
-              role: "MAIN",
+              mediaId: [32m"hologamers"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "okayu",
+              [32m"okayu"[39m,
             ],
-            english: "Nekomata Okayu",
-            native: "猫又おかゆ",
+            english: [32m"Nekomata Okayu"[39m,
+            native: [32m"猫又おかゆ"[39m,
           },
-          popularity: 1630000,
+          popularity: [33m1630000[39m,
         },
         {
-          age: "92 in dog years",
-          description: "A dog from a bakery in the city. She likes headpats and stealing human food (a bad thing for a dog living in a bakery).",
+          age: [32m"92 in dog years"[39m,
+          description: [32m"A dog from a bakery in the city. She likes headpats and stealing human food (a bad thing for a dog living in a bakery)."[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@InugamiKorone",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@InugamiKorone"[39m,
             },
           ],
-          gender: "Female",
-          id: "korone",
+          gender: [32m"Female"[39m,
+          id: [32m"korone"[39m,
           images: [
             {
-              url: "https://i.imgur.com/2jlf6Ti.jpg",
+              url: [32m"https://i.imgur.com/2jlf6Ti.jpg"[39m,
             },
           ],
           media: [
             {
-              mediaId: "hologamers",
-              role: "MAIN",
+              mediaId: [32m"hologamers"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              mediaId: "hololive",
-              role: "MAIN",
+              mediaId: [32m"hololive"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
           name: {
             alternative: [
-              "korone",
+              [32m"korone"[39m,
             ],
-            english: "Inugami Korone",
-            native: "戌神ころね",
+            english: [32m"Inugami Korone"[39m,
+            native: [32m"戌神ころね"[39m,
           },
-          popularity: 2000000,
+          popularity: [33m2000000[39m,
         },
       ],
     },
     conflicts: [
-      "anilist:145478",
-      "anilist:118123",
-      "anilist:139756",
-      "anilist:129963",
-      "anilist:148104",
-      "anilist:139342",
-      "anilist:156165",
-      "anilist:153348",
-      "anilist:128539",
-      "anilist:128713",
+      [32m"anilist:145478"[39m,
+      [32m"anilist:118123"[39m,
+      [32m"anilist:139756"[39m,
+      [32m"anilist:129963"[39m,
+      [32m"anilist:148104"[39m,
+      [32m"anilist:139342"[39m,
+      [32m"anilist:156165"[39m,
+      [32m"anilist:153348"[39m,
+      [32m"anilist:128539"[39m,
+      [32m"anilist:128713"[39m,
     ],
-    description: "A pack containing a set of the most famous vtubers.",
-    id: "vtubers",
+    description: [32m"A pack containing a set of the most famous vtubers."[39m,
+    id: [32m"vtubers"[39m,
     media: {
       new: [
         {
-          description: "Hololive Production is a streamer agency under COVER Corporation which encompasses the VTuber groups hololive and holostars, along with the Inonaka Music record label. The agency houses virtual talents whose activities include live streaming on platforms such as YouTube and interacting with fans on Twitter. The talents perform using intricate 2D and 3D avatars provided by the company.
+          description: [32m"Hololive Production is a streamer agency under COVER Corporation which encompasses the VTuber groups hololive and holostars, along with the Inonaka Music record label. The agency houses virtual talents whose activities include live streaming on platforms such as YouTube and interacting with fans on Twitter. The talents perform using intricate 2D and 3D avatars provided by the company.
 
-(Source: COVER Corporation)",
+(Source: COVER Corporation)"[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@hololive",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@hololive"[39m,
             },
           ],
-          id: "hololive",
+          id: [32m"hololive"[39m,
           images: [
             {
-              url: "https://i.imgur.com/y4axd06.jpg",
+              url: [32m"https://i.imgur.com/y4axd06.jpg"[39m,
             },
           ],
-          popularity: 50000000,
+          popularity: [33m50000000[39m,
           relations: [
             {
-              mediaId: "holomyth",
-              relation: "CONTAINS",
+              mediaId: [32m"holomyth"[39m,
+              relation: [32m"CONTAINS"[39m,
             },
             {
-              mediaId: "holocouncil",
-              relation: "CONTAINS",
+              mediaId: [32m"holocouncil"[39m,
+              relation: [32m"CONTAINS"[39m,
             },
             {
-              mediaId: "hologen2",
-              relation: "CONTAINS",
+              mediaId: [32m"hologen2"[39m,
+              relation: [32m"CONTAINS"[39m,
             },
             {
-              mediaId: "hologamers",
-              relation: "CONTAINS",
+              mediaId: [32m"hologamers"[39m,
+              relation: [32m"CONTAINS"[39m,
             },
           ],
           title: {
-            english: "Hololive",
-            native: "ホロライブ",
-            romaji: "Hololive",
+            english: [32m"Hololive"[39m,
+            native: [32m"ホロライブ"[39m,
+            romaji: [32m"Hololive"[39m,
           },
-          type: "ANIME",
+          type: [32m"ANIME"[39m,
         },
         {
           characters: [
             {
-              characterId: "gura",
-              role: "MAIN",
+              characterId: [32m"gura"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "calliope",
-              role: "MAIN",
+              characterId: [32m"calliope"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "kiara",
-              role: "MAIN",
+              characterId: [32m"kiara"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "ina",
-              role: "MAIN",
+              characterId: [32m"ina"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "watson",
-              role: "MAIN",
+              characterId: [32m"watson"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
-          description: "The Myths hail from the worlds of legend.
+          description: [32m"The Myths hail from the worlds of legend.
 
-holoMyth was the first wave of VTubers under Hololive English.",
+holoMyth was the first wave of VTubers under Hololive English."[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@hololiveEnglish",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@hololiveEnglish"[39m,
             },
           ],
-          id: "holomyth",
+          id: [32m"holomyth"[39m,
           images: [
             {
-              url: "https://i.imgur.com/0ehLlU5.png",
+              url: [32m"https://i.imgur.com/0ehLlU5.png"[39m,
             },
           ],
           relations: [
             {
-              mediaId: "hololive",
-              relation: "PARENT",
+              mediaId: [32m"hololive"[39m,
+              relation: [32m"PARENT"[39m,
             },
             {
-              mediaId: "holocouncil",
-              relation: "SEQUEL",
+              mediaId: [32m"holocouncil"[39m,
+              relation: [32m"SEQUEL"[39m,
             },
           ],
           title: {
             alternative: [
-              "holoMyth",
+              [32m"holoMyth"[39m,
             ],
-            english: "hololive English -Myth-",
+            english: [32m"hololive English -Myth-"[39m,
           },
-          type: "ANIME",
+          type: [32m"ANIME"[39m,
         },
         {
           characters: [
             {
-              characterId: "kronii",
-              role: "MAIN",
+              characterId: [32m"kronii"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "mumei",
-              role: "MAIN",
+              characterId: [32m"mumei"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "chaos",
-              role: "MAIN",
+              characterId: [32m"chaos"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "fauna",
-              role: "MAIN",
+              characterId: [32m"fauna"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "sana",
-              role: "MAIN",
+              characterId: [32m"sana"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
-          description: "The Council are a group of divine beings, they are the concepts of the world itself.
+          description: [32m"The Council are a group of divine beings, they are the concepts of the world itself.
 
-holoCouncil is the second wave of VTubers under Hololive English.",
+holoCouncil is the second wave of VTubers under Hololive English."[39m,
           externalLinks: [
             {
-              site: "YouTube",
-              url: "https://www.youtube.com/@hololiveEnglish",
+              site: [32m"YouTube"[39m,
+              url: [32m"https://www.youtube.com/@hololiveEnglish"[39m,
             },
           ],
-          id: "holocouncil",
+          id: [32m"holocouncil"[39m,
           images: [
             {
-              url: "https://i.imgur.com/9ZBYZmj.png",
+              url: [32m"https://i.imgur.com/9ZBYZmj.png"[39m,
             },
           ],
           relations: [
             {
-              mediaId: "hololive",
-              relation: "PARENT",
+              mediaId: [32m"hololive"[39m,
+              relation: [32m"PARENT"[39m,
             },
             {
-              mediaId: "holomyth",
-              relation: "PREQUEL",
+              mediaId: [32m"holomyth"[39m,
+              relation: [32m"PREQUEL"[39m,
             },
           ],
           title: {
             alternative: [
-              "holoCouncil",
+              [32m"holoCouncil"[39m,
             ],
-            english: "hololive English -Council-",
+            english: [32m"hololive English -Council-"[39m,
           },
-          type: "ANIME",
+          type: [32m"ANIME"[39m,
         },
         {
           characters: [
             {
-              characterId: "subaru",
-              role: "MAIN",
+              characterId: [32m"subaru"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "ayame",
-              role: "MAIN",
+              characterId: [32m"ayame"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "shion",
-              role: "MAIN",
+              characterId: [32m"shion"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
-          id: "hologen2",
+          id: [32m"hologen2"[39m,
           images: [
             {
-              url: "https://i.imgur.com/LxhVKRz.png",
+              url: [32m"https://i.imgur.com/LxhVKRz.png"[39m,
             },
           ],
           relations: [
             {
-              mediaId: "hololive",
-              relation: "PARENT",
+              mediaId: [32m"hololive"[39m,
+              relation: [32m"PARENT"[39m,
             },
           ],
           title: {
             alternative: [
-              "hologen2",
+              [32m"hologen2"[39m,
             ],
-            english: "hololive Gen 2",
+            english: [32m"hololive Gen 2"[39m,
           },
-          type: "ANIME",
+          type: [32m"ANIME"[39m,
         },
         {
           characters: [
             {
-              characterId: "fubuki",
-              role: "MAIN",
+              characterId: [32m"fubuki"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "okayu",
-              role: "MAIN",
+              characterId: [32m"okayu"[39m,
+              role: [32m"MAIN"[39m,
             },
             {
-              characterId: "korone",
-              role: "MAIN",
+              characterId: [32m"korone"[39m,
+              role: [32m"MAIN"[39m,
             },
           ],
-          id: "hologamers",
+          id: [32m"hologamers"[39m,
           images: [
             {
-              url: "https://i.imgur.com/jYYBQTI.png",
+              url: [32m"https://i.imgur.com/jYYBQTI.png"[39m,
             },
           ],
           relations: [
             {
-              mediaId: "hololive",
-              relation: "PARENT",
+              mediaId: [32m"hololive"[39m,
+              relation: [32m"PARENT"[39m,
             },
           ],
           title: {
             alternative: [
-              "hologamers",
+              [32m"hologamers"[39m,
             ],
-            english: "hololive GAMERS",
+            english: [32m"hololive GAMERS"[39m,
           },
-          type: "ANIME",
+          type: [32m"ANIME"[39m,
         },
       ],
     },
-    title: "Vtubers",
+    title: [32m"Vtubers"[39m,
   },
 }
 `;

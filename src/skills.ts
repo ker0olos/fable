@@ -1,23 +1,25 @@
-import _user from './user.ts';
+import _user from '~/src/user.ts';
 
-import i18n from './i18n.ts';
-import config from './config.ts';
-import utils from './utils.ts';
+import i18n from '~/src/i18n.ts';
+import config from '~/src/config.ts';
+import utils from '~/src/utils.ts';
 
-import packs from './packs.ts';
+import packs from '~/src/packs.ts';
 
-import search, { idPrefix } from './search.ts';
+import search, { idPrefix } from '~/src/search.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
-import type { CharacterSkill, SkillOutput } from './types.ts';
+import type { CharacterSkill, SkillOutput } from '~/src/types.ts';
 
-const pool: Record<string, CharacterSkill> = {
-  'crit': {
+type SkillKey = keyof typeof skills;
+
+const skills = {
+  crit: {
     cost: 2,
     key: 'crit',
     descKey: 'crit-desc',
@@ -66,7 +68,7 @@ const pool: Record<string, CharacterSkill> = {
   //     suffix: '%',
   //   }],
   // },
-};
+} satisfies Record<string, CharacterSkill>;
 
 const format = (
   skill: CharacterSkill,
@@ -115,13 +117,13 @@ const format = (
 function preAcquire(
   { token, skillKey, guildId, character, userId }: {
     token: string;
-    skillKey: string;
+    skillKey: SkillKey;
     guildId: string;
     character: string;
     userId: string;
   },
 ): discord.Message {
-  if (!pool[skillKey]) {
+  if (!skills[skillKey]) {
     throw new Error('404');
   }
 
@@ -210,7 +212,7 @@ function preAcquire(
 
       message.addEmbed(embed);
 
-      const skill = pool[skillKey];
+      const skill = skills[skillKey];
 
       const existingSkill = existing[0].combat?.skills?.[skill.key];
 
@@ -303,7 +305,7 @@ function preAcquire(
 
 async function acquire(
   { skillKey, guildId, characterId, userId }: {
-    skillKey: string;
+    skillKey: SkillKey;
     guildId: string;
     characterId: string;
     userId: string;
@@ -312,7 +314,7 @@ async function acquire(
   const locale = _user.cachedUsers[userId]?.locale ??
     _user.cachedGuilds[guildId]?.locale;
 
-  if (!pool[skillKey]) {
+  if (!skills[skillKey]) {
     throw new Error('404');
   }
 
@@ -324,7 +326,7 @@ async function acquire(
 
     const { inventory } = await db.getInventory(instance, __user);
 
-    const skill = pool[skillKey];
+    const skill = skills[skillKey];
 
     const existingSkill = await db.acquireSkill(
       inventory,
@@ -380,7 +382,7 @@ function all(
 ): discord.Message {
   const message = new discord.Message();
 
-  const pages = utils.chunks(Object.values(pool), 3);
+  const pages = utils.chunks(Object.values(skills), 3);
 
   const page = pages[index];
 
@@ -399,9 +401,10 @@ function all(
   });
 }
 
+export { skills };
+
 export default {
   preAcquire,
   acquire,
-  pool,
   all,
 };

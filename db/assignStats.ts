@@ -4,7 +4,7 @@ import {
   charactersByMediaIdPrefix,
 } from '~/db/indices.ts';
 
-import skills from '~/src/skills.ts';
+import { skills } from '~/src/skills.ts';
 
 import db, { kv } from '~/db/mod.ts';
 
@@ -50,7 +50,7 @@ export function unsureInitStats(character: Schema.Character): Schema.Character {
 
   //
 
-  const skillsPool = Object.values(skills.pool);
+  const skillsPool = Object.values(skills);
 
   for (let i = 0; i < slots; i++) {
     const index = Math.floor(Math.random() * skillsPool.length);

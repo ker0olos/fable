@@ -12,10 +12,11 @@ import trade from '~/src/trade.ts';
 import steal from '~/src/steal.ts';
 import shop from '~/src/shop.ts';
 import stats from '~/src/stats.ts';
-import skills from '~/src/skills.ts';
 import battle from '~/src/battle.ts';
 import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
+
+import _skills, { skills } from '~/src/skills.ts';
 
 import merge from '~/src/merge.ts';
 
@@ -25,6 +26,7 @@ import * as communityAPI from '~/src/communityAPI.ts';
 import config, { initConfig } from '~/src/config.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
+import { SkillKey } from '~/src/types.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -289,7 +291,7 @@ export const handler = async (r: Request) => {
 
           const distance: Record<string, number> = {};
 
-          let _skills = Object.values(skills.pool);
+          let _skills = Object.values(skills);
 
           // sort suggestion based on distance
           _skills.forEach((skill) => {
@@ -779,13 +781,13 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'showall':
-                return skills.all(0, locale).send();
+                return _skills.all(0, locale).send();
               case 'upgrade':
               case 'acquire': {
-                const skillKey = options['skill'] as string;
+                const skillKey = options['skill'] as SkillKey;
                 const character = options['character'] as string;
 
-                return skills.preAcquire({
+                return _skills.preAcquire({
                   token,
                   skillKey,
                   guildId,
@@ -1184,10 +1186,10 @@ export const handler = async (r: Request) => {
             const characterId = customValues![1];
 
             // deno-lint-ignore no-non-null-assertion
-            const skillKey = customValues![2];
+            const skillKey = customValues![2] as SkillKey;
 
             if (userId === member.user.id) {
-              return (await skills.acquire({
+              return (await _skills.acquire({
                 guildId,
                 characterId,
                 userId,
@@ -1225,7 +1227,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return skills.all(index, locale)
+            return _skills.all(index, locale)
               .setType(discord.MessageType.Update)
               .send();
           }

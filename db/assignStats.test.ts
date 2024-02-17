@@ -146,7 +146,7 @@ Deno.test('initStats', async (test) => {
       });
 
       assertEquals(result.character.combat?.skills, {
-        dodge: { level: 1 },
+        crit: { level: 1 },
       });
     } finally {
       getValueAndTimestampStub.restore();
@@ -185,7 +185,7 @@ Deno.test('initStats', async (test) => {
       });
 
       assertEquals(result.character.combat?.skills, {
-        dodge: { level: 1 },
+        crit: { level: 1 },
       });
     } finally {
       getValueAndTimestampStub.restore();

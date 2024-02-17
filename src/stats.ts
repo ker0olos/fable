@@ -8,7 +8,7 @@ import utils from '~/src/utils.ts';
 import config from '~/src/config.ts';
 import i18n from '~/src/i18n.ts';
 
-import skills from '~/src/skills.ts';
+import { skills } from '~/src/skills.ts';
 
 import * as discord from '~/src/discord.ts';
 
@@ -19,6 +19,8 @@ import { experienceToNextLevel } from '~/db/gainExp.ts';
 import { NonFetalError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
+
+import type { SkillKey } from '~/src/types.ts';
 
 // async function update(
 //   { token, type, characterId, userId, guildId }: {
@@ -162,7 +164,7 @@ function view({ token, character, characterSchema, userId, guildId }: {
           .addField({
             name: i18n.get('skills', locale),
             value: _skills.map(([key, s]) => {
-              const skill = skills.pool[key];
+              const skill = skills[key as SkillKey];
 
               const maxed = skill.stats[0].scale.length <= s.level;
 

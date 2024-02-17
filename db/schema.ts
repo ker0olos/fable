@@ -1,5 +1,7 @@
 import type { Manifest } from '../src/types.ts';
 
+import type { SkillKey } from '~/src/types.ts';
+
 interface Collection {
   _id: string;
 }
@@ -82,7 +84,7 @@ export interface CharacterCombat {
   level?: number;
 
   skillPoints?: number;
-  skills?: Record<string, AcquiredCharacterSkill>;
+  skills?: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
 
   // unclaimedStatsPoints?: number;
   curStats?: CharacterStats;

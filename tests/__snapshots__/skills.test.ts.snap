@@ -3,47 +3,28 @@ export const snapshot = {};
 snapshot[`all skills > snapshot 1`] = `
 {
   crit: {
-    activation: [Function: activation],
-    activationTurn: "user",
-    cost: 2,
-    descKey: "crit-desc",
-    key: "crit",
+    activation: [36m[Function: activation][39m,
+    cost: [33m2[39m,
+    descKey: [32m"crit-desc"[39m,
+    key: [32m"crit"[39m,
     stats: [
       {
-        key: "crit-chance",
+        key: [32m"crit-chance"[39m,
         scale: [
-          0.5,
-          5,
-          15,
+          [33m0.5[39m,
+          [33m5[39m,
+          [33m15[39m,
         ],
-        suffix: "%",
+        suffix: [32m"%"[39m,
       },
       {
-        key: "crit-damage",
+        key: [32m"crit-damage"[39m,
         scale: [
-          30,
-          45,
-          60,
+          [33m30[39m,
+          [33m45[39m,
+          [33m60[39m,
         ],
-        suffix: "%",
-      },
-    ],
-  },
-  dodge: {
-    activation: [Function: activation],
-    activationTurn: "enemy",
-    cost: 3,
-    descKey: "dodge-desc",
-    key: "dodge",
-    stats: [
-      {
-        key: "dodge-chance",
-        scale: [
-          0.5,
-          5,
-          15,
-        ],
-        suffix: "%",
+        suffix: [32m"%"[39m,
       },
     ],
   },
@@ -58,42 +39,38 @@ snapshot[`/skills showall > page 0 1`] = `
       {
         components: [
           {
-            custom_id: "skills==0=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"skills==0=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "1/1",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"1/1"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "skills==0=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"skills==0=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
-        description: "**Critical Hit** (2 Skill Points)
+        description: [32m"**Critical Hit** (2 Skill Points)
 The art of performing the traditional critical hit.
 1. _Crit Chance (0.5%, 5%, 15%)_
-2. _Crit Damage (30%, 45%, 60%)_
-
-**Dodge** (3 Skill Points)
-Like the wind in the air, or something.
-1. _Dodge Chance (0.5%, 5%, 15%)_",
-        type: "rich",
+2. _Crit Damage (30%, 45%, 60%)_"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;

@@ -11,6 +11,7 @@ import { KvError } from '../src/errors.ts';
 import type * as Schema from './schema.ts';
 
 import type { CharacterSkill } from '../src/types.ts';
+import { SkillKey } from '~/src/types.ts';
 
 export async function acquireSkill(
   inventory: Schema.Inventory,
@@ -45,17 +46,21 @@ export async function acquireSkill(
       throw new Error('NOT_ENOUGH_SKILL_POINTS');
     }
 
-    if (typeof character.combat.skills[skill.key]?.level !== 'number') {
-      character.combat.skills[skill.key] = { level: 1 };
+    const key = skill.key as SkillKey;
+
+    if (
+      typeof character.combat.skills[key]?.level !== 'number'
+    ) {
+      character.combat.skills[key] = { level: 1 };
     } else {
       const maxed =
-        skill.stats[0].scale.length <= character.combat.skills[skill.key].level;
+        skill.stats[0].scale.length <= character.combat.skills[key].level;
 
       if (maxed) {
         throw new Error('SKILL_MAXED');
       }
 
-      character.combat.skills[skill.key].level += 1;
+      character.combat.skills[key].level += 1;
     }
 
     const update = await kv.atomic()
@@ -88,7 +93,7 @@ export async function acquireSkill(
       .commit();
 
     if (update.ok) {
-      return character.combat.skills[skill.key];
+      return character.combat.skills[key];
     }
 
     retries += 1;

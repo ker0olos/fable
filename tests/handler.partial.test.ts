@@ -3557,9 +3557,6 @@ Deno.test('skills', async (test) => {
           choices: [{
             name: 'Critical Hit',
             value: 'crit',
-          }, {
-            name: 'Dodge',
-            value: 'dodge',
           }],
         },
       });
@@ -3646,9 +3643,6 @@ Deno.test('skills', async (test) => {
           choices: [{
             name: 'Critical Hit',
             value: 'crit',
-          }, {
-            name: 'Dodge',
-            value: 'dodge',
           }],
         },
       });

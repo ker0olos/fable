@@ -5,7 +5,8 @@ import utils from '~/src/utils.ts';
 import i18n from '~/src/i18n.ts';
 
 import gacha from '~/src/gacha.ts';
-import skills from '~/src/skills.ts';
+
+import { skills } from '~/src/skills.ts';
 
 import db from '~/db/mod.ts';
 
@@ -80,7 +81,7 @@ export const getEnemyRating = (floor: number): number => {
 };
 
 export const getEnemySkillSlots = (floor: number): number => {
-  const skillsPool = Object.keys(skills.pool);
+  const skillsPool = Object.keys(skills);
   return Math.min(Math.floor(floor / 10), skillsPool.length);
 };
 
@@ -100,7 +101,7 @@ export const createEnemyState = (
 
   const _skills: CharacterState['skills'] = {};
 
-  const skillsPool = Object.values(skills.pool);
+  const skillsPool = Object.values(skills);
   const skillsSlots = getEnemySkillSlots(floor);
   const maxSkillLevel = getEnemyMaxSkillLevel(floor);
 

@@ -237,7 +237,7 @@ Deno.test('/stats', async (test) => {
             rating: 4,
             combat: {
               skillPoints: 2,
-              skills: { 'crit': { level: 2 }, 'dodge': { level: 3 } },
+              skills: { 'crit': { level: 2 } },
               // unclaimedStatsPoints: 0,
               curStats: {
                 attack: 1,
@@ -310,7 +310,7 @@ Deno.test('/stats', async (test) => {
                 },
                 {
                   name: 'Skills',
-                  value: 'Critical Hit (LVL 2)\nDodge (LVL MAX)',
+                  value: 'Critical Hit (LVL 2)',
                 },
                 {
                   name: 'Stats',

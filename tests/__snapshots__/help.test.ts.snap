@@ -8,46 +8,46 @@ snapshot[`/help 1`] = `
       {
         components: [
           {
-            custom_id: "help==9=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==9=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "1/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"1/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==1=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==1=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "gacha=user_id",
-            label: "/gacha",
-            style: 2,
-            type: 2,
+            custom_id: [32m"gacha=user_id"[39m,
+            label: [32m"/gacha"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "now=user_id",
-            label: "/now",
-            style: 2,
-            type: 2,
+            custom_id: [32m"now=user_id"[39m,
+            label: [32m"/now"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "1.",
+          name: [32m"1."[39m,
         },
-        description: "Before anything: You will need characters.
+        description: [32m"Before anything: You will need characters.
 
 __You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
 
@@ -58,16 +58,16 @@ __Characters vary in ranks from 1<:smolstar:1107503653956374638>to 5<:smolstar:1
 __Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smolstar:1107503653956374638>appearing is equal or less than 1%.
 
 > *\`/q\` allows you to do gacha pulls with no animations*
-​",
+​"[39m,
         footer: {
-          text: "aliases: /w, /q",
+          text: [32m"aliases: /w, /q"[39m,
         },
-        title: "\`/gacha\`",
-        type: "rich",
+        title: [32m"\`/gacha\`"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -79,34 +79,34 @@ snapshot[`/help 2`] = `
       {
         components: [
           {
-            custom_id: "help==0=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==0=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "2/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"2/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==2=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==2=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "2.",
+          name: [32m"2."[39m,
         },
-        description: "Sacrifice characters to pull a new character with a higher rating.
+        description: [32m"Sacrifice characters to pull a new character with a higher rating.
 
 __Your party members and likes will never be sacrificed.__ To protect characters from being merged, add them to your likeslist with \`/like\`
 
@@ -118,16 +118,16 @@ Example: \`/merge target: 3\` will sacrifice __25 of your 1<:smolstar:1107503653
 or __5 of your 2<:smolstar:1107503653956374638>characters.__
 
 > *Sacrificed characters will return to being available in \`/gacha\`*
-​",
+​"[39m,
         footer: {
-          text: "aliases: /synthesis",
+          text: [32m"aliases: /synthesis"[39m,
         },
-        title: "\`/merge\`",
-        type: "rich",
+        title: [32m"\`/merge\`"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -139,46 +139,46 @@ snapshot[`/help 3`] = `
       {
         components: [
           {
-            custom_id: "help==1=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==1=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "3/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"3/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==3=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==3=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "cstars=5=user_id",
-            label: "/collection stars 5",
-            style: 2,
-            type: 2,
+            custom_id: [32m"cstars=5=user_id"[39m,
+            label: [32m"/collection stars 5"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "cstars=4=user_id",
-            label: "/collection stars 4",
-            style: 2,
-            type: 2,
+            custom_id: [32m"cstars=4=user_id"[39m,
+            label: [32m"/collection stars 4"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "3.",
+          name: [32m"3."[39m,
         },
-        description: "You will need a party to use combat features
+        description: [32m"You will need a party to use combat features
 
 __You can't have more than 1 party__ or save your current party to a preset and switch between presets.
 
@@ -188,16 +188,16 @@ __You can't have more than 1 party__ or save your current party to a preset and 
 leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
 
 > *\`/collection\` can be used to browse your characters and select your potential party members*
-​",
+​"[39m,
         footer: {
-          text: "aliases: /team, /p",
+          text: [32m"aliases: /team, /p"[39m,
         },
-        title: "\`/party\`",
-        type: "rich",
+        title: [32m"\`/party\`"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -209,34 +209,34 @@ snapshot[`/help 4`] = `
       {
         components: [
           {
-            custom_id: "help==2=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==2=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "4/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"4/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==4=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==4=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "Stealing",
+          name: [32m"Stealing"[39m,
         },
-        description: "When all negotiations fails, it's fine to take what you want by force, right?
+        description: [32m"When all negotiations fails, it's fine to take what you want by force, right?
 
 __You can't steal characters assigned as party members__, meaning you can protect your most precious characters by adding them to your party.
 
@@ -249,12 +249,12 @@ __The higher the character's rating the harder it is to steal.__ 5<:smolstar:110
 __Steal has a cooldown of **3** days__ regardless of the outcome of the attempt.
 
 > Staying active is the best defense against stealing.
-​",
-        type: "rich",
+​"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -266,34 +266,34 @@ snapshot[`/help 5`] = `
       {
         components: [
           {
-            custom_id: "help==3=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==3=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "5/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"5/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==5=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==5=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "Combat",
+          name: [32m"Combat"[39m,
         },
-        description: "Prepare your characters for combat using \`/stats\`
+        description: [32m"Prepare your characters for combat using \`/stats\`
 
 __Every character gets a starting amount of stat points__ based on their star rating.
 
@@ -308,12 +308,12 @@ __Stamina is health points__, allows you to take more hits and survive longer in
 Use \`/battle tower\` to climb the tower, each server has a unique tower and unique enemies and weakness.
 
 > Level up your characters and gain extra stat points by \`/sweep\`ing the same floor a few times.
-​",
-        type: "rich",
+​"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -325,46 +325,46 @@ snapshot[`/help 6`] = `
       {
         components: [
           {
-            custom_id: "help==4=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==4=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "6/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"6/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==6=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==6=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "now=user_id",
-            label: "/vote",
-            style: 2,
-            type: 2,
+            custom_id: [32m"now=user_id"[39m,
+            label: [32m"/vote"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "buy=bguaranteed=user_id=5",
-            label: "/buy guaranteed 5",
-            style: 2,
-            type: 2,
+            custom_id: [32m"buy=bguaranteed=user_id=5"[39m,
+            label: [32m"/buy guaranteed 5"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "Shop",
+          name: [32m"Shop"[39m,
         },
-        description: "The shop is a way to purchase extra pulls and guaranteed pulls.
+        description: [32m"The shop is a way to purchase extra pulls and guaranteed pulls.
 
 __You get 1 daily token every day__, automatically added after your first \`/gacha\` of the day.
 
@@ -383,15 +383,15 @@ Example: \`/buy guaranteed 5\` will guarantee you get one random 5<:smolstar:110
 5<:smolstar:1107503653956374638>cost **28** tokens
 
 > Use the guaranteed pulls you bought by calling \`/pull stars:\`
-​",
+​"[39m,
         footer: {
-          text: "aliases: /shop",
+          text: [32m"aliases: /shop"[39m,
         },
-        type: "rich",
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -403,67 +403,67 @@ snapshot[`/help 7`] = `
       {
         components: [
           {
-            custom_id: "help==5=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==5=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "7/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"7/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==7=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==7=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            label: "GitHub",
-            style: 5,
-            type: 2,
-            url: "https://github.com/ker0olos/fable",
+            label: [32m"GitHub"[39m,
+            style: [33m5[39m,
+            type: [33m2[39m,
+            url: [32m"https://github.com/ker0olos/fable"[39m,
           },
           {
-            label: "Discord Support Server",
-            style: 5,
-            type: 2,
-            url: "https://discord.gg/H69RVBxeYY",
+            label: [32m"Discord Support Server"[39m,
+            style: [33m5[39m,
+            type: [33m2[39m,
+            url: [32m"https://discord.gg/H69RVBxeYY"[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
       {
         components: [
           {
-            label: "Donate",
-            style: 5,
-            type: 2,
-            url: "https://ko-fi.com/ker0olos",
+            label: [32m"Donate"[39m,
+            style: [33m5[39m,
+            type: [33m2[39m,
+            url: [32m"https://ko-fi.com/ker0olos"[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "Roadmap",
+          name: [32m"Roadmap"[39m,
         },
-        description: "__**Releasing in the near future (~3 months)**__
+        description: [32m"__**Releasing in the near future (~3 months)**__
 
 **[Classes And Skills](https://github.com/ker0olos/fable/issues/64)**
 
 **[Server vs. Server](https://github.com/ker0olos/fable/issues/65)**
-",
-        type: "rich",
+"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -475,34 +475,34 @@ snapshot[`/help 8`] = `
       {
         components: [
           {
-            custom_id: "help==6=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==6=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "8/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"8/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==8=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==8=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "Essential Commands",
+          name: [32m"Essential Commands"[39m,
         },
-        description: "- \`/gacha\` \`/w\`: _start a new gacha pull_
+        description: [32m"- \`/gacha\` \`/w\`: _start a new gacha pull_
 - \`/q\`: _start a gacha pull but with no animations_
 - \`/pull\` \`/guaranteed\`: _use a guaranteed pull you have_
 
@@ -526,12 +526,12 @@ snapshot[`/help 8`] = `
 - \`/give\` \`/gift\`: _give characters to another user_
 
 - \`/battle tower\`: _Climb the tower to glory and become a fable_
-- \`/sweep\`: _Sweep your current battle tower floor for exp_",
-        type: "rich",
+- \`/sweep\`: _Sweep your current battle tower floor for exp_"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -543,34 +543,34 @@ snapshot[`/help 9`] = `
       {
         components: [
           {
-            custom_id: "help==7=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==7=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "9/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"9/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==9=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==9=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "Other Commands",
+          name: [32m"Other Commands"[39m,
         },
-        description: "- \`/nick\`: _change the nickname of a character_
+        description: [32m"- \`/nick\`: _change the nickname of a character_
 - \`/image\` \`/custom\`: _change the image of a character_
 
 - \`/found\` \`/owned\`: _list all characters found from a specific series_
@@ -590,12 +590,12 @@ snapshot[`/help 9`] = `
 
 - \`/installed packs\`: _list all the installed packs on a server_
 
-- \`/logs\`: _list user last few found characters_",
-        type: "rich",
+- \`/logs\`: _list user last few found characters_"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
 
@@ -607,43 +607,43 @@ snapshot[`/help 10`] = `
       {
         components: [
           {
-            custom_id: "help==8=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==8=prev"[39m,
+            label: [32m"Prev"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "_",
-            disabled: true,
-            label: "10/10",
-            style: 2,
-            type: 2,
+            custom_id: [32m"_"[39m,
+            disabled: [33mtrue[39m,
+            label: [32m"10/10"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
           {
-            custom_id: "help==0=next",
-            label: "Next",
-            style: 2,
-            type: 2,
+            custom_id: [32m"help==0=next"[39m,
+            label: [32m"Next"[39m,
+            style: [33m2[39m,
+            type: [33m2[39m,
           },
         ],
-        type: 1,
+        type: [33m1[39m,
       },
     ],
     embeds: [
       {
         author: {
-          name: "Admin Commands",
+          name: [32m"Admin Commands"[39m,
         },
-        description: "_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._
+        description: [32m"_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._
 - \`/packs install\`: _install a community pack_
 - \`/packs uninstall\`: _uninstall a community pack_
 - \`/packs disable builtins\`: _permanently disable the builtin packs_
 
-> To create your own community pack visit <https://packs.deno.dev>",
-        type: "rich",
+> To create your own community pack visit <https://packs.deno.dev>"[39m,
+        type: [32m"rich"[39m,
       },
     ],
   },
-  type: 4,
+  type: [33m4[39m,
 }
 `;
