@@ -4,7 +4,7 @@ import { assertSpyCallArgs, stub } from '$std/testing/mock.ts';
 import { FakeTime } from '$std/testing/time.ts';
 
 import { assertEquals, assertRejects, assertThrows } from '$std/assert/mod.ts';
-import { assertSnapshot } from '$std/testing/snapshot.ts';
+import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
 
 import db from '~/db/mod.ts';
 import packs from '~/src/packs.ts';
@@ -19,7 +19,7 @@ import { NonFetalError } from '~/src/errors.ts';
 
 Deno.test('all skills', async (test) => {
   await test.step('snapshot', async (test) => {
-    await assertSnapshot(test, skills);
+    await assertMonochromeSnapshot(test, skills);
   });
 
   await test.step('crits', async (test) => {
@@ -93,7 +93,7 @@ Deno.test('/skills showall', async (test) => {
   await test.step('page 0', async (test) => {
     const message = _skills.all(0);
 
-    await assertSnapshot(test, message.json());
+    await assertMonochromeSnapshot(test, message.json());
   });
 });
 

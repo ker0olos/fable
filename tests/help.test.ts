@@ -1,8 +1,7 @@
 import { assertEquals } from '$std/assert/mod.ts';
+import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
 
-import { assertSnapshot } from '$std/testing/snapshot.ts';
-
-import help from '../src/help.ts';
+import help from '~/src/help.ts';
 
 Deno.test('/help', async (test) => {
   await test.step('navigation', () => {
@@ -35,7 +34,7 @@ Deno.test('/help', async (test) => {
     for (let i = 0; i < 10; i++) {
       const message = help.pages({ userId: 'user_id', index: i });
 
-      await assertSnapshot(test, message.json());
+      await assertMonochromeSnapshot(test, message.json());
     }
   });
 });

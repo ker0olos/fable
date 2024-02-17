@@ -1,7 +1,6 @@
-import { assertSnapshot } from '$std/testing/snapshot.ts';
-
-import { commands } from './update_commands.ts';
+import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
+import { commands } from '~/update_commands.ts';
 
 Deno.test('commands', async (test) => {
-  await assertSnapshot(test, commands);
+  await assertMonochromeSnapshot(test, commands);
 });

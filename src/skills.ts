@@ -44,30 +44,6 @@ const skills = {
       suffix: '%',
     }],
   },
-  // 'dodge': {
-  //   cost: 3,
-  //   key: 'dodge',
-  //   descKey: 'dodge-desc',
-  //   activationTurn: 'enemy',
-  //   activation: function (_char, _target, lvl): SkillOutput {
-  //     const [dodgeChance] = this.stats;
-
-  //     const isDodged = Math.random() * 100 <= dodgeChance.scale[lvl - 1];
-
-  //     if (isDodged) {
-  //       return {
-  //         dodge: true,
-  //       };
-  //     }
-
-  //     return {};
-  //   },
-  //   stats: [{
-  //     key: 'dodge-chance',
-  //     scale: [0.5, 5, 15],
-  //     suffix: '%',
-  //   }],
-  // },
 } satisfies Record<string, CharacterSkill>;
 
 const format = (

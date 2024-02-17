@@ -3,29 +3,28 @@
 import { assertEquals, assertRejects } from '$std/assert/mod.ts';
 
 import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
-
-import { assertSnapshot } from '$std/testing/snapshot.ts';
+import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
-import utils from '../src/utils.ts';
+import utils from '~/src/utils.ts';
 
-import packs from '../src/packs.ts';
-import gacha from '../src/gacha.ts';
+import packs from '~/src/packs.ts';
+import gacha from '~/src/gacha.ts';
 
-import config from '../src/config.ts';
+import config from '~/src/config.ts';
 
-import Rating from '../src/rating.ts';
+import Rating from '~/src/rating.ts';
 
-import merge from '../src/merge.ts';
+import merge from '~/src/merge.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import { CharacterRole, MediaFormat, MediaType } from '../src/types.ts';
+import { CharacterRole, MediaFormat, MediaType } from '~/src/types.ts';
 
-import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
-import { NonFetalError, PoolError } from '../src/errors.ts';
+import { NonFetalError, PoolError } from '~/src/errors.ts';
 
 Deno.test('auto merge', async (test) => {
   await test.step('5 ones', async (test) => {
@@ -63,7 +62,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('25 ones', async (test) => {
@@ -101,7 +100,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('5 twos', async (test) => {
@@ -141,7 +140,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('20 ones + 1 two', async (test) => {
@@ -190,7 +189,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('625 ones', async (test) => {
@@ -242,7 +241,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('500 ones + 5 threes', async (test) => {
@@ -297,7 +296,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('5 fours', async (test) => {
@@ -340,7 +339,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('5 fives', async () => {
@@ -380,7 +379,7 @@ Deno.test('auto merge', async (test) => {
       5,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('4 fours + 1 five', async () => {
@@ -429,7 +428,7 @@ Deno.test('auto merge', async (test) => {
       1,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('4 fives + 1 four', async () => {
@@ -478,7 +477,7 @@ Deno.test('auto merge', async (test) => {
       4,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('min', async (test) => {
@@ -520,7 +519,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 
   await test.step('max', async (test) => {
@@ -562,7 +561,7 @@ Deno.test('auto merge', async (test) => {
       0,
     );
 
-    await assertSnapshot(test, sacrifices);
+    await assertMonochromeSnapshot(test, sacrifices);
   });
 });
 

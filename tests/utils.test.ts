@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-non-null-assertion
+import { stripAnsiCode } from '$std/fmt/colors.ts';
 
 import { assert, assertEquals, assertThrows } from '$std/assert/mod.ts';
 
@@ -8,8 +9,14 @@ import {
   returnsNext,
   stub,
 } from '$std/testing/mock.ts';
+import { assertSnapshot, createAssertSnapshot } from '$std/testing/snapshot.ts';
 
-import utils from '../src/utils.ts';
+import utils from '~/src/utils.ts';
+
+export const assertMonochromeSnapshot = createAssertSnapshot<string>(
+  { serializer: (obj) => stripAnsiCode(JSON.stringify(obj, undefined, 2)) },
+  assertSnapshot,
+);
 
 Deno.test('color hex to color int', () => {
   assertEquals(utils.hexToInt('#3E5F8A'), 4087690);
