@@ -1,8 +1,8 @@
-import { inventoriesByUser, usersByDiscordId } from './indices.ts';
+import { inventoriesByUser, usersByDiscordId } from '~/db/indices.ts';
 
-import type * as Schema from './schema.ts';
+import db from '~/db/mod.ts';
 
-import db from './mod.ts';
+import type * as Schema from '~/db/schema.ts';
 
 export function clearFloor(
   op: Deno.AtomicOperation,

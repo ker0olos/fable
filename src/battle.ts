@@ -73,7 +73,7 @@ function challengeTower({ token, guildId, user }: {
 
       const { inventory } = await db.getInventory(instance, _user);
 
-      const floor = inventory.floorsCleared || 1;
+      const floor = (inventory.floorsCleared || 0) + 1;
 
       if (MAX_FLOORS <= floor) {
         throw new NonFetalError(i18n.get('max-floor-cleared', locale));
@@ -264,7 +264,6 @@ async function startCombat(
 
     for (let i = 0; i < turns.length; i++) {
       const turn = turns[i];
-      const _prev = i > 0 ? turns[i - 1] : undefined;
 
       if (party1Character.state.hp <= 0 || party2Character.state.hp <= 0) {
         break;
@@ -277,7 +276,6 @@ async function startCombat(
         message,
         attacking,
         receiving,
-        same: _prev === turn,
         locale,
       });
 
@@ -323,11 +321,10 @@ function calculateExtraTurns(speedDiffPercent: number): number {
 }
 
 function prepRound(
-  { message, attacking, receiving, same, locale }: {
+  { message, attacking, receiving, locale }: {
     message: discord.Message;
     attacking: PartyMember;
     receiving: PartyMember;
-    same: boolean;
     locale: discord.AvailableLocales;
   },
 ): void {
@@ -340,7 +337,6 @@ function prepRound(
     character: attacking,
     type: 'attacking',
     locale,
-    subtitle: same ? i18n.get('attacking-again', locale) : undefined,
   });
 }
 
@@ -373,6 +369,10 @@ function actionRound(
       subtitle = i18n.get('crit', locale);
     }
   }
+
+  // minimal damage should be 1
+  // avoids looping if both attackers have 0 attack
+  damage = Math.max(damage, 1);
 
   receiving.state.hp = Math.max(receiving.state.hp - damage, 0);
 
