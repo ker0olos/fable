@@ -166,7 +166,7 @@ function view({ token, character, characterSchema, userId, guildId }: {
             value: _skills.map(([key, s]) => {
               const skill = skills[key as SkillKey];
 
-              const maxed = skill.stats[0].scale.length <= s.level;
+              const maxed = skill.max <= s.level;
 
               return `${i18n.get(skill.key, locale)} (${
                 i18n.get('lvl', locale)

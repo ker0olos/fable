@@ -60,14 +60,15 @@ export async function acquireSkill(
     ) {
       character.combat.skills[key] = { level: 1 };
     } else {
-      const maxed =
-        skill.stats[0].scale.length <= character.combat.skills[key].level;
+      // deno-lint-ignore no-non-null-assertion
+      const maxed = skill.max <= character.combat.skills[key]!.level;
 
       if (maxed) {
         throw new Error('SKILL_MAXED');
       }
 
-      character.combat.skills[key].level += 1;
+      // deno-lint-ignore no-non-null-assertion
+      character.combat.skills[key]!.level += 1;
     }
 
     const update = await kv.atomic()
@@ -100,7 +101,8 @@ export async function acquireSkill(
       .commit();
 
     if (update.ok) {
-      return character.combat.skills[key];
+      // deno-lint-ignore no-non-null-assertion
+      return character.combat.skills[key]!;
     }
 
     retries += 1;

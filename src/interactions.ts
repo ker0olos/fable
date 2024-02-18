@@ -688,20 +688,11 @@ export const handler = async (r: Request) => {
             }
             break;
           }
-          case 'installed': {
-            //deno-lint-ignore no-non-null-assertion
-            switch (subcommand!) {
-              case 'packs':
-                return (await packs.pages({
-                  guildId,
-                  userId: member.user.id,
-                })).send();
-            }
-            break;
-          }
+          case 'installed':
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
+              default:
               case 'installed': {
                 return (await packs.pages({
                   guildId,
@@ -738,23 +729,12 @@ export const handler = async (r: Request) => {
                 })
                   .send();
               }
-              // case 'popular': {
-              //   return (await community.popularPacks({
-              //     guildId,
-              //     userId: member.user.id,
-              //     index: 0,
-              //   }))
-              //     .setFlags(discord.MessageFlags.Ephemeral)
-              //     .send();
-              // }
               case 'disable builtins': {
                 return (await packs.disableBuiltins({
                   userId: member.user.id,
                   guildId,
                 })).send();
               }
-              default:
-                break;
             }
             break;
           }
@@ -1154,30 +1134,6 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          // case 'stats': {
-          //   // deno-lint-ignore no-non-null-assertion
-          //   const type = customValues![0];
-
-          //   // deno-lint-ignore no-non-null-assertion
-          //   const userId = customValues![1];
-
-          //   // deno-lint-ignore no-non-null-assertion
-          //   const characterId = customValues![2];
-
-          //   if (userId === member.user.id) {
-          //     return (await stats.update({
-          //       type,
-          //       token,
-          //       guildId,
-          //       characterId,
-          //       userId: member.user.id,
-          //     }))
-          //       .setType(discord.MessageType.Update)
-          //       .send();
-          //   }
-
-          //   throw new NoPermissionError();
-          // }
           case 'cacquire': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];

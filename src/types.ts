@@ -4,6 +4,8 @@ import type { AcquiredCharacterSkill, CharacterStats } from '~/db/schema.ts';
 
 import { skills } from '~/src/skills.ts';
 
+import type { PartyMember } from '~/src/battle.types.ts';
+
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export enum MediaType {
@@ -173,7 +175,7 @@ export interface Manifest {
 
 export type SkillKey = keyof typeof skills;
 
-export type CharacterState = CharacterStats & {
+export type CharacterBattleStats = CharacterStats & {
   skills: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
   hp: number;
   maxHP: number;
@@ -186,12 +188,13 @@ export interface SkillOutput {
 export interface CharacterSkill {
   key: Keys;
   descKey: Keys;
+  max: number;
 
   cost: number;
 
   activation?: (
-    attacking: CharacterState,
-    receiving: CharacterState,
+    attacking: PartyMember,
+    receiving: PartyMember,
     lvl: number,
   ) => SkillOutput;
 

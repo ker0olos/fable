@@ -15,13 +15,15 @@ import tower from '~/src/tower.ts';
 
 import { skills } from '~/src/skills.ts';
 
+import { getBattleStats, PartyMember } from '~/src/battle.types.ts';
+
 import { MAX_FLOORS } from '~/src/tower.ts';
 
 import * as Schema from '~/db/schema.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
 
-import type { Character, CharacterState } from './types.ts';
+import type { Character } from './types.ts';
 
 type BattleData = { playing: boolean };
 
@@ -31,25 +33,6 @@ const MAX_TIME = 3 * 60 * 1000; // 3 minutes
 function skipBattle(battleId: string): Promise<void> {
   return kv.delete(['active_battle', battleId]);
 }
-
-type PartyMember = {
-  character: Character;
-  state: CharacterState;
-  existing?: Schema.Character;
-};
-
-const getStats = (char: Schema.Character): CharacterState => {
-  return {
-    skills: char.combat?.skills ?? {},
-    //
-    attack: char.combat?.curStats?.attack ?? 0,
-    speed: char.combat?.curStats?.speed ?? 1,
-    //
-    defense: char.combat?.curStats?.defense ?? 1,
-    hp: char.combat?.curStats?.defense ?? 1,
-    maxHP: char.combat?.curStats?.defense ?? 1,
-  };
-};
 
 function challengeTower({ token, guildId, user }: {
   token: string;
@@ -107,7 +90,7 @@ function challengeTower({ token, guildId, user }: {
         throw new NonFetalError(i18n.get('character-disabled', locale));
       }
 
-      const enemyState = tower.createEnemyState(floor, seed);
+      const enemyStats = tower.createEnemyStats(floor, seed);
 
       const enemyCharacter = await tower.getEnemyCharacter(
         floor,
@@ -120,15 +103,21 @@ function challengeTower({ token, guildId, user }: {
         floor,
         token,
         locale,
-        party1: party.map((existing, idx) => ({
-          existing,
-          character: characters[idx],
-          state: getStats(existing),
-        })),
-        party2: [{
-          character: enemyCharacter,
-          state: enemyState,
-        }],
+        party1: party.map((existing, idx) =>
+          new PartyMember({
+            existing,
+            character: characters[idx],
+            stats: getBattleStats(existing),
+            owner: 'party1',
+          })
+        ),
+        party2: [
+          new PartyMember({
+            character: enemyCharacter,
+            stats: enemyStats,
+            owner: 'party2',
+          }),
+        ],
       });
 
       if (winnerId === user.id) {
@@ -239,20 +228,31 @@ async function startCombat(
   }
 
   while (true) {
-    // returns the first alive party member of each party
-    const party1Character = party1.find(({ state }) => state.hp > 0);
-    const party2Character = party2.find(({ state }) => state.hp > 0);
+    const party1Alive = party1.filter((m) => m.alive);
+    const party2Alive = party2.filter((m) => m.alive);
 
     // no one is still alive
-    if (!party1Character || !party2Character) {
+    if (!party1Alive.length || !party2Alive.length) {
       break;
     }
 
+    const party1Character: PartyMember = party1Alive[0];
+    const party2Character: PartyMember = party2Alive[0];
+
+    party1Character
+      .activateSpeedBoost(party1Alive)
+      .activateDefenseBoost(party1Alive);
+
+    party2Character
+      .activateSpeedBoost(party2Alive)
+      .activateDefenseBoost(party2Alive);
+
     const fastestCharacter = determineFastest(party1Character, party2Character);
 
-    const speedDiffPercent =
-      ((party1Character.state.speed - party2Character.state.speed) /
-        party2Character.state.speed) * 100;
+    const speedDiffPercent = calculateSpeedDiffPercent(
+      party1Character,
+      party2Character,
+    );
 
     const extraTurnsBonus = calculateExtraTurns(speedDiffPercent);
 
@@ -265,7 +265,7 @@ async function startCombat(
     for (let i = 0; i < turns.length; i++) {
       const turn = turns[i];
 
-      if (party1Character.state.hp <= 0 || party2Character.state.hp <= 0) {
+      if (!party1Character.alive || !party2Character.alive) {
         break;
       }
 
@@ -294,7 +294,7 @@ async function startCombat(
     }
   }
 
-  const party1Win = party1.some(({ state }) => state.hp > 0);
+  const party1Win = party1.some((m) => m.alive);
 
   battleData?.playing && await utils.sleep(MESSAGE_DELAY);
 
@@ -311,9 +311,24 @@ function determineFastest(
   party1Character: PartyMember,
   party2Character: PartyMember,
 ): 'party1' | 'party2' {
-  return party1Character.state.speed > party2Character.state.speed
-    ? 'party1'
-    : 'party2';
+  return party1Character.speed > party2Character.speed ? 'party1' : 'party2';
+}
+
+function calculateSpeedDiffPercent(
+  party1Character: PartyMember,
+  party2Character: PartyMember,
+): number {
+  let party1Speed = party1Character.speed;
+  let party2Speed = party2Character.speed;
+
+  // swap speeds to get the correct diff from the algorithm
+  if (party2Speed > party1Speed) {
+    const t = party1Speed;
+    party1Speed = party2Speed;
+    party2Speed = t;
+  }
+
+  return ((party1Speed - party2Speed) / party2Speed) * 100;
 }
 
 function calculateExtraTurns(speedDiffPercent: number): number {
@@ -330,14 +345,16 @@ function prepRound(
 ): void {
   message.clearEmbedsAndAttachments(1);
 
-  addEmbed({ message, type: 'normal', character: receiving, locale });
+  const embeds: Parameters<typeof addEmbed>[0][] = [
+    { message, type: 'normal', character: receiving, locale },
+    { message, type: 'attacking', character: attacking, locale },
+  ];
 
-  addEmbed({
-    message,
-    character: attacking,
-    type: 'attacking',
-    locale,
-  });
+  if (receiving.owner === 'party1') {
+    embeds.reverse();
+  }
+
+  embeds.forEach(addEmbed);
 }
 
 function actionRound(
@@ -348,19 +365,16 @@ function actionRound(
     locale: discord.AvailableLocales;
   },
 ): void {
-  let damage = Math.max(
-    attacking.state.attack - receiving.state.defense,
-    0,
-  );
+  let damage = Math.max(attacking.attack - receiving.defense, 1);
 
   let subtitle: string | undefined = undefined;
 
-  if (attacking.state.skills.crit?.level) {
-    const lvl = attacking.state.skills.crit.level;
+  if (attacking.skills.crit?.level) {
+    const lvl = attacking.skills.crit.level;
 
     const { damage: extraDamage } = skills.crit.activation(
-      attacking.state,
-      receiving.state,
+      attacking,
+      receiving,
       lvl,
     );
 
@@ -370,24 +384,27 @@ function actionRound(
     }
   }
 
-  // minimal damage should be 1
-  // avoids looping if both attackers have 0 attack
-  damage = Math.max(damage, 1);
-
-  receiving.state.hp = Math.max(receiving.state.hp - damage, 0);
+  receiving.damage(damage);
 
   message.clearEmbedsAndAttachments(1);
 
-  addEmbed({
-    message,
-    subtitle,
-    character: receiving,
-    type: 'hit',
-    diff: -damage,
-    locale,
-  });
+  const embeds: Parameters<typeof addEmbed>[0][] = [
+    {
+      message,
+      subtitle,
+      type: 'hit',
+      character: receiving,
+      diff: -damage,
+      locale,
+    },
+    { message, type: 'normal', character: attacking, locale },
+  ];
 
-  addEmbed({ message, type: 'normal', character: attacking, locale });
+  if (receiving.owner === 'party1') {
+    embeds.reverse();
+  }
+
+  embeds.forEach(addEmbed);
 }
 
 const addEmbed = ({
@@ -446,11 +463,11 @@ const addEmbed = ({
     )
     .setImage({ url: `attachment://${uuid}.png` })
     .setFooter({
-      text: `${character.state.hp}/${character.state.maxHP}`,
+      text: `${character.hp}/${character.maxHP}`,
     });
 
-  const left = Math.round((character.state.hp / character.state.maxHP) * 100);
-  const _diff = Math.round((Math.abs(diff) / character.state.maxHP) * 100);
+  const left = Math.round((character.hp / character.maxHP) * 100);
+  const _diff = Math.round((Math.abs(diff) / character.maxHP) * 100);
 
   message.addAttachment({
     type: 'image/png',

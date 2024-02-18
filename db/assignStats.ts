@@ -8,9 +8,11 @@ import { skills } from '~/src/skills.ts';
 
 import db, { kv } from '~/db/mod.ts';
 
+import { KvError } from '~/src/errors.ts';
+
 import type * as Schema from '~/db/schema.ts';
 
-import { KvError } from '~/src/errors.ts';
+import type { SkillKey } from '~/src/types.ts';
 
 const newSkills = (rating: number): number => {
   switch (rating) {
@@ -50,13 +52,15 @@ export function unsureInitStats(character: Schema.Character): Schema.Character {
 
   //
 
-  const skillsPool = Object.values(skills);
+  const skillsPool = Object.keys(skills) as SkillKey[];
 
   for (let i = 0; i < slots; i++) {
-    const index = Math.floor(Math.random() * skillsPool.length);
-    const [skill] = skillsPool.splice(index, 1);
+    const randomSkillKey = skillsPool.splice(
+      Math.floor(Math.random() * skillsPool.length),
+      1,
+    )[0];
 
-    character.combat.skills[skill.key] = { level: 1 };
+    character.combat.skills[randomSkillKey] = { level: 1 };
   }
 
   return character;

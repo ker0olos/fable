@@ -31,21 +31,9 @@ Deno.test('all skills', async (test) => {
       try {
         const output = critSkill.activation(
           {
-            hp: 1,
-            maxHP: 1,
             attack: 5,
-            speed: 1,
-            defense: 1,
-            skills: {},
-          },
-          {
-            hp: 1,
-            maxHP: 1,
-            attack: 1,
-            speed: 1,
-            defense: 1,
-            skills: {},
-          },
+          } as any,
+          {} as any,
           1,
         );
 
@@ -63,21 +51,9 @@ Deno.test('all skills', async (test) => {
       try {
         const output = critSkill.activation(
           {
-            hp: 1,
-            maxHP: 1,
             attack: 5,
-            speed: 1,
-            defense: 1,
-            skills: {},
-          },
-          {
-            hp: 1,
-            maxHP: 1,
-            attack: 1,
-            speed: 1,
-            defense: 1,
-            skills: {},
-          },
+          } as any,
+          {} as any,
           1,
         );
 

@@ -3554,10 +3554,20 @@ Deno.test('skills', async (test) => {
       assertEquals(json, {
         type: 8,
         data: {
-          choices: [{
-            name: 'Critical Hit',
-            value: 'crit',
-          }],
+          choices: [
+            {
+              name: 'Critical Hit',
+              value: 'crit',
+            },
+            {
+              name: 'Speed Boost',
+              value: 'speed-boost',
+            },
+            {
+              name: 'Defense Boost',
+              value: 'defense-boost',
+            },
+          ],
         },
       });
     } finally {
@@ -3640,10 +3650,20 @@ Deno.test('skills', async (test) => {
       assertEquals(json, {
         type: 8,
         data: {
-          choices: [{
-            name: 'Critical Hit',
-            value: 'crit',
-          }],
+          choices: [
+            {
+              name: 'Critical Hit',
+              value: 'crit',
+            },
+            {
+              name: 'Speed Boost',
+              value: 'speed-boost',
+            },
+            {
+              name: 'Defense Boost',
+              value: 'defense-boost',
+            },
+          ],
         },
       });
     } finally {

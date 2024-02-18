@@ -21,7 +21,7 @@ import type * as Schema from '~/db/schema.ts';
 import type {
   Character,
   CharacterAdditionalStat,
-  CharacterState,
+  CharacterBattleStats,
   SkillKey,
 } from '~/src/types.ts';
 
@@ -94,17 +94,17 @@ export const getEnemyMaxSkillLevel = (floor: number): number => {
   return Math.max(Math.floor(floor / 5), 1);
 };
 
-export const createEnemyState = (
+export const createEnemyStats = (
   floor: number,
   seed: string,
-): CharacterState => {
+): CharacterBattleStats => {
   const rng = new utils.LehmerRNG(seed);
   const skillRng = new utils.LehmerRNG(seed);
 
   // same as player characters
   const totalStats = 3 * getEnemyRating(floor);
 
-  const _skills: CharacterState['skills'] = {};
+  const _skills: CharacterBattleStats['skills'] = {};
 
   const skillsPool = Object.keys(skills) as SkillKey[];
 
@@ -130,7 +130,7 @@ export const createEnemyState = (
     };
   }
 
-  const state: CharacterState = {
+  const state: CharacterBattleStats = {
     skills: _skills,
     attack: 0,
     defense: 0,
@@ -657,7 +657,7 @@ const tower = {
   onFail,
   onSuccess,
   getEnemyCharacter,
-  createEnemyState,
+  createEnemyStats,
 };
 
 export default tower;

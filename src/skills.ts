@@ -40,6 +40,7 @@ const skills = {
           : undefined,
       };
     },
+    max: 3,
     stats: [{
       key: 'crit-chance',
       scale: [0.5, 5, 15],
@@ -54,6 +55,7 @@ const skills = {
     key: 'speed-boost',
     descKey: 'speed-boost-desc',
     cost: 1,
+    max: Infinity,
     stats: [{
       key: 'boost',
       suffix: '%',
@@ -64,6 +66,7 @@ const skills = {
     key: 'defense-boost',
     descKey: 'defense-boost-desc',
     cost: 1,
+    max: Infinity,
     stats: [{
       key: 'boost',
       suffix: '%',
@@ -229,9 +232,7 @@ function preAcquire(
 
       const existingSkill = existing[0].combat?.skills?.[skillKey];
 
-      const maxed = !!skill.stats?.length ||
-        (skill.stats![0]! as CharacterAdditionalStat).scale!.length <=
-          (existingSkill?.level ?? 1);
+      const maxed = skill.max <= (existingSkill?.level ?? 1);
 
       const formatted = format(skill, locale, {
         maxed,
