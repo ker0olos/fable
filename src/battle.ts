@@ -245,13 +245,15 @@ async function startCombat(
     const party2Character: PartyMember = party2Alive[0];
 
     party1Character
-      .activateSpeedBoost(party1Alive)
+      .activateAttackBoost(party1Alive)
       .activateDefenseBoost(party1Alive)
+      .activateSpeedBoost(party1Alive)
       .activateEnrageBoost();
 
     party2Character
-      .activateSpeedBoost(party2Alive)
+      .activateAttackBoost(party2Alive)
       .activateDefenseBoost(party2Alive)
+      .activateSpeedBoost(party2Alive)
       .activateEnrageBoost();
 
     const fastestCharacter = determineFastest(party1Character, party2Character);

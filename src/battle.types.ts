@@ -40,16 +40,16 @@ export class PartyMember {
     return this.#stats.hp <= this.#stats.maxHP * (percent / 100);
   }
 
-  public get speed(): number {
-    return this.#stats.speed + this.#boost.speed;
+  public get attack(): number {
+    return this.#stats.attack + this.#boost.attack;
   }
 
   public get defense(): number {
     return this.#stats.defense + this.#boost.defense;
   }
 
-  public get attack(): number {
-    return this.#stats.attack + this.#boost.attack;
+  public get speed(): number {
+    return this.#stats.speed + this.#boost.speed;
   }
 
   public get skills(): CharacterBattleStats['skills'] {
@@ -64,17 +64,8 @@ export class PartyMember {
     this.#stats.hp = Math.max(this.#stats.hp - damage, 0);
   }
 
-  public activateSpeedBoost(party: PartyMember[]): PartyMember {
-    const boosts = party
-      .map(({ skills }) => skills.speed)
-      .filter(Boolean) as Schema.AcquiredCharacterSkill[];
-
-    const sorted = boosts.sort((a, b) => b.level - a.level);
-
-    const cur = this.#stats.speed;
-    const boost = (sorted[0]?.level ?? 0) / 100;
-
-    this.#boost.speed = cur * boost;
+  public activateAttackBoost(_party: PartyMember[]): PartyMember {
+    this.#boost.attack = 0;
 
     return this;
   }
@@ -94,6 +85,22 @@ export class PartyMember {
     return this;
   }
 
+  public activateSpeedBoost(party: PartyMember[]): PartyMember {
+    const boosts = party
+      .map(({ skills }) => skills.speed)
+      .filter(Boolean) as Schema.AcquiredCharacterSkill[];
+
+    const sorted = boosts.sort((a, b) => b.level - a.level);
+
+    const cur = this.#stats.speed;
+    const boost = (sorted[0]?.level ?? 0) / 100;
+
+    this.#boost.speed = cur * boost;
+
+    return this;
+  }
+
+  // TODO test
   public activateEnrageBoost(): PartyMember {
     const lvl = this.skills.enrage?.level ?? 0;
 
@@ -104,9 +111,9 @@ export class PartyMember {
       const boost = _boost.scale[lvl - 1] / 100;
 
       if (this.isHpBelowOrEquals(remainingHP)) {
-        this.#boost.attack = this.#stats.attack * boost;
-        this.#boost.defense = this.#stats.defense * boost;
-        this.#boost.speed = this.#stats.speed * boost;
+        this.#boost.attack += this.#stats.attack * boost;
+        this.#boost.defense += this.#stats.defense * boost;
+        this.#boost.speed += this.#stats.speed * boost;
       }
     }
 
