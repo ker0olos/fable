@@ -25,6 +25,8 @@ import { NonFetalError } from '~/src/errors.ts';
 
 import type { Character } from './types.ts';
 
+import type { SkillKey } from '~/src/types.ts';
+
 type BattleData = { playing: boolean };
 
 const MESSAGE_DELAY = 2; // 2 seconds
@@ -227,6 +229,9 @@ async function startCombat(
     );
   }
 
+  const party1UsedSkills: Partial<Record<SkillKey, boolean>> = {};
+  const party2UsedSkills: Partial<Record<SkillKey, boolean>> = {};
+
   while (true) {
     const party1Alive = party1.filter((m) => m.alive);
     const party2Alive = party2.filter((m) => m.alive);
@@ -269,11 +274,19 @@ async function startCombat(
         break;
       }
 
+      // const attackingParty = turn === 'party1' ? party1Alive : party2Alive;
+      const receivingParty = turn === 'party1' ? party2Alive : party1Alive;
+
       const attacking = turn === 'party1' ? party1Character : party2Character;
       const receiving = turn === 'party1' ? party2Character : party1Character;
 
+      const receivingUsedSkills = turn === 'party1'
+        ? party2UsedSkills
+        : party1UsedSkills;
+
       prepRound({
         message,
+        combo: i > 0 && i < turns.length - 1 ? i + 1 : 0,
         attacking,
         receiving,
         locale,
@@ -291,6 +304,47 @@ async function startCombat(
 
       battleData?.playing && await utils.sleep(MESSAGE_DELAY);
       battleData?.playing && await message.patch(token);
+
+      if (
+        receiving.alive &&
+        receiving.isHpBelow(25) &&
+        !receivingUsedSkills.heal
+      ) {
+        const healers = receivingParty
+          .filter((char) => char.skills.heal?.level)
+          .sort((a, b) =>
+            // deno-lint-ignore no-non-null-assertion
+            b.skills.heal!.level - a.skills.heal!.level
+          );
+
+        if (healers.length) {
+          const healer = healers[0];
+
+          const skill = skills.heal.activation(
+            healer,
+            receiving,
+            // deno-lint-ignore no-non-null-assertion
+            healer.skills.heal!.level,
+          );
+
+          receivingUsedSkills.heal = true;
+
+          if (skill.heal) {
+            receiving.heal(skill.heal);
+
+            healRound({
+              message,
+              healing: receiving,
+              receiving: attacking,
+              heal: skill.heal,
+              locale,
+            });
+
+            battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+            battleData?.playing && await message.patch(token);
+          }
+        }
+      }
     }
   }
 
@@ -336,7 +390,8 @@ function calculateExtraTurns(speedDiffPercent: number): number {
 }
 
 function prepRound(
-  { message, attacking, receiving, locale }: {
+  { message, attacking, receiving, combo, locale }: {
+    combo: number;
     message: discord.Message;
     attacking: PartyMember;
     receiving: PartyMember;
@@ -347,7 +402,30 @@ function prepRound(
 
   const embeds: Parameters<typeof addEmbed>[0][] = [
     { message, type: 'normal', character: receiving, locale },
-    { message, type: 'attacking', character: attacking, locale },
+    { message, type: 'attacking', character: attacking, locale, combo },
+  ];
+
+  if (receiving.owner === 'party1') {
+    embeds.reverse();
+  }
+
+  embeds.forEach(addEmbed);
+}
+
+function healRound(
+  { message, healing, receiving, heal, locale }: {
+    message: discord.Message;
+    healing: PartyMember;
+    receiving: PartyMember;
+    heal: number;
+    locale: discord.AvailableLocales;
+  },
+): void {
+  message.clearEmbedsAndAttachments(1);
+
+  const embeds: Parameters<typeof addEmbed>[0][] = [
+    { message, type: 'normal', character: receiving, locale },
+    { message, type: 'heal', character: healing, locale, diff: heal },
   ];
 
   if (receiving.owner === 'party1') {
@@ -408,18 +486,20 @@ function actionRound(
 }
 
 const addEmbed = ({
+  message,
   subtitle,
   character,
-  diff,
   type,
+  diff,
+  combo,
   locale,
-  message,
 }: {
   message: discord.Message;
   subtitle?: string;
   character: PartyMember;
   type: 'normal' | 'attacking' | 'hit' | 'heal';
   diff?: number;
+  combo?: number;
   locale: discord.AvailableLocales;
 }) => {
   diff ??= 0;
@@ -434,6 +514,7 @@ const addEmbed = ({
     case 'attacking':
       embed.setColor('#5D56C7');
       state = i18n.get('attacking', locale);
+      if (combo) state = `${state} x${combo}`;
       break;
     case 'heal':
       embed.setColor('#2BB540');

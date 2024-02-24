@@ -183,6 +183,7 @@ export type CharacterBattleStats = CharacterStats & {
 
 export interface SkillOutput {
   damage?: number;
+  heal?: number;
 }
 
 export interface CharacterSkill {

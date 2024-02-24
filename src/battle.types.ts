@@ -34,6 +34,10 @@ export class PartyMember {
     return this.#stats.maxHP;
   }
 
+  public isHpBelow(percent: number): boolean {
+    return this.#stats.hp <= this.#stats.maxHP * (percent / 100);
+  }
+
   public get speed(): number {
     return this.#stats.speed + this.#boost.speed;
   }
@@ -48,6 +52,10 @@ export class PartyMember {
 
   public get skills(): CharacterBattleStats['skills'] {
     return this.#stats.skills;
+  }
+
+  public heal(heal: number): void {
+    this.#stats.hp = Math.min(this.#stats.hp + heal, this.maxHP);
   }
 
   public damage(damage: number): void {

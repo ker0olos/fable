@@ -34,11 +34,18 @@ const skills = {
 
       const isCrit = Math.random() * 100 <= critChance.scale![lvl - 1];
 
-      return {
-        damage: isCrit
-          ? char.attack * (critDamageMultiplier.scale![lvl - 1] / 100)
-          : undefined,
-      };
+      if (isCrit) {
+        return {
+          damage: Math.max(
+            Math.round(
+              char.attack * (critDamageMultiplier.scale![lvl - 1] / 100),
+            ),
+            1,
+          ),
+        };
+      }
+
+      return {};
     },
     max: 3,
     stats: [{
@@ -71,6 +78,27 @@ const skills = {
       key: 'boost',
       suffix: '%',
       factor: 1,
+    }],
+  },
+  heal: {
+    cost: 2,
+    key: 'heal',
+    descKey: 'heal-desc',
+    activation: function (char, _target, lvl): SkillOutput {
+      const [healPercent] = this.stats!;
+
+      return {
+        heal: Math.max(
+          Math.round(char.maxHP * (healPercent.scale![lvl - 1] / 100)),
+          1,
+        ),
+      };
+    },
+    max: 3,
+    stats: [{
+      key: 'heal-amount',
+      scale: [5, 15, 25],
+      suffix: '%',
     }],
   },
 } satisfies Record<string, CharacterSkill>;

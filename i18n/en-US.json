@@ -371,5 +371,9 @@
   "speed-boost": "Speed Boost",
   "speed-boost-desc": "Boost the speed of all party members (Not stackable)",
   "defense-boost": "Defense Boost",
-  "defense-boost-desc": "Boost the defense of all party members (Not stackable)"
+  "defense-boost-desc": "Boost the defense of all party members (Not stackable)",
+
+  "heal": "Emergency Healing",
+  "heal-desc": "Once per battle, once a party member HP drops to below 25%, heal them by n% of the caster's max HP (Not stackable)",
+  "heal-amount": "Heal by"
 }
