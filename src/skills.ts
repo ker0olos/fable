@@ -80,6 +80,21 @@ const skills = {
       factor: 1,
     }],
   },
+  enrage: {
+    cost: 2,
+    key: 'enrage',
+    descKey: 'enrage-desc',
+    max: 3,
+    stats: [{
+      key: 'hp-remaining',
+      scale: [5, 15, 25],
+      suffix: '%',
+    }, {
+      key: 'boost',
+      scale: [15, 25, 50],
+      suffix: '%',
+    }],
+  },
   heal: {
     cost: 2,
     key: 'heal',

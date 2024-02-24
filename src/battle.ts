@@ -246,11 +246,13 @@ async function startCombat(
 
     party1Character
       .activateSpeedBoost(party1Alive)
-      .activateDefenseBoost(party1Alive);
+      .activateDefenseBoost(party1Alive)
+      .activateEnrageBoost();
 
     party2Character
       .activateSpeedBoost(party2Alive)
-      .activateDefenseBoost(party2Alive);
+      .activateDefenseBoost(party2Alive)
+      .activateEnrageBoost();
 
     const fastestCharacter = determineFastest(party1Character, party2Character);
 
@@ -307,7 +309,7 @@ async function startCombat(
 
       if (
         receiving.alive &&
-        receiving.isHpBelow(25) &&
+        receiving.isHpBelowOrEquals(25) &&
         !receivingUsedSkills.heal
       ) {
         const healers = receivingParty

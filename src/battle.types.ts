@@ -1,4 +1,6 @@
-import * as Schema from '~/db/schema.ts';
+import { skills } from '~/src/skills.ts';
+
+import type * as Schema from '~/db/schema.ts';
 
 import type { Character, CharacterBattleStats } from './types.ts';
 
@@ -34,7 +36,7 @@ export class PartyMember {
     return this.#stats.maxHP;
   }
 
-  public isHpBelow(percent: number): boolean {
+  public isHpBelowOrEquals(percent: number): boolean {
     return this.#stats.hp <= this.#stats.maxHP * (percent / 100);
   }
 
@@ -47,7 +49,7 @@ export class PartyMember {
   }
 
   public get attack(): number {
-    return this.#stats.attack;
+    return this.#stats.attack + this.#boost.attack;
   }
 
   public get skills(): CharacterBattleStats['skills'] {
@@ -70,9 +72,9 @@ export class PartyMember {
     const sorted = boosts.sort((a, b) => b.level - a.level);
 
     const cur = this.#stats.speed;
-    const boost = sorted[0]?.level ?? 0;
+    const boost = (sorted[0]?.level ?? 0) / 100;
 
-    this.#boost.speed = cur + (cur * boost);
+    this.#boost.speed = cur * boost;
 
     return this;
   }
@@ -85,9 +87,28 @@ export class PartyMember {
     const sorted = boosts.sort((a, b) => b.level - a.level);
 
     const cur = this.#stats.defense;
-    const boost = sorted[0]?.level ?? 0;
+    const boost = (sorted[0]?.level ?? 0) / 100;
 
-    this.#boost.defense = cur + (cur * boost);
+    this.#boost.defense = cur * boost;
+
+    return this;
+  }
+
+  public activateEnrageBoost(): PartyMember {
+    const lvl = this.skills.enrage?.level ?? 0;
+
+    if (lvl > 0) {
+      const [_remainingHP, _boost] = skills.enrage.stats;
+
+      const remainingHP = _remainingHP.scale[lvl - 1];
+      const boost = _boost.scale[lvl - 1] / 100;
+
+      if (this.isHpBelowOrEquals(remainingHP)) {
+        this.#boost.attack = this.#stats.attack * boost;
+        this.#boost.defense = this.#stats.defense * boost;
+        this.#boost.speed = this.#stats.speed * boost;
+      }
+    }
 
     return this;
   }
