@@ -1,0 +1,61 @@
+export const snapshot = {};
+
+snapshot[`skills > acquire 1`] = `
+{
+  "type": 8,
+  "data": {
+    "choices": [
+      {
+        "name": "Critical Hit",
+        "value": "crit"
+      },
+      {
+        "name": "Enraged",
+        "value": "enrage"
+      },
+      {
+        "name": "Speed Boost",
+        "value": "speed-boost"
+      },
+      {
+        "name": "Defense Boost",
+        "value": "defense-boost"
+      },
+      {
+        "name": "Emergency Healing",
+        "value": "heal"
+      }
+    ]
+  }
+}
+`;
+
+snapshot[`skills > upgrade 1`] = `
+{
+  "type": 8,
+  "data": {
+    "choices": [
+      {
+        "name": "Critical Hit",
+        "value": "crit"
+      },
+      {
+        "name": "Enraged",
+        "value": "enrage"
+      },
+      {
+        "name": "Speed Boost",
+        "value": "speed-boost"
+      },
+      {
+        "name": "Defense Boost",
+        "value": "defense-boost"
+      },
+      {
+        "name": "Emergency Healing",
+        "value": "heal"
+      }
+    ]
+  }
+}
+`;

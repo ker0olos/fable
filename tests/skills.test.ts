@@ -37,7 +37,7 @@ Deno.test('all skills', async (test) => {
           1,
         );
 
-        assertEquals(output.damage, 5 * 0.3);
+        assertEquals(output.damage, 2);
       } finally {
         randomStub.restore();
       }

@@ -53,6 +53,49 @@ snapshot[`all skills > snapshot 1`] = `
         "factor": 1
       }
     ]
+  },
+  "enrage": {
+    "cost": 2,
+    "key": "enrage",
+    "descKey": "enrage-desc",
+    "max": 3,
+    "stats": [
+      {
+        "key": "hp-remaining",
+        "scale": [
+          5,
+          15,
+          25
+        ],
+        "suffix": "%"
+      },
+      {
+        "key": "boost",
+        "scale": [
+          15,
+          25,
+          50
+        ],
+        "suffix": "%"
+      }
+    ]
+  },
+  "heal": {
+    "cost": 2,
+    "key": "heal",
+    "descKey": "heal-desc",
+    "max": 3,
+    "stats": [
+      {
+        "key": "heal-amount",
+        "scale": [
+          5,
+          15,
+          25
+        ],
+        "suffix": "%"
+      }
+    ]
   }
 }
 `;
@@ -74,14 +117,14 @@ snapshot[`/skills showall > page 0 1`] = `
         "components": [
           {
             "type": 2,
-            "custom_id": "skills==0=prev",
+            "custom_id": "skills==1=prev",
             "label": "Prev",
             "style": 2
           },
           {
             "type": 2,
             "custom_id": "_",
-            "label": "1/1",
+            "label": "1/2",
             "disabled": true,
             "style": 2
           },
