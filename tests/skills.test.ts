@@ -31,10 +31,11 @@ Deno.test('all skills', async (test) => {
       try {
         const output = critSkill.activation(
           {
-            attack: 5,
-          } as any,
-          {} as any,
-          1,
+            attacking: {
+              attack: 5,
+            } as any,
+            lvl: 1,
+          },
         );
 
         assertEquals(output.damage, 2);
@@ -51,10 +52,11 @@ Deno.test('all skills', async (test) => {
       try {
         const output = critSkill.activation(
           {
-            attack: 5,
-          } as any,
-          {} as any,
-          1,
+            attacking: {
+              attack: 5,
+            } as any,
+            lvl: 1,
+          },
         );
 
         assertEquals(output.damage, undefined);

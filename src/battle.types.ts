@@ -2,7 +2,7 @@ import { skills } from '~/src/skills.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type { Character, CharacterBattleStats } from './types.ts';
+import type { Character, CharacterBattleStats, StatusEffect } from './types.ts';
 
 export class PartyMember {
   character: Character;
@@ -10,6 +10,9 @@ export class PartyMember {
   #boost: Schema.CharacterStats;
   existing?: Schema.Character;
   owner: 'party1' | 'party2';
+  effects: {
+    enraged?: StatusEffect;
+  };
 
   constructor({ character, stats, existing, owner }: {
     character: Character;
@@ -22,6 +25,7 @@ export class PartyMember {
     this.#boost = { attack: 0, defense: 0, speed: 0 };
     this.existing = existing;
     this.owner = owner;
+    this.effects = {};
   }
 
   public get alive(): boolean {
@@ -100,7 +104,6 @@ export class PartyMember {
     return this;
   }
 
-  // TODO test
   public activateEnrageBoost(): PartyMember {
     const lvl = this.skills.enrage?.level ?? 0;
 
@@ -114,6 +117,7 @@ export class PartyMember {
         this.#boost.attack += this.#stats.attack * boost;
         this.#boost.defense += this.#stats.defense * boost;
         this.#boost.speed += this.#stats.speed * boost;
+        this.effects.enraged = { active: true };
       }
     }
 

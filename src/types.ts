@@ -181,6 +181,10 @@ export type CharacterBattleStats = CharacterStats & {
   maxHP: number;
 };
 
+export interface StatusEffect {
+  active: boolean;
+}
+
 export interface SkillOutput {
   damage?: number;
   heal?: number;
@@ -194,9 +198,12 @@ export interface CharacterSkill {
   cost: number;
 
   activation?: (
-    attacking: PartyMember,
-    receiving: PartyMember,
-    lvl: number,
+    args: {
+      lvl: number;
+      attacking: PartyMember;
+      receiving?: PartyMember;
+      damage?: number;
+    },
   ) => SkillOutput;
 
   stats?: CharacterAdditionalStat[];

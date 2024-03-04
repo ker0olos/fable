@@ -14,6 +14,10 @@ snapshot[`skills > acquire 1`] = `
         "value": "enrage"
       },
       {
+        "name": "Lifesteal",
+        "value": "lifesteal"
+      },
+      {
         "name": "Speed Boost",
         "value": "speed-boost"
       },
@@ -42,6 +46,10 @@ snapshot[`skills > upgrade 1`] = `
       {
         "name": "Enraged",
         "value": "enrage"
+      },
+      {
+        "name": "Lifesteal",
+        "value": "lifesteal"
       },
       {
         "name": "Speed Boost",

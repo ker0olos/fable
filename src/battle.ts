@@ -28,6 +28,7 @@ import type { Character } from './types.ts';
 import type { SkillKey } from '~/src/types.ts';
 
 type BattleData = { playing: boolean };
+type UsedSkills = Partial<Record<SkillKey, boolean>>;
 
 const MESSAGE_DELAY = 2; // 2 seconds
 const MAX_TIME = 3 * 60 * 1000; // 3 minutes
@@ -310,44 +311,17 @@ async function startCombat(
       battleData?.playing && await message.patch(token);
 
       if (
-        receiving.alive &&
-        receiving.isHpBelowOrEquals(25) &&
-        !receivingUsedSkills.heal
+        healRound({
+          message,
+          healing: receiving,
+          receiving: attacking,
+          receivingUsedSkills,
+          receivingParty,
+          locale,
+        })
       ) {
-        const healers = receivingParty
-          .filter((char) => char.skills.heal?.level)
-          .sort((a, b) =>
-            // deno-lint-ignore no-non-null-assertion
-            b.skills.heal!.level - a.skills.heal!.level
-          );
-
-        if (healers.length) {
-          const healer = healers[0];
-
-          const skill = skills.heal.activation(
-            healer,
-            receiving,
-            // deno-lint-ignore no-non-null-assertion
-            healer.skills.heal!.level,
-          );
-
-          receivingUsedSkills.heal = true;
-
-          if (skill.heal) {
-            receiving.heal(skill.heal);
-
-            healRound({
-              message,
-              healing: receiving,
-              receiving: attacking,
-              heal: skill.heal,
-              locale,
-            });
-
-            battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-            battleData?.playing && await message.patch(token);
-          }
-        }
+        battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+        battleData?.playing && await message.patch(token);
       }
     }
   }
@@ -417,26 +391,67 @@ function prepRound(
 }
 
 function healRound(
-  { message, healing, receiving, heal, locale }: {
-    message: discord.Message;
-    healing: PartyMember;
-    receiving: PartyMember;
-    heal: number;
-    locale: discord.AvailableLocales;
-  },
-): void {
-  message.clearEmbedsAndAttachments(1);
+  { message, healing, receiving, receivingParty, receivingUsedSkills, locale }:
+    {
+      message: discord.Message;
+      healing: PartyMember;
+      receiving: PartyMember;
+      receivingParty: PartyMember[];
+      receivingUsedSkills: UsedSkills;
+      locale: discord.AvailableLocales;
+    },
+): boolean {
+  if (
+    receiving.alive &&
+    receiving.isHpBelowOrEquals(25) &&
+    !receivingUsedSkills.heal
+  ) {
+    const healers = receivingParty
+      .filter((char) => char.skills.heal?.level)
+      .sort((a, b) =>
+        // deno-lint-ignore no-non-null-assertion
+        b.skills.heal!.level - a.skills.heal!.level
+      );
 
-  const embeds: Parameters<typeof addEmbed>[0][] = [
-    { message, type: 'normal', character: receiving, locale },
-    { message, type: 'heal', character: healing, locale, diff: heal },
-  ];
+    if (healers.length) {
+      const healer = healers[0];
 
-  if (receiving.owner === 'party1') {
-    embeds.reverse();
+      const skill = skills.heal.activation({
+        attacking: healer,
+        // deno-lint-ignore no-non-null-assertion
+        lvl: healer.skills.heal!.level,
+      });
+
+      receivingUsedSkills.heal = true;
+
+      if (skill.heal) {
+        receiving.heal(skill.heal);
+
+        message.clearEmbedsAndAttachments(1);
+
+        const embeds: Parameters<typeof addEmbed>[0][] = [
+          { message, type: 'normal', character: receiving, locale },
+          {
+            message,
+            type: 'heal',
+            character: healing,
+            locale,
+            diff: skill.heal,
+          },
+        ];
+
+        if (receiving.owner === 'party1') {
+          embeds.reverse();
+        }
+
+        embeds.forEach(addEmbed);
+
+        return true;
+      }
+    }
   }
 
-  embeds.forEach(addEmbed);
+  return false;
 }
 
 function actionRound(
@@ -454,11 +469,7 @@ function actionRound(
   if (attacking.skills.crit?.level) {
     const lvl = attacking.skills.crit.level;
 
-    const { damage: extraDamage } = skills.crit.activation(
-      attacking,
-      receiving,
-      lvl,
-    );
+    const { damage: extraDamage } = skills.crit.activation({ attacking, lvl });
 
     if (extraDamage) {
       damage += extraDamage;
@@ -467,6 +478,24 @@ function actionRound(
   }
 
   receiving.damage(damage);
+
+  let heal = 0;
+
+  attacking.skills.lifesteal = {
+    level: 1,
+  };
+
+  if (attacking.skills.lifesteal?.level) {
+    const skill = skills.lifesteal.activation({
+      attacking,
+      lvl: attacking.skills.lifesteal.level,
+      damage,
+    });
+
+    if (skill.heal) {
+      attacking.heal(heal = skill.heal);
+    }
+  }
 
   message.clearEmbedsAndAttachments(1);
 
@@ -479,7 +508,13 @@ function actionRound(
       diff: -damage,
       locale,
     },
-    { message, type: 'normal', character: attacking, locale },
+    {
+      message,
+      type: heal > 0 ? 'heal' : 'normal',
+      diff: heal || undefined,
+      character: attacking,
+      locale,
+    },
   ];
 
   if (receiving.owner === 'party1') {
@@ -509,6 +544,7 @@ const addEmbed = ({
   diff ??= 0;
 
   let state = discord.empty;
+  let statusEffects = '';
 
   const embed = new discord.Embed();
 
@@ -532,6 +568,10 @@ const addEmbed = ({
       break;
   }
 
+  if (character.effects.enraged?.active) {
+    statusEffects += discord.emotes.enraged;
+  }
+
   embed
     .setThumbnail({
       url: character.existing?.image ?? character.character.images?.[0]?.url,
@@ -541,7 +581,7 @@ const addEmbed = ({
         `## ${
           character?.existing?.nickname ??
             packs.aliasToArray(character.character.name)[0]
-        }`,
+        }${statusEffects}`,
         state,
         subtitle ? `*${subtitle}*` : undefined,
       ].filter(Boolean).join('\n'),

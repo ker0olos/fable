@@ -96,6 +96,23 @@ snapshot[`all skills > snapshot 1`] = `
         "suffix": "%"
       }
     ]
+  },
+  "lifesteal": {
+    "cost": 2,
+    "key": "lifesteal",
+    "descKey": "lifesteal-desc",
+    "max": 3,
+    "stats": [
+      {
+        "key": "lifesteal-amount",
+        "scale": [
+          10,
+          25,
+          50
+        ],
+        "suffix": "%"
+      }
+    ]
   }
 }
 `;

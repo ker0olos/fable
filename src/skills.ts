@@ -29,7 +29,10 @@ const skills = {
     cost: 2,
     key: 'crit',
     descKey: 'crit-desc',
-    activation: function (char, _target, lvl): SkillOutput {
+    activation: function ({
+      lvl,
+      attacking: char,
+    }): SkillOutput {
       const [critChance, critDamageMultiplier] = this.stats!;
 
       const isCrit = Math.random() * 100 <= critChance.scale![lvl - 1];
@@ -99,7 +102,10 @@ const skills = {
     cost: 2,
     key: 'heal',
     descKey: 'heal-desc',
-    activation: function (char, _target, lvl): SkillOutput {
+    activation: function ({
+      lvl,
+      attacking: char,
+    }): SkillOutput {
       const [healPercent] = this.stats!;
 
       return {
@@ -113,6 +119,28 @@ const skills = {
     stats: [{
       key: 'heal-amount',
       scale: [5, 15, 25],
+      suffix: '%',
+    }],
+  },
+  lifesteal: {
+    cost: 2,
+    key: 'lifesteal',
+    descKey: 'lifesteal-desc',
+    activation: function ({ attacking, lvl, damage }): SkillOutput {
+      const [stealPercent] = this.stats!;
+
+      const missing = attacking.maxHP - attacking.hp;
+
+      const heal = Math.round(damage! * (stealPercent.scale![lvl - 1] / 100));
+
+      return {
+        heal: Math.min(heal, missing),
+      };
+    },
+    max: 3,
+    stats: [{
+      key: 'lifesteal-amount',
+      scale: [10, 25, 50],
       suffix: '%',
     }],
   },

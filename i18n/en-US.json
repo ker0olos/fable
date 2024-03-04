@@ -380,5 +380,9 @@
 
   "heal": "Emergency Healing",
   "heal-desc": "Once per battle, once a party member HP drops to below 25%, heal them by n% of the caster's max HP (Not stackable)",
-  "heal-amount": "Heal by"
+  "heal-amount": "Heal by",
+
+  "lifesteal": "Lifesteal",
+  "lifesteal-desc": "Every time you damage an enemy heal a portion of the damage you dealt",
+  "lifesteal-amount": "Heal By of Damage"
 }

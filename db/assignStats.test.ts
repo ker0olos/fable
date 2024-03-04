@@ -146,7 +146,7 @@ Deno.test('initStats', async (test) => {
       });
 
       assertEquals(result.character.combat?.skills, {
-        defense: { level: 1 },
+        enrage: { level: 1 },
       });
     } finally {
       getValueAndTimestampStub.restore();
@@ -185,7 +185,7 @@ Deno.test('initStats', async (test) => {
       });
 
       assertEquals(result.character.combat?.skills, {
-        defense: { level: 1 },
+        enrage: { level: 1 },
       });
     } finally {
       getValueAndTimestampStub.restore();
