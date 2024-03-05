@@ -29,6 +29,7 @@
     "./db",
     "./tests",
     "./update_commands.ts",
+    "./upload_emote.ts",
     "./update_commands.test.ts",
     "./update_topgg_stats.ts",
     "./setup.ts"
