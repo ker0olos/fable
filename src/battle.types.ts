@@ -12,6 +12,7 @@ export class PartyMember {
   owner: 'party1' | 'party2';
   effects: {
     enraged?: StatusEffect;
+    stunned?: StatusEffect;
   };
 
   constructor({ character, stats, existing, owner }: {

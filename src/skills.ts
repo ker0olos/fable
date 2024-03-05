@@ -35,7 +35,8 @@ const skills = {
     }): SkillOutput {
       const [critChance, critDamageMultiplier] = this.stats!;
 
-      const isCrit = Math.random() * 100 <= critChance.scale![lvl - 1];
+      const rng = Math.random() * 100;
+      const isCrit = rng <= critChance.scale![lvl - 1];
 
       if (isCrit) {
         return {
@@ -141,6 +142,27 @@ const skills = {
     stats: [{
       key: 'lifesteal-amount',
       scale: [10, 25, 50],
+      suffix: '%',
+    }],
+  },
+  stun: {
+    cost: 2,
+    key: 'stun',
+    descKey: 'stun-desc',
+    max: 3,
+    activation: function ({ lvl }): SkillOutput {
+      const [stunChance] = this.stats!;
+
+      const rng = Math.random() * 100;
+      const isStunned = rng <= stunChance.scale![lvl - 1];
+
+      return {
+        stun: isStunned,
+      };
+    },
+    stats: [{
+      key: 'stun-chance',
+      scale: [5, 15, 80],
       suffix: '%',
     }],
   },

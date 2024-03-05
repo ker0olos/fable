@@ -384,5 +384,10 @@
 
   "lifesteal": "Lifesteal",
   "lifesteal-desc": "Every time you damage an enemy heal a portion of the damage you dealt",
-  "lifesteal-amount": "Heal By of Damage"
+  "lifesteal-amount": "Heal By of Damage",
+
+  "stun": "Stun",
+  "stunned": "Stunned",
+  "stun-desc": "Adds a chance to stun the enemy skipping their next turn",
+  "stun-chance": "Stun Chance"
 }

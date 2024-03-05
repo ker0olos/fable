@@ -10,6 +10,10 @@ snapshot[`skills > acquire 1`] = `
         "value": "crit"
       },
       {
+        "name": "Stun",
+        "value": "stun"
+      },
+      {
         "name": "Enraged",
         "value": "enrage"
       },
@@ -42,6 +46,10 @@ snapshot[`skills > upgrade 1`] = `
       {
         "name": "Critical Hit",
         "value": "crit"
+      },
+      {
+        "name": "Stun",
+        "value": "stun"
       },
       {
         "name": "Enraged",

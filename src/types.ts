@@ -188,6 +188,7 @@ export interface StatusEffect {
 export interface SkillOutput {
   damage?: number;
   heal?: number;
+  stun?: boolean;
 }
 
 export interface CharacterSkill {

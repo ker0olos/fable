@@ -27,6 +27,8 @@ import type { Character } from './types.ts';
 
 import type { SkillKey } from '~/src/types.ts';
 
+import type { StatusEffect } from '~/src/types.ts';
+
 type BattleData = { playing: boolean };
 type UsedSkills = Partial<Record<SkillKey, boolean>>;
 
@@ -289,18 +291,17 @@ async function startCombat(
         ? party2UsedSkills
         : party1UsedSkills;
 
+      const { stunned } = attacking.effects;
+
+      const combo = i > 0 && i < turns.length - 1 ? i + 1 : 0;
+
+      // skip extra turns if character is stunned
+      if (stunned?.active && combo > 1) {
+        continue;
+      }
+
       prepRound({
-        message,
-        combo: i > 0 && i < turns.length - 1 ? i + 1 : 0,
-        attacking,
-        receiving,
-        locale,
-      });
-
-      battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-      battleData?.playing && await message.patch(token);
-
-      actionRound({
+        combo,
         message,
         attacking,
         receiving,
@@ -309,6 +310,21 @@ async function startCombat(
 
       battleData?.playing && await utils.sleep(MESSAGE_DELAY);
       battleData?.playing && await message.patch(token);
+
+      // if stunned skip attack and cancel the stun
+      if (stunned?.active) {
+        stunned.active = false;
+      } else {
+        actionRound({
+          message,
+          attacking,
+          receiving,
+          locale,
+        });
+
+        battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+        battleData?.playing && await message.patch(token);
+      }
 
       if (
         healRound({
@@ -376,11 +392,19 @@ function prepRound(
     locale: discord.AvailableLocales;
   },
 ): void {
+  const { stunned } = attacking.effects;
+
   message.clearEmbedsAndAttachments(1);
 
   const embeds: Parameters<typeof addEmbed>[0][] = [
     { message, type: 'normal', character: receiving, locale },
-    { message, type: 'attacking', character: attacking, locale, combo },
+    {
+      message,
+      type: stunned?.active ? 'stunned' : 'attacking',
+      character: attacking,
+      locale,
+      combo,
+    },
   ];
 
   if (receiving.owner === 'party1') {
@@ -477,6 +501,16 @@ function actionRound(
     }
   }
 
+  if (attacking.skills.stun?.level) {
+    const lvl = attacking.skills.stun.level;
+
+    const { stun } = skills.stun.activation({ attacking, lvl });
+
+    if (stun) {
+      receiving.effects.stunned = { active: true };
+    }
+  }
+
   receiving.damage(damage);
 
   let heal = 0;
@@ -536,7 +570,7 @@ const addEmbed = ({
   message: discord.Message;
   subtitle?: string;
   character: PartyMember;
-  type: 'normal' | 'attacking' | 'hit' | 'heal';
+  type: 'normal' | 'attacking' | 'hit' | 'heal' | 'stunned';
   diff?: number;
   combo?: number;
   locale: discord.AvailableLocales;
@@ -544,13 +578,17 @@ const addEmbed = ({
   diff ??= 0;
 
   let state = discord.empty;
-  let statusEffects = '';
+  let statusEmotes = '';
 
   const embed = new discord.Embed();
 
   const uuid = crypto.randomUUID();
 
   switch (type) {
+    case 'stunned':
+      embed.setColor('#FEB500');
+      state = i18n.get('stunned', locale);
+      break;
     case 'attacking':
       embed.setColor('#5D56C7');
       state = i18n.get('attacking', locale);
@@ -568,9 +606,14 @@ const addEmbed = ({
       break;
   }
 
-  if (character.effects.enraged?.active) {
-    statusEffects += discord.emotes.enraged;
-  }
+  const effects = Object.entries(character.effects) as [
+    keyof typeof character.effects,
+    StatusEffect | undefined,
+  ][];
+
+  effects.forEach(([name, value]) => {
+    if (value?.active) statusEmotes += discord.emotes[name];
+  });
 
   embed
     .setThumbnail({
@@ -581,7 +624,7 @@ const addEmbed = ({
         `## ${
           character?.existing?.nickname ??
             packs.aliasToArray(character.character.name)[0]
-        }${statusEffects}`,
+        }${statusEmotes}`,
         state,
         subtitle ? `*${subtitle}*` : undefined,
       ].filter(Boolean).join('\n'),

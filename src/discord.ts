@@ -66,6 +66,7 @@ export const emotes = {
   undiscoveredFloor: '<:undiscoveredfloor:1128724910609551481>',
   rightArrow: '<:rarrow:1170533290105655428>',
   enraged: '<:ENRAGED:1214241073518481428>',
+  stunned: '<:STUNNED:1214576287415541814>',
 };
 
 export const join = (...args: string[]): string => {
