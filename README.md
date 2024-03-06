@@ -119,17 +119,6 @@ Fable to install, wanna start creating your own pack? Visit
 
 ### FAQ
 
-<details><summary>Fable didn't join my server?</summary>
-<p>
-
-Please note that Fable won't show up in your members' list, After adding Fable
-go back to your server and call `/help` to confirm Fable is working.
-
-This is because Fable is an "app" not a "bot user".
-
-</p>
-</details>
-
 <details><summary>How can I limit Fable to 1 channel?</summary>
 <p>
 
