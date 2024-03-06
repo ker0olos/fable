@@ -56,6 +56,7 @@ Deno.test('/now', async (test) => {
             stealTimestamp: null,
             rechargeTimestamp: null,
           },
+          user: {},
         }) as any,
     );
 
@@ -162,6 +163,7 @@ Deno.test('/now', async (test) => {
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
           },
+          user: {},
         }) as any,
     );
 
@@ -257,6 +259,7 @@ Deno.test('/now', async (test) => {
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
           },
+          user: {},
         }) as any,
     );
 
@@ -355,6 +358,7 @@ Deno.test('/now', async (test) => {
             availableSweeps: 5,
             lastSweep: new Date().toISOString(),
           },
+          user: {},
         }) as any,
     );
 
@@ -477,6 +481,7 @@ Deno.test('/now', async (test) => {
             sweepsTimestamp: time.toISOString(),
             lastSweep: new Date().toISOString(),
           },
+          user: {},
         }) as any,
     );
 
@@ -555,10 +560,7 @@ Deno.test('/now', async (test) => {
     const getUserStub = stub(
       db,
       'getUser',
-      () =>
-        ({
-          availableTokens: 1,
-        }) as any,
+      () => 'user' as any,
     );
 
     const getGuildStub = stub(
@@ -582,6 +584,9 @@ Deno.test('/now', async (test) => {
             availablePulls: 0,
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
+          },
+          user: {
+            availableTokens: 1,
           },
         }) as any,
     );
@@ -655,10 +660,7 @@ Deno.test('/now', async (test) => {
     const getUserStub = stub(
       db,
       'getUser',
-      () =>
-        ({
-          availableTokens: 4,
-        }) as any,
+      () => 'user' as any,
     );
 
     const getGuildStub = stub(
@@ -682,6 +684,9 @@ Deno.test('/now', async (test) => {
             availablePulls: 0,
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
+          },
+          user: {
+            availableTokens: 4,
           },
         }) as any,
     );
@@ -754,10 +759,7 @@ Deno.test('/now', async (test) => {
     const getUserStub = stub(
       db,
       'getUser',
-      () =>
-        ({
-          availableTokens: 28,
-        }) as any,
+      () => 'user' as any,
     );
 
     const getGuildStub = stub(
@@ -782,6 +784,7 @@ Deno.test('/now', async (test) => {
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
           },
+          user: { availableTokens: 28 },
         }) as any,
     );
 
@@ -870,10 +873,7 @@ Deno.test('/now', async (test) => {
     const getUserStub = stub(
       db,
       'getUser',
-      () =>
-        ({
-          availableTokens: 27,
-        }) as any,
+      () => 'user' as any,
     );
 
     const getGuildStub = stub(
@@ -898,6 +898,7 @@ Deno.test('/now', async (test) => {
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
           },
+          user: { availableTokens: 27 },
         }) as any,
     );
 
@@ -986,11 +987,7 @@ Deno.test('/now', async (test) => {
     const getUserStub = stub(
       db,
       'getUser',
-      () =>
-        ({
-          availableTokens: 5,
-          guarantees: [5, 5, 4, 4, 3],
-        }) as any,
+      () => 'user' as any,
     );
 
     const getGuildStub = stub(
@@ -1014,6 +1011,10 @@ Deno.test('/now', async (test) => {
             availablePulls: 4,
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
+          },
+          user: {
+            availableTokens: 5,
+            guarantees: [5, 5, 4, 4, 3],
           },
         }) as any,
     );
@@ -1133,6 +1134,7 @@ Deno.test('/now', async (test) => {
             stealTimestamp: timestamp,
             rechargeTimestamp: null,
           },
+          user: {},
         }) as any,
     );
 
@@ -1243,6 +1245,7 @@ Deno.test('/now', async (test) => {
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
           },
+          user: {},
         }) as any,
     );
 

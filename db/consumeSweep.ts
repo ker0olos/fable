@@ -1,4 +1,4 @@
-import { inventoriesByUser, usersByDiscordId } from '~/db/indices.ts';
+import { inventoriesByUser } from '~/db/indices.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
