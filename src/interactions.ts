@@ -1350,7 +1350,7 @@ if (import.meta.main) {
     }),
     '/invite': () =>
       Response.redirect(
-        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
+        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
       ),
     '/robots.txt': () => {
       return new Response(
