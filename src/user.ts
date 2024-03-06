@@ -54,7 +54,7 @@ async function now({
     lastSweep,
   } = inventory;
 
-  const { dailyTimestamp } = user;
+  const { dailyTimestamp, availableTokens } = user;
 
   const message = new discord.Message();
 
@@ -95,12 +95,12 @@ async function now({
     );
   }
 
-  if (user.availableTokens) {
+  if (availableTokens) {
     message.addEmbed(
       new discord.Embed()
-        .setTitle(`**${user.availableTokens}**`)
+        .setTitle(`**${availableTokens}**`)
         .setFooter({
-          text: user.availableTokens === 1
+          text: availableTokens === 1
             ? i18n.get('daily-token', locale)
             : i18n.get('daily-tokens', locale),
         }),

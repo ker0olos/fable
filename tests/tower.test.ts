@@ -1184,6 +1184,7 @@ Deno.test('/sweep', async (test) => {
       'rechargeConsumables',
       () =>
         ({
+          user: {},
           inventory: {
             floorsCleared: 1,
           },
@@ -1455,6 +1456,7 @@ Deno.test('/sweep', async (test) => {
           inventory: {
             floorsCleared: 1,
           },
+          user: {},
         }) as any,
     );
 
@@ -1527,7 +1529,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = tower.sweep({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1731,6 +1733,7 @@ Deno.test('/sweep', async (test) => {
       'rechargeConsumables',
       () =>
         ({
+          user: {},
           inventory: {
             floorsCleared: 1,
           },
@@ -1996,6 +1999,7 @@ Deno.test('/sweep', async (test) => {
       'rechargeConsumables',
       () =>
         ({
+          user: {},
           inventory: {
             availableSweeps: 0,
             sweepsTimestamp: date.toISOString(),
@@ -2064,7 +2068,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = tower.sweep({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
