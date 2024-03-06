@@ -477,7 +477,7 @@ export const commands = [
   ...Command({
     name: 'now',
     description: '/now',
-    aliases: ['vote', 'tu'],
+    aliases: ['tu'],
   }),
   ...Command({
     name: 'q',

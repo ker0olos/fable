@@ -240,39 +240,6 @@ Deno.test('recharge timestamps', () => {
   );
 });
 
-Deno.test('voting timestamps', async (test) => {
-  await test.step('cannot vote', () => {
-    const now = new Date();
-
-    const expected = new Date().setHours(now.getHours() + 12).toString();
-
-    const _ = utils.votingTimestamp(now.toISOString());
-
-    assertEquals(
-      _.timeLeft,
-      expected.substring(0, expected.length - 3),
-    );
-
-    assertEquals(
-      _.canVote,
-      false,
-    );
-  });
-
-  await test.step('can vote', () => {
-    const past = new Date();
-
-    past.setHours(new Date().getHours() - 12).toString();
-
-    const _ = utils.votingTimestamp(past.toISOString());
-
-    assertEquals(
-      _.canVote,
-      true,
-    );
-  });
-});
-
 Deno.test('diff days', async (test) => {
   await test.step('23 hours', () => {
     const a = new Date();

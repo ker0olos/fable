@@ -20,13 +20,13 @@ import _skills, { skills } from '~/src/skills.ts';
 
 import merge from '~/src/merge.ts';
 
-import * as webhooks from '~/src/webhooks.ts';
 import * as communityAPI from '~/src/communityAPI.ts';
 
 import config, { initConfig } from '~/src/config.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
-import { SkillKey } from '~/src/types.ts';
+
+import type { SkillKey } from '~/src/types.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -576,12 +576,10 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'now':
-          case 'vote':
           case 'tu': {
             return (await user.now({
               userId: member.user.id,
               guildId,
-              token,
             }))
               .send();
           }
@@ -971,7 +969,6 @@ export const handler = async (r: Request) => {
               mention: true,
               userId: member.user.id,
               guildId,
-              token,
             })).send();
           }
           case 'help': {
@@ -1003,8 +1000,6 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'guaranteed':
                   return (await shop.confirmGuaranteed({
-                    token,
-                    guildId,
                     userId: member.user.id,
                     stars: value,
                   }))
@@ -1012,7 +1007,6 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'sweeps':
                   return (await shop.confirmSweeps({
-                    token,
                     guildId,
                     userId: member.user.id,
                     amount: value,
@@ -1021,7 +1015,6 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'normal':
                   return (await shop.confirmNormal({
-                    token,
                     guildId,
                     userId: member.user.id,
                     amount: value,
@@ -1351,7 +1344,6 @@ if (import.meta.main) {
     '/api/publish': communityAPI.publish,
     '/api/popular': communityAPI.popular,
     '/api/pack/:packId+': communityAPI.pack,
-    '/webhooks/topgg': webhooks.topgg,
     '/external/*': utils.handleProxy,
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       baseUrl: import.meta.url,

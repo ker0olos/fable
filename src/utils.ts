@@ -331,20 +331,6 @@ function rechargeSweepTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
-  const parsed = new Date(v ?? new Date());
-
-  parsed.setHours(parsed.getHours() + 12);
-
-  const ts = parsed.getTime();
-
-  return {
-    canVote: Date.now() >= parsed.getTime(),
-    // discord uses seconds not milliseconds
-    timeLeft: Math.floor(ts / 1000).toString(),
-  };
-}
-
 function stealTimestamp(v?: string): string {
   const parsed = new Date(v ?? new Date());
 
@@ -488,7 +474,6 @@ const utils = {
   truncate,
   validateRequest,
   verifySignature,
-  votingTimestamp,
   wrap,
   pagination,
 };

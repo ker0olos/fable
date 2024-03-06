@@ -170,9 +170,6 @@ function pages(
     new discord.Message()
       .addComponents([
         new discord.Component()
-          .setLabel('/vote')
-          .setId('now', userId),
-        new discord.Component()
           .setId('buy', 'bguaranteed', userId, '5')
           .setLabel(`/buy guaranteed 5`),
       ])
@@ -183,10 +180,6 @@ function pages(
             i18n.get('help-page5-shop', locale),
             '',
             i18n.get('help-page5-daily-tokens', locale),
-            '',
-            i18n.get('help-page5-voting', locale),
-            '',
-            i18n.get('help-page5-voting-weekends', locale),
             '',
             i18n.get('help-page5-buy-normal', locale, RECHARGE_MINS),
             '',
@@ -251,7 +244,7 @@ function pages(
             `- \`/q\`: _${i18n.get('/q', locale)}_`,
             `- \`/pull\` \`/guaranteed\`: _${i18n.get('/pull', locale)}_`,
             '',
-            `- \`/now\` \`/vote\` \`/tu\`: _${i18n.get('/now', locale)}_`,
+            `- \`/now\` \`/tu\`: _${i18n.get('/now', locale)}_`,
             `- \`/search\` \`/anime\` \`/manga\` \`/series\`: _${
               i18n.get('/search', locale)
             }_`,

@@ -4,8 +4,7 @@
 
 <i align="center">
 
-[![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)][topgg]
-[![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg2]
+[![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg]
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20community%20server&color=blue)][discord]
@@ -193,7 +192,6 @@ single dollar, it will help a lot.
 </details>
 
 [discord]: https://discord.gg/ceKyEfhyPQ
-[topgg]: https://top.gg/bot/1041970851559522304/vote
-[topgg2]: https://top.gg/bot/1041970851559522304
+[topgg]: https://top.gg/bot/1041970851559522304
 [invite]: https://fable.deno.dev/invite
 [kofi]: https://ko-fi.com/ker0olos

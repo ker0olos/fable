@@ -266,7 +266,7 @@ snapshot[`/help 6`] = `
         "author": {
           "name": "Shop"
         },
-        "description": "The shop is a way to purchase extra pulls and guaranteed pulls.\\n\\n__You get 1 daily token every day__, automatically added after your first \`/gacha\` of the day.\\n\\n__Voting for Fable on Top.gg awards 1 token__, you can vote once every 12 hours.\\n\\n__Voting on weekends awards 2 tokens__ (_Fridays, Saturdays and Sundays_).\\n\\n\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every 30 minutes.\\n\\n\`/buy guaranteed\` guarantees you get a character from one specific star rating.\\n\\nExample: \`/buy guaranteed 5\` will guarantee you get one random 5<:smolstar:1107503653956374638>character.\\n\\n3<:smolstar:1107503653956374638>cost **4** tokens\\n4<:smolstar:1107503653956374638>cost **12** tokens\\n5<:smolstar:1107503653956374638>cost **28** tokens\\n\\n> Use the guaranteed pulls you bought by calling \`/pull stars:\`\\n​",
+        "description": "The shop is a way to purchase extra pulls and guaranteed pulls.\\n\\n__You get 1 daily token every day__, automatically added after your first \`/gacha\` of the day.\\n\\n\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every 30 minutes.\\n\\n\`/buy guaranteed\` guarantees you get a character from one specific star rating.\\n\\nExample: \`/buy guaranteed 5\` will guarantee you get one random 5<:smolstar:1107503653956374638>character.\\n\\n3<:smolstar:1107503653956374638>cost **4** tokens\\n4<:smolstar:1107503653956374638>cost **12** tokens\\n5<:smolstar:1107503653956374638>cost **28** tokens\\n\\n> Use the guaranteed pulls you bought by calling \`/pull stars:\`\\n​",
         "footer": {
           "text": "aliases: /shop"
         }
@@ -294,12 +294,6 @@ snapshot[`/help 6`] = `
             "type": 2,
             "custom_id": "help==6=next",
             "label": "Next",
-            "style": 2
-          },
-          {
-            "type": 2,
-            "label": "/vote",
-            "custom_id": "now=user_id",
             "style": 2
           },
           {
@@ -392,7 +386,7 @@ snapshot[`/help 8`] = `
         "author": {
           "name": "Essential Commands"
         },
-        "description": "- \`/gacha\` \`/w\`: _start a new gacha pull_\\n- \`/q\`: _start a gacha pull but with no animations_\\n- \`/pull\` \`/guaranteed\`: _use a guaranteed pull you have_\\n\\n- \`/now\` \`/vote\` \`/tu\`: _check what you can do right now_\\n- \`/search\` \`/anime\` \`/manga\` \`/series\`: _search for a specific series_\\n- \`/character\` \`/char\`: _search for a specific character_\\n\\n- \`/merge\` \`/synthesize\`: _merge characters together to pull a new character_\\n\\n- \`/party view\` \`/team view\` \`/p view\`: _view your current party_\\n- \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_\\n- \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_\\n- \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_\\n\\n- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user stars_\\n- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific series_\\n- \`/collection sum\` \`/coll sum\` \`/mm sum\`: _view the sum numbers of a user collection_\\n\\n- \`/steal\`: _steal a character from another user_\\n- \`/trade\` \`/offer\`: _trade characters with another user_\\n- \`/give\` \`/gift\`: _give characters to another user_\\n\\n- \`/battle tower\`: _Climb the tower to glory and become a fable_\\n- \`/sweep\`: _Sweep your current battle tower floor for exp_"
+        "description": "- \`/gacha\` \`/w\`: _start a new gacha pull_\\n- \`/q\`: _start a gacha pull but with no animations_\\n- \`/pull\` \`/guaranteed\`: _use a guaranteed pull you have_\\n\\n- \`/now\` \`/tu\`: _check what you can do right now_\\n- \`/search\` \`/anime\` \`/manga\` \`/series\`: _search for a specific series_\\n- \`/character\` \`/char\`: _search for a specific character_\\n\\n- \`/merge\` \`/synthesize\`: _merge characters together to pull a new character_\\n\\n- \`/party view\` \`/team view\` \`/p view\`: _view your current party_\\n- \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_\\n- \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_\\n- \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_\\n\\n- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user stars_\\n- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific series_\\n- \`/collection sum\` \`/coll sum\` \`/mm sum\`: _view the sum numbers of a user collection_\\n\\n- \`/steal\`: _steal a character from another user_\\n- \`/trade\` \`/offer\`: _trade characters with another user_\\n- \`/give\` \`/gift\`: _give characters to another user_\\n\\n- \`/battle tower\`: _Climb the tower to glory and become a fable_\\n- \`/sweep\`: _Sweep your current battle tower floor for exp_"
       }
     ],
     "attachments": [],

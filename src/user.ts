@@ -1,25 +1,23 @@
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import db, { COSTS, MAX_PULLS, MAX_SWEEPS } from '../db/mod.ts';
+import db, { COSTS, MAX_PULLS, MAX_SWEEPS } from '~/db/mod.ts';
 
-import i18n from './i18n.ts';
-import utils from './utils.ts';
-import packs from './packs.ts';
+import i18n from '~/src/i18n.ts';
+import utils from '~/src/utils.ts';
+import packs from '~/src/packs.ts';
 
-import Rating from './rating.ts';
+import Rating from '~/src/rating.ts';
 
-import { voteComponent } from './shop.ts';
+import { default as srch, relationFilter } from '~/src/search.ts';
 
-import { default as srch, relationFilter } from './search.ts';
-
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
 import {
   Character,
   DisaggregatedCharacter,
   DisaggregatedMedia,
   Media,
-} from './types.ts';
+} from '~/src/types.ts';
 
 const cachedGuilds: Record<string, {
   locale: discord.AvailableLocales;
@@ -30,12 +28,10 @@ const cachedUsers: Record<string, {
 }> = {};
 
 async function now({
-  token,
   userId,
   guildId,
   mention,
 }: {
-  token: string;
   userId: string;
   guildId: string;
   mention?: boolean;
@@ -65,8 +61,6 @@ async function now({
 
   const showSweeps = typeof lastSweep === 'string' &&
     utils.isWithin14Days(new Date(lastSweep));
-
-  const voting = utils.votingTimestamp(user.lastVote);
 
   const guarantees = Array.from(new Set(user.guarantees ?? []))
     .sort((a, b) => b - a);
@@ -134,19 +128,6 @@ async function now({
     );
   }
 
-  if (user.lastVote && !voting.canVote) {
-    message.addEmbed(
-      new discord.Embed()
-        .setDescription(
-          i18n.get(
-            'can-vote-again',
-            locale,
-            `<t:${utils.votingTimestamp(user.lastVote).timeLeft}:R>`,
-          ),
-        ),
-    );
-  }
-
   if (new Date(stealTimestamp ?? new Date()).getTime() > Date.now()) {
     message.addEmbed(
       new discord.Embed()
@@ -203,12 +184,6 @@ async function now({
       new discord.Component()
         .setId('pull', userId, `${guarantees[0]}`)
         .setLabel(`/pull ${guarantees[0]}`),
-    ]);
-  }
-
-  if (!user.lastVote || voting.canVote) {
-    message.addComponents([
-      await voteComponent({ token, guildId, locale }),
     ]);
   }
 

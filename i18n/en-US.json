@@ -7,7 +7,6 @@
   "found-nothing": "Found _nothing_ matching that query!",
   "support-server": "Discord Support Server",
   "donate": "Donate",
-  "vote": "Vote",
   "prev": "Prev",
   "next": "Next",
   "danger": "DANGER",
@@ -32,7 +31,6 @@
   "available-sweeps": "Available Sweeps",
   "daily-token": "Daily Token",
   "daily-tokens": "Daily Tokens",
-  "can-vote-again": "_Can vote again {0}_",
   "steal-cooldown-ends": "_Steal cooldown ends {0}_",
 
   "token": "token",
@@ -41,7 +39,6 @@
   "pulls": "pulls",
   "character": "character",
   "characters": "characters",
-  "thanks-for-voting": "Thanks for voting, {0}, you gained {1} {2}.",
 
   "skip": "Skip",
   "attacking": "Attacking",
@@ -238,8 +235,6 @@
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
   "help-page5-daily-tokens": "__You get 1 daily token every day__, automatically added after your first `/gacha` of the day.",
-  "help-page5-voting": "__Voting for Fable on Top.gg awards 1 token__, you can vote once every 12 hours.",
-  "help-page5-voting-weekends": "__Voting on weekends awards 2 tokens__ (_Fridays, Saturdays and Sundays_).",
   "help-page5-buy-normal": "`/buy normal` gets you extra pulls, they are the exact same as the ones you get every {0} minutes.",
   "help-page5-buy-guaranteed": "`/buy guaranteed` guarantees you get a character from one specific star rating.",
   "help-page5-example": "Example: `/buy guaranteed 5` will guarantee you get one random 5{0}character.",

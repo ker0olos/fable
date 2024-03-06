@@ -15,15 +15,10 @@ export const COSTS = {
 export async function addTokens(
   user: Schema.User,
   amount: number,
-  vote?: boolean,
 ): Promise<Schema.User> {
   user.availableTokens ??= 0;
 
   user.availableTokens = user.availableTokens + amount;
-
-  if (vote) {
-    user.lastVote = new Date().toISOString();
-  }
 
   let res = { ok: false }, retries = 0;
 

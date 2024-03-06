@@ -1475,7 +1475,6 @@ Deno.test('buy components', async (test) => {
 
       assertSpyCall(shopStub, 0, {
         args: [{
-          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           amount: 3,
@@ -1562,9 +1561,7 @@ Deno.test('buy components', async (test) => {
 
       assertSpyCall(shopStub, 0, {
         args: [{
-          token: 'token',
           userId: 'user_id',
-          guildId: 'guild_id',
           stars: 5,
         }],
       });
@@ -1733,7 +1730,6 @@ Deno.test('buy components', async (test) => {
 
       assertSpyCall(shopStub, 0, {
         args: [{
-          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           amount: 2,
@@ -2084,7 +2080,6 @@ Deno.test('now components', async (test) => {
 
       assertSpyCall(userStub, 0, {
         args: [{
-          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           mention: true,

@@ -59,17 +59,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -115,6 +108,7 @@ Deno.test('/now', async (test) => {
           ],
           components: [
             {
+              type: 1,
               components: [
                 {
                   custom_id: 'gacha=user_id',
@@ -122,14 +116,7 @@ Deno.test('/now', async (test) => {
                   style: 2,
                   type: 2,
                 },
-                {
-                  label: 'Vote',
-                  style: 5,
-                  type: 2,
-                  url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-                },
               ],
-              type: 1,
             },
           ],
         },
@@ -141,7 +128,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -179,17 +165,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -234,15 +213,7 @@ Deno.test('/now', async (test) => {
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
-          components: [{
-            type: 1,
-            components: [{
-              label: 'Vote',
-              style: 5,
-              type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-            }],
-          }],
+          components: [],
         },
       });
     } finally {
@@ -252,7 +223,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -290,17 +260,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         mention: true,
@@ -348,15 +311,7 @@ Deno.test('/now', async (test) => {
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
-          components: [{
-            type: 1,
-            components: [{
-              label: 'Vote',
-              style: 5,
-              type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-            }],
-          }],
+          components: [],
         },
       });
     } finally {
@@ -366,7 +321,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -404,17 +358,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -467,6 +414,7 @@ Deno.test('/now', async (test) => {
           ],
           components: [
             {
+              type: 1,
               components: [
                 {
                   custom_id: 'gacha=user_id',
@@ -480,14 +428,7 @@ Deno.test('/now', async (test) => {
                   style: 2,
                   type: 2,
                 },
-                {
-                  label: 'Vote',
-                  style: 5,
-                  type: 2,
-                  url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-                },
               ],
-              type: 1,
             },
           ],
         },
@@ -499,7 +440,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -540,17 +480,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -603,15 +536,7 @@ Deno.test('/now', async (test) => {
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
             { type: 'rich', description: '_+5 sweeps <t:1675570906:R>_' },
           ],
-          components: [{
-            type: 1,
-            components: [{
-              label: 'Vote',
-              style: 5,
-              type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-            }],
-          }],
+          components: [],
         },
       });
     } finally {
@@ -621,7 +546,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -634,7 +558,6 @@ Deno.test('/now', async (test) => {
       () =>
         ({
           availableTokens: 1,
-          lastVote: time.toISOString(),
         }) as any,
     );
 
@@ -663,17 +586,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -720,15 +636,7 @@ Deno.test('/now', async (test) => {
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
-          components: [{
-            type: 1,
-            components: [{
-              label: 'Vote',
-              style: 5,
-              type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-            }],
-          }],
+          components: [],
         },
       });
     } finally {
@@ -738,7 +646,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -751,7 +658,6 @@ Deno.test('/now', async (test) => {
       () =>
         ({
           availableTokens: 4,
-          lastVote: time.toISOString(),
         }) as any,
     );
 
@@ -780,17 +686,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -836,15 +735,7 @@ Deno.test('/now', async (test) => {
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
-          components: [{
-            type: 1,
-            components: [{
-              label: 'Vote',
-              style: 5,
-              type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-            }],
-          }],
+          components: [],
         },
       });
     } finally {
@@ -854,7 +745,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -867,7 +757,6 @@ Deno.test('/now', async (test) => {
       () =>
         ({
           availableTokens: 28,
-          lastVote: time.toISOString(),
         }) as any,
     );
 
@@ -896,17 +785,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -968,12 +850,6 @@ Deno.test('/now', async (test) => {
                 style: 2,
                 type: 2,
               },
-              {
-                label: 'Vote',
-                style: 5,
-                type: 2,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
             ],
           }],
         },
@@ -985,7 +861,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -998,7 +873,6 @@ Deno.test('/now', async (test) => {
       () =>
         ({
           availableTokens: 27,
-          lastVote: time.toISOString(),
         }) as any,
     );
 
@@ -1027,17 +901,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1099,12 +966,6 @@ Deno.test('/now', async (test) => {
                 style: 2,
                 type: 2,
               },
-              {
-                label: 'Vote',
-                style: 5,
-                type: 2,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
             ],
           }],
         },
@@ -1116,7 +977,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -1129,7 +989,6 @@ Deno.test('/now', async (test) => {
       () =>
         ({
           availableTokens: 5,
-          lastVote: time.toISOString(),
           guarantees: [5, 5, 4, 4, 3],
         }) as any,
     );
@@ -1159,17 +1018,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1232,12 +1084,6 @@ Deno.test('/now', async (test) => {
                 custom_id: 'pull=user_id=5',
                 label: '/pull 5',
               },
-              {
-                label: 'Vote',
-                style: 5,
-                type: 2,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
             ],
           }],
         },
@@ -1249,7 +1095,6 @@ Deno.test('/now', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -1291,17 +1136,10 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1359,12 +1197,6 @@ Deno.test('/now', async (test) => {
                 custom_id: 'gacha=user_id',
                 label: '/gacha',
               },
-              {
-                label: 'Vote',
-                style: 5,
-                type: 2,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
             ],
           }],
         },
@@ -1377,7 +1209,6 @@ Deno.test('/now', async (test) => {
       getInstanceStub.restore();
       rechargeConsumablesStub.restore();
       timeStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -1415,19 +1246,12 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     config.notice = '**test**\\n_message_';
 
     try {
       const message = await user.now({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1476,128 +1300,13 @@ Deno.test('/now', async (test) => {
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
-          components: [{
-            type: 1,
-            components: [{
-              label: 'Vote',
-              style: 5,
-              type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-            }],
-          }],
+          components: [],
         },
       });
     } finally {
       delete config.appId;
 
       delete config.notice;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
-      rechargeConsumablesStub.restore();
-      createVoteRefStub.restore();
-    }
-  });
-
-  await test.step("can't vote", async () => {
-    const time = new Date('2023-02-05T03:21:46.253Z');
-
-    const timeStub = new FakeTime(time);
-
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () =>
-        ({
-          availableTokens: 5,
-          lastVote: new Date().toISOString(),
-        }) as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
-    const rechargeConsumablesStub = stub(
-      db,
-      'rechargeConsumables',
-      () =>
-        ({
-          inventory: {
-            availablePulls: 0,
-            stealTimestamp: null,
-            rechargeTimestamp: time.toISOString(),
-          },
-        }) as any,
-    );
-
-    try {
-      const message = await user.now({
-        token: 'token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-      });
-
-      assertEquals(
-        getUserStub.calls[0].args[0],
-        'user_id',
-      );
-
-      assertEquals(
-        getGuildStub.calls[0].args[0],
-        'guild_id',
-      );
-
-      assertEquals(
-        getInstanceStub.calls[0].args[0],
-        'guild' as any,
-      );
-
-      assertEquals(
-        rechargeConsumablesStub.calls[0].args[0],
-        'instance' as any,
-      );
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              title: '**0**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
-            },
-            {
-              type: 'rich',
-              title: '**5**',
-              footer: {
-                text: 'Daily Tokens',
-              },
-            },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
-            {
-              type: 'rich',
-              description: '_Can vote again <t:1675610506:R>_',
-            },
-          ],
-          components: [],
-        },
-      });
-    } finally {
-      timeStub.restore();
 
       getUserStub.restore();
       getGuildStub.restore();

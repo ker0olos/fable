@@ -23,7 +23,6 @@ export interface Instance extends Collection {
 export interface User extends Collection {
   id: string;
   inventories: string[];
-  lastVote?: string;
   availableTokens?: number;
   dailyTimestamp?: string;
   guarantees?: number[];
