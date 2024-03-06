@@ -10,6 +10,8 @@ import { skills } from '~/src/skills.ts';
 
 import db from '~/db/mod.ts';
 
+import { usersByDiscordId } from '~/db/indices.ts';
+
 import * as discord from '~/src/discord.ts';
 
 import config from '~/src/config.ts';
@@ -370,13 +372,14 @@ function sweep({ token, guildId, userId }: {
         const guild = await db.getGuild(guildId);
         const instance = await db.getInstance(guild);
 
-        const user = await db.getUser(userId);
+        const _user = await db.getUser(userId);
 
-        const { inventory, inventoryCheck } = await db.rechargeConsumables(
-          instance,
-          user,
-          false,
-        );
+        const { user, inventory, inventoryCheck } = await db
+          .rechargeConsumables(
+            instance,
+            _user,
+            false,
+          );
 
         if (!inventory.floorsCleared) {
           throw new NonFetalError(
@@ -433,6 +436,12 @@ function sweep({ token, guildId, userId }: {
         );
 
         const update = await op.commit();
+
+        // don't save likes on the user object
+        user.likes = undefined;
+
+        op.set(['users', user._id], user);
+        op.set(usersByDiscordId(user.id), user);
 
         if (update.ok) {
           const message = new discord.Message();

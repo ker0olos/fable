@@ -7,15 +7,15 @@ import {
   inventoriesByUser,
   usersByDiscordId,
   usersLikesByDiscordId,
-} from './indices.ts';
+} from '~/db/indices.ts';
 
-import db, { kv } from './mod.ts';
+import db, { kv } from '~/db/mod.ts';
 
-import utils from '../src/utils.ts';
+import utils from '~/src/utils.ts';
 
-import { KvError } from '../src/errors.ts';
+import { KvError } from '~/src/errors.ts';
 
-import type * as Schema from './schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
 export const MAX_PULLS = 5;
 export const MAX_SWEEPS = 5;
@@ -26,18 +26,8 @@ export const MAX_NEW_SWEEPS = MAX_SWEEPS;
 export const RECHARGE_MINS = 30;
 export const RECHARGE_SWEEPS_MINS = 60;
 
-export function checkDailyTimestamp(user: Schema.User): void {
-  if (new Date() >= new Date(user.dailyTimestamp ?? new Date())) {
-    const newDailyTimestamp = new Date();
-
-    user.dailyTimestamp = (
-      newDailyTimestamp.setDate(newDailyTimestamp.getDate() + 1),
-        newDailyTimestamp.toISOString()
-    );
-
-    user.availableTokens = (user.availableTokens ?? 0) + 1;
-  }
-}
+// in hours
+export const RECHARGE_DAILY_TOKENS = 12;
 
 export async function getUser(userId: string): Promise<Schema.User> {
   const response = await Promise.all([
@@ -210,6 +200,7 @@ export async function rechargeConsumables(
   user: Schema.User,
   commit = true,
 ): Promise<{
+  user: Schema.User;
   inventory: Schema.Inventory;
   inventoryCheck: Deno.AtomicCheck;
 }> {
@@ -241,8 +232,23 @@ export async function rechargeConsumables(
         : 0,
     );
 
-    if (newPulls === currentPulls && newSweeps === currentSweeps) {
-      return { inventory, inventoryCheck };
+    const dailyTimestamp = user.dailyTimestamp
+      ? new Date(user.dailyTimestamp)
+      : undefined;
+
+    const dailyTimestampThreshold = new Date(
+      Date.now() - RECHARGE_DAILY_TOKENS * 60 * 60 * 1000,
+    );
+
+    const newDailyTokens = !dailyTimestamp ||
+      dailyTimestamp <= dailyTimestampThreshold;
+
+    if (
+      newPulls === currentPulls &&
+      newSweeps === currentSweeps &&
+      !newDailyTokens
+    ) {
+      return { user, inventory, inventoryCheck };
     }
 
     const rechargedPulls = currentPulls + newPulls;
@@ -263,18 +269,45 @@ export async function rechargeConsumables(
       )
         .toISOString();
 
-    if (!commit) {
-      return { inventory, inventoryCheck };
+    if (newDailyTokens) {
+      user.availableTokens ??= 0;
+
+      user.availableTokens += 1;
+
+      const dayOfWeek = new Date().getUTCDay();
+
+      if (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5) {
+        // Today is a Weekend (Saturday, Sunday, or Friday) in GMT timezone
+        user.availableTokens += 2;
+      } else {
+        // Today is a normal weekday in GMT timezone
+        user.availableTokens += 1;
+      }
+
+      user.dailyTimestamp = new Date().toISOString();
     }
+
+    if (!commit) {
+      return { user, inventory, inventoryCheck };
+    }
+
+    // don't save likes on the user object
+    user.likes = undefined;
 
     res = await kv.atomic()
       .check(inventoryCheck)
+      //
       .set(['inventories', inventory._id], inventory)
       .set(inventoriesByUser(inventory.instance, inventory._id), inventory)
+      //
+      .set(['users', user._id], user)
+      .set(usersByDiscordId(user.id), user)
+      //
       .commit();
 
     if (res.ok) {
       return {
+        user,
         inventory,
         inventoryCheck: {
           key: inventoryCheck.key,

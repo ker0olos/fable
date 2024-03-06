@@ -11,11 +11,15 @@ import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import { levenshtein } from '../search-index/mod.ts';
+import { levenshtein } from '~/search-index/mod.ts';
 
-import { proxy } from '../images-proxy/mod.ts';
+import { proxy } from '~/images-proxy/mod.ts';
 
-import { RECHARGE_MINS, RECHARGE_SWEEPS_MINS } from '../db/mod.ts';
+import {
+  RECHARGE_DAILY_TOKENS,
+  RECHARGE_MINS,
+  RECHARGE_SWEEPS_MINS,
+} from '~/db/mod.ts';
 
 const TEN_MIB = 1024 * 1024 * 10;
 
@@ -320,6 +324,17 @@ function rechargeTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
+function rechargeDailyTimestamp(v?: string): string {
+  const parsed = new Date(v ?? new Date());
+
+  parsed.setHours(parsed.getHours() + RECHARGE_DAILY_TOKENS);
+
+  const ts = parsed.getTime();
+
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
+}
+
 function rechargeSweepTimestamp(v?: string): string {
   const parsed = new Date(v ?? new Date());
 
@@ -464,6 +479,7 @@ const utils = {
   parseInt: _parseInt,
   readJson,
   rechargeTimestamp,
+  rechargeDailyTimestamp,
   rechargeSweepTimestamp,
   rng,
   serve,

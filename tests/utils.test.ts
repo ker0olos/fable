@@ -240,6 +240,28 @@ Deno.test('recharge timestamps', () => {
   );
 });
 
+Deno.test('recharge sweeps timestamps', () => {
+  const now = new Date();
+
+  const expected = new Date().setMinutes(now.getMinutes() + 60).toString();
+
+  assertEquals(
+    utils.rechargeSweepTimestamp(now.toISOString()),
+    expected.substring(0, expected.length - 3),
+  );
+});
+
+Deno.test('recharge daily tokens timestamps', () => {
+  const now = new Date();
+
+  const expected = new Date().setHours(now.getHours() + 12).toString();
+
+  assertEquals(
+    utils.rechargeDailyTimestamp(now.toISOString()),
+    expected.substring(0, expected.length - 3),
+  );
+});
+
 Deno.test('diff days', async (test) => {
   await test.step('23 hours', () => {
     const a = new Date();

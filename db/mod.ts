@@ -3,7 +3,6 @@
 import utils from '~/src/utils.ts';
 
 import {
-  checkDailyTimestamp,
   getGuild,
   getInstance,
   getInstanceInventories,
@@ -15,6 +14,7 @@ import {
   MAX_NEW_PULLS,
   MAX_PULLS,
   MAX_SWEEPS,
+  RECHARGE_DAILY_TOKENS,
   RECHARGE_MINS,
   RECHARGE_SWEEPS_MINS,
   rechargeConsumables,
@@ -78,8 +78,6 @@ import { getAllPublicPacks, getPacksByMaintainerId } from '~/db/getPack.ts';
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
 import { disableBuiltins } from '~/db/manageInstance.ts';
-
-import { createVoteRef, resolveVoteRef } from '~/db/voteRef.ts';
 
 import { getFromBlob, setAsBlob } from '~/db/blob.ts';
 
@@ -228,7 +226,6 @@ const db = {
   getUserCharacters,
   getUserParty,
   rechargeConsumables,
-  checkDailyTimestamp,
   //
   addCharacter,
   //
@@ -274,9 +271,6 @@ const db = {
   removePack,
   //
   disableBuiltins,
-  //
-  createVoteRef,
-  resolveVoteRef,
 };
 
 export {
@@ -287,6 +281,7 @@ export {
   MAX_NEW_PULLS,
   MAX_PULLS,
   MAX_SWEEPS,
+  RECHARGE_DAILY_TOKENS,
   RECHARGE_MINS,
   RECHARGE_SWEEPS_MINS,
 };

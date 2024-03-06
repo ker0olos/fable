@@ -6,25 +6,25 @@ import { FakeTime } from '$std/testing/time.ts';
 
 import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 
-import utils from '../src/utils.ts';
+import utils from '~/src/utils.ts';
 
-import user from '../src/user.ts';
-import packs from '../src/packs.ts';
+import user from '~/src/user.ts';
+import packs from '~/src/packs.ts';
 
-import config from '../src/config.ts';
+import config from '~/src/config.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
 import {
-  Character,
+  type Character,
   CharacterRole,
-  Media,
+  type Media,
   MediaFormat,
   MediaRelation,
   MediaType,
-} from '../src/types.ts';
+} from '~/src/types.ts';
 
-import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+import type { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
 Deno.test('/now', async (test) => {
   await test.step('with pulls', async () => {
@@ -1307,6 +1307,114 @@ Deno.test('/now', async (test) => {
       delete config.appId;
 
       delete config.notice;
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      rechargeConsumablesStub.restore();
+    }
+  });
+
+  await test.step('with daily tokens cooldown', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const rechargeConsumablesStub = stub(
+      db,
+      'rechargeConsumables',
+      () =>
+        ({
+          inventory: {
+            availablePulls: 5,
+          },
+          user: {
+            dailyTimestamp: time.toISOString(),
+          },
+        }) as any,
+    );
+
+    config.appId = 'app_id';
+
+    try {
+      const message = await user.now({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(
+        getUserStub.calls[0].args[0],
+        'user_id',
+      );
+
+      assertEquals(
+        getGuildStub.calls[0].args[0],
+        'guild_id',
+      );
+
+      assertEquals(
+        getInstanceStub.calls[0].args[0],
+        'guild' as any,
+      );
+
+      assertEquals(
+        rechargeConsumablesStub.calls[0].args[0],
+        'instance' as any,
+      );
+
+      assertEquals(
+        rechargeConsumablesStub.calls[0].args[1],
+        'user' as any,
+      );
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**5**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            { type: 'rich', description: '_+1 daily token <t:1675610506:R>_' },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'gacha=user_id',
+                  label: '/gacha',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
 
       getUserStub.restore();
       getGuildStub.restore();

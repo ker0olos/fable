@@ -266,7 +266,7 @@ snapshot[`/help 6`] = `
         "author": {
           "name": "Shop"
         },
-        "description": "The shop is a way to purchase extra pulls and guaranteed pulls.\\n\\n__You get 1 daily token every day__, automatically added after your first \`/gacha\` of the day.\\n\\n\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every 30 minutes.\\n\\n\`/buy guaranteed\` guarantees you get a character from one specific star rating.\\n\\nExample: \`/buy guaranteed 5\` will guarantee you get one random 5<:smolstar:1107503653956374638>character.\\n\\n3<:smolstar:1107503653956374638>cost **4** tokens\\n4<:smolstar:1107503653956374638>cost **12** tokens\\n5<:smolstar:1107503653956374638>cost **28** tokens\\n\\n> Use the guaranteed pulls you bought by calling \`/pull stars:\`\\n​",
+        "description": "The shop is a way to purchase extra pulls and guaranteed pulls.\\n\\n__You get 1 daily token every 12 hours__, tokens are added automatically. \\n\\nYou get 2 daily tokens on weekends.\\n\\n\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every 30 minutes.\\n\\n\`/buy guaranteed\` guarantees you get a character from one specific star rating.\\n\\nExample: \`/buy guaranteed 5\` will guarantee you get one random 5<:smolstar:1107503653956374638>character.\\n\\n3<:smolstar:1107503653956374638>cost **4** tokens\\n4<:smolstar:1107503653956374638>cost **12** tokens\\n5<:smolstar:1107503653956374638>cost **28** tokens\\n\\n> Use the guaranteed pulls you bought by calling \`/pull stars:\`\\n​",
         "footer": {
           "text": "aliases: /shop"
         }

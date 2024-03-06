@@ -39,11 +39,11 @@ async function now({
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
-  const user = await db.getUser(userId);
+  const _user = await db.getUser(userId);
   const guild = await db.getGuild(guildId);
   const instance = await db.getInstance(guild);
 
-  const { inventory } = await db.rechargeConsumables(instance, user);
+  const { user, inventory } = await db.rechargeConsumables(instance, _user);
 
   const {
     availablePulls,
@@ -54,9 +54,12 @@ async function now({
     lastSweep,
   } = inventory;
 
+  const { dailyTimestamp } = user;
+
   const message = new discord.Message();
 
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
+  const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
   const sweepsRecharge = utils.rechargeSweepTimestamp(sweepsTimestamp);
 
   const showSweeps = typeof lastSweep === 'string' &&
@@ -115,6 +118,15 @@ async function now({
     message.addEmbed(
       new discord.Embed()
         .setDescription(i18n.get('+1-pull', locale, `<t:${recharge}:R>`)),
+    );
+  }
+
+  if (dailyTimestamp) {
+    message.addEmbed(
+      new discord.Embed()
+        .setDescription(
+          i18n.get('+1-token', locale, `<t:${dailyTokenRecharge}:R>`),
+        ),
     );
   }
 

@@ -43,23 +43,23 @@ export async function addTokens(
 
 export async function addPulls(
   instance: Schema.Instance,
-  user: Schema.User,
+  _user: Schema.User,
   amount: number,
 ): Promise<Schema.Inventory> {
-  user.availableTokens ??= 0;
+  _user.availableTokens ??= 0;
 
-  if (amount > user.availableTokens) {
+  if (amount > _user.availableTokens) {
     throw new Error('INSUFFICIENT_TOKENS');
   }
 
-  user.availableTokens = user.availableTokens - amount;
+  _user.availableTokens = _user.availableTokens - amount;
 
   let res = { ok: false }, retries = 0;
 
   while (!res.ok && retries < 5) {
-    const { inventory, inventoryCheck } = await db.rechargeConsumables(
+    const { user, inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
-      user,
+      _user,
       false,
     );
 
@@ -69,6 +69,7 @@ export async function addPulls(
       inventory.rechargeTimestamp = undefined;
     }
 
+    // don't save likes on the user object
     user.likes = undefined;
 
     res = await kv.atomic()
@@ -113,6 +114,7 @@ export async function addGuarantee(
 
   user.guarantees.push(guarantee);
 
+  // don't save likes on the user object
   user.likes = undefined;
 
   const update = await kv.atomic()
@@ -129,23 +131,23 @@ export async function addGuarantee(
 
 export async function addSweeps(
   instance: Schema.Instance,
-  user: Schema.User,
+  _user: Schema.User,
   amount: number,
 ): Promise<Schema.Inventory> {
-  user.availableTokens ??= 0;
+  _user.availableTokens ??= 0;
 
-  if (amount > user.availableTokens) {
+  if (amount > _user.availableTokens) {
     throw new Error('INSUFFICIENT_TOKENS');
   }
 
-  user.availableTokens = user.availableTokens - amount;
+  _user.availableTokens = _user.availableTokens - amount;
 
   let res = { ok: false }, retries = 0;
 
   while (!res.ok && retries < 5) {
-    const { inventory, inventoryCheck } = await db.rechargeConsumables(
+    const { user, inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
-      user,
+      _user,
       false,
     );
 
@@ -159,6 +161,7 @@ export async function addSweeps(
       inventory.sweepsTimestamp = undefined;
     }
 
+    // don't save likes on the user object
     user.likes = undefined;
 
     res = await kv.atomic()

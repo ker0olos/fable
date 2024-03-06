@@ -1,11 +1,17 @@
-import i18n from './i18n.ts';
-import user from './user.ts';
+import i18n from '~/src/i18n.ts';
+import user from '~/src/user.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import { COOLDOWN_DAYS, COSTS, MAX_PULLS, RECHARGE_MINS } from '../db/mod.ts';
+import {
+  COOLDOWN_DAYS,
+  COSTS,
+  MAX_PULLS,
+  RECHARGE_DAILY_TOKENS,
+  RECHARGE_MINS,
+} from '~/db/mod.ts';
 
-import { PARTY_PROTECTION_PERIOD } from './steal.ts';
+import { PARTY_PROTECTION_PERIOD } from '~/src/steal.ts';
 
 function pages(
   { userId, index }: { userId: string; index: number },
@@ -179,7 +185,7 @@ function pages(
           .setDescription([
             i18n.get('help-page5-shop', locale),
             '',
-            i18n.get('help-page5-daily-tokens', locale),
+            i18n.get('help-page5-daily-tokens', locale, RECHARGE_DAILY_TOKENS),
             '',
             i18n.get('help-page5-buy-normal', locale, RECHARGE_MINS),
             '',

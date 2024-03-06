@@ -1,7 +1,5 @@
 import { inventoriesByUser, usersByDiscordId } from '~/db/indices.ts';
 
-import db from '~/db/mod.ts';
-
 import type * as Schema from '~/db/schema.ts';
 
 export function clearFloor(
@@ -21,7 +19,6 @@ export function clearFloor(
 export function consumeSweep(
   {
     op,
-    user,
     inventory,
     inventoryCheck,
   }: {
@@ -37,16 +34,8 @@ export function consumeSweep(
   inventory.lastSweep = new Date().toISOString();
   inventory.sweepsTimestamp ??= new Date().toISOString();
 
-  db.checkDailyTimestamp(user);
-
-  // don't save likes on the user object
-  user.likes = undefined;
-
   op
     .check(inventoryCheck)
-    //
-    .set(['users', user._id], user)
-    .set(usersByDiscordId(user.id), user)
     //
     .set(['inventories', inventory._id], inventory)
     .set(inventoriesByUser(inventory.instance, inventory.user), inventory);

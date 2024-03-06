@@ -162,7 +162,6 @@
 
   "help-page5-title": "Tienda",
   "help-page5-shop": "La tienda es una forma de comprar tiradas extra y tiradas garantizadas.",
-  "help-page5-daily-tokens": "__Obtienes 1 Token diario__, automáticamente añadido después de tu primer `/gacha` del día.",
   "help-page5-buy-normal": "`/buy normal` te otorga una tirada extra, exactamente iguales a las que obtienes cada {0} minutos.",
   "help-page5-buy-guaranteed": "`/buy guaranteed` te garantiza un personaje de un grado de estrellas específico.",
   "help-page5-example": "Example: `/buy guaranteed 5` te garantiza un personaje 5{0}aleatorio.",
