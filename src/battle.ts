@@ -321,6 +321,7 @@ async function startCombat(
           message,
           attacking,
           receiving,
+          combo,
           locale,
         });
 
@@ -481,16 +482,33 @@ function healRound(
 }
 
 function actionRound(
-  { message, attacking, receiving, locale }: {
+  { message, attacking, receiving, combo, locale }: {
     message: discord.Message;
     attacking: PartyMember;
     receiving: PartyMember;
+    combo: number;
     locale: discord.AvailableLocales;
   },
 ): void {
+  const subtitle: string[] = [];
+
   let damage = Math.max(attacking.attack - receiving.defense, 1);
 
-  let subtitle: string | undefined = undefined;
+  if (attacking.skills.chain?.level) {
+    const lvl = attacking.skills.chain.level;
+
+    const { damage: extraDamage } = skills.chain.activation({
+      lvl,
+      damage,
+      attacking,
+      combo,
+    });
+
+    if (extraDamage) {
+      damage += extraDamage;
+      subtitle.push(i18n.get('chained', locale));
+    }
+  }
 
   if (attacking.skills.crit?.level) {
     const lvl = attacking.skills.crit.level;
@@ -499,7 +517,7 @@ function actionRound(
 
     if (extraDamage) {
       damage += extraDamage;
-      subtitle = i18n.get('crit', locale);
+      subtitle.push(i18n.get('crit', locale));
     }
   }
 
@@ -516,10 +534,6 @@ function actionRound(
   receiving.damage(damage);
 
   let heal = 0;
-
-  attacking.skills.lifesteal = {
-    level: 1,
-  };
 
   if (attacking.skills.lifesteal?.level) {
     const skill = skills.lifesteal.activation({
@@ -570,7 +584,7 @@ const addEmbed = ({
   locale,
 }: {
   message: discord.Message;
-  subtitle?: string;
+  subtitle?: string[];
   character: PartyMember;
   type: 'normal' | 'attacking' | 'hit' | 'heal' | 'stunned';
   diff?: number;
@@ -628,7 +642,7 @@ const addEmbed = ({
             packs.aliasToArray(character.character.name)[0]
         }${statusEmotes}`,
         state,
-        subtitle ? `*${subtitle}*` : undefined,
+        subtitle?.length ? `*${subtitle?.join(' ')}*` : undefined,
       ].filter(Boolean).join('\n'),
     )
     .setImage({ url: `attachment://${uuid}.png` })

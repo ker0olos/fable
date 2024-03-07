@@ -204,6 +204,7 @@ export interface CharacterSkill {
       attacking: PartyMember;
       receiving?: PartyMember;
       damage?: number;
+      combo?: number;
     },
   ) => SkillOutput;
 

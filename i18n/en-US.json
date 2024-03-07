@@ -388,5 +388,11 @@
   "stun": "Stun",
   "stunned": "Stunned",
   "stun-desc": "Adds a chance to stun the enemy skipping their next turn",
-  "stun-chance": "Stun Chance"
+  "stun-chance": "Stun Chance",
+
+  "chained": "Chained",
+  "chain": "Chain Attack",
+  "chain-desc": "Increases the amount of damage on chained attacks",
+  "chain-2-boost": "x2 Attack Boost",
+  "chain-3-boost": "x3 Attack Boost"
 }

@@ -177,6 +177,36 @@ const skills = {
       suffix: '%',
     }],
   },
+  chain: {
+    cost: 10,
+    key: 'chain',
+    descKey: 'chain-desc',
+    activation: function ({ combo, damage }): SkillOutput {
+      const [chain2, chain3] = this.stats!;
+
+      if (combo === 2) {
+        return {
+          damage: Math.max(Math.round(damage! * (chain2.scale![0] / 100)), 1),
+        };
+      } else if (combo === 3) {
+        return {
+          damage: Math.max(Math.round(damage! * (chain3.scale![0] / 100)), 1),
+        };
+      }
+
+      return {};
+    },
+    max: 1,
+    stats: [{
+      key: 'chain-2-boost',
+      scale: [25],
+      suffix: '%',
+    }, {
+      key: 'chain-3-boost',
+      scale: [50],
+      suffix: '%',
+    }],
+  },
 } satisfies Record<string, CharacterSkill>;
 
 const format = (

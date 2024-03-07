@@ -143,6 +143,28 @@ snapshot[`all skills > snapshot 1`] = `
         "suffix": "%"
       }
     ]
+  },
+  "chain": {
+    "cost": 10,
+    "key": "chain",
+    "descKey": "chain-desc",
+    "max": 1,
+    "stats": [
+      {
+        "key": "chain-2-boost",
+        "scale": [
+          25
+        ],
+        "suffix": "%"
+      },
+      {
+        "key": "chain-3-boost",
+        "scale": [
+          50
+        ],
+        "suffix": "%"
+      }
+    ]
   }
 }
 `;
