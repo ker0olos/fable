@@ -8,11 +8,13 @@ export class PartyMember {
   character: Character;
   #stats: CharacterBattleStats;
   #boost: Schema.CharacterStats;
+  #debuff: Schema.CharacterStats;
   existing?: Schema.Character;
   owner: 'party1' | 'party2';
   effects: {
     enraged?: StatusEffect;
     stunned?: StatusEffect;
+    slowed?: StatusEffect;
   };
 
   constructor({ character, stats, existing, owner }: {
@@ -24,6 +26,7 @@ export class PartyMember {
     this.character = character;
     this.#stats = stats;
     this.#boost = { attack: 0, defense: 0, speed: 0 };
+    this.#debuff = { attack: 0, defense: 0, speed: 0 };
     this.existing = existing;
     this.owner = owner;
     this.effects = {};
@@ -46,15 +49,21 @@ export class PartyMember {
   }
 
   public get attack(): number {
-    return this.#stats.attack + this.#boost.attack;
+    const boost = this.#stats.attack * this.#boost.attack;
+    const debuff = this.#stats.attack * this.#debuff.attack;
+    return this.#stats.attack + boost - debuff;
   }
 
   public get defense(): number {
-    return this.#stats.defense + this.#boost.defense;
+    const boost = this.#stats.defense * this.#boost.defense;
+    const debuff = this.#stats.defense * this.#debuff.defense;
+    return this.#stats.defense + boost - debuff;
   }
 
   public get speed(): number {
-    return this.#stats.speed + this.#boost.speed;
+    const boost = this.#stats.speed * this.#boost.speed;
+    const debuff = this.#stats.speed * this.#debuff.speed;
+    return this.#stats.speed + boost - debuff;
   }
 
   public get skills(): CharacterBattleStats['skills'] {
@@ -69,11 +78,11 @@ export class PartyMember {
     this.#stats.hp = Math.max(this.#stats.hp - damage, 0);
   }
 
-  public activateAttackBoost(_party: PartyMember[]): PartyMember {
-    this.#boost.attack = 0;
+  // public activateAttackBoost(_party: PartyMember[]): PartyMember {
+  //   this.#boost.attack = 0;
 
-    return this;
-  }
+  //   return this;
+  // }
 
   public activateDefenseBoost(party: PartyMember[]): PartyMember {
     const boosts = party
@@ -82,10 +91,9 @@ export class PartyMember {
 
     const sorted = boosts.sort((a, b) => b.level - a.level);
 
-    const cur = this.#stats.defense;
-    const boost = (sorted[0]?.level ?? 0) / 100;
+    const percent = (sorted[0]?.level ?? 0) / 100;
 
-    this.#boost.defense = cur * boost;
+    this.#boost.defense = percent;
 
     return this;
   }
@@ -97,10 +105,25 @@ export class PartyMember {
 
     const sorted = boosts.sort((a, b) => b.level - a.level);
 
-    const cur = this.#stats.speed;
-    const boost = (sorted[0]?.level ?? 0) / 100;
+    const percent = (sorted[0]?.level ?? 0) / 100;
 
-    this.#boost.speed = cur * boost;
+    this.#boost.speed = percent;
+
+    return this;
+  }
+
+  public activateSlowDebuff(enemyParty: PartyMember[]): PartyMember {
+    const boosts = enemyParty
+      .map(({ skills }) => skills.slow)
+      .filter(Boolean) as Schema.AcquiredCharacterSkill[];
+
+    const sorted = boosts.sort((a, b) => b.level - a.level);
+
+    const percent = (sorted[0]?.level ?? 0) / 100;
+
+    this.#debuff.speed = percent;
+
+    this.effects.slowed = percent > 0 ? { active: true } : undefined;
 
     return this;
   }
@@ -112,12 +135,14 @@ export class PartyMember {
       const [_remainingHP, _boost] = skills.enrage.stats;
 
       const remainingHP = _remainingHP.scale[lvl - 1];
+
       const boost = _boost.scale[lvl - 1] / 100;
 
       if (this.isHpBelowOrEquals(remainingHP)) {
-        this.#boost.attack += this.#stats.attack * boost;
-        this.#boost.defense += this.#stats.defense * boost;
-        this.#boost.speed += this.#stats.speed * boost;
+        this.#boost.attack += boost;
+        this.#boost.defense += boost;
+        this.#boost.speed += boost;
+
         this.effects.enraged = { active: true };
       }
     }

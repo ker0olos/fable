@@ -67,6 +67,7 @@ export const emotes = {
   rightArrow: '<:rarrow:1170533290105655428>',
   enraged: '<:ENRAGED:1214241073518481428>',
   stunned: '<:STUNNED:1214576287415541814>',
+  slowed: '<:SLOWED:1215255510706683905>',
 };
 
 export const join = (...args: string[]): string => {

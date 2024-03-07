@@ -1,3 +1,5 @@
+import { basename, extname } from '$std/path/mod.ts';
+
 async function copyToClipboard(text: string): Promise<void> {
   const command = new Deno.Command(
     Deno.build.os === 'windows' ? 'clip' : 'xclip',
@@ -21,13 +23,12 @@ async function copyToClipboard(text: string): Promise<void> {
 }
 
 async function uploadEmote(
-  { BOT_TOKEN, GUILD_ID, emotePath, emoteName }: {
+  { BOT_TOKEN, GUILD_ID, emotePath }: {
     BOT_TOKEN: string;
     GUILD_ID: string;
     emotePath: string;
-    emoteName: string;
   },
-): Promise<{ id: string }> {
+): Promise<{ id: string; name: string }> {
   const url = `https://discord.com/api/v10/guilds/${GUILD_ID}/emojis`;
 
   const imageData = await Deno.readFile(emotePath);
@@ -35,6 +36,8 @@ async function uploadEmote(
   const imageBase64 = btoa(String.fromCharCode(...imageData));
 
   const imageDataUrl = `data:image/png;base64,${imageBase64}`;
+
+  const emoteName = basename(emotePath, extname(emotePath));
 
   const body = { image: imageDataUrl, name: emoteName };
 
@@ -60,12 +63,37 @@ async function uploadEmote(
   return emoteData;
 }
 
+async function deleteEmote(
+  { BOT_TOKEN, GUILD_ID, emoteId }: {
+    BOT_TOKEN: string;
+    GUILD_ID: string;
+    emoteId: string;
+  },
+): Promise<void> {
+  const url =
+    `https://discord.com/api/v10/guilds/${GUILD_ID}/emojis/${emoteId}`;
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bot ${BOT_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (response.status !== 204) {
+    throw new Error(
+      `Failed to upload emote: ${response.statusText}`,
+    );
+  }
+}
+
 if (import.meta.main) {
   const GUILD_ID = '1046932492952805446';
 
   const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
 
-  const [emotePath, emoteName] = Deno.args;
+  const [emotePath, emoteId] = Deno.args;
 
   if (!BOT_TOKEN) {
     throw new Error('BOT_TOKEN is not defined');
@@ -75,19 +103,29 @@ if (import.meta.main) {
     throw new Error('Emote image path is not defined');
   }
 
-  if (!emoteName) {
-    throw new Error('Emote name is not defined');
+  if (emotePath === 'delete') {
+    if (!emoteId) {
+      throw new Error('Emote id is not defined');
+    }
+
+    await deleteEmote({
+      BOT_TOKEN,
+      GUILD_ID,
+      emoteId,
+    });
+
+    console.log(`Emote ${emoteId} deleted`);
+  } else {
+    const { id, name } = await uploadEmote({
+      BOT_TOKEN,
+      GUILD_ID,
+      emotePath,
+    });
+
+    const output = `<:${name}:${id}>`;
+
+    console.log(output);
+
+    copyToClipboard(output);
   }
-
-  const { id } = await uploadEmote({
-    BOT_TOKEN,
-    GUILD_ID,
-    emoteName,
-    emotePath,
-  });
-
-  const output = `<:${emoteName}:${id}>`;
-
-  console.log(output);
-  copyToClipboard('text-text');
 }

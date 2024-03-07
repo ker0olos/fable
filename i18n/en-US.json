@@ -370,6 +370,9 @@
   "defense-boost": "Defense Boost",
   "defense-boost-desc": "Boost the defense of all party members (Not stackable)",
 
+  "slow-debuff": "Slow Debuff",
+  "slow-debuff-desc": "Slow the speed of your enemy party members (Not stackable)",
+
   "enrage": "Enraged",
   "enrage-desc": "If your health drops to n% boost all stats by n%",
   "hp-remaining": "HP Remaining",

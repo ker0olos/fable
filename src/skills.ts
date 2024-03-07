@@ -84,6 +84,17 @@ const skills = {
       factor: 1,
     }],
   },
+  slow: {
+    key: 'slow-debuff',
+    descKey: 'slow-debuff-desc',
+    cost: 1,
+    max: Infinity,
+    stats: [{
+      key: 'boost',
+      suffix: '%',
+      factor: 1,
+    }],
+  },
   enrage: {
     cost: 2,
     key: 'enrage',

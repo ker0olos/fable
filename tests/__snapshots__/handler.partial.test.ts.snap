@@ -32,6 +32,10 @@ snapshot[`skills > acquire 1`] = `
       {
         "name": "Emergency Healing",
         "value": "heal"
+      },
+      {
+        "name": "Slow Debuff",
+        "value": "slow-debuff"
       }
     ]
   }
@@ -70,6 +74,10 @@ snapshot[`skills > upgrade 1`] = `
       {
         "name": "Emergency Healing",
         "value": "heal"
+      },
+      {
+        "name": "Slow Debuff",
+        "value": "slow-debuff"
       }
     ]
   }
