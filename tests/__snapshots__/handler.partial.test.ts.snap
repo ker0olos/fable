@@ -7,39 +7,39 @@ snapshot[`skills > acquire 1`] = `
     "choices": [
       {
         "name": "Critical Hit",
-        "value": "crit"
-      },
-      {
-        "name": "Stun",
-        "value": "stun"
+        "value": "~crit"
       },
       {
         "name": "Enraged",
-        "value": "enrage"
+        "value": "~enrage"
+      },
+      {
+        "name": "Stun",
+        "value": "~stun"
       },
       {
         "name": "Chain Attack",
-        "value": "chain"
+        "value": "~chain"
       },
       {
         "name": "Lifesteal",
-        "value": "lifesteal"
+        "value": "~lifesteal"
       },
       {
         "name": "Speed Boost",
-        "value": "speed-boost"
-      },
-      {
-        "name": "Defense Boost",
-        "value": "defense-boost"
+        "value": "~speed-boost"
       },
       {
         "name": "Emergency Healing",
-        "value": "heal"
+        "value": "~heal"
+      },
+      {
+        "name": "Defense Boost",
+        "value": "~defense-boost"
       },
       {
         "name": "Slow Debuff",
-        "value": "slow-debuff"
+        "value": "~slow-debuff"
       }
     ]
   }
@@ -53,39 +53,39 @@ snapshot[`skills > upgrade 1`] = `
     "choices": [
       {
         "name": "Critical Hit",
-        "value": "crit"
-      },
-      {
-        "name": "Stun",
-        "value": "stun"
+        "value": "~crit"
       },
       {
         "name": "Enraged",
-        "value": "enrage"
+        "value": "~enrage"
+      },
+      {
+        "name": "Stun",
+        "value": "~stun"
       },
       {
         "name": "Chain Attack",
-        "value": "chain"
+        "value": "~chain"
       },
       {
         "name": "Lifesteal",
-        "value": "lifesteal"
+        "value": "~lifesteal"
       },
       {
         "name": "Speed Boost",
-        "value": "speed-boost"
-      },
-      {
-        "name": "Defense Boost",
-        "value": "defense-boost"
+        "value": "~speed-boost"
       },
       {
         "name": "Emergency Healing",
-        "value": "heal"
+        "value": "~heal"
+      },
+      {
+        "name": "Defense Boost",
+        "value": "~defense-boost"
       },
       {
         "name": "Slow Debuff",
-        "value": "slow-debuff"
+        "value": "~slow-debuff"
       }
     ]
   }

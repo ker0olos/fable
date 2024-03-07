@@ -26,7 +26,7 @@ import config, { initConfig } from '~/src/config.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
-import type { SkillKey } from '~/src/types.ts';
+import type { SkillCategory, SkillKey } from '~/src/types.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -758,8 +758,11 @@ export const handler = async (r: Request) => {
           case 'skills': {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'showall':
-                return _skills.all(0, locale).send();
+              case 'showall': {
+                const category = options['category'] as SkillCategory;
+
+                return _skills.all(0, category, locale).send();
+              }
               case 'upgrade':
               case 'acquire': {
                 const skillKey = options['skill'] as SkillKey;
@@ -1174,9 +1177,12 @@ export const handler = async (r: Request) => {
           }
           case 'skills': {
             // deno-lint-ignore no-non-null-assertion
+            const category = customValues![0] as SkillCategory;
+
+            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return _skills.all(index, locale)
+            return _skills.all(index, category, locale)
               .setType(discord.MessageType.Update)
               .send();
           }

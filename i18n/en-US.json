@@ -346,6 +346,9 @@
 
   "$pack-id": "the id of the pack",
 
+  "page": "page",
+  "category": "category",
+
   "$help-page": "specify a page to display",
   "$help-page-gacha": "Gacha",
   "$help-page-merging": "Merging",
@@ -358,41 +361,51 @@
   "$help-page-other-commands": "Other Commands",
   "$help-page-admin-commands": "Admin Commands",
 
-  "crit": "Critical Hit",
-  "crit-desc": "The art of performing the traditional critical hit.",
-  "crit-chance": "Crit Chance",
-  "crit-damage": "Crit Damage",
+  "$skill-categories": "specify a category to display",
 
-  "boost": "Boost by",
+  "buff": "Buff",
+  "debuff": "Debuff",
+  "damage": "Damage",
+  "support": "Support",
+  "heal": "Heal",
 
-  "speed-boost": "Speed Boost",
-  "speed-boost-desc": "Boost the speed of all party members (Not stackable)",
-  "defense-boost": "Defense Boost",
-  "defense-boost-desc": "Boost the defense of all party members (Not stackable)",
-
-  "slow-debuff": "Slow Debuff",
-  "slow-debuff-desc": "Slow the speed of your enemy party members (Not stackable)",
-
-  "enrage": "Enraged",
-  "enrage-desc": "If your health drops to n% boost all stats by n%",
-  "hp-remaining": "HP Remaining",
-
-  "heal": "Emergency Healing",
-  "heal-desc": "Once per battle, once a party member HP drops to below 25%, heal them by n% of the caster's max HP (Not stackable)",
-  "heal-amount": "Heal by",
-
-  "lifesteal": "Lifesteal",
-  "lifesteal-desc": "Every time you damage an enemy heal a portion of the damage you dealt",
-  "lifesteal-amount": "Heal By of Damage",
-
-  "stun": "Stun",
   "stunned": "Stunned",
-  "stun-desc": "Adds a chance to stun the enemy skipping their next turn",
-  "stun-chance": "Stun Chance",
-
   "chained": "Chained",
-  "chain": "Chain Attack",
-  "chain-desc": "Increases the amount of damage on chained attacks",
-  "chain-2-boost": "x2 Attack Boost",
-  "chain-3-boost": "x3 Attack Boost"
+  "crit": "Crit",
+
+  "~crit": "Critical Hit",
+  "~crit-desc": "The art of performing the traditional critical hit.",
+  "~crit-chance": "Crit Chance",
+  "~crit-damage": "Crit Damage",
+
+  "~boost": "Boost by",
+
+  "~speed-boost": "Speed Boost",
+  "~speed-boost-desc": "Boost the speed of all party members (Not stackable)",
+  "~defense-boost": "Defense Boost",
+  "~defense-boost-desc": "Boost the defense of all party members (Not stackable)",
+
+  "~slow-debuff": "Slow Debuff",
+  "~slow-debuff-desc": "Slow the speed of your enemy party members (Not stackable)",
+
+  "~enrage": "Enraged",
+  "~enrage-desc": "If your health drops to n% boost all stats by n%",
+  "~hp-remaining": "HP Remaining",
+
+  "~heal": "Emergency Healing",
+  "~heal-desc": "Once per battle, once a party member HP drops to below 25%, heal them by n% of the caster's max HP (Not stackable)",
+  "~heal-amount": "Heal by",
+
+  "~lifesteal": "Lifesteal",
+  "~lifesteal-desc": "Every time you damage an enemy heal a portion of the damage you dealt",
+  "~lifesteal-amount": "Heal By of Damage",
+
+  "~stun": "Stun",
+  "~stun-desc": "Adds a chance to stun the enemy skipping their next turn",
+  "~stun-chance": "Stun Chance",
+
+  "~chain": "Chain Attack",
+  "~chain-desc": "Increases the amount of damage on chained attacks",
+  "~chain-2-boost": "x2 Attack Boost",
+  "~chain-3-boost": "x3 Attack Boost"
 }

@@ -3736,7 +3736,7 @@ Deno.test('skills components', async (test) => {
         },
       },
       data: {
-        custom_id: 'skills==1',
+        custom_id: 'skills=buff=1',
       },
     });
 
@@ -3788,7 +3788,7 @@ Deno.test('skills components', async (test) => {
       });
 
       assertSpyCall(skillsStub, 0, {
-        args: [1, undefined],
+        args: [1, 'buff', undefined],
       });
     } finally {
       delete config.publicKey;

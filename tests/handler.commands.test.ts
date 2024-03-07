@@ -8295,6 +8295,10 @@ Deno.test('skills', async (test) => {
         options: [{
           type: 1,
           name: `showall`,
+          options: [{
+            name: 'category',
+            value: 'buff',
+          }],
         }],
       },
     });
@@ -8346,7 +8350,7 @@ Deno.test('skills', async (test) => {
       });
 
       assertSpyCall(skillsStub, 0, {
-        args: [0, undefined],
+        args: [0, 'buff', undefined],
       });
 
       assertEquals(response, true as any);

@@ -19,6 +19,7 @@ import { NonFetalError } from '~/src/errors.ts';
 import type {
   CharacterAdditionalStat,
   CharacterSkill,
+  SkillCategory,
   SkillOutput,
 } from '~/src/types.ts';
 
@@ -27,8 +28,9 @@ type SkillKey = keyof typeof skills;
 const skills = {
   crit: {
     cost: 2,
-    key: 'crit',
-    descKey: 'crit-desc',
+    key: '~crit',
+    descKey: '~crit-desc',
+    categories: ['damage'],
     activation: function ({
       lvl,
       attacking: char,
@@ -53,67 +55,72 @@ const skills = {
     },
     max: 3,
     stats: [{
-      key: 'crit-chance',
+      key: '~crit-chance',
       scale: [0.5, 5, 15],
       suffix: '%',
     }, {
-      key: 'crit-damage',
+      key: '~crit-damage',
       scale: [30, 45, 60],
       suffix: '%',
     }],
   },
   speed: {
-    key: 'speed-boost',
-    descKey: 'speed-boost-desc',
+    key: '~speed-boost',
+    descKey: '~speed-boost-desc',
+    categories: ['buff', 'support'],
     cost: 1,
     max: Infinity,
     stats: [{
-      key: 'boost',
+      key: '~boost',
       suffix: '%',
       factor: 1,
     }],
   },
   defense: {
-    key: 'defense-boost',
-    descKey: 'defense-boost-desc',
+    key: '~defense-boost',
+    descKey: '~defense-boost-desc',
+    categories: ['buff', 'support'],
     cost: 1,
     max: Infinity,
     stats: [{
-      key: 'boost',
+      key: '~boost',
       suffix: '%',
       factor: 1,
     }],
   },
   slow: {
-    key: 'slow-debuff',
-    descKey: 'slow-debuff-desc',
+    key: '~slow-debuff',
+    descKey: '~slow-debuff-desc',
+    categories: ['debuff', 'support'],
     cost: 1,
     max: Infinity,
     stats: [{
-      key: 'boost',
+      key: '~boost',
       suffix: '%',
       factor: 1,
     }],
   },
   enrage: {
     cost: 2,
-    key: 'enrage',
-    descKey: 'enrage-desc',
+    key: '~enrage',
+    descKey: '~enrage-desc',
+    categories: ['buff', 'damage'],
     max: 3,
     stats: [{
-      key: 'hp-remaining',
+      key: '~hp-remaining',
       scale: [5, 15, 25],
       suffix: '%',
     }, {
-      key: 'boost',
+      key: '~boost',
       scale: [15, 25, 50],
       suffix: '%',
     }],
   },
   heal: {
     cost: 2,
-    key: 'heal',
-    descKey: 'heal-desc',
+    key: '~heal',
+    descKey: '~heal-desc',
+    categories: ['support', 'heal'],
     activation: function ({
       lvl,
       attacking: char,
@@ -129,15 +136,16 @@ const skills = {
     },
     max: 3,
     stats: [{
-      key: 'heal-amount',
+      key: '~heal-amount',
       scale: [5, 15, 25],
       suffix: '%',
     }],
   },
   lifesteal: {
     cost: 2,
-    key: 'lifesteal',
-    descKey: 'lifesteal-desc',
+    key: '~lifesteal',
+    descKey: '~lifesteal-desc',
+    categories: ['heal'],
     activation: function ({ attacking, lvl, damage }): SkillOutput {
       const [stealPercent] = this.stats!;
 
@@ -151,15 +159,16 @@ const skills = {
     },
     max: 3,
     stats: [{
-      key: 'lifesteal-amount',
+      key: '~lifesteal-amount',
       scale: [10, 25, 50],
       suffix: '%',
     }],
   },
   stun: {
     cost: 2,
-    key: 'stun',
-    descKey: 'stun-desc',
+    key: '~stun',
+    descKey: '~stun-desc',
+    categories: ['damage'],
     max: 3,
     activation: function ({ lvl }): SkillOutput {
       const [stunChance] = this.stats!;
@@ -172,15 +181,16 @@ const skills = {
       };
     },
     stats: [{
-      key: 'stun-chance',
+      key: '~stun-chance',
       scale: [5, 15, 80],
       suffix: '%',
     }],
   },
   chain: {
     cost: 10,
-    key: 'chain',
-    descKey: 'chain-desc',
+    key: '~chain',
+    descKey: '~chain-desc',
+    categories: ['damage'],
     activation: function ({ combo, damage }): SkillOutput {
       const [chain2, chain3] = this.stats!;
 
@@ -198,11 +208,11 @@ const skills = {
     },
     max: 1,
     stats: [{
-      key: 'chain-2-boost',
+      key: '~chain-2-boost',
       scale: [25],
       suffix: '%',
     }, {
-      key: 'chain-3-boost',
+      key: '~chain-3-boost',
       scale: [50],
       suffix: '%',
     }],
@@ -532,11 +542,20 @@ async function acquire(
 
 function all(
   index: number,
+  category?: SkillCategory,
   locale?: discord.AvailableLocales,
 ): discord.Message {
   const message = new discord.Message();
 
-  const pages = utils.chunks(Object.values(skills), 3);
+  const __skills = Object.values(skills)
+    .filter((skill) => {
+      if (category && !(skill.categories as string[]).includes(category)) {
+        return false;
+      }
+      return true;
+    });
+
+  const pages = utils.chunks(__skills, 3);
 
   const page = pages[index];
 
@@ -551,6 +570,8 @@ function all(
     message,
     total: pages.length,
     type: 'skills',
+    target: category ?? '',
+    next: index + 1 < pages.length,
     locale,
   });
 }

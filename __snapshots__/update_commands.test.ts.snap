@@ -2680,7 +2680,43 @@ snapshot[`commands 1`] = `
         "description": "Show all available skills and their details",
         "type": 1,
         "required": false,
-        "description_localizations": {}
+        "description_localizations": {},
+        "options": [
+          {
+            "name": "category",
+            "description": "specify a category to display",
+            "type": 3,
+            "choices": [
+              {
+                "value": "buff",
+                "name": "Buff",
+                "name_localizations": {}
+              },
+              {
+                "value": "debuff",
+                "name": "Debuff",
+                "name_localizations": {}
+              },
+              {
+                "value": "support",
+                "name": "Support",
+                "name_localizations": {}
+              },
+              {
+                "value": "damage",
+                "name": "Damage",
+                "name_localizations": {}
+              },
+              {
+                "value": "heal",
+                "name": "Heal",
+                "name_localizations": {}
+              }
+            ],
+            "required": false,
+            "description_localizations": {}
+          }
+        ]
       },
       {
         "name": "acquire",

@@ -191,10 +191,22 @@ export interface SkillOutput {
   stun?: boolean;
 }
 
+export const skillCategories = [
+  'buff',
+  'debuff',
+  'support',
+  'damage',
+  'heal',
+] as const;
+
+export type SkillCategory = typeof skillCategories[number];
+
 export interface CharacterSkill {
   key: Keys;
   descKey: Keys;
   max: number;
+
+  categories: SkillCategory[];
 
   cost: number;
 

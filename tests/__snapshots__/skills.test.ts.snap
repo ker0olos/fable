@@ -4,12 +4,15 @@ snapshot[`all skills > snapshot 1`] = `
 {
   "crit": {
     "cost": 2,
-    "key": "crit",
-    "descKey": "crit-desc",
+    "key": "~crit",
+    "descKey": "~crit-desc",
+    "categories": [
+      "damage"
+    ],
     "max": 3,
     "stats": [
       {
-        "key": "crit-chance",
+        "key": "~crit-chance",
         "scale": [
           0.5,
           5,
@@ -18,7 +21,7 @@ snapshot[`all skills > snapshot 1`] = `
         "suffix": "%"
       },
       {
-        "key": "crit-damage",
+        "key": "~crit-damage",
         "scale": [
           30,
           45,
@@ -29,39 +32,51 @@ snapshot[`all skills > snapshot 1`] = `
     ]
   },
   "speed": {
-    "key": "speed-boost",
-    "descKey": "speed-boost-desc",
+    "key": "~speed-boost",
+    "descKey": "~speed-boost-desc",
+    "categories": [
+      "buff",
+      "support"
+    ],
     "cost": 1,
     "max": null,
     "stats": [
       {
-        "key": "boost",
+        "key": "~boost",
         "suffix": "%",
         "factor": 1
       }
     ]
   },
   "defense": {
-    "key": "defense-boost",
-    "descKey": "defense-boost-desc",
+    "key": "~defense-boost",
+    "descKey": "~defense-boost-desc",
+    "categories": [
+      "buff",
+      "support"
+    ],
     "cost": 1,
     "max": null,
     "stats": [
       {
-        "key": "boost",
+        "key": "~boost",
         "suffix": "%",
         "factor": 1
       }
     ]
   },
   "slow": {
-    "key": "slow-debuff",
-    "descKey": "slow-debuff-desc",
+    "key": "~slow-debuff",
+    "descKey": "~slow-debuff-desc",
+    "categories": [
+      "debuff",
+      "support"
+    ],
     "cost": 1,
     "max": null,
     "stats": [
       {
-        "key": "boost",
+        "key": "~boost",
         "suffix": "%",
         "factor": 1
       }
@@ -69,12 +84,16 @@ snapshot[`all skills > snapshot 1`] = `
   },
   "enrage": {
     "cost": 2,
-    "key": "enrage",
-    "descKey": "enrage-desc",
+    "key": "~enrage",
+    "descKey": "~enrage-desc",
+    "categories": [
+      "buff",
+      "damage"
+    ],
     "max": 3,
     "stats": [
       {
-        "key": "hp-remaining",
+        "key": "~hp-remaining",
         "scale": [
           5,
           15,
@@ -83,7 +102,7 @@ snapshot[`all skills > snapshot 1`] = `
         "suffix": "%"
       },
       {
-        "key": "boost",
+        "key": "~boost",
         "scale": [
           15,
           25,
@@ -95,12 +114,16 @@ snapshot[`all skills > snapshot 1`] = `
   },
   "heal": {
     "cost": 2,
-    "key": "heal",
-    "descKey": "heal-desc",
+    "key": "~heal",
+    "descKey": "~heal-desc",
+    "categories": [
+      "support",
+      "heal"
+    ],
     "max": 3,
     "stats": [
       {
-        "key": "heal-amount",
+        "key": "~heal-amount",
         "scale": [
           5,
           15,
@@ -112,12 +135,15 @@ snapshot[`all skills > snapshot 1`] = `
   },
   "lifesteal": {
     "cost": 2,
-    "key": "lifesteal",
-    "descKey": "lifesteal-desc",
+    "key": "~lifesteal",
+    "descKey": "~lifesteal-desc",
+    "categories": [
+      "heal"
+    ],
     "max": 3,
     "stats": [
       {
-        "key": "lifesteal-amount",
+        "key": "~lifesteal-amount",
         "scale": [
           10,
           25,
@@ -129,12 +155,15 @@ snapshot[`all skills > snapshot 1`] = `
   },
   "stun": {
     "cost": 2,
-    "key": "stun",
-    "descKey": "stun-desc",
+    "key": "~stun",
+    "descKey": "~stun-desc",
+    "categories": [
+      "damage"
+    ],
     "max": 3,
     "stats": [
       {
-        "key": "stun-chance",
+        "key": "~stun-chance",
         "scale": [
           5,
           15,
@@ -146,19 +175,22 @@ snapshot[`all skills > snapshot 1`] = `
   },
   "chain": {
     "cost": 10,
-    "key": "chain",
-    "descKey": "chain-desc",
+    "key": "~chain",
+    "descKey": "~chain-desc",
+    "categories": [
+      "damage"
+    ],
     "max": 1,
     "stats": [
       {
-        "key": "chain-2-boost",
+        "key": "~chain-2-boost",
         "scale": [
           25
         ],
         "suffix": "%"
       },
       {
-        "key": "chain-3-boost",
+        "key": "~chain-3-boost",
         "scale": [
           50
         ],
@@ -199,7 +231,7 @@ snapshot[`/skills showall > page 0 1`] = `
           },
           {
             "type": 2,
-            "custom_id": "skills==0=next",
+            "custom_id": "skills==1=next",
             "label": "Next",
             "style": 2
           }

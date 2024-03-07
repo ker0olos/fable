@@ -4,6 +4,8 @@ import { green } from '$std/fmt/colors.ts';
 
 import { AvailableLocales } from '~/src/discord.ts';
 
+import { skillCategories } from '~/src/types.ts';
+
 import EN from '~/i18n/en-US.json' with { type: 'json' };
 import ES from '~/i18n/es-ES.json' with { type: 'json' };
 
@@ -883,6 +885,21 @@ export const commands = [
         description: '/skills showall',
         type: Type.SUB_COMMAND,
         optional: true,
+        options: [
+          Option({
+            name: 'category',
+            description: '$skill-categories',
+            optional: true,
+            type: Type.STRING,
+            choices: skillCategories.map((category) => ({
+              value: category,
+              name: EN[category],
+              name_localizations: {
+                'es-ES': (ES as typeof EN)[category],
+              },
+            })),
+          }),
+        ],
       }),
       Option({
         name: 'acquire',
