@@ -41,7 +41,7 @@ if (import.meta.main) {
         continue;
       }
 
-      member = db.unsureInitStats(member);
+      member = db.ensureInitStats(member);
 
       op
         .set(['characters', member._id], member)

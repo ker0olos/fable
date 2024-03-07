@@ -62,8 +62,8 @@ import {
 } from '~/db/assignParty.ts';
 
 import {
+  ensureInitStats,
   initStats,
-  unsureInitStats,
   //  upgradeStats
 } from '~/db/assignStats.ts';
 
@@ -255,7 +255,7 @@ const db = {
   unassignCharacter,
   //
   initStats,
-  unsureInitStats,
+  ensureInitStats,
   // upgradeStats,
   acquireSkill,
   //

@@ -31,7 +31,7 @@ export async function assignCharacter(
       throw new Error('CHARACTER_NOT_FOUND');
     }
 
-    const character = db.unsureInitStats(characterCheck.value);
+    const character = db.ensureInitStats(characterCheck.value);
 
     if (character.inventory !== inventory._id) {
       throw new Error('CHARACTER_NOT_OWNED');

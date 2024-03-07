@@ -28,7 +28,7 @@ const newUnclaimed = (rating: number): number => {
   return 3 * rating;
 };
 
-export function unsureInitStats(character: Schema.Character): Schema.Character {
+export function ensureInitStats(character: Schema.Character): Schema.Character {
   if (character.combat?.baseStats !== undefined) {
     return character;
   }
@@ -95,7 +95,7 @@ export async function initStats(
       return { character, user };
     }
 
-    character = unsureInitStats(character);
+    character = ensureInitStats(character);
 
     const update = await kv.atomic()
       .check(response)
