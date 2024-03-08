@@ -225,11 +225,14 @@ export async function rechargeConsumables(
       ),
     );
 
-    const newSweeps = Math.min(
-      MAX_SWEEPS - currentSweeps,
-      utils.diffInMinutes(sweepsTimestamp, new Date()) >= RECHARGE_SWEEPS_MINS
-        ? MAX_SWEEPS - currentSweeps
-        : 0,
+    const newSweeps = Math.max(
+      0,
+      Math.min(
+        MAX_SWEEPS - currentSweeps,
+        utils.diffInMinutes(sweepsTimestamp, new Date()) >= RECHARGE_SWEEPS_MINS
+          ? MAX_SWEEPS - currentSweeps
+          : 0,
+      ),
     );
 
     const dailyTimestamp = user.dailyTimestamp

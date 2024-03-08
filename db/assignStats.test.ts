@@ -1,7 +1,7 @@
 // deno-lint-ignore-file
 
 import { assertEquals } from '$std/assert/mod.ts';
-import { stub } from '$std/testing/mock.ts';
+import { returnsNext, stub } from '$std/testing/mock.ts';
 
 import db, { kv } from '~/db/mod.ts';
 
@@ -15,7 +15,15 @@ Deno.test('initStats', async (test) => {
 
     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const randomStub = stub(Math, 'random', () => 0.5);
+    const randomStub = stub(
+      Math,
+      'random',
+      returnsNext([
+        0,
+        0.5,
+        0.99,
+      ]),
+    );
 
     const atomicMock = {
       check: () => atomicMock,
@@ -52,7 +60,49 @@ Deno.test('initStats', async (test) => {
 
     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const randomStub = stub(Math, 'random', () => 0.5);
+    const randomStub = stub(
+      Math,
+      'random',
+      returnsNext([
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.90,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+      ]),
+    );
 
     const atomicMock = {
       check: () => atomicMock,
@@ -67,8 +117,8 @@ Deno.test('initStats', async (test) => {
 
       assertEquals(result.character.combat?.baseStats, {
         attack: 3,
-        defense: 1,
-        speed: 2,
+        defense: 2,
+        speed: 1,
       });
 
       assertEquals(result.character.combat?.skills, {});
@@ -89,7 +139,49 @@ Deno.test('initStats', async (test) => {
 
     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const randomStub = stub(Math, 'random', () => 0.5);
+    const randomStub = stub(
+      Math,
+      'random',
+      returnsNext([
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.90,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+      ]),
+    );
 
     const atomicMock = {
       check: () => atomicMock,
@@ -103,9 +195,9 @@ Deno.test('initStats', async (test) => {
       const result = await db.initStats('instance' as any, 'character_id');
 
       assertEquals(result.character.combat?.baseStats, {
-        attack: 4,
+        attack: 5,
         defense: 2,
-        speed: 3,
+        speed: 2,
       });
 
       assertEquals(result.character.combat?.skills, {});
@@ -126,7 +218,49 @@ Deno.test('initStats', async (test) => {
 
     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const randomStub = stub(Math, 'random', () => 0.5);
+    const randomStub = stub(
+      Math,
+      'random',
+      returnsNext([
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.90,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+      ]),
+    );
 
     const atomicMock = {
       check: () => atomicMock,
@@ -141,12 +275,12 @@ Deno.test('initStats', async (test) => {
 
       assertEquals(result.character.combat?.baseStats, {
         attack: 6,
-        defense: 3,
-        speed: 3,
+        defense: 4,
+        speed: 2,
       });
 
       assertEquals(result.character.combat?.skills, {
-        heal: { level: 1 },
+        grab: { level: 1 },
       });
     } finally {
       getValueAndTimestampStub.restore();
@@ -165,7 +299,49 @@ Deno.test('initStats', async (test) => {
 
     const getValueStub = stub(db, 'getValue', () => Promise.resolve({}));
 
-    const randomStub = stub(Math, 'random', () => 0.5);
+    const randomStub = stub(
+      Math,
+      'random',
+      returnsNext([
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.90,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+        0,
+        0,
+        0,
+        0.5,
+        0.5,
+        0.99,
+      ]),
+    );
 
     const atomicMock = {
       check: () => atomicMock,
@@ -179,12 +355,13 @@ Deno.test('initStats', async (test) => {
       const result = await db.initStats('instance' as any, 'character_id');
 
       assertEquals(result.character.combat?.baseStats, {
-        attack: 7,
+        attack: 8,
         defense: 4,
-        speed: 4,
+        speed: 3,
       });
 
       assertEquals(result.character.combat?.skills, {
+        crit: { level: 1 },
         heal: { level: 1 },
       });
     } finally {

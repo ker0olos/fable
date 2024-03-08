@@ -100,7 +100,7 @@ export const createEnemyStats = (
   const skillRng = new utils.LehmerRNG(seed);
 
   // same as player characters
-  const totalStats = 3 * getEnemyRating(floor) * 5;
+  const totalStats = 9 * getEnemyRating(floor);
 
   const _skills: CharacterBattleStats['skills'] = {};
 
