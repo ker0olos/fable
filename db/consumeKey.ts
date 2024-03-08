@@ -16,29 +16,34 @@ export function clearFloor(
   return inventory.floorsCleared;
 }
 
-export function consumeSweep(
+export function consumeKey(
   {
     op,
     inventory,
     inventoryCheck,
+    amount,
   }: {
     op: Deno.AtomicOperation;
     inventory: Schema.Inventory;
-    user: Schema.User;
     inventoryCheck: Deno.AtomicCheck;
+    amount?: number;
   },
 ): number {
-  const sweeps = inventory.availableSweeps ?? 0;
+  if (typeof inventory.availableKeys === 'undefined') {
+    throw new Error("available keys shouldn't be undefined");
+  }
 
-  inventory.availableSweeps = 0;
+  const keys = amount ?? inventory.availableKeys;
 
-  inventory.lastSweep = new Date().toISOString();
-  inventory.sweepsTimestamp ??= new Date().toISOString();
+  inventory.availableKeys -= keys;
+
+  inventory.lastPVE = new Date().toISOString();
+  inventory.keysTimestamp ??= new Date().toISOString();
 
   op
     .check(inventoryCheck)
     .set(['inventories', inventory._id], inventory)
     .set(inventoriesByUser(inventory.instance, inventory.user), inventory);
 
-  return sweeps;
+  return keys;
 }

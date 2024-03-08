@@ -208,7 +208,7 @@ async function confirmGuaranteed({
   }
 }
 
-function sweeps(
+function keys(
   { userId, amount }: { userId: string; amount: number },
 ): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
@@ -229,7 +229,7 @@ function sweeps(
   );
 
   message.addComponents([
-    new discord.Component().setId('buy', 'sweeps', userId, `${amount}`)
+    new discord.Component().setId('buy', 'keys', userId, `${amount}`)
       .setLabel(i18n.get('confirm', locale)),
     new discord.Component().setId('cancel', userId)
       .setStyle(discord.ButtonStyle.Red)
@@ -239,7 +239,7 @@ function sweeps(
   return message;
 }
 
-async function confirmSweeps({ userId, guildId, amount }: {
+async function confirmKeys({ userId, guildId, amount }: {
   userId: string;
   guildId: string;
   amount: number;
@@ -251,7 +251,7 @@ async function confirmSweeps({ userId, guildId, amount }: {
   const instance = await db.getInstance(guild);
 
   try {
-    await db.addSweeps(instance, _user, amount);
+    await db.addKeys(instance, _user, amount);
 
     const message = new discord.Message();
 
@@ -261,7 +261,7 @@ async function confirmSweeps({ userId, guildId, amount }: {
           'you-bought-pulls',
           locale,
           amount,
-          (amount > 1 ? i18n.get('sweeps', locale) : i18n.get('sweep', locale))
+          (amount > 1 ? i18n.get('keys', locale) : i18n.get('key', locale))
             .toLocaleLowerCase(),
           discord.emotes.add,
         ),
@@ -269,8 +269,11 @@ async function confirmSweeps({ userId, guildId, amount }: {
 
     message.addComponents([
       new discord.Component()
-        .setId('tsweep', userId)
-        .setLabel('/sweep'),
+        .setId('tchallenge', userId)
+        .setLabel('/bt challenge'),
+      new discord.Component()
+        .setId('treclear', userId)
+        .setLabel('/reclear'),
     ]);
 
     return message;
@@ -305,8 +308,8 @@ const shop = {
   guaranteed,
   confirmNormal,
   confirmGuaranteed,
-  sweeps,
-  confirmSweeps,
+  keys,
+  confirmKeys,
 };
 
 export default shop;

@@ -4907,7 +4907,7 @@ Deno.test('buy command handlers', async (test) => {
     }
   });
 
-  await test.step('shop sweeps', async () => {
+  await test.step('shop keys', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -4922,7 +4922,7 @@ Deno.test('buy command handlers', async (test) => {
         name: 'shop',
         options: [{
           type: 1,
-          name: 'sweeps',
+          name: 'keys',
           options: [{
             name: 'amount',
             value: 2,
@@ -4938,7 +4938,7 @@ Deno.test('buy command handlers', async (test) => {
       body,
     } as any));
 
-    const shopStub = stub(shop, 'sweeps', () => ({
+    const shopStub = stub(shop, 'keys', () => ({
       send: () => true,
     } as any));
 
@@ -5008,7 +5008,7 @@ Deno.test('buy command handlers', async (test) => {
         name: 'buy',
         options: [{
           type: 1,
-          name: 'sweeps',
+          name: 'keys',
           options: [{
             name: 'amount',
             value: 2,
@@ -5024,7 +5024,7 @@ Deno.test('buy command handlers', async (test) => {
       body,
     } as any));
 
-    const shopStub = stub(shop, 'sweeps', () => ({
+    const shopStub = stub(shop, 'keys', () => ({
       send: () => true,
     } as any));
 
@@ -8550,7 +8550,7 @@ Deno.test('skills', async (test) => {
   });
 });
 
-Deno.test('sweep', async (test) => {
+Deno.test('reclear', async (test) => {
   await test.step('normal', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -8563,7 +8563,7 @@ Deno.test('sweep', async (test) => {
         },
       },
       data: {
-        name: 'sweep',
+        name: 'reclear',
       },
     });
 
@@ -8574,7 +8574,7 @@ Deno.test('sweep', async (test) => {
       body,
     } as any));
 
-    const skillsStub = stub(tower, 'sweep', () =>
+    const skillsStub = stub(tower, 'reclear', () =>
       ({
         send: () => true,
       }) as any);

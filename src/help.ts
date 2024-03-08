@@ -7,7 +7,7 @@ import {
   COOLDOWN_DAYS,
   COSTS,
   MAX_PULLS,
-  RECHARGE_DAILY_TOKENS,
+  RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_MINS,
 } from '~/db/mod.ts';
 
@@ -169,7 +169,7 @@ function pages(
             '',
             i18n.get('help-page10-tower', locale),
             '',
-            i18n.get('help-page10-sweep', locale),
+            i18n.get('help-page10-reclear', locale),
             discord.empty,
           ].join('\n')),
       ),
@@ -185,7 +185,11 @@ function pages(
           .setDescription([
             i18n.get('help-page5-shop', locale),
             '',
-            i18n.get('help-page5-daily-tokens', locale, RECHARGE_DAILY_TOKENS),
+            i18n.get(
+              'help-page5-daily-tokens',
+              locale,
+              RECHARGE_DAILY_TOKENS_HOURS,
+            ),
             '',
             i18n.get('help-page5-buy-normal', locale, RECHARGE_MINS),
             '',
@@ -286,7 +290,7 @@ function pages(
             `- \`/give\` \`/gift\`: _${i18n.get('/give', locale)}_`,
             '',
             `- \`/battle tower\`: _${i18n.get('/battle tower', locale)}_`,
-            `- \`/sweep\`: _${i18n.get('/sweep', locale)}_`,
+            `- \`/reclear\`: _${i18n.get('/reclear', locale)}_`,
           ].join('\n')),
       ),
     new discord.Message()

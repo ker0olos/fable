@@ -327,7 +327,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with sweeps', async () => {
+  await test.step('with keys (no cleared floors)', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -355,8 +355,8 @@ Deno.test('/now', async (test) => {
             availablePulls: 5,
             stealTimestamp: null,
             rechargeTimestamp: null,
-            availableSweeps: 5,
-            lastSweep: new Date().toISOString(),
+            availableKeys: 5,
+            lastPVE: new Date().toISOString(),
           },
           user: {},
         }) as any,
@@ -412,7 +412,7 @@ Deno.test('/now', async (test) => {
               type: 'rich',
               title: '**5**',
               footer: {
-                text: 'Available Sweeps',
+                text: 'Available Keys',
               },
             },
           ],
@@ -423,12 +423,6 @@ Deno.test('/now', async (test) => {
                 {
                   custom_id: 'gacha=user_id',
                   label: '/gacha',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'tsweep=user_id',
-                  label: '/sweep',
                   style: 2,
                   type: 2,
                 },
@@ -447,7 +441,128 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('no sweeps', async () => {
+  await test.step('with keys (1 floor cleared)', async () => {
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const rechargeConsumablesStub = stub(
+      db,
+      'rechargeConsumables',
+      () =>
+        ({
+          inventory: {
+            availablePulls: 5,
+            stealTimestamp: null,
+            rechargeTimestamp: null,
+            availableKeys: 5,
+            lastPVE: new Date().toISOString(),
+            floorsCleared: 1,
+          },
+          user: {},
+        }) as any,
+    );
+
+    config.appId = 'app_id';
+
+    try {
+      const message = await user.now({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(
+        getUserStub.calls[0].args[0],
+        'user_id',
+      );
+
+      assertEquals(
+        getGuildStub.calls[0].args[0],
+        'guild_id',
+      );
+
+      assertEquals(
+        getInstanceStub.calls[0].args[0],
+        'guild' as any,
+      );
+
+      assertEquals(
+        rechargeConsumablesStub.calls[0].args[0],
+        'instance' as any,
+      );
+
+      assertEquals(
+        rechargeConsumablesStub.calls[0].args[1],
+        'user' as any,
+      );
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**5**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            {
+              type: 'rich',
+              title: '**5**',
+              footer: {
+                text: 'Available Keys',
+              },
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'gacha=user_id',
+                  label: '/gacha',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'treclear=user_id',
+                  label: '/reclear',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      rechargeConsumablesStub.restore();
+    }
+  });
+
+  await test.step('no keys', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const getUserStub = stub(
@@ -475,11 +590,11 @@ Deno.test('/now', async (test) => {
         ({
           inventory: {
             availablePulls: 0,
-            availableSweeps: 0,
+            availableKeys: 0,
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
-            sweepsTimestamp: time.toISOString(),
-            lastSweep: new Date().toISOString(),
+            keysTimestamp: time.toISOString(),
+            lastPVE: new Date().toISOString(),
           },
           user: {},
         }) as any,
@@ -535,11 +650,11 @@ Deno.test('/now', async (test) => {
               type: 'rich',
               title: '**0**',
               footer: {
-                text: 'Available Sweeps',
+                text: 'Available Keys',
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
-            { type: 'rich', description: '_+5 sweeps <t:1675570906:R>_' },
+            { type: 'rich', description: '_+1 key <t:1675567906:R>_' },
           ],
           components: [],
         },

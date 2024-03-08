@@ -1,4 +1,5 @@
-// deno-lint-ignore no-external-import
+// deno-lint-ignore-file ban-ts-comment no-external-import
+
 import {
   batchedAtomic,
 } from 'https://raw.githubusercontent.com/ker0olos/kv-toolbox/patch-1/batchedAtomic.ts';
@@ -26,9 +27,16 @@ if (import.meta.main) {
   const func = async (list: typeof _inventories) => {
     for await (const { key, value } of list) {
       delete value.floorsCleared;
+      //@ts-ignore
       delete value.sweepsTimestamp;
+      //@ts-ignore
       delete value.availableSweeps;
+      //@ts-ignore
       delete value.lastSweep;
+
+      delete value.keysTimestamp;
+      delete value.availableKeys;
+      delete value.lastPVE;
 
       op.set(key, value);
     }

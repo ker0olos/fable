@@ -1663,7 +1663,7 @@ Deno.test('buy components', async (test) => {
     }
   });
 
-  await test.step('sweeps', async () => {
+  await test.step('keys', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1675,7 +1675,7 @@ Deno.test('buy components', async (test) => {
         },
       },
       data: {
-        custom_id: 'buy=sweeps=user_id=2',
+        custom_id: 'buy=keys=user_id=2',
       },
     });
 
@@ -1690,7 +1690,7 @@ Deno.test('buy components', async (test) => {
       send: () => true,
     }));
 
-    const shopStub = stub(shop, 'confirmSweeps', () =>
+    const shopStub = stub(shop, 'confirmKeys', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -1928,7 +1928,7 @@ Deno.test('buy components', async (test) => {
     }
   });
 
-  await test.step('sweeps no permission', async () => {
+  await test.step('keys no permission', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1941,7 +1941,7 @@ Deno.test('buy components', async (test) => {
         },
       },
       data: {
-        custom_id: 'buy=sweeps=another_user_id=2',
+        custom_id: 'buy=keys=another_user_id=2',
       },
     });
 

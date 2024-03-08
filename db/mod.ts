@@ -11,12 +11,12 @@ import {
   getUser,
   getUserCharacters,
   getUserParty,
+  MAX_KEYS,
   MAX_NEW_PULLS,
   MAX_PULLS,
-  MAX_SWEEPS,
-  RECHARGE_DAILY_TOKENS,
+  RECHARGE_DAILY_TOKENS_HOURS,
+  RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
-  RECHARGE_SWEEPS_MINS,
   rechargeConsumables,
 } from '~/db/getInventory.ts';
 
@@ -38,8 +38,8 @@ import {
 
 import {
   addGuarantee,
+  addKeys,
   addPulls,
-  addSweeps,
   addTokens,
   COSTS,
 } from '~/db/addTokens.ts';
@@ -71,7 +71,7 @@ import { acquireSkill } from '~/db/acquireSkill.ts';
 
 import { distributeNewStats, gainExp, MAX_LEVEL } from '~/db/gainExp.ts';
 
-import { clearFloor, consumeSweep } from '~/db/consumeSweep.ts';
+import { clearFloor, consumeKey } from '~/db/consumeKey.ts';
 
 import { getAllPublicPacks, getPacksByMaintainerId } from '~/db/getPack.ts';
 
@@ -82,7 +82,6 @@ import { disableBuiltins } from '~/db/manageInstance.ts';
 import { getFromBlob, setAsBlob } from '~/db/blob.ts';
 
 export const kv = await Deno.openKv(
-  // 'test2',
   // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
 );
 
@@ -249,7 +248,7 @@ const db = {
   addTokens,
   addGuarantee,
   addPulls,
-  addSweeps,
+  addKeys,
   //
   assignCharacter,
   swapSpots,
@@ -262,7 +261,7 @@ const db = {
   //
   gainExp,
   distributeNewStats,
-  consumeSweep,
+  consumeKey,
   clearFloor,
   //
   addPack,
@@ -278,13 +277,13 @@ export {
   COOLDOWN_DAYS,
   COSTS,
   findCharacter,
+  MAX_KEYS,
   MAX_LEVEL,
   MAX_NEW_PULLS,
   MAX_PULLS,
-  MAX_SWEEPS,
-  RECHARGE_DAILY_TOKENS,
+  RECHARGE_DAILY_TOKENS_HOURS,
+  RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
-  RECHARGE_SWEEPS_MINS,
 };
 
 export default db;

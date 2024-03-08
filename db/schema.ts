@@ -24,7 +24,7 @@ export interface User extends Collection {
   id: string;
   inventories: string[];
   availableTokens?: number;
-  dailyTimestamp?: string;
+  dailyTimestamp: string;
   guarantees?: number[];
   likes?: Like[];
 }
@@ -34,13 +34,14 @@ export interface Inventory extends Collection {
   instance: string;
   availablePulls: number;
   lastPull?: string;
+
   rechargeTimestamp?: string;
   stealTimestamp?: string;
 
   floorsCleared?: number;
-  availableSweeps?: number;
-  sweepsTimestamp?: string;
-  lastSweep?: string;
+  availableKeys?: number;
+  keysTimestamp?: string;
+  lastPVE?: string;
 
   party?: {
     member1?: string;

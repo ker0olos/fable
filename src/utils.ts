@@ -16,9 +16,9 @@ import { levenshtein } from '~/search-index/mod.ts';
 import { proxy } from '~/images-proxy/mod.ts';
 
 import {
-  RECHARGE_DAILY_TOKENS,
+  RECHARGE_DAILY_TOKENS_HOURS,
+  RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
-  RECHARGE_SWEEPS_MINS,
 } from '~/db/mod.ts';
 
 const TEN_MIB = 1024 * 1024 * 10;
@@ -327,7 +327,7 @@ function rechargeTimestamp(v?: string): string {
 function rechargeDailyTimestamp(v?: string): string {
   const parsed = new Date(v ?? new Date());
 
-  parsed.setHours(parsed.getHours() + RECHARGE_DAILY_TOKENS);
+  parsed.setHours(parsed.getHours() + RECHARGE_DAILY_TOKENS_HOURS);
 
   const ts = parsed.getTime();
 
@@ -335,10 +335,10 @@ function rechargeDailyTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeSweepTimestamp(v?: string): string {
+function rechargeKeysTimestamp(v?: string): string {
   const parsed = new Date(v ?? new Date());
 
-  parsed.setMinutes(parsed.getMinutes() + RECHARGE_SWEEPS_MINS);
+  parsed.setMinutes(parsed.getMinutes() + RECHARGE_KEYS_MINS);
 
   const ts = parsed.getTime();
 
@@ -480,7 +480,7 @@ const utils = {
   readJson,
   rechargeTimestamp,
   rechargeDailyTimestamp,
-  rechargeSweepTimestamp,
+  rechargeKeysTimestamp,
   rng,
   serve,
   serveStatic,

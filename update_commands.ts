@@ -631,8 +631,8 @@ export const commands = [
         ],
       }),
       Option({
-        name: 'sweeps',
-        description: '/buy sweeps',
+        name: 'keys',
+        description: '/buy keys',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -640,7 +640,7 @@ export const commands = [
             min_value: 1,
             max_value: 99,
             name: 'amount',
-            description: '$buy-sweeps-amount',
+            description: '$buy-keys-amount',
             type: Type.INTEGER,
           }),
         ],
@@ -963,8 +963,8 @@ export const commands = [
     ],
   }),
   ...Command({
-    name: 'sweep',
-    description: '/sweep',
+    name: 'reclear',
+    description: '/reclear',
   }),
 ];
 

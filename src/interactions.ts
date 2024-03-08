@@ -676,8 +676,8 @@ export const handler = async (r: Request) => {
                   userId: member.user.id,
                   amount: options['amount'] as number,
                 }).send();
-              case 'sweeps':
-                return shop.sweeps({
+              case 'keys':
+                return shop.keys({
                   userId: member.user.id,
                   amount: options['amount'] as number,
                 }).send();
@@ -810,8 +810,8 @@ export const handler = async (r: Request) => {
             }
             break;
           }
-          case 'sweep': {
-            return tower.sweep({
+          case 'reclear': {
+            return tower.reclear({
               token,
               guildId,
               userId: member.user.id,
@@ -1008,8 +1008,8 @@ export const handler = async (r: Request) => {
                   }))
                     .setType(discord.MessageType.Update)
                     .send();
-                case 'sweeps':
-                  return (await shop.confirmSweeps({
+                case 'keys':
+                  return (await shop.confirmKeys({
                     guildId,
                     userId: member.user.id,
                     amount: value,
@@ -1219,8 +1219,8 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'tsweep': {
-            return tower.sweep({
+          case 'treclear': {
+            return tower.reclear({
               token,
               guildId,
               userId: member.user.id,

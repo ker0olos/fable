@@ -240,13 +240,13 @@ Deno.test('recharge timestamps', () => {
   );
 });
 
-Deno.test('recharge sweeps timestamps', () => {
+Deno.test('recharge keys timestamps', () => {
   const now = new Date();
 
-  const expected = new Date().setMinutes(now.getMinutes() + 60).toString();
+  const expected = new Date().setMinutes(now.getMinutes() + 10).toString();
 
   assertEquals(
-    utils.rechargeSweepTimestamp(now.toISOString()),
+    utils.rechargeKeysTimestamp(now.toISOString()),
     expected.substring(0, expected.length - 3),
   );
 });

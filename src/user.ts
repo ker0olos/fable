@@ -1,6 +1,6 @@
 import config from '~/src/config.ts';
 
-import db, { COSTS, MAX_PULLS, MAX_SWEEPS } from '~/db/mod.ts';
+import db, { COSTS, MAX_KEYS, MAX_PULLS } from '~/db/mod.ts';
 
 import i18n from '~/src/i18n.ts';
 import utils from '~/src/utils.ts';
@@ -47,11 +47,12 @@ async function now({
 
   const {
     availablePulls,
-    sweepsTimestamp,
-    availableSweeps,
+    keysTimestamp,
+    availableKeys,
     stealTimestamp,
     rechargeTimestamp,
-    lastSweep,
+    lastPVE,
+    floorsCleared,
   } = inventory;
 
   const { dailyTimestamp, availableTokens } = user;
@@ -60,10 +61,10 @@ async function now({
 
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
   const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
-  const sweepsRecharge = utils.rechargeSweepTimestamp(sweepsTimestamp);
+  const keysRecharge = utils.rechargeKeysTimestamp(keysTimestamp);
 
-  const showSweeps = typeof lastSweep === 'string' &&
-    utils.isWithin14Days(new Date(lastSweep));
+  const showKeys = typeof lastPVE === 'string' &&
+    utils.isWithin14Days(new Date(lastPVE));
 
   const guarantees = Array.from(new Set(user.guarantees ?? []))
     .sort((a, b) => b - a);
@@ -83,14 +84,14 @@ async function now({
       }),
   );
 
-  if (showSweeps) {
+  if (showKeys) {
     message.addEmbed(
       new discord.Embed()
-        .setTitle(`**${availableSweeps}**`)
+        .setTitle(`**${availableKeys}**`)
         .setFooter({
-          text: availableSweeps === 1
-            ? i18n.get('available-sweep', locale)
-            : i18n.get('available-sweeps', locale),
+          text: availableKeys === 1
+            ? i18n.get('available-key', locale)
+            : i18n.get('available-keys', locale),
         }),
     );
   }
@@ -131,11 +132,11 @@ async function now({
   }
 
   // deno-lint-ignore no-non-null-assertion
-  if (showSweeps && availableSweeps! < MAX_SWEEPS) {
+  if (showKeys && availableKeys! < MAX_KEYS) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          i18n.get('+1-sweep', locale, `<t:${sweepsRecharge}:R>`),
+          i18n.get('+1-key', locale, `<t:${keysRecharge}:R>`),
         ),
     );
   }
@@ -165,12 +166,12 @@ async function now({
   }
 
   // deno-lint-ignore no-non-null-assertion
-  if (showSweeps && availableSweeps! > 0) {
+  if (showKeys && floorsCleared && availableKeys! > 0) {
     message.addComponents([
-      // `/sweep` shortcut
+      // `/reclear` shortcut
       new discord.Component()
-        .setId('tsweep', userId)
-        .setLabel('/sweep'),
+        .setId('treclear', userId)
+        .setLabel('/reclear'),
     ]);
   }
 

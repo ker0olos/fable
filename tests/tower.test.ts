@@ -250,16 +250,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  disabled: true,
-                  label: 'Sweep',
+                  custom_id: 'tchallenge=user_id',
+                  disabled: false,
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
-                  disabled: false,
-                  label: 'Challenge',
+                  custom_id: 'treclear',
+                  disabled: true,
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -382,16 +382,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -514,16 +514,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -646,16 +646,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -778,16 +778,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -910,16 +910,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -1042,16 +1042,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  disabled: false,
-                  label: 'Sweep',
+                  custom_id: 'tchallenge=user_id',
+                  disabled: true,
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
-                  disabled: true,
-                  label: 'Challenge',
+                  custom_id: 'treclear',
+                  disabled: false,
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -1076,7 +1076,7 @@ Deno.test('/tower view', async (test) => {
   });
 });
 
-Deno.test('/sweep', async (test) => {
+Deno.test('/reclear', async (test) => {
   await test.step('normal', async () => {
     const timeStub = new FakeTime();
 
@@ -1173,9 +1173,9 @@ Deno.test('/sweep', async (test) => {
       () => 'instance' as any,
     );
 
-    const consumeSweepStub = stub(
+    const consumeKeyStub = stub(
       db,
-      'consumeSweep',
+      'consumeKey',
       () => 1,
     );
 
@@ -1251,7 +1251,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = await tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1306,8 +1306,8 @@ Deno.test('/sweep', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  label: '/sweep',
+                  custom_id: 'treclear',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -1329,7 +1329,7 @@ Deno.test('/sweep', async (test) => {
       getUserStub.restore();
       getInventoryStub.restore();
       getUserPartyStub.restore();
-      consumeSweepStub.restore();
+      consumeKeyStub.restore();
       atomicStub.restore();
     }
   });
@@ -1430,9 +1430,9 @@ Deno.test('/sweep', async (test) => {
       () => 'instance' as any,
     );
 
-    const consumeSweepStub = stub(
+    const consumeKeyStub = stub(
       db,
-      'consumeSweep',
+      'consumeKey',
       () => 3,
     );
 
@@ -1529,7 +1529,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = tower.sweep({
+      const message = tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1585,8 +1585,8 @@ Deno.test('/sweep', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  label: '/sweep',
+                  custom_id: 'treclear',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -1608,7 +1608,7 @@ Deno.test('/sweep', async (test) => {
       getUserStub.restore();
       getInventoryStub.restore();
       getUserPartyStub.restore();
-      consumeSweepStub.restore();
+      consumeKeyStub.restore();
       gainExpStub.restore();
       atomicStub.restore();
     }
@@ -1710,9 +1710,9 @@ Deno.test('/sweep', async (test) => {
       () => 'instance' as any,
     );
 
-    const consumeSweepStub = stub(
+    const consumeKeyStub = stub(
       db,
-      'consumeSweep',
+      'consumeKey',
       () => 5,
     );
 
@@ -1809,7 +1809,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = await tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1865,8 +1865,8 @@ Deno.test('/sweep', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  label: '/sweep',
+                  custom_id: 'treclear',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -1888,13 +1888,13 @@ Deno.test('/sweep', async (test) => {
       getUserStub.restore();
       getInventoryStub.restore();
       getUserPartyStub.restore();
-      consumeSweepStub.restore();
+      consumeKeyStub.restore();
       gainExpStub.restore();
       atomicStub.restore();
     }
   });
 
-  await test.step('no sweeps available', async () => {
+  await test.step('no keys available', async () => {
     const timeStub = new FakeTime('2011/1/25 00:00 UTC');
 
     const media: AniListMedia[] = [
@@ -2001,8 +2001,8 @@ Deno.test('/sweep', async (test) => {
         ({
           user: {},
           inventory: {
-            availableSweeps: 0,
-            sweepsTimestamp: date.toISOString(),
+            availableKeys: 0,
+            keysTimestamp: date.toISOString(),
             floorsCleared: 1,
           },
         }) as any,
@@ -2068,7 +2068,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = tower.sweep({
+      const message = tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -2111,11 +2111,11 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: "You don't have any more sweeps!",
+              description: "You don't have any more keys!",
             },
             {
               type: 'rich',
-              description: '_+5 sweeps <t:1295910000:R>_',
+              description: '_+1 key <t:1295907000:R>_',
             },
           ],
         },
@@ -2180,7 +2180,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = await tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -2223,7 +2223,8 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Clear at least 1 floor of `/battle tower` first',
+              description:
+                'Clear at least one floor of the `/battle tower` first',
             },
           ],
         },

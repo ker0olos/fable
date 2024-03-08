@@ -1,6 +1,6 @@
 import { inventoriesByUser, usersByDiscordId } from './indices.ts';
 
-import db, { kv, MAX_PULLS, MAX_SWEEPS } from './mod.ts';
+import db, { kv, MAX_KEYS, MAX_PULLS } from './mod.ts';
 
 import { KvError } from '../src/errors.ts';
 
@@ -129,7 +129,7 @@ export async function addGuarantee(
   throw new KvError('failed to update user');
 }
 
-export async function addSweeps(
+export async function addKeys(
   instance: Schema.Instance,
   _user: Schema.User,
   amount: number,
@@ -151,14 +151,14 @@ export async function addSweeps(
       false,
     );
 
-    inventory.availableSweeps = Math.min(
+    inventory.availableKeys = Math.min(
       99,
       // deno-lint-ignore no-non-null-assertion
-      inventory.availableSweeps! + amount,
+      inventory.availableKeys! + amount,
     );
 
-    if (inventory.availableSweeps >= MAX_SWEEPS) {
-      inventory.sweepsTimestamp = undefined;
+    if (inventory.availableKeys >= MAX_KEYS) {
+      inventory.keysTimestamp = undefined;
     }
 
     // don't save likes on the user object

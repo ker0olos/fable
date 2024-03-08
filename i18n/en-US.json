@@ -25,11 +25,11 @@
 
   "+1-pull": "_+1 pull {0}_",
   "+1-token": "_+1 daily token {0}_",
-  "+1-sweep": "_+5 sweeps {0}_",
+  "+1-key": "_+1 key {0}_",
   "available-pull": "Available Pull",
   "available-pulls": "Available Pulls",
-  "available-sweep": "Available Sweep",
-  "available-sweeps": "Available Sweeps",
+  "available-key": "Available Key",
+  "available-keys": "Available Keys",
   "daily-token": "Daily Token",
   "daily-tokens": "Daily Tokens",
   "steal-cooldown-ends": "_Steal cooldown ends {0}_",
@@ -46,8 +46,9 @@
   "attacking-again": "Again",
   "won": "Won",
 
-  "sweep": "Sweep",
-  "sweeps": "Sweeps",
+  "key": "Key",
+  "keys": "Keys",
+  "reclear": "Reclear",
   "floor": "Floor",
   "next-floor": "Next Floor",
   "try-again": "Try Again",
@@ -135,7 +136,7 @@
   "gacha-no-more-characters-left": "There are no more {0}characters left",
   "gacha-no-more-in-range": "There are no more characters left in this range",
 
-  "combat-no-more-sweeps": "You don't have any more sweeps!",
+  "combat-no-more-keys": "You don't have any more keys!",
 
   "no-packs-installed": "Server doesn't have any installed packs",
 
@@ -184,9 +185,9 @@
   "skill-is-maxed": "Skill is maxed",
   "maxed-skill-slots": "This character already has the max number of skills possible, and can't acquire new skills",
 
-  "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
+  "no-cleared-floors": "Clear at least one floor of the `/battle tower` first",
   "max-floor-cleared": "You already cleared the hightest floor in the tower",
-  "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
+  "tower-fail": "`/reclear` the last floor to level up your party and try again!",
   "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
 
@@ -231,7 +232,7 @@
   "help-page10-stamina": "__Stamina is health points__, allows you to take more hits and survive longer in battle",
 
   "help-page10-tower": "Use `/battle tower` to climb the tower, each server has a unique tower and unique enemies and weakness.",
-  "help-page10-sweep": "> Level up your characters and gain extra stat points by `/sweep`ing the same floor a few times.",
+  "help-page10-reclear": "> Level up your characters and gain extra stat points by `/reclear`ing the same floor a few times.",
 
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
@@ -293,7 +294,7 @@
 
   "/buy normal": "use tokens to buy normal pulls",
   "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
-  "/buy sweeps": "use tokens to buy tower sweeps",
+  "/buy keys": "use tokens to buy tower keys",
 
   "/installed packs": "list all the installed packs on a server",
   "/logs": "list user last few found characters",
@@ -307,7 +308,7 @@
   "/battle tower": "Climb the tower to glory and become a fable",
   "/battle challenge": "Challenge the tower's next floor",
 
-  "/sweep": "Sweep your current battle tower floor for exp",
+  "/reclear": "Reclear your current tower floor to gain exp",
 
   "/skills showall": "Show all available skills and their details",
   "/skills acquire": "Teach a character a skill",
@@ -336,7 +337,7 @@
   "$new-nick": "new nickname",
 
   "$buy-normal-amount": "the amount of pulls you want to buy",
-  "$buy-sweeps-amount": "the amount of sweeps you want to buy",
+  "$buy-keys-amount": "the amount of keys you want to buy",
   "$buy-guaranteed-stars": "the star rating you want to buy",
 
   "$party-spot": "the spot where you want this character",

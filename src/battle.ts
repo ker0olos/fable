@@ -59,14 +59,37 @@ function challengeTower({ token, guildId, user }: {
       const guild = await db.getGuild(guildId);
       const instance = await db.getInstance(guild);
 
-      const _user = await db.getUser(user.id);
+      const __user = await db.getUser(user.id);
 
-      const { inventory } = await db.getInventory(instance, _user);
+      const { user: _user, inventory, inventoryCheck } = await db
+        .rechargeConsumables(instance, __user, false);
 
       const floor = (inventory.floorsCleared || 0) + 1;
 
       if (MAX_FLOORS <= floor) {
         throw new NonFetalError(i18n.get('max-floor-cleared', locale));
+      }
+
+      // deno-lint-ignore no-non-null-assertion
+      if (inventory.availableKeys! <= 0) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(i18n.get('combat-no-more-keys', locale)),
+          )
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(
+                i18n.get(
+                  '+1-key',
+                  locale,
+                  `<t:${
+                    utils.rechargeKeysTimestamp(inventory.keysTimestamp)
+                  }:R>`,
+                ),
+              ),
+          )
+          .patch(token);
       }
 
       const seed = `${guildId}${floor}`;
@@ -135,12 +158,15 @@ function challengeTower({ token, guildId, user }: {
           message: lastMessage,
           party,
           inventory,
+          inventoryCheck,
           locale,
         });
       } else {
         await tower.onFail({
           token,
           userId: user.id,
+          inventory,
+          inventoryCheck,
           message: lastMessage,
           locale,
         });

@@ -271,20 +271,15 @@ function getMessage(
   message.addEmbed(new discord.Embed()
     .setDescription(s.join('\n')));
 
-  // sweep button
-  message.addComponents([
-    new discord.Component()
-      .setId('tsweep')
-      .setLabel(i18n.get('sweep', locale))
-      .setDisabled(cleared <= 0),
-  ]);
-
-  // challenge button
   message.addComponents([
     new discord.Component()
       .setId('tchallenge', userId)
-      .setLabel(i18n.get('challenge', locale))
+      .setLabel('/bt challenge')
       .setDisabled(MAX_FLOORS <= cleared),
+    new discord.Component()
+      .setId('treclear')
+      .setLabel('/reclear')
+      .setDisabled(cleared <= 0),
   ]);
 
   return message;
@@ -343,7 +338,7 @@ function view({ token, guildId, userId }: {
   return loading;
 }
 
-function sweep({ token, guildId, userId }: {
+function reclear({ token, guildId, userId }: {
   token: string;
   guildId: string;
   userId: string;
@@ -380,20 +375,20 @@ function sweep({ token, guildId, userId }: {
         }
 
         // deno-lint-ignore no-non-null-assertion
-        if (inventory.availableSweeps! <= 0) {
+        if (inventory.availableKeys! <= 0) {
           return await new discord.Message()
             .addEmbed(
               new discord.Embed()
-                .setDescription(i18n.get('combat-no-more-sweeps', locale)),
+                .setDescription(i18n.get('combat-no-more-keys', locale)),
             )
             .addEmbed(
               new discord.Embed()
                 .setDescription(
                   i18n.get(
-                    '+1-sweep',
+                    '+1-key',
                     locale,
                     `<t:${
-                      utils.rechargeSweepTimestamp(inventory.sweepsTimestamp)
+                      utils.rechargeKeysTimestamp(inventory.keysTimestamp)
                     }:R>`,
                   ),
                 ),
@@ -413,9 +408,9 @@ function sweep({ token, guildId, userId }: {
 
         const op = db.kv.atomic();
 
-        const sweeps = db.consumeSweep({ op, user, inventory, inventoryCheck });
+        const keys = db.consumeKey({ op, inventory, inventoryCheck });
 
-        const expGained = getFloorExp(inventory.floorsCleared ?? 1) * sweeps;
+        const expGained = getFloorExp(inventory.floorsCleared ?? 1) * keys;
 
         const status = party1.map((character) =>
           db.gainExp(op, inventory, character, expGained)
@@ -482,16 +477,16 @@ function sweep({ token, guildId, userId }: {
               .setTitle(
                 // deno-lint-ignore no-non-null-assertion
                 `${i18n.get('floor', locale)} ${inventory
-                  .floorsCleared!} x${sweeps}`,
+                  .floorsCleared!} x${keys}`,
               )
               .setDescription(statusText),
           );
 
-          // sweep button
+          // reclear button
           message.addComponents([
             new discord.Component()
-              .setId('tsweep')
-              .setLabel(`/sweep`),
+              .setId('treclear')
+              .setLabel(`/reclear`),
           ]);
 
           return await message.patch(token);
@@ -529,9 +524,11 @@ function sweep({ token, guildId, userId }: {
 }
 
 async function onFail(
-  { token, message, userId, locale }: {
+  { token, message, userId, inventory, inventoryCheck, locale }: {
     token: string;
     userId: string;
+    inventory: Schema.Inventory;
+    inventoryCheck: Deno.AtomicCheck;
     message: discord.Message;
     locale: discord.AvailableLocales;
   },
@@ -542,11 +539,11 @@ async function onFail(
       .setDescription(i18n.get('tower-fail', locale)),
   );
 
-  // sweep button
+  // reclear button
   message.addComponents([
     new discord.Component()
-      .setId('tsweep')
-      .setLabel(`/sweep`),
+      .setId('treclear')
+      .setLabel(`/reclear`),
   ]);
 
   // try again button
@@ -556,19 +553,36 @@ async function onFail(
       .setLabel(i18n.get('try-again', locale)),
   ]);
 
-  await message.patch(token);
+  let retires = 0;
+
+  const op = db.kv.atomic();
+
+  db.consumeKey({ op, inventory, inventoryCheck, amount: 1 });
+
+  while (retires < 5) {
+    const update = await op.commit();
+
+    if (update.ok) {
+      await message.patch(token);
+      return;
+    }
+
+    retires += 1;
+  }
 }
 
 async function onSuccess(
-  { token, message, inventory, party, userId, guildId, locale }: {
-    token: string;
-    userId: string;
-    guildId: string;
-    message: discord.Message;
-    inventory: Schema.Inventory;
-    party: Schema.Character[];
-    locale: discord.AvailableLocales;
-  },
+  { token, message, inventory, inventoryCheck, party, userId, guildId, locale }:
+    {
+      token: string;
+      userId: string;
+      guildId: string;
+      message: discord.Message;
+      inventory: Schema.Inventory;
+      inventoryCheck: Deno.AtomicCheck;
+      party: Schema.Character[];
+      locale: discord.AvailableLocales;
+    },
 ): Promise<void> {
   const op = db.kv.atomic();
 
@@ -584,6 +598,8 @@ async function onSuccess(
     guildId,
     ids: party.map(({ id }) => id),
   });
+
+  db.consumeKey({ op, inventory, inventoryCheck, amount: 1 });
 
   const characters = party.map(({ id }) => {
     return _characters.find((c) => id === `${c.packId}:${c.id}`);
@@ -644,7 +660,7 @@ async function onSuccess(
 
 const tower = {
   view,
-  sweep,
+  reclear,
   onFail,
   onSuccess,
   getEnemyCharacter,

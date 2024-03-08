@@ -773,8 +773,8 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('sweep dialog', () => {
-    const message = shop.sweeps({
+  await test.step('keys dialog', () => {
+    const message = shop.keys({
       userId: 'user_id',
       amount: 1,
     });
@@ -787,7 +787,7 @@ Deno.test('/buy', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'buy=sweeps=user_id=1',
+              custom_id: 'buy=keys=user_id=1',
               label: 'Confirm',
               style: 2,
               type: 2,
@@ -809,8 +809,8 @@ Deno.test('/buy', async (test) => {
     });
   });
 
-  await test.step('sweep dialog (plural)', () => {
-    const message = shop.sweeps({
+  await test.step('keys dialog (plural)', () => {
+    const message = shop.keys({
       userId: 'user_id',
       amount: 4,
     });
@@ -823,7 +823,7 @@ Deno.test('/buy', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'buy=sweeps=user_id=4',
+              custom_id: 'buy=keys=user_id=4',
               label: 'Confirm',
               style: 2,
               type: 2,
@@ -845,7 +845,7 @@ Deno.test('/buy', async (test) => {
     });
   });
 
-  await test.step('sweep confirmed', async () => {
+  await test.step('keys confirmed', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -866,12 +866,12 @@ Deno.test('/buy', async (test) => {
 
     const addPullsStub = stub(
       db,
-      'addSweeps',
+      'addKeys',
       () => '_' as any,
     );
 
     try {
-      const message = await shop.confirmSweeps({
+      const message = await shop.confirmKeys({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 1,
@@ -891,8 +891,14 @@ Deno.test('/buy', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'tsweep=user_id',
-                label: '/sweep',
+                custom_id: 'tchallenge=user_id',
+                label: '/bt challenge',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'treclear=user_id',
+                label: '/reclear',
                 style: 2,
                 type: 2,
               },
@@ -900,7 +906,7 @@ Deno.test('/buy', async (test) => {
           }],
           embeds: [{
             type: 'rich',
-            description: 'You bought **1** sweep <:add:1099004747123523644>',
+            description: 'You bought **1** key <:add:1099004747123523644>',
           }],
         },
       });
@@ -912,7 +918,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('sweep confirmed (plural)', async () => {
+  await test.step('keys confirmed (plural)', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -933,12 +939,12 @@ Deno.test('/buy', async (test) => {
 
     const addPullsStub = stub(
       db,
-      'addSweeps',
+      'addKeys',
       () => '_' as any,
     );
 
     try {
-      const message = await shop.confirmSweeps({
+      const message = await shop.confirmKeys({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 4,
@@ -958,8 +964,14 @@ Deno.test('/buy', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'tsweep=user_id',
-                label: '/sweep',
+                custom_id: 'tchallenge=user_id',
+                label: '/bt challenge',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'treclear=user_id',
+                label: '/reclear',
                 style: 2,
                 type: 2,
               },
@@ -967,7 +979,7 @@ Deno.test('/buy', async (test) => {
           }],
           embeds: [{
             type: 'rich',
-            description: 'You bought **4** sweeps <:add:1099004747123523644>',
+            description: 'You bought **4** keys <:add:1099004747123523644>',
           }],
         },
       });
@@ -979,7 +991,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('sweep insufficient tokens', async () => {
+  await test.step('keys insufficient tokens', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -1003,7 +1015,7 @@ Deno.test('/buy', async (test) => {
 
     const addPullsStub = stub(
       db,
-      'addSweeps',
+      'addKeys',
       () => {
         throw new Error('INSUFFICIENT_TOKENS');
       },
@@ -1012,7 +1024,7 @@ Deno.test('/buy', async (test) => {
     config.appId = 'app_id';
 
     try {
-      const message = await shop.confirmSweeps({
+      const message = await shop.confirmKeys({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,
@@ -1039,7 +1051,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('sweep insufficient tokens (plural)', async () => {
+  await test.step('keys insufficient tokens (plural)', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -1063,7 +1075,7 @@ Deno.test('/buy', async (test) => {
 
     const addPullsStub = stub(
       db,
-      'addSweeps',
+      'addKeys',
       () => {
         throw new Error('INSUFFICIENT_TOKENS');
       },
@@ -1072,7 +1084,7 @@ Deno.test('/buy', async (test) => {
     config.appId = 'app_id';
 
     try {
-      const message = await shop.confirmSweeps({
+      const message = await shop.confirmKeys({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,

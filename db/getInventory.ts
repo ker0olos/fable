@@ -18,16 +18,15 @@ import { KvError } from '~/src/errors.ts';
 import type * as Schema from '~/db/schema.ts';
 
 export const MAX_PULLS = 5;
-export const MAX_SWEEPS = 5;
-
 export const MAX_NEW_PULLS = 10;
-export const MAX_NEW_SWEEPS = MAX_SWEEPS;
+
+export const MAX_KEYS = 5;
+export const MAX_NEW_KEYS = 5;
 
 export const RECHARGE_MINS = 30;
-export const RECHARGE_SWEEPS_MINS = 60;
+export const RECHARGE_KEYS_MINS = 10;
 
-// in hours
-export const RECHARGE_DAILY_TOKENS = 12;
+export const RECHARGE_DAILY_TOKENS_HOURS = 12;
 
 export async function getUser(userId: string): Promise<Schema.User> {
   const response = await Promise.all([
@@ -45,6 +44,7 @@ export async function getUser(userId: string): Promise<Schema.User> {
     _id: ulid(),
     id: userId,
     inventories: [],
+    dailyTimestamp: new Date().toISOString(),
   };
 
   const insert = await kv.atomic()
@@ -209,11 +209,11 @@ export async function rechargeConsumables(
   while (!res.ok && retries < 5) {
     const { inventory, inventoryCheck } = await db.getInventory(instance, user);
 
-    const sweepsTimestamp = new Date(inventory.sweepsTimestamp ?? Date.now());
+    const keysTimestamp = new Date(inventory.keysTimestamp ?? Date.now());
     const pullsTimestamp = new Date(inventory.rechargeTimestamp ?? Date.now());
 
     const currentPulls = inventory.availablePulls;
-    const currentSweeps = inventory.availableSweeps ?? MAX_NEW_SWEEPS;
+    const currentKeys = inventory.availableKeys ?? MAX_NEW_KEYS;
 
     const newPulls = Math.max(
       0,
@@ -225,13 +225,13 @@ export async function rechargeConsumables(
       ),
     );
 
-    const newSweeps = Math.max(
+    const newKeys = Math.max(
       0,
       Math.min(
-        MAX_SWEEPS - currentSweeps,
-        utils.diffInMinutes(sweepsTimestamp, new Date()) >= RECHARGE_SWEEPS_MINS
-          ? MAX_SWEEPS - currentSweeps
-          : 0,
+        MAX_KEYS - currentKeys,
+        Math.trunc(
+          utils.diffInMinutes(keysTimestamp, new Date()) / RECHARGE_KEYS_MINS,
+        ),
       ),
     );
 
@@ -240,42 +240,38 @@ export async function rechargeConsumables(
       : undefined;
 
     const dailyTimestampThreshold = new Date(
-      Date.now() - RECHARGE_DAILY_TOKENS * 60 * 60 * 1000,
+      Date.now() - RECHARGE_DAILY_TOKENS_HOURS * 60 * 60 * 1000,
     );
 
-    const newDailyTokens = !dailyTimestamp ||
+    const newDailyTokens = dailyTimestamp &&
       dailyTimestamp <= dailyTimestampThreshold;
 
     if (
       newPulls === currentPulls &&
-      newSweeps === currentSweeps &&
+      newKeys === currentKeys &&
       !newDailyTokens
     ) {
       return { user, inventory, inventoryCheck };
     }
 
     const rechargedPulls = currentPulls + newPulls;
-    const rechargedSweeps = currentSweeps + newSweeps;
+    const rechargedKeys = currentKeys + newKeys;
 
     inventory.availablePulls = Math.min(99, rechargedPulls);
-    inventory.availableSweeps = Math.min(99, rechargedSweeps);
+    inventory.availableKeys = Math.min(99, rechargedKeys);
 
     inventory.rechargeTimestamp = rechargedPulls >= MAX_PULLS
       ? undefined
       : new Date(pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS * 60000))
         .toISOString();
 
-    inventory.sweepsTimestamp = rechargedSweeps >= MAX_SWEEPS
-      ? undefined
-      : new Date(
-        sweepsTimestamp.getTime() + (newSweeps * RECHARGE_SWEEPS_MINS * 60000),
-      )
-        .toISOString();
+    inventory.keysTimestamp = rechargedKeys >= MAX_KEYS ? undefined : new Date(
+      keysTimestamp.getTime() + (newKeys * RECHARGE_KEYS_MINS * 60000),
+    )
+      .toISOString();
 
     if (newDailyTokens) {
       user.availableTokens ??= 0;
-
-      user.availableTokens += 1;
 
       const dayOfWeek = new Date().getUTCDay();
 
