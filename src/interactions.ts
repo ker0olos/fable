@@ -1130,6 +1130,19 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
+          case 'stats': {
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![0];
+
+            return stats.view({
+              token,
+              guildId,
+              character: `${idPrefix}${characterId}`,
+              userId: member.user.id,
+            })
+              .setType(discord.MessageType.Update)
+              .send();
+          }
           case 'cacquire': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];

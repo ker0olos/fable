@@ -219,6 +219,9 @@ function assign({
             new discord.Component()
               .setLabel('/character')
               .setId(`character`, characterId),
+            new discord.Component()
+              .setLabel('/stats')
+              .setId(`stats`, characterId),
           ]).patch(token);
       } catch (err) {
         const names = packs.aliasToArray(results[0].name);
