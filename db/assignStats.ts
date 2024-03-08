@@ -17,6 +17,7 @@ import type { SkillKey } from '~/src/types.ts';
 const newSkills = (rating: number): number => {
   switch (rating) {
     case 5:
+      return 2;
     case 4:
       return 1;
     default:
@@ -38,9 +39,21 @@ export function ensureInitStats(character: Schema.Character): Schema.Character {
 
   //
 
-  const attack = Math.floor(Math.random() * total);
-  const defense = Math.floor(Math.random() * (total - attack));
-  const speed = total - attack - defense;
+  let attack = 0;
+  let defense = 0;
+  let speed = 0;
+
+  for (let i = 0; i < total; i++) {
+    const rand = Math.floor(Math.random() * 3);
+
+    if (rand === 0) {
+      attack += 1;
+    } else if (rand === 1) {
+      defense += 1;
+    } else {
+      speed += 1;
+    }
+  }
 
   character.combat ??= {};
   character.combat.skills = {};
