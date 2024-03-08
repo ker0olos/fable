@@ -809,6 +809,12 @@ Deno.test('synthesis confirmed', async (test) => {
                 type: 2,
               },
               {
+                custom_id: 'stats=anilist:1',
+                label: '/stats',
+                style: 2,
+                type: 2,
+              },
+              {
                 custom_id: 'like=anilist:1',
                 label: '/like',
                 style: 2,
@@ -1079,6 +1085,12 @@ Deno.test('synthesis confirmed', async (test) => {
               {
                 custom_id: 'character=anilist:1=1',
                 label: '/character',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'stats=anilist:1',
+                label: '/stats',
                 style: 2,
                 type: 2,
               },

@@ -408,6 +408,9 @@ async function pullAnimation(
       .setLabel('/character')
       .setId(`character`, characterId, '1'),
     new discord.Component()
+      .setLabel('/stats')
+      .setId(`stats`, characterId),
+    new discord.Component()
       .setLabel('/like')
       .setId(`like`, characterId),
   ]);

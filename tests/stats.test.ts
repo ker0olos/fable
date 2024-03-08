@@ -145,32 +145,45 @@ Deno.test('/stats', async (test) => {
             },
           ],
           components: [
-            // {
-            //   type: 1,
-            //   components: [
-            //     {
-            //       custom_id: 'stats=atk=user_id=id:1',
-            //       disabled: false,
-            //       label: '+1 ATK',
-            //       style: 2,
-            //       type: 2,
-            //     },
-            //     {
-            //       custom_id: 'stats=def=user_id=id:1',
-            //       disabled: false,
-            //       label: '+1 DEF',
-            //       style: 2,
-            //       type: 2,
-            //     },
-            //     {
-            //       custom_id: 'stats=spd=user_id=id:1',
-            //       disabled: false,
-            //       label: '+1 SPD',
-            //       style: 2,
-            //       type: 2,
-            //     },
-            //   ],
-            // },
+            {
+              type: 1,
+              components: [
+                //     {
+                //       custom_id: 'stats=atk=user_id=id:1',
+                //       disabled: false,
+                //       label: '+1 ATK',
+                //       style: 2,
+                //       type: 2,
+                //     },
+                //     {
+                //       custom_id: 'stats=def=user_id=id:1',
+                //       disabled: false,
+                //       label: '+1 DEF',
+                //       style: 2,
+                //       type: 2,
+                //     },
+                //     {
+                //       custom_id: 'stats=spd=user_id=id:1',
+                //       disabled: false,
+                //       label: '+1 SPD',
+                //       style: 2,
+                //       type: 2,
+                //     },
+                //   ],
+                {
+                  custom_id: 'character=id:1',
+                  label: '/character',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'like=id:1',
+                  label: '/like',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
           ],
         },
       );
@@ -320,32 +333,44 @@ Deno.test('/stats', async (test) => {
             },
           ],
           components: [
-            // {
-            //   type: 1,
-            //   components: [
-            //     {
-            //       custom_id: 'stats=atk=user_id=id:1',
-            //       disabled: true,
-            //       label: '+1 ATK',
-            //       style: 2,
-            //       type: 2,
-            //     },
-            //     {
-            //       custom_id: 'stats=def=user_id=id:1',
-            //       disabled: true,
-            //       label: '+1 DEF',
-            //       style: 2,
-            //       type: 2,
-            //     },
-            //     {
-            //       custom_id: 'stats=spd=user_id=id:1',
-            //       disabled: true,
-            //       label: '+1 SPD',
-            //       style: 2,
-            //       type: 2,
-            //     },
-            //   ],
-            // },
+            {
+              type: 1,
+              components: [
+                //     {
+                //       custom_id: 'stats=atk=user_id=id:1',
+                //       disabled: true,
+                //       label: '+1 ATK',
+                //       style: 2,
+                //       type: 2,
+                //     },
+                //     {
+                //       custom_id: 'stats=def=user_id=id:1',
+                //       disabled: true,
+                //       label: '+1 DEF',
+                //       style: 2,
+                //       type: 2,
+                //     },
+                //     {
+                //       custom_id: 'stats=spd=user_id=id:1',
+                //       disabled: true,
+                //       label: '+1 SPD',
+                //       style: 2,
+                //       type: 2,
+                //     },
+                {
+                  custom_id: 'character=id:1',
+                  label: '/character',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'like=id:1',
+                  label: '/like',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
           ],
         },
       );

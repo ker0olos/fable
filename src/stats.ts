@@ -213,6 +213,15 @@ function view({ token, character, characterSchema, userId, guildId }: {
       //   ]);
       // }
 
+      message.addComponents([
+        new discord.Component()
+          .setLabel('/character')
+          .setId(`character`, existing.character.id),
+        new discord.Component()
+          .setLabel('/like')
+          .setId(`like`, existing.character.id),
+      ]);
+
       message.addEmbed(embed);
 
       await message.patch(token);

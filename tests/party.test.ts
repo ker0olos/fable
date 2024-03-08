@@ -1494,6 +1494,12 @@ Deno.test('/party assign', async (test) => {
                 style: 2,
                 type: 2,
               },
+              {
+                custom_id: 'stats=anilist:1',
+                label: '/stats',
+                style: 2,
+                type: 2,
+              },
             ],
           }],
           attachments: [],
@@ -1652,6 +1658,12 @@ Deno.test('/party assign', async (test) => {
               {
                 custom_id: 'character=anilist:1',
                 label: '/character',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'stats=anilist:1',
+                label: '/stats',
                 style: 2,
                 type: 2,
               },
