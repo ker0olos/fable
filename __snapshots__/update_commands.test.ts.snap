@@ -1534,22 +1534,20 @@ snapshot[`commands 1`] = `
         ]
       },
       {
-        "name": "sweeps",
-        "description": "use tokens to buy tower sweeps",
+        "name": "keys",
+        "description": "use tokens to buy tower keys",
         "type": 1,
         "required": false,
         "description_localizations": {},
         "options": [
           {
             "name": "amount",
-            "description": "the amount of sweeps you want to buy",
+            "description": "the amount of keys you want to buy",
             "type": 4,
             "required": true,
             "min_value": 1,
             "max_value": 99,
-            "description_localizations": {
-              "es-ES": "the amount of sweeps you want to buy"
-            }
+            "description_localizations": {}
           }
         ]
       }
@@ -1618,22 +1616,20 @@ snapshot[`commands 1`] = `
         ]
       },
       {
-        "name": "sweeps",
-        "description": "use tokens to buy tower sweeps",
+        "name": "keys",
+        "description": "use tokens to buy tower keys",
         "type": 1,
         "required": false,
         "description_localizations": {},
         "options": [
           {
             "name": "amount",
-            "description": "the amount of sweeps you want to buy",
+            "description": "the amount of keys you want to buy",
             "type": 4,
             "required": true,
             "min_value": 1,
             "max_value": 99,
-            "description_localizations": {
-              "es-ES": "the amount of sweeps you want to buy"
-            }
+            "description_localizations": {}
           }
         ]
       }
@@ -2823,8 +2819,8 @@ snapshot[`commands 1`] = `
     ]
   },
   {
-    "name": "sweep",
-    "description": "Sweep your current battle tower floor for exp",
+    "name": "reclear",
+    "description": "Reclear your current tower floor to gain exp",
     "dm_permission": false,
     "description_localizations": {}
   }
