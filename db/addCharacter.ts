@@ -1,4 +1,4 @@
-import { ulid } from 'ulid';
+import { ulid } from '$std/ulid/mod.ts';
 
 import {
   charactersByInstancePrefix,
