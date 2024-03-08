@@ -365,7 +365,7 @@
 
   "buff": "Buff",
   "debuff": "Debuff",
-  "damage": "Damage",
+  "offensive": "Offensive",
   "support": "Support",
   "heal": "Heal",
 
@@ -407,5 +407,8 @@
   "~chain": "Chain Attack",
   "~chain-desc": "Increases the amount of damage on chained attacks",
   "~chain-2-boost": "x2 Attack Boost",
-  "~chain-3-boost": "x3 Attack Boost"
+  "~chain-3-boost": "x3 Attack Boost",
+
+  "~sneak": "Sneak Attack",
+  "~sneak-desc": "Always target and sneak attack the backline of the enemy party instead"
 }

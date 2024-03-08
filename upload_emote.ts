@@ -122,10 +122,8 @@ if (import.meta.main) {
       emotePath,
     });
 
-    const output = `<:${name}:${id}>`;
+    const output = `${name.toLowerCase()}: '<:${name}:${id}>'`;
 
-    console.log(output);
-
-    copyToClipboard(output);
+    copyToClipboard((console.log(output), output));
   }
 }

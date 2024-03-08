@@ -15,7 +15,11 @@ import tower from '~/src/tower.ts';
 
 import { skills } from '~/src/skills.ts';
 
-import { getBattleStats, PartyMember } from '~/src/battle.types.ts';
+import {
+  getBattleStats,
+  PartyMember,
+  type StatusEffect,
+} from '~/src/battle.types.ts';
 
 import { MAX_FLOORS } from '~/src/tower.ts';
 
@@ -26,8 +30,6 @@ import { NonFetalError } from '~/src/errors.ts';
 import type { Character } from './types.ts';
 
 import type { SkillKey } from '~/src/types.ts';
-
-import type { StatusEffect } from '~/src/types.ts';
 
 type BattleData = { playing: boolean };
 type UsedSkills = Partial<Record<SkillKey, boolean>>;
@@ -247,20 +249,6 @@ async function startCombat(
     const party1Character: PartyMember = party1Alive[0];
     const party2Character: PartyMember = party2Alive[0];
 
-    party1Character
-      // .activateAttackBoost(party1Alive)
-      .activateDefenseBoost(party1Alive)
-      .activateSpeedBoost(party1Alive)
-      .activateSlowDebuff(party2Alive)
-      .activateEnrageBoost();
-
-    party2Character
-      // .activateAttackBoost(party2Alive)
-      .activateDefenseBoost(party2Alive)
-      .activateSpeedBoost(party2Alive)
-      .activateSlowDebuff(party1Alive)
-      .activateEnrageBoost();
-
     const fastestCharacter = determineFastest(party1Character, party2Character);
 
     const speedDiffPercent = calculateSpeedDiffPercent(
@@ -286,8 +274,8 @@ async function startCombat(
       // const attackingParty = turn === 'party1' ? party1Alive : party2Alive;
       const receivingParty = turn === 'party1' ? party2Alive : party1Alive;
 
+      let receiving = turn === 'party1' ? party2Character : party1Character;
       const attacking = turn === 'party1' ? party1Character : party2Character;
-      const receiving = turn === 'party1' ? party2Character : party1Character;
 
       const receivingUsedSkills = turn === 'party1'
         ? party2UsedSkills
@@ -313,6 +301,12 @@ async function startCombat(
       battleData?.playing && await utils.sleep(MESSAGE_DELAY);
       battleData?.playing && await message.patch(token);
 
+      // sneak attack the backline if the attacking character has the skill
+      if (attacking.canSneakAttack) {
+        receiving = receivingParty.filter((m) => m.alive).slice(-1)[0];
+        attacking.effects.sneaky = { active: true };
+      }
+
       // if stunned skip attack and cancel the stun
       if (stunned?.active) {
         stunned.active = false;
@@ -327,6 +321,9 @@ async function startCombat(
 
         battleData?.playing && await utils.sleep(MESSAGE_DELAY);
         battleData?.playing && await message.patch(token);
+
+        delete attacking.effects.sneaky;
+        delete receiving.effects.sneaky;
       }
 
       if (

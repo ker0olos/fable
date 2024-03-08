@@ -30,6 +30,10 @@ snapshot[`skills > acquire 1`] = `
         "value": "~speed-boost"
       },
       {
+        "name": "Sneak Attack",
+        "value": "~sneak"
+      },
+      {
         "name": "Emergency Healing",
         "value": "~heal"
       },
@@ -74,6 +78,10 @@ snapshot[`skills > upgrade 1`] = `
       {
         "name": "Speed Boost",
         "value": "~speed-boost"
+      },
+      {
+        "name": "Sneak Attack",
+        "value": "~sneak"
       },
       {
         "name": "Emergency Healing",

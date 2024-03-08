@@ -30,7 +30,7 @@ const skills = {
     cost: 2,
     key: '~crit',
     descKey: '~crit-desc',
-    categories: ['damage'],
+    categories: ['offensive'],
     activation: function ({
       lvl,
       attacking: char,
@@ -104,7 +104,7 @@ const skills = {
     cost: 2,
     key: '~enrage',
     descKey: '~enrage-desc',
-    categories: ['buff', 'damage'],
+    categories: ['buff', 'offensive'],
     max: 3,
     stats: [{
       key: '~hp-remaining',
@@ -145,7 +145,7 @@ const skills = {
     cost: 2,
     key: '~lifesteal',
     descKey: '~lifesteal-desc',
-    categories: ['heal'],
+    categories: ['heal', 'offensive'],
     activation: function ({ attacking, lvl, damage }): SkillOutput {
       const [stealPercent] = this.stats!;
 
@@ -168,7 +168,7 @@ const skills = {
     cost: 2,
     key: '~stun',
     descKey: '~stun-desc',
-    categories: ['damage'],
+    categories: ['offensive'],
     max: 3,
     activation: function ({ lvl }): SkillOutput {
       const [stunChance] = this.stats!;
@@ -190,7 +190,7 @@ const skills = {
     cost: 10,
     key: '~chain',
     descKey: '~chain-desc',
-    categories: ['damage'],
+    categories: ['offensive'],
     activation: function ({ combo, damage }): SkillOutput {
       const [chain2, chain3] = this.stats!;
 
@@ -216,6 +216,14 @@ const skills = {
       scale: [50],
       suffix: '%',
     }],
+  },
+  grab: {
+    cost: 5,
+    key: '~sneak',
+    descKey: '~sneak-desc',
+    categories: ['offensive'],
+    max: 1,
+    stats: [],
   },
 } satisfies Record<string, CharacterSkill>;
 

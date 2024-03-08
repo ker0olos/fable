@@ -2703,8 +2703,8 @@ snapshot[`commands 1`] = `
                 "name_localizations": {}
               },
               {
-                "value": "damage",
-                "name": "Damage",
+                "value": "offensive",
+                "name": "Offensive",
                 "name_localizations": {}
               },
               {

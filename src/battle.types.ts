@@ -2,7 +2,18 @@ import { skills } from '~/src/skills.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type { Character, CharacterBattleStats, StatusEffect } from './types.ts';
+import type { Character, CharacterBattleStats } from './types.ts';
+
+export interface StatusEffect {
+  active: boolean;
+}
+
+export interface StatusEffects {
+  enraged?: StatusEffect;
+  stunned?: StatusEffect;
+  slowed?: StatusEffect;
+  sneaky?: StatusEffect;
+}
 
 export class PartyMember {
   character: Character;
@@ -11,11 +22,7 @@ export class PartyMember {
   #debuff: Schema.CharacterStats;
   existing?: Schema.Character;
   owner: 'party1' | 'party2';
-  effects: {
-    enraged?: StatusEffect;
-    stunned?: StatusEffect;
-    slowed?: StatusEffect;
-  };
+  effects: StatusEffects;
 
   constructor({ character, stats, existing, owner }: {
     character: Character;
@@ -23,13 +30,20 @@ export class PartyMember {
     existing?: Schema.Character;
     owner: 'party1' | 'party2';
   }) {
-    this.character = character;
+    this.effects = {};
     this.#stats = stats;
+    this.character = character;
     this.#boost = { attack: 0, defense: 0, speed: 0 };
     this.#debuff = { attack: 0, defense: 0, speed: 0 };
     this.existing = existing;
     this.owner = owner;
-    this.effects = {};
+  }
+
+  public ensureBoosts(party: PartyMember[], enemyParty: PartyMember[]): void {
+    this.activateDefenseBoost(party)
+      .activateSpeedBoost(party)
+      .activateSlowDebuff(enemyParty)
+      .activateEnrageBoost();
   }
 
   public get alive(): boolean {
@@ -76,6 +90,10 @@ export class PartyMember {
 
   public damage(damage: number): void {
     this.#stats.hp = Math.max(this.#stats.hp - damage, 0);
+  }
+
+  public get canSneakAttack(): boolean {
+    return (this.skills.grab?.level ?? 0) > 0;
   }
 
   // public activateAttackBoost(_party: PartyMember[]): PartyMember {

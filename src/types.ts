@@ -181,10 +181,6 @@ export type CharacterBattleStats = CharacterStats & {
   maxHP: number;
 };
 
-export interface StatusEffect {
-  active: boolean;
-}
-
 export interface SkillOutput {
   damage?: number;
   heal?: number;
@@ -195,7 +191,7 @@ export const skillCategories = [
   'buff',
   'debuff',
   'support',
-  'damage',
+  'offensive',
   'heal',
 ] as const;
 
@@ -220,7 +216,7 @@ export interface CharacterSkill {
     },
   ) => SkillOutput;
 
-  stats?: CharacterAdditionalStat[];
+  stats: CharacterAdditionalStat[];
 }
 
 export interface CharacterAdditionalStat {
