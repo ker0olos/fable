@@ -421,18 +421,12 @@ function sweep({ token, guildId, userId }: {
 
         const op = db.kv.atomic();
 
-        db.consumeSweep({ op, user, inventory, inventoryCheck });
+        const sweeps = db.consumeSweep({ op, user, inventory, inventoryCheck });
 
-        // deno-lint-ignore no-non-null-assertion
-        const expGained = getFloorExp(inventory.floorsCleared!);
+        const expGained = getFloorExp(inventory.floorsCleared ?? 1) * sweeps;
 
-        const status = party1.map((character, index) =>
-          db.gainExp(
-            op,
-            inventory,
-            character,
-            index === 0 ? expGained : expGained * 0.5,
-          )
+        const status = party1.map((character) =>
+          db.gainExp(op, inventory, character, expGained)
         );
 
         const update = await op.commit();
@@ -495,7 +489,8 @@ function sweep({ token, guildId, userId }: {
             new discord.Embed()
               .setTitle(
                 // deno-lint-ignore no-non-null-assertion
-                `${i18n.get('floor', locale)} ${inventory.floorsCleared!}`,
+                `${i18n.get('floor', locale)} ${inventory
+                  .floorsCleared!} x${sweeps}`,
               )
               .setDescription(statusText),
           );
@@ -589,13 +584,8 @@ async function onSuccess(
 
   const expGained = getFloorExp(floor);
 
-  const status = party.map((character, index) =>
-    db.gainExp(
-      op,
-      inventory,
-      character,
-      index === 0 ? expGained : expGained * 0.5,
-    )
+  const status = party.map((character) =>
+    db.gainExp(op, inventory, character, expGained)
   );
 
   const _characters = await packs.characters({

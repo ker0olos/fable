@@ -1176,7 +1176,7 @@ Deno.test('/sweep', async (test) => {
     const consumeSweepStub = stub(
       db,
       'consumeSweep',
-      () => undefined as any,
+      () => 1,
     );
 
     const getInventoryStub = stub(
@@ -1293,12 +1293,12 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              title: 'Floor 1',
+              title: 'Floor 1 x1',
               description: '**name 1** 1/10 EXP\n' +
-                '**name 2** 0.5/10 EXP\n' +
-                '**name 3** 0.5/10 EXP\n' +
-                '**name 4** 0.5/10 EXP\n' +
-                '**name 5** 0.5/10 EXP',
+                '**name 2** 1/10 EXP\n' +
+                '**name 3** 1/10 EXP\n' +
+                '**name 4** 1/10 EXP\n' +
+                '**name 5** 1/10 EXP',
             },
           ],
           components: [
@@ -1433,7 +1433,7 @@ Deno.test('/sweep', async (test) => {
     const consumeSweepStub = stub(
       db,
       'consumeSweep',
-      () => undefined as any,
+      () => 3,
     );
 
     const gainExpStub = stub(
@@ -1571,7 +1571,7 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              title: 'Floor 1',
+              title: 'Floor 1 x3',
               description:
                 '**name 1** leveled up and gained 3 stat points and 1 skill point.\n' +
                 '**name 2** leveled up and gained 3 stat points and 1 skill point.\n' +
@@ -1713,7 +1713,7 @@ Deno.test('/sweep', async (test) => {
     const consumeSweepStub = stub(
       db,
       'consumeSweep',
-      () => undefined as any,
+      () => 5,
     );
 
     const gainExpStub = stub(
@@ -1851,7 +1851,7 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              title: 'Floor 1',
+              title: 'Floor 1 x5',
               description:
                 '**name 1** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
                 '**name 2** leveled up 2x and gained 6 stat points and 2 skill points.\n' +

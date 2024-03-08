@@ -27,16 +27,18 @@ export function consumeSweep(
     user: Schema.User;
     inventoryCheck: Deno.AtomicCheck;
   },
-): void {
-  // deno-lint-ignore no-non-null-assertion
-  inventory.availableSweeps = inventory.availableSweeps! - 1;
+): number {
+  const sweeps = inventory.availableSweeps ?? 0;
+
+  inventory.availableSweeps = 0;
 
   inventory.lastSweep = new Date().toISOString();
   inventory.sweepsTimestamp ??= new Date().toISOString();
 
   op
     .check(inventoryCheck)
-    //
     .set(['inventories', inventory._id], inventory)
     .set(inventoriesByUser(inventory.instance, inventory.user), inventory);
+
+  return sweeps;
 }
