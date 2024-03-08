@@ -220,7 +220,12 @@ function view({ token, character, characterSchema, userId, guildId }: {
         new discord.Component()
           .setLabel('/like')
           .setId(`like`, existing.character.id),
-      ]);
+        existing.user?.id === userId
+          ? new discord.Component()
+            .setLabel('/p assign')
+            .setId(`passign`, userId, existing.character.id)
+          : undefined,
+      ].filter(Boolean) as discord.Component[]);
 
       message.addEmbed(embed);
 

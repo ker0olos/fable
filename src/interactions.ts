@@ -1166,6 +1166,26 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
+          case 'passign': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![1];
+
+            if (userId === member.user.id) {
+              return party.assign({
+                token,
+                userId: member.user.id,
+                guildId,
+                id: characterId,
+              })
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
           case 'sbattle': {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
