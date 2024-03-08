@@ -23,7 +23,7 @@ import { MediaType } from '~/src/types.ts';
 import type { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
 Deno.test('max floors', () => {
-  assertEquals(MAX_FLOORS, 10);
+  assertEquals(MAX_FLOORS, 20);
 });
 
 Deno.test('exp gained amount floors 1-10', () => {
@@ -96,28 +96,28 @@ Deno.test('test enemy skill slots floors 1-10', () => {
   assertEquals(getEnemySkillSlots(3), 0);
   assertEquals(getEnemySkillSlots(4), 0);
 
-  assertEquals(getEnemySkillSlots(5), 0);
-  assertEquals(getEnemySkillSlots(6), 0);
-  assertEquals(getEnemySkillSlots(7), 0);
-  assertEquals(getEnemySkillSlots(8), 0);
-  assertEquals(getEnemySkillSlots(9), 0);
+  assertEquals(getEnemySkillSlots(5), 1);
+  assertEquals(getEnemySkillSlots(6), 1);
+  assertEquals(getEnemySkillSlots(7), 1);
+  assertEquals(getEnemySkillSlots(8), 1);
+  assertEquals(getEnemySkillSlots(9), 1);
 
-  assertEquals(getEnemySkillSlots(10), 1);
+  assertEquals(getEnemySkillSlots(10), 2);
 });
 
 Deno.test('test enemy skill slots floors 11-20', () => {
-  assertEquals(getEnemySkillSlots(11), 1);
-  assertEquals(getEnemySkillSlots(12), 1);
-  assertEquals(getEnemySkillSlots(13), 1);
-  assertEquals(getEnemySkillSlots(14), 1);
+  assertEquals(getEnemySkillSlots(11), 2);
+  assertEquals(getEnemySkillSlots(12), 2);
+  assertEquals(getEnemySkillSlots(13), 2);
+  assertEquals(getEnemySkillSlots(14), 2);
 
-  assertEquals(getEnemySkillSlots(15), 1);
-  assertEquals(getEnemySkillSlots(16), 1);
-  assertEquals(getEnemySkillSlots(17), 1);
-  assertEquals(getEnemySkillSlots(18), 1);
-  assertEquals(getEnemySkillSlots(19), 1);
+  assertEquals(getEnemySkillSlots(15), 3);
+  assertEquals(getEnemySkillSlots(16), 3);
+  assertEquals(getEnemySkillSlots(17), 3);
+  assertEquals(getEnemySkillSlots(18), 3);
+  assertEquals(getEnemySkillSlots(19), 3);
 
-  assertEquals(getEnemySkillSlots(20), 2);
+  assertEquals(getEnemySkillSlots(20), 4);
 });
 
 Deno.test('test enemy skill levels floors 1-10', () => {
@@ -765,11 +765,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:undiscoveredfloor:1128724910609551481> Floor 10 - Undiscovered',
-                '<:currentfloor:1128724907245711452> Floor 9 - Current',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:undiscoveredfloor:1128724910609551481> Floor 20 - Undiscovered',
+                '<:currentfloor:1128724907245711452> Floor 19 - Current',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],
@@ -897,11 +897,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:currentfloor:1128724907245711452> Floor 10 - Current',
-                '<:clearedfloor:1131872032456446053> Floor 9 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:currentfloor:1128724907245711452> Floor 20 - Current',
+                '<:clearedfloor:1131872032456446053> Floor 19 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],
@@ -1029,11 +1029,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:clearedfloor:1131872032456446053> Floor 10 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 9 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 20 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 19 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],

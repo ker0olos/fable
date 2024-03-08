@@ -20,14 +20,9 @@ import { NonFetalError, PoolError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type {
-  Character,
-  CharacterAdditionalStat,
-  CharacterBattleStats,
-  SkillKey,
-} from '~/src/types.ts';
+import type { Character, CharacterBattleStats, SkillKey } from '~/src/types.ts';
 
-export const MAX_FLOORS = 10;
+export const MAX_FLOORS = 20;
 
 const calculateMultipleOfTen = (num: number): number => {
   return Math.max(1, num % 10 === 0 ? num / 10 : Math.floor(num / 10) + 1);
@@ -89,7 +84,8 @@ export const getEnemyRating = (floor: number): number => {
 
 export const getEnemySkillSlots = (floor: number): number => {
   const skillsPool = Object.keys(skills);
-  return Math.min(Math.floor(floor / 10), skillsPool.length);
+
+  return Math.min(Math.floor(floor / 5), skillsPool.length);
 };
 
 export const getEnemyMaxSkillLevel = (floor: number): number => {
@@ -104,14 +100,14 @@ export const createEnemyStats = (
   const skillRng = new utils.LehmerRNG(seed);
 
   // same as player characters
-  const totalStats = 3 * getEnemyRating(floor);
+  const totalStats = 3 * getEnemyRating(floor) * 5;
 
   const _skills: CharacterBattleStats['skills'] = {};
 
   const skillsPool = Object.keys(skills) as SkillKey[];
 
   const skillsSlots = getEnemySkillSlots(floor);
-  const maxSkillLevel = getEnemyMaxSkillLevel(floor);
+  const skillLevel = getEnemyMaxSkillLevel(floor);
 
   for (let i = 0; i < skillsSlots; i++) {
     if (!skillsPool.length) {
@@ -124,11 +120,7 @@ export const createEnemyStats = (
     )[0];
 
     _skills[randomSkillKey] = {
-      level: Math.min(
-        maxSkillLevel,
-        (skills[randomSkillKey].stats?.[0] as CharacterAdditionalStat).scale
-          ?.length ?? maxSkillLevel,
-      ),
+      level: Math.min(skillLevel, skills[randomSkillKey].max),
     };
   }
 
