@@ -3,3707 +3,2826 @@ export const snapshot = {};
 snapshot[`commands 1`] = `
 [
   {
-    default_member_permissions: undefined,
-    description: "search for a specific series",
-    description_localizations: {
-      "es-ES": "busca una serie específica",
+    "name": "search",
+    "description": "search for a specific series",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "busca una serie específica"
     },
-    dm_permission: false,
-    name: "search",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "display the nerdy stuff",
-        description_localizations: {
-          "es-ES": "muestra los datos para nerds",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "debug",
-        options: undefined,
-        required: false,
-        type: 5,
+        "name": "debug",
+        "description": "display the nerdy stuff",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los datos para nerds"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view the characters from the series",
-        description_localizations: {
-          "es-ES": "muestra los personajes de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "characters",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
+        "name": "characters",
+        "description": "view the characters from the series",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los personajes de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "search for a specific series",
-    description_localizations: {
-      "es-ES": "busca una serie específica",
+    "name": "anime",
+    "description": "search for a specific series",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "busca una serie específica"
     },
-    dm_permission: false,
-    name: "anime",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "display the nerdy stuff",
-        description_localizations: {
-          "es-ES": "muestra los datos para nerds",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "debug",
-        options: undefined,
-        required: false,
-        type: 5,
+        "name": "debug",
+        "description": "display the nerdy stuff",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los datos para nerds"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view the characters from the series",
-        description_localizations: {
-          "es-ES": "muestra los personajes de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "characters",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
+        "name": "characters",
+        "description": "view the characters from the series",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los personajes de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "search for a specific series",
-    description_localizations: {
-      "es-ES": "busca una serie específica",
+    "name": "manga",
+    "description": "search for a specific series",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "busca una serie específica"
     },
-    dm_permission: false,
-    name: "manga",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "display the nerdy stuff",
-        description_localizations: {
-          "es-ES": "muestra los datos para nerds",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "debug",
-        options: undefined,
-        required: false,
-        type: 5,
+        "name": "debug",
+        "description": "display the nerdy stuff",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los datos para nerds"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view the characters from the series",
-        description_localizations: {
-          "es-ES": "muestra los personajes de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "characters",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
+        "name": "characters",
+        "description": "view the characters from the series",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los personajes de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "search for a specific series",
-    description_localizations: {
-      "es-ES": "busca una serie específica",
+    "name": "media",
+    "description": "search for a specific series",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "busca una serie específica"
     },
-    dm_permission: false,
-    name: "media",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "display the nerdy stuff",
-        description_localizations: {
-          "es-ES": "muestra los datos para nerds",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "debug",
-        options: undefined,
-        required: false,
-        type: 5,
+        "name": "debug",
+        "description": "display the nerdy stuff",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los datos para nerds"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view the characters from the series",
-        description_localizations: {
-          "es-ES": "muestra los personajes de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "characters",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
+        "name": "characters",
+        "description": "view the characters from the series",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los personajes de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "search for a specific series",
-    description_localizations: {
-      "es-ES": "busca una serie específica",
+    "name": "series",
+    "description": "search for a specific series",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "busca una serie específica"
     },
-    dm_permission: false,
-    name: "series",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "display the nerdy stuff",
-        description_localizations: {
-          "es-ES": "muestra los datos para nerds",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "debug",
-        options: undefined,
-        required: false,
-        type: 5,
+        "name": "debug",
+        "description": "display the nerdy stuff",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los datos para nerds"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view the characters from the series",
-        description_localizations: {
-          "es-ES": "muestra los personajes de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "characters",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
+        "name": "characters",
+        "description": "view the characters from the series",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los personajes de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "search for a specific character",
-    description_localizations: {
-      "es-ES": "busca un personaje específico",
+    "name": "character",
+    "description": "search for a specific character",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "busca un personaje específico"
     },
-    dm_permission: false,
-    name: "character",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "display the nerdy stuff",
-        description_localizations: {
-          "es-ES": "muestra los datos para nerds",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "debug",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
+        "name": "debug",
+        "description": "display the nerdy stuff",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los datos para nerds"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "search for a specific character",
-    description_localizations: {
-      "es-ES": "busca un personaje específico",
+    "name": "char",
+    "description": "search for a specific character",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "busca un personaje específico"
     },
-    dm_permission: false,
-    name: "char",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "display the nerdy stuff",
-        description_localizations: {
-          "es-ES": "muestra los datos para nerds",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "debug",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
+        "name": "debug",
+        "description": "display the nerdy stuff",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra los datos para nerds"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "list all characters found from a specific series",
-    description_localizations: {
-      "es-ES": "muestra todos los personajes de una serie que hayan sido obtenidos",
+    "name": "found",
+    "description": "list all characters found from a specific series",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "muestra todos los personajes de una serie que hayan sido obtenidos"
     },
-    dm_permission: false,
-    name: "found",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "list all characters found from a specific series",
-    description_localizations: {
-      "es-ES": "muestra todos los personajes de una serie que hayan sido obtenidos",
+    "name": "owned",
+    "description": "list all characters found from a specific series",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "muestra todos los personajes de una serie que hayan sido obtenidos"
     },
-    dm_permission: false,
-    name: "owned",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "like a character to be notified if someone finds them",
-    description_localizations: {
-      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga",
+    "name": "like",
+    "description": "like a character to be notified if someone finds them",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga"
     },
-    dm_permission: false,
-    name: "like",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "like a character to be notified if someone finds them",
-    description_localizations: {
-      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga",
+    "name": "protect",
+    "description": "like a character to be notified if someone finds them",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga"
     },
-    dm_permission: false,
-    name: "protect",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "like a character to be notified if someone finds them",
-    description_localizations: {
-      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga",
+    "name": "wish",
+    "description": "like a character to be notified if someone finds them",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga"
     },
-    dm_permission: false,
-    name: "wish",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "remove character from your likes",
-    description_localizations: {
-      "es-ES": "quita personajes de tus likes",
+    "name": "unlike",
+    "description": "remove character from your likes",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "quita personajes de tus likes"
     },
-    dm_permission: false,
-    name: "unlike",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "like a series to be notified if someone finds any character from it",
-    description_localizations: {
-      "es-ES": "da like a una serie y recibe notificaciones cuando alguien obtenga un personaje de ella",
+    "name": "likeall",
+    "description": "like a series to be notified if someone finds any character from it",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "da like a una serie y recibe notificaciones cuando alguien obtenga un personaje de ella"
     },
-    dm_permission: false,
-    name: "likeall",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "remove a series from your likes",
-    description_localizations: {
-      "es-ES": "quita series de tus likes",
+    "name": "unlikeall",
+    "description": "remove a series from your likes",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "quita series de tus likes"
     },
-    dm_permission: false,
-    name: "unlikeall",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the title of the series",
-        description_localizations: {
-          "es-ES": "el título de la serie",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "title",
+        "description": "the title of the series",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el título de la serie"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "list all user likes",
-    description_localizations: {
-      "es-ES": "muestra todos tus likes",
+    "name": "likeslist",
+    "description": "list all user likes",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "muestra todos tus likes"
     },
-    dm_permission: false,
-    name: "likeslist",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "the user of the likes list",
-        description_localizations: {
-          "es-ES": "el usuario de la lista de likes",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "user",
-        options: undefined,
-        required: false,
-        type: 6,
+        "name": "user",
+        "description": "the user of the likes list",
+        "type": 6,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "el usuario de la lista de likes"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "filter out the likes already found by the user",
-        description_localizations: {
-          "es-ES": "no mostrar los likes que ya poseas",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "filter",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
+        "name": "filter",
+        "description": "filter out the likes already found by the user",
+        "type": 5,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "no mostrar los likes que ya poseas"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "give characters to another user",
-    description_localizations: {
-      "es-ES": "regala personajes a otro usuario",
+    "name": "give",
+    "description": "give characters to another user",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "regala personajes a otro usuario"
     },
-    dm_permission: false,
-    name: "give",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "the user you want to trade with",
-        description_localizations: {
-          "es-ES": "el usuario con el que quieres intercambiar",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "user",
-        options: undefined,
-        required: true,
-        type: 6,
+        "name": "user",
+        "description": "the user you want to trade with",
+        "type": 6,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el usuario con el que quieres intercambiar"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "give",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give2",
-        options: undefined,
-        required: false,
-        type: 3,
+        "name": "give2",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give3",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "give3",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "give characters to another user",
-    description_localizations: {
-      "es-ES": "regala personajes a otro usuario",
+    "name": "gift",
+    "description": "give characters to another user",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "regala personajes a otro usuario"
     },
-    dm_permission: false,
-    name: "gift",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "the user you want to trade with",
-        description_localizations: {
-          "es-ES": "el usuario con el que quieres intercambiar",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "user",
-        options: undefined,
-        required: true,
-        type: 6,
+        "name": "user",
+        "description": "the user you want to trade with",
+        "type": 6,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el usuario con el que quieres intercambiar"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "give",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give2",
-        options: undefined,
-        required: false,
-        type: 3,
+        "name": "give2",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give3",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "give3",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "trade characters with another user",
-    description_localizations: {
-      "es-ES": "intercambia personajes con otro usuario",
+    "name": "trade",
+    "description": "trade characters with another user",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "intercambia personajes con otro usuario"
     },
-    dm_permission: false,
-    name: "trade",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "the user you want to trade with",
-        description_localizations: {
-          "es-ES": "el usuario con el que quieres intercambiar",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "user",
-        options: undefined,
-        required: true,
-        type: 6,
+        "name": "user",
+        "description": "the user you want to trade with",
+        "type": 6,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el usuario con el que quieres intercambiar"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "give",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to take for yourself",
-        description_localizations: {
-          "es-ES": "un personaje que obtendrás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "take",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "take",
+        "description": "a character to take for yourself",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "un personaje que obtendrás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give2",
-        options: undefined,
-        required: false,
-        type: 3,
+        "name": "give2",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give3",
-        options: undefined,
-        required: false,
-        type: 3,
+        "name": "give3",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to take for yourself",
-        description_localizations: {
-          "es-ES": "un personaje que obtendrás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "take2",
-        options: undefined,
-        required: false,
-        type: 3,
+        "name": "take2",
+        "description": "a character to take for yourself",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que obtendrás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to take for yourself",
-        description_localizations: {
-          "es-ES": "un personaje que obtendrás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "take3",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "take3",
+        "description": "a character to take for yourself",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que obtendrás"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "trade characters with another user",
-    description_localizations: {
-      "es-ES": "intercambia personajes con otro usuario",
+    "name": "offer",
+    "description": "trade characters with another user",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "intercambia personajes con otro usuario"
     },
-    dm_permission: false,
-    name: "offer",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "the user you want to trade with",
-        description_localizations: {
-          "es-ES": "el usuario con el que quieres intercambiar",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "user",
-        options: undefined,
-        required: true,
-        type: 6,
+        "name": "user",
+        "description": "the user you want to trade with",
+        "type": 6,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el usuario con el que quieres intercambiar"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "give",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to take for yourself",
-        description_localizations: {
-          "es-ES": "un personaje que obtendrás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "take",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "take",
+        "description": "a character to take for yourself",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "un personaje que obtendrás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give2",
-        options: undefined,
-        required: false,
-        type: 3,
+        "name": "give2",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to give away",
-        description_localizations: {
-          "es-ES": "un personaje que darás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "give3",
-        options: undefined,
-        required: false,
-        type: 3,
+        "name": "give3",
+        "description": "a character to give away",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que darás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to take for yourself",
-        description_localizations: {
-          "es-ES": "un personaje que obtendrás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "take2",
-        options: undefined,
-        required: false,
-        type: 3,
+        "name": "take2",
+        "description": "a character to take for yourself",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que obtendrás"
+        }
       },
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "a character to take for yourself",
-        description_localizations: {
-          "es-ES": "un personaje que obtendrás",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "take3",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "take3",
+        "description": "a character to take for yourself",
+        "autocomplete": true,
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "un personaje que obtendrás"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "steal a character from another user",
-    description_localizations: {
-      "es-ES": "roba un personaje a otro usuario",
+    "name": "steal",
+    "description": "steal a character from another user",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "roba un personaje a otro usuario"
     },
-    dm_permission: false,
-    name: "steal",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "need more information? we got you",
-    description_localizations: {
-      "es-ES": "¿Necesitas más información? No te preocupes",
+    "name": "help",
+    "description": "need more information? we got you",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "¿Necesitas más información? No te preocupes"
     },
-    dm_permission: false,
-    name: "help",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "page",
+        "description": "specify a page to display",
+        "type": 4,
+        "choices": [
           {
-            name: "Gacha",
-            name_localizations: {
-              "es-ES": "Gacha",
+            "name": "Gacha",
+            "name_localizations": {
+              "es-ES": "Gacha"
             },
-            value: 0,
+            "value": 0
           },
           {
-            name: "Merging",
-            name_localizations: {
-              "es-ES": "Combinar (merge)",
+            "name": "Merging",
+            "name_localizations": {
+              "es-ES": "Combinar (merge)"
             },
-            value: 1,
+            "value": 1
           },
           {
-            name: "Party",
-            name_localizations: {
-              "es-ES": "Equipo (party)",
+            "name": "Party",
+            "name_localizations": {
+              "es-ES": "Equipo (party)"
             },
-            value: 2,
+            "value": 2
           },
           {
-            name: "Stealing",
-            name_localizations: {
-              "es-ES": "Robar",
+            "name": "Stealing",
+            "name_localizations": {
+              "es-ES": "Robar"
             },
-            value: 3,
+            "value": 3
           },
           {
-            name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
-            value: 4,
+            "name": "Combat",
+            "name_localizations": {},
+            "value": 4
           },
           {
-            name: "Shop",
-            name_localizations: {
-              "es-ES": "Tienda",
+            "name": "Shop",
+            "name_localizations": {
+              "es-ES": "Tienda"
             },
-            value: 5,
+            "value": 5
           },
           {
-            name: "Roadmap",
-            name_localizations: {
-              "es-ES": "Futuro del bot",
+            "name": "Roadmap",
+            "name_localizations": {
+              "es-ES": "Futuro del bot"
             },
-            value: 6,
+            "value": 6
           },
           {
-            name: "Essential Commands",
-            name_localizations: {
-              "es-ES": "Comandos Esenciales",
+            "name": "Essential Commands",
+            "name_localizations": {
+              "es-ES": "Comandos Esenciales"
             },
-            value: 7,
+            "value": 7
           },
           {
-            name: "Other Commands",
-            name_localizations: {
-              "es-ES": "Otros Comandos",
+            "name": "Other Commands",
+            "name_localizations": {
+              "es-ES": "Otros Comandos"
             },
-            value: 8,
+            "value": 8
           },
           {
-            name: "Admin Commands",
-            name_localizations: {
-              "es-ES": "Comandos de Administrador",
+            "name": "Admin Commands",
+            "name_localizations": {
+              "es-ES": "Comandos de Administrador"
             },
-            value: 9,
-          },
+            "value": 9
+          }
         ],
-        description: "specify a page to display",
-        description_localizations: {
-          "es-ES": "especifica la página que quieres ver",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "page",
-        options: undefined,
-        required: false,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "especifica la página que quieres ver"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "need more information? we got you",
-    description_localizations: {
-      "es-ES": "¿Necesitas más información? No te preocupes",
+    "name": "start",
+    "description": "need more information? we got you",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "¿Necesitas más información? No te preocupes"
     },
-    dm_permission: false,
-    name: "start",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "page",
+        "description": "specify a page to display",
+        "type": 4,
+        "choices": [
           {
-            name: "Gacha",
-            name_localizations: {
-              "es-ES": "Gacha",
+            "name": "Gacha",
+            "name_localizations": {
+              "es-ES": "Gacha"
             },
-            value: 0,
+            "value": 0
           },
           {
-            name: "Merging",
-            name_localizations: {
-              "es-ES": "Combinar (merge)",
+            "name": "Merging",
+            "name_localizations": {
+              "es-ES": "Combinar (merge)"
             },
-            value: 1,
+            "value": 1
           },
           {
-            name: "Party",
-            name_localizations: {
-              "es-ES": "Equipo (party)",
+            "name": "Party",
+            "name_localizations": {
+              "es-ES": "Equipo (party)"
             },
-            value: 2,
+            "value": 2
           },
           {
-            name: "Stealing",
-            name_localizations: {
-              "es-ES": "Robar",
+            "name": "Stealing",
+            "name_localizations": {
+              "es-ES": "Robar"
             },
-            value: 3,
+            "value": 3
           },
           {
-            name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
-            value: 4,
+            "name": "Combat",
+            "name_localizations": {},
+            "value": 4
           },
           {
-            name: "Shop",
-            name_localizations: {
-              "es-ES": "Tienda",
+            "name": "Shop",
+            "name_localizations": {
+              "es-ES": "Tienda"
             },
-            value: 5,
+            "value": 5
           },
           {
-            name: "Roadmap",
-            name_localizations: {
-              "es-ES": "Futuro del bot",
+            "name": "Roadmap",
+            "name_localizations": {
+              "es-ES": "Futuro del bot"
             },
-            value: 6,
+            "value": 6
           },
           {
-            name: "Essential Commands",
-            name_localizations: {
-              "es-ES": "Comandos Esenciales",
+            "name": "Essential Commands",
+            "name_localizations": {
+              "es-ES": "Comandos Esenciales"
             },
-            value: 7,
+            "value": 7
           },
           {
-            name: "Other Commands",
-            name_localizations: {
-              "es-ES": "Otros Comandos",
+            "name": "Other Commands",
+            "name_localizations": {
+              "es-ES": "Otros Comandos"
             },
-            value: 8,
+            "value": 8
           },
           {
-            name: "Admin Commands",
-            name_localizations: {
-              "es-ES": "Comandos de Administrador",
+            "name": "Admin Commands",
+            "name_localizations": {
+              "es-ES": "Comandos de Administrador"
             },
-            value: 9,
-          },
+            "value": 9
+          }
         ],
-        description: "specify a page to display",
-        description_localizations: {
-          "es-ES": "especifica la página que quieres ver",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "page",
-        options: undefined,
-        required: false,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "especifica la página que quieres ver"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "need more information? we got you",
-    description_localizations: {
-      "es-ES": "¿Necesitas más información? No te preocupes",
+    "name": "guide",
+    "description": "need more information? we got you",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "¿Necesitas más información? No te preocupes"
     },
-    dm_permission: false,
-    name: "guide",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "page",
+        "description": "specify a page to display",
+        "type": 4,
+        "choices": [
           {
-            name: "Gacha",
-            name_localizations: {
-              "es-ES": "Gacha",
+            "name": "Gacha",
+            "name_localizations": {
+              "es-ES": "Gacha"
             },
-            value: 0,
+            "value": 0
           },
           {
-            name: "Merging",
-            name_localizations: {
-              "es-ES": "Combinar (merge)",
+            "name": "Merging",
+            "name_localizations": {
+              "es-ES": "Combinar (merge)"
             },
-            value: 1,
+            "value": 1
           },
           {
-            name: "Party",
-            name_localizations: {
-              "es-ES": "Equipo (party)",
+            "name": "Party",
+            "name_localizations": {
+              "es-ES": "Equipo (party)"
             },
-            value: 2,
+            "value": 2
           },
           {
-            name: "Stealing",
-            name_localizations: {
-              "es-ES": "Robar",
+            "name": "Stealing",
+            "name_localizations": {
+              "es-ES": "Robar"
             },
-            value: 3,
+            "value": 3
           },
           {
-            name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
-            value: 4,
+            "name": "Combat",
+            "name_localizations": {},
+            "value": 4
           },
           {
-            name: "Shop",
-            name_localizations: {
-              "es-ES": "Tienda",
+            "name": "Shop",
+            "name_localizations": {
+              "es-ES": "Tienda"
             },
-            value: 5,
+            "value": 5
           },
           {
-            name: "Roadmap",
-            name_localizations: {
-              "es-ES": "Futuro del bot",
+            "name": "Roadmap",
+            "name_localizations": {
+              "es-ES": "Futuro del bot"
             },
-            value: 6,
+            "value": 6
           },
           {
-            name: "Essential Commands",
-            name_localizations: {
-              "es-ES": "Comandos Esenciales",
+            "name": "Essential Commands",
+            "name_localizations": {
+              "es-ES": "Comandos Esenciales"
             },
-            value: 7,
+            "value": 7
           },
           {
-            name: "Other Commands",
-            name_localizations: {
-              "es-ES": "Otros Comandos",
+            "name": "Other Commands",
+            "name_localizations": {
+              "es-ES": "Otros Comandos"
             },
-            value: 8,
+            "value": 8
           },
           {
-            name: "Admin Commands",
-            name_localizations: {
-              "es-ES": "Comandos de Administrador",
+            "name": "Admin Commands",
+            "name_localizations": {
+              "es-ES": "Comandos de Administrador"
             },
-            value: 9,
-          },
+            "value": 9
+          }
         ],
-        description: "specify a page to display",
-        description_localizations: {
-          "es-ES": "especifica la página que quieres ver",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "page",
-        options: undefined,
-        required: false,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "especifica la página que quieres ver"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "need more information? we got you",
-    description_localizations: {
-      "es-ES": "¿Necesitas más información? No te preocupes",
+    "name": "wiki",
+    "description": "need more information? we got you",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "¿Necesitas más información? No te preocupes"
     },
-    dm_permission: false,
-    name: "wiki",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "page",
+        "description": "specify a page to display",
+        "type": 4,
+        "choices": [
           {
-            name: "Gacha",
-            name_localizations: {
-              "es-ES": "Gacha",
+            "name": "Gacha",
+            "name_localizations": {
+              "es-ES": "Gacha"
             },
-            value: 0,
+            "value": 0
           },
           {
-            name: "Merging",
-            name_localizations: {
-              "es-ES": "Combinar (merge)",
+            "name": "Merging",
+            "name_localizations": {
+              "es-ES": "Combinar (merge)"
             },
-            value: 1,
+            "value": 1
           },
           {
-            name: "Party",
-            name_localizations: {
-              "es-ES": "Equipo (party)",
+            "name": "Party",
+            "name_localizations": {
+              "es-ES": "Equipo (party)"
             },
-            value: 2,
+            "value": 2
           },
           {
-            name: "Stealing",
-            name_localizations: {
-              "es-ES": "Robar",
+            "name": "Stealing",
+            "name_localizations": {
+              "es-ES": "Robar"
             },
-            value: 3,
+            "value": 3
           },
           {
-            name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
-            value: 4,
+            "name": "Combat",
+            "name_localizations": {},
+            "value": 4
           },
           {
-            name: "Shop",
-            name_localizations: {
-              "es-ES": "Tienda",
+            "name": "Shop",
+            "name_localizations": {
+              "es-ES": "Tienda"
             },
-            value: 5,
+            "value": 5
           },
           {
-            name: "Roadmap",
-            name_localizations: {
-              "es-ES": "Futuro del bot",
+            "name": "Roadmap",
+            "name_localizations": {
+              "es-ES": "Futuro del bot"
             },
-            value: 6,
+            "value": 6
           },
           {
-            name: "Essential Commands",
-            name_localizations: {
-              "es-ES": "Comandos Esenciales",
+            "name": "Essential Commands",
+            "name_localizations": {
+              "es-ES": "Comandos Esenciales"
             },
-            value: 7,
+            "value": 7
           },
           {
-            name: "Other Commands",
-            name_localizations: {
-              "es-ES": "Otros Comandos",
+            "name": "Other Commands",
+            "name_localizations": {
+              "es-ES": "Otros Comandos"
             },
-            value: 8,
+            "value": 8
           },
           {
-            name: "Admin Commands",
-            name_localizations: {
-              "es-ES": "Comandos de Administrador",
+            "name": "Admin Commands",
+            "name_localizations": {
+              "es-ES": "Comandos de Administrador"
             },
-            value: 9,
-          },
+            "value": 9
+          }
         ],
-        description: "specify a page to display",
-        description_localizations: {
-          "es-ES": "especifica la página que quieres ver",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "page",
-        options: undefined,
-        required: false,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "especifica la página que quieres ver"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "need more information? we got you",
-    description_localizations: {
-      "es-ES": "¿Necesitas más información? No te preocupes",
+    "name": "tuto",
+    "description": "need more information? we got you",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "¿Necesitas más información? No te preocupes"
     },
-    dm_permission: false,
-    name: "tuto",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "page",
+        "description": "specify a page to display",
+        "type": 4,
+        "choices": [
           {
-            name: "Gacha",
-            name_localizations: {
-              "es-ES": "Gacha",
+            "name": "Gacha",
+            "name_localizations": {
+              "es-ES": "Gacha"
             },
-            value: 0,
+            "value": 0
           },
           {
-            name: "Merging",
-            name_localizations: {
-              "es-ES": "Combinar (merge)",
+            "name": "Merging",
+            "name_localizations": {
+              "es-ES": "Combinar (merge)"
             },
-            value: 1,
+            "value": 1
           },
           {
-            name: "Party",
-            name_localizations: {
-              "es-ES": "Equipo (party)",
+            "name": "Party",
+            "name_localizations": {
+              "es-ES": "Equipo (party)"
             },
-            value: 2,
+            "value": 2
           },
           {
-            name: "Stealing",
-            name_localizations: {
-              "es-ES": "Robar",
+            "name": "Stealing",
+            "name_localizations": {
+              "es-ES": "Robar"
             },
-            value: 3,
+            "value": 3
           },
           {
-            name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
-            value: 4,
+            "name": "Combat",
+            "name_localizations": {},
+            "value": 4
           },
           {
-            name: "Shop",
-            name_localizations: {
-              "es-ES": "Tienda",
+            "name": "Shop",
+            "name_localizations": {
+              "es-ES": "Tienda"
             },
-            value: 5,
+            "value": 5
           },
           {
-            name: "Roadmap",
-            name_localizations: {
-              "es-ES": "Futuro del bot",
+            "name": "Roadmap",
+            "name_localizations": {
+              "es-ES": "Futuro del bot"
             },
-            value: 6,
+            "value": 6
           },
           {
-            name: "Essential Commands",
-            name_localizations: {
-              "es-ES": "Comandos Esenciales",
+            "name": "Essential Commands",
+            "name_localizations": {
+              "es-ES": "Comandos Esenciales"
             },
-            value: 7,
+            "value": 7
           },
           {
-            name: "Other Commands",
-            name_localizations: {
-              "es-ES": "Otros Comandos",
+            "name": "Other Commands",
+            "name_localizations": {
+              "es-ES": "Otros Comandos"
             },
-            value: 8,
+            "value": 8
           },
           {
-            name: "Admin Commands",
-            name_localizations: {
-              "es-ES": "Comandos de Administrador",
+            "name": "Admin Commands",
+            "name_localizations": {
+              "es-ES": "Comandos de Administrador"
             },
-            value: 9,
-          },
+            "value": 9
+          }
         ],
-        description: "specify a page to display",
-        description_localizations: {
-          "es-ES": "especifica la página que quieres ver",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "page",
-        options: undefined,
-        required: false,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "especifica la página que quieres ver"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "check what you can do right now",
-    description_localizations: {
-      "es-ES": "comprueba lo que puedes hacer ahora mismo",
-    },
-    dm_permission: false,
-    name: "now",
-    options: undefined,
-    type: undefined,
+    "name": "now",
+    "description": "check what you can do right now",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "comprueba lo que puedes hacer ahora mismo"
+    }
   },
   {
-    default_member_permissions: undefined,
-    description: "check what you can do right now",
-    description_localizations: {
-      "es-ES": "comprueba lo que puedes hacer ahora mismo",
-    },
-    dm_permission: false,
-    name: "vote",
-    options: undefined,
-    type: undefined,
+    "name": "tu",
+    "description": "check what you can do right now",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "comprueba lo que puedes hacer ahora mismo"
+    }
   },
   {
-    default_member_permissions: undefined,
-    description: "check what you can do right now",
-    description_localizations: {
-      "es-ES": "comprueba lo que puedes hacer ahora mismo",
-    },
-    dm_permission: false,
-    name: "tu",
-    options: undefined,
-    type: undefined,
+    "name": "q",
+    "description": "start a gacha pull but with no animations",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "realiza una tirada pero sin animaciones"
+    }
   },
   {
-    default_member_permissions: undefined,
-    description: "start a gacha pull but with no animations",
-    description_localizations: {
-      "es-ES": "realiza una tirada pero sin animaciones",
-    },
-    dm_permission: false,
-    name: "q",
-    options: undefined,
-    type: undefined,
+    "name": "gacha",
+    "description": "start a new gacha pull",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "realiza una tirada de gacha"
+    }
   },
   {
-    default_member_permissions: undefined,
-    description: "start a new gacha pull",
-    description_localizations: {
-      "es-ES": "realiza una tirada de gacha",
-    },
-    dm_permission: false,
-    name: "gacha",
-    options: undefined,
-    type: undefined,
+    "name": "w",
+    "description": "start a new gacha pull",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "realiza una tirada de gacha"
+    }
   },
   {
-    default_member_permissions: undefined,
-    description: "start a new gacha pull",
-    description_localizations: {
-      "es-ES": "realiza una tirada de gacha",
+    "name": "pull",
+    "description": "use a guaranteed pull you have",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "usa una tirada garantizada que hayas comprado"
     },
-    dm_permission: false,
-    name: "w",
-    options: undefined,
-    type: undefined,
-  },
-  {
-    default_member_permissions: undefined,
-    description: "use a guaranteed pull you have",
-    description_localizations: {
-      "es-ES": "usa una tirada garantizada que hayas comprado",
-    },
-    dm_permission: false,
-    name: "pull",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "stars",
+        "description": "the star rating",
+        "type": 4,
+        "choices": [
           {
-            name: "5",
-            value: 5,
+            "name": "5",
+            "value": 5
           },
           {
-            name: "4",
-            value: 4,
+            "name": "4",
+            "value": 4
           },
           {
-            name: "3",
-            value: 3,
-          },
+            "name": "3",
+            "value": 3
+          }
         ],
-        description: "the star rating",
-        description_localizations: {
-          "es-ES": "el grado de estrellas",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "stars",
-        options: undefined,
-        required: true,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el grado de estrellas"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "use a guaranteed pull you have",
-    description_localizations: {
-      "es-ES": "usa una tirada garantizada que hayas comprado",
+    "name": "guaranteed",
+    "description": "use a guaranteed pull you have",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "usa una tirada garantizada que hayas comprado"
     },
-    dm_permission: false,
-    name: "guaranteed",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "stars",
+        "description": "the star rating",
+        "type": 4,
+        "choices": [
           {
-            name: "5",
-            value: 5,
+            "name": "5",
+            "value": 5
           },
           {
-            name: "4",
-            value: 4,
+            "name": "4",
+            "value": 4
           },
           {
-            name: "3",
-            value: 3,
-          },
+            "name": "3",
+            "value": 3
+          }
         ],
-        description: "the star rating",
-        description_localizations: {
-          "es-ES": "el grado de estrellas",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "stars",
-        options: undefined,
-        required: true,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el grado de estrellas"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "change the image of a character",
-    description_localizations: {
-      "es-ES": "cambia la imagen de un personaje",
+    "name": "image",
+    "description": "change the image of a character",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "cambia la imagen de un personaje"
     },
-    dm_permission: false,
-    name: "image",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "character",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "character",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "new image url",
-        description_localizations: {
-          "es-ES": "URL de la nueva imagen",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "new_image",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "new_image",
+        "description": "new image url",
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "URL de la nueva imagen"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "change the image of a character",
-    description_localizations: {
-      "es-ES": "cambia la imagen de un personaje",
+    "name": "custom",
+    "description": "change the image of a character",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "cambia la imagen de un personaje"
     },
-    dm_permission: false,
-    name: "custom",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "character",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "character",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "new image url",
-        description_localizations: {
-          "es-ES": "URL de la nueva imagen",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "new_image",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "new_image",
+        "description": "new image url",
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "URL de la nueva imagen"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "change the nickname of a character",
-    description_localizations: {
-      "es-ES": "cambia el apodo de un personaje",
+    "name": "nick",
+    "description": "change the nickname of a character",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "cambia el apodo de un personaje"
     },
-    dm_permission: false,
-    name: "nick",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "character",
-        options: undefined,
-        required: true,
-        type: 3,
+        "name": "character",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "new nickname",
-        description_localizations: {
-          "es-ES": "nuevo apodo",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "new_nick",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "new_nick",
+        "description": "new nickname",
+        "type": 3,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "nuevo apodo"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "merge characters together to pull a new character",
-    description_localizations: {
-      "es-ES": "combina personajes para obtener uno nuevo",
+    "name": "merge",
+    "description": "merge characters together to pull a new character",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "combina personajes para obtener uno nuevo"
     },
-    dm_permission: false,
-    name: "merge",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "target",
+        "description": "the target star rating of the merge",
+        "type": 4,
+        "choices": [
           {
-            name: "5",
-            value: 5,
+            "name": "5",
+            "value": 5
           },
           {
-            name: "4",
-            value: 4,
+            "name": "4",
+            "value": 4
           },
           {
-            name: "3",
-            value: 3,
+            "name": "3",
+            "value": 3
           },
           {
-            name: "2",
-            value: 2,
-          },
+            "name": "2",
+            "value": 2
+          }
         ],
-        description: "the target star rating of the merge",
-        description_localizations: {
-          "es-ES": "el grado del personaje a obtener",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "target",
-        options: undefined,
-        required: true,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el grado del personaje a obtener"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "merge characters together to pull a new character",
-    description_localizations: {
-      "es-ES": "combina personajes para obtener uno nuevo",
+    "name": "synthesize",
+    "description": "merge characters together to pull a new character",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "combina personajes para obtener uno nuevo"
     },
-    dm_permission: false,
-    name: "synthesize",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: [
+        "name": "target",
+        "description": "the target star rating of the merge",
+        "type": 4,
+        "choices": [
           {
-            name: "5",
-            value: 5,
+            "name": "5",
+            "value": 5
           },
           {
-            name: "4",
-            value: 4,
+            "name": "4",
+            "value": 4
           },
           {
-            name: "3",
-            value: 3,
+            "name": "3",
+            "value": 3
           },
           {
-            name: "2",
-            value: 2,
-          },
+            "name": "2",
+            "value": 2
+          }
         ],
-        description: "the target star rating of the merge",
-        description_localizations: {
-          "es-ES": "el grado del personaje a obtener",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "target",
-        options: undefined,
-        required: true,
-        type: 4,
-      },
-    ],
-    type: undefined,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el grado del personaje a obtener"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "/automerge",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "automerge",
-    options: [
+    "name": "automerge",
+    "description": "/automerge",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "merge your characters together to pull the lowest rating possible",
-        description_localizations: {
-          "es-ES": "haz una combinación de personajes del nivel más bajo posible",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "min",
-        options: undefined,
-        required: false,
-        type: 1,
+        "name": "min",
+        "description": "merge your characters together to pull the lowest rating possible",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "haz una combinación de personajes del nivel más bajo posible"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "merge your characters together to pull the highest rating possible",
-        description_localizations: {
-          "es-ES": "haz una combinación de personajes del nivel más alto posible",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "max",
-        options: undefined,
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+        "name": "max",
+        "description": "merge your characters together to pull the highest rating possible",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "haz una combinación de personajes del nivel más alto posible"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "list user last few found characters",
-    description_localizations: {
-      "es-ES": "muestra los últimos personajes obtenidos",
+    "name": "logs",
+    "description": "list user last few found characters",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "muestra los últimos personajes obtenidos"
     },
-    dm_permission: false,
-    name: "logs",
-    options: [
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "the user of the list",
-        description_localizations: {
-          "es-ES": "el usuario de la lista",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "user",
-        options: undefined,
-        required: false,
-        type: 6,
-      },
-    ],
-    type: undefined,
+        "name": "user",
+        "description": "the user of the list",
+        "type": 6,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "el usuario de la lista"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "token shop commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "buy",
-    options: [
+    "name": "buy",
+    "description": "token shop commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "use tokens to buy normal pulls",
-        description_localizations: {
-          "es-ES": "usa tokens para comprar tiradas normales",
+        "name": "normal",
+        "description": "use tokens to buy normal pulls",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "usa tokens para comprar tiradas normales"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "normal",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the amount of pulls you want to buy",
-            description_localizations: {
-              "es-ES": "la cantidad de tiradas a comprar",
-            },
-            max_value: 99,
-            min_value: 1,
-            name: "amount",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "amount",
+            "description": "the amount of pulls you want to buy",
+            "type": 4,
+            "required": true,
+            "min_value": 1,
+            "max_value": 99,
+            "description_localizations": {
+              "es-ES": "la cantidad de tiradas a comprar"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "use tokens to buy pulls with a specific guaranteed rating",
-        description_localizations: {
-          "es-ES": "usa tokens para comprar tiradas de un grado garantizado",
+        "name": "guaranteed",
+        "description": "use tokens to buy pulls with a specific guaranteed rating",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "usa tokens para comprar tiradas de un grado garantizado"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "guaranteed",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "stars",
+            "description": "the star rating you want to buy",
+            "type": 4,
+            "choices": [
               {
-                name: "5",
-                value: 5,
+                "name": "5",
+                "value": 5
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "3",
-                value: 3,
-              },
+                "name": "3",
+                "value": 3
+              }
             ],
-            description: "the star rating you want to buy",
-            description_localizations: {
-              "es-ES": "el grado de estrellas a comprar",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "stars",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el grado de estrellas a comprar"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "use tokens to buy tower sweeps",
-        description_localizations: {
-          "es-ES": "use tokens to buy tower sweeps",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "sweeps",
-        options: [
+        "name": "keys",
+        "description": "use tokens to buy tower keys",
+        "type": 1,
+        "required": false,
+        "description_localizations": {},
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the amount of sweeps you want to buy",
-            description_localizations: {
-              "es-ES": "the amount of sweeps you want to buy",
-            },
-            max_value: 99,
-            min_value: 1,
-            name: "amount",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "name": "amount",
+            "description": "the amount of keys you want to buy",
+            "type": 4,
+            "required": true,
+            "min_value": 1,
+            "max_value": 99,
+            "description_localizations": {}
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "token shop commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "shop",
-    options: [
+    "name": "shop",
+    "description": "token shop commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "use tokens to buy normal pulls",
-        description_localizations: {
-          "es-ES": "usa tokens para comprar tiradas normales",
+        "name": "normal",
+        "description": "use tokens to buy normal pulls",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "usa tokens para comprar tiradas normales"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "normal",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the amount of pulls you want to buy",
-            description_localizations: {
-              "es-ES": "la cantidad de tiradas a comprar",
-            },
-            max_value: 99,
-            min_value: 1,
-            name: "amount",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "amount",
+            "description": "the amount of pulls you want to buy",
+            "type": 4,
+            "required": true,
+            "min_value": 1,
+            "max_value": 99,
+            "description_localizations": {
+              "es-ES": "la cantidad de tiradas a comprar"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "use tokens to buy pulls with a specific guaranteed rating",
-        description_localizations: {
-          "es-ES": "usa tokens para comprar tiradas de un grado garantizado",
+        "name": "guaranteed",
+        "description": "use tokens to buy pulls with a specific guaranteed rating",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "usa tokens para comprar tiradas de un grado garantizado"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "guaranteed",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "stars",
+            "description": "the star rating you want to buy",
+            "type": 4,
+            "choices": [
               {
-                name: "5",
-                value: 5,
+                "name": "5",
+                "value": 5
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "3",
-                value: 3,
-              },
+                "name": "3",
+                "value": 3
+              }
             ],
-            description: "the star rating you want to buy",
-            description_localizations: {
-              "es-ES": "el grado de estrellas a comprar",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "stars",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el grado de estrellas a comprar"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "use tokens to buy tower sweeps",
-        description_localizations: {
-          "es-ES": "use tokens to buy tower sweeps",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "sweeps",
-        options: [
+        "name": "keys",
+        "description": "use tokens to buy tower keys",
+        "type": 1,
+        "required": false,
+        "description_localizations": {},
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the amount of sweeps you want to buy",
-            description_localizations: {
-              "es-ES": "the amount of sweeps you want to buy",
-            },
-            max_value: 99,
-            min_value: 1,
-            name: "amount",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "name": "amount",
+            "description": "the amount of keys you want to buy",
+            "type": 4,
+            "required": true,
+            "min_value": 1,
+            "max_value": 99,
+            "description_localizations": {}
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: undefined,
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "Party",
-    options: undefined,
-    type: 2,
+    "name": "Party",
+    "type": 2,
+    "dm_permission": false,
+    "description_localizations": {}
   },
   {
-    default_member_permissions: undefined,
-    description: "party management commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "party",
-    options: [
+    "name": "party",
+    "description": "party management commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view your current party",
-        description_localizations: {
-          "es-ES": "visualiza tu equipo actual",
+        "name": "view",
+        "description": "view your current party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tu equipo actual"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "view",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the party",
-            description_localizations: {
-              "es-ES": "el usuario del equipo",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the party",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario del equipo"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "assign a character to your party",
-        description_localizations: {
-          "es-ES": "asigna personajes a tu equipo",
+        "name": "assign",
+        "description": "assign a character to your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "asigna personajes a tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "assign",
-        options: [
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the name of the character",
-            description_localizations: {
-              "es-ES": "el nombre del personaje",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "name",
-            options: undefined,
-            required: true,
-            type: 3,
+            "name": "name",
+            "description": "the name of the character",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el nombre del personaje"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "spot",
+            "description": "the spot where you want this character",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the spot where you want this character",
-            description_localizations: {
-              "es-ES": "el puesto en el que quieres a este personaje",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "spot",
-            options: undefined,
-            required: false,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el puesto en el que quieres a este personaje"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "swap characters spots with each others",
-        description_localizations: {
-          "es-ES": "intercambia puestos de tu equipo",
+        "name": "swap",
+        "description": "swap characters spots with each others",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "intercambia puestos de tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "swap",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "a",
+            "description": "the first target of the swap",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the first target of the swap",
-            description_localizations: {
-              "es-ES": "el primer objetivo del intercambio",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "a",
-            options: undefined,
-            required: true,
-            type: 4,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el primer objetivo del intercambio"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "b",
+            "description": "the second target of the swap",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the second target of the swap",
-            description_localizations: {
-              "es-ES": "el segundo objetivo del intercambio",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "b",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el segundo objetivo del intercambio"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "remove a character from your party",
-        description_localizations: {
-          "es-ES": "quita a un personaje de tu equipo",
+        "name": "remove",
+        "description": "remove a character from your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "quita a un personaje de tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "remove",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "spot",
+            "description": "the spot to empty",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the spot to empty",
-            description_localizations: {
-              "es-ES": "el puesto a liberar",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "spot",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el puesto a liberar"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "party management commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "team",
-    options: [
+    "name": "team",
+    "description": "party management commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view your current party",
-        description_localizations: {
-          "es-ES": "visualiza tu equipo actual",
+        "name": "view",
+        "description": "view your current party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tu equipo actual"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "view",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the party",
-            description_localizations: {
-              "es-ES": "el usuario del equipo",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the party",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario del equipo"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "assign a character to your party",
-        description_localizations: {
-          "es-ES": "asigna personajes a tu equipo",
+        "name": "assign",
+        "description": "assign a character to your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "asigna personajes a tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "assign",
-        options: [
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the name of the character",
-            description_localizations: {
-              "es-ES": "el nombre del personaje",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "name",
-            options: undefined,
-            required: true,
-            type: 3,
+            "name": "name",
+            "description": "the name of the character",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el nombre del personaje"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "spot",
+            "description": "the spot where you want this character",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the spot where you want this character",
-            description_localizations: {
-              "es-ES": "el puesto en el que quieres a este personaje",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "spot",
-            options: undefined,
-            required: false,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el puesto en el que quieres a este personaje"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "swap characters spots with each others",
-        description_localizations: {
-          "es-ES": "intercambia puestos de tu equipo",
+        "name": "swap",
+        "description": "swap characters spots with each others",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "intercambia puestos de tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "swap",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "a",
+            "description": "the first target of the swap",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the first target of the swap",
-            description_localizations: {
-              "es-ES": "el primer objetivo del intercambio",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "a",
-            options: undefined,
-            required: true,
-            type: 4,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el primer objetivo del intercambio"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "b",
+            "description": "the second target of the swap",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the second target of the swap",
-            description_localizations: {
-              "es-ES": "el segundo objetivo del intercambio",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "b",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el segundo objetivo del intercambio"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "remove a character from your party",
-        description_localizations: {
-          "es-ES": "quita a un personaje de tu equipo",
+        "name": "remove",
+        "description": "remove a character from your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "quita a un personaje de tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "remove",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "spot",
+            "description": "the spot to empty",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the spot to empty",
-            description_localizations: {
-              "es-ES": "el puesto a liberar",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "spot",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el puesto a liberar"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "party management commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "p",
-    options: [
+    "name": "p",
+    "description": "party management commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view your current party",
-        description_localizations: {
-          "es-ES": "visualiza tu equipo actual",
+        "name": "view",
+        "description": "view your current party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tu equipo actual"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "view",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the party",
-            description_localizations: {
-              "es-ES": "el usuario del equipo",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the party",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario del equipo"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "assign a character to your party",
-        description_localizations: {
-          "es-ES": "asigna personajes a tu equipo",
+        "name": "assign",
+        "description": "assign a character to your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "asigna personajes a tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "assign",
-        options: [
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the name of the character",
-            description_localizations: {
-              "es-ES": "el nombre del personaje",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "name",
-            options: undefined,
-            required: true,
-            type: 3,
+            "name": "name",
+            "description": "the name of the character",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el nombre del personaje"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "spot",
+            "description": "the spot where you want this character",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the spot where you want this character",
-            description_localizations: {
-              "es-ES": "el puesto en el que quieres a este personaje",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "spot",
-            options: undefined,
-            required: false,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el puesto en el que quieres a este personaje"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "swap characters spots with each others",
-        description_localizations: {
-          "es-ES": "intercambia puestos de tu equipo",
+        "name": "swap",
+        "description": "swap characters spots with each others",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "intercambia puestos de tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "swap",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "a",
+            "description": "the first target of the swap",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the first target of the swap",
-            description_localizations: {
-              "es-ES": "el primer objetivo del intercambio",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "a",
-            options: undefined,
-            required: true,
-            type: 4,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el primer objetivo del intercambio"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "b",
+            "description": "the second target of the swap",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the second target of the swap",
-            description_localizations: {
-              "es-ES": "el segundo objetivo del intercambio",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "b",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el segundo objetivo del intercambio"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "remove a character from your party",
-        description_localizations: {
-          "es-ES": "quita a un personaje de tu equipo",
+        "name": "remove",
+        "description": "remove a character from your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "quita a un personaje de tu equipo"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "remove",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "spot",
+            "description": "the spot to empty",
+            "type": 4,
+            "choices": [
               {
-                name: "1",
-                value: 1,
+                "name": "1",
+                "value": 1
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "5",
-                value: 5,
-              },
+                "name": "5",
+                "value": 5
+              }
             ],
-            description: "the spot to empty",
-            description_localizations: {
-              "es-ES": "el puesto a liberar",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "spot",
-            options: undefined,
-            required: true,
-            type: 4,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el puesto a liberar"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "collection browsing commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "collection",
-    options: [
+    "name": "collection",
+    "description": "collection browsing commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view user stars",
-        description_localizations: {
-          "es-ES": "visualiza tus personajes de un grado concreto",
+        "name": "stars",
+        "description": "view user stars",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tus personajes de un grado concreto"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "stars",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "rating",
+            "description": "the star rating",
+            "type": 4,
+            "choices": [
               {
-                name: "5",
-                value: 5,
+                "name": "5",
+                "value": 5
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "1",
-                value: 1,
-              },
+                "name": "1",
+                "value": 1
+              }
             ],
-            description: "the star rating",
-            description_localizations: {
-              "es-ES": "el grado de estrellas",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "rating",
-            options: undefined,
-            required: true,
-            type: 4,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el grado de estrellas"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view user characters in a specific series",
-        description_localizations: {
-          "es-ES": "visualiza tus personajes de una serie específica",
+        "name": "media",
+        "description": "view user characters in a specific series",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tus personajes de una serie específica"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "media",
-        options: [
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the title of the series",
-            description_localizations: {
-              "es-ES": "el título de la serie",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "title",
-            options: undefined,
-            required: true,
-            type: 3,
+            "name": "title",
+            "description": "the title of the series",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el título de la serie"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view the sum numbers of a user collection",
-        description_localizations: {
-          "es-ES": "visualiza la suma total de la colección de un usuario",
+        "name": "sum",
+        "description": "view the sum numbers of a user collection",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza la suma total de la colección de un usuario"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "sum",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "collection browsing commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "coll",
-    options: [
+    "name": "coll",
+    "description": "collection browsing commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view user stars",
-        description_localizations: {
-          "es-ES": "visualiza tus personajes de un grado concreto",
+        "name": "stars",
+        "description": "view user stars",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tus personajes de un grado concreto"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "stars",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "rating",
+            "description": "the star rating",
+            "type": 4,
+            "choices": [
               {
-                name: "5",
-                value: 5,
+                "name": "5",
+                "value": 5
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "1",
-                value: 1,
-              },
+                "name": "1",
+                "value": 1
+              }
             ],
-            description: "the star rating",
-            description_localizations: {
-              "es-ES": "el grado de estrellas",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "rating",
-            options: undefined,
-            required: true,
-            type: 4,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el grado de estrellas"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view user characters in a specific series",
-        description_localizations: {
-          "es-ES": "visualiza tus personajes de una serie específica",
+        "name": "media",
+        "description": "view user characters in a specific series",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tus personajes de una serie específica"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "media",
-        options: [
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the title of the series",
-            description_localizations: {
-              "es-ES": "el título de la serie",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "title",
-            options: undefined,
-            required: true,
-            type: 3,
+            "name": "title",
+            "description": "the title of the series",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el título de la serie"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view the sum numbers of a user collection",
-        description_localizations: {
-          "es-ES": "visualiza la suma total de la colección de un usuario",
+        "name": "sum",
+        "description": "view the sum numbers of a user collection",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza la suma total de la colección de un usuario"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "sum",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "collection browsing commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "mm",
-    options: [
+    "name": "mm",
+    "description": "collection browsing commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view user stars",
-        description_localizations: {
-          "es-ES": "visualiza tus personajes de un grado concreto",
+        "name": "stars",
+        "description": "view user stars",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tus personajes de un grado concreto"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "stars",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: [
+            "name": "rating",
+            "description": "the star rating",
+            "type": 4,
+            "choices": [
               {
-                name: "5",
-                value: 5,
+                "name": "5",
+                "value": 5
               },
               {
-                name: "4",
-                value: 4,
+                "name": "4",
+                "value": 4
               },
               {
-                name: "3",
-                value: 3,
+                "name": "3",
+                "value": 3
               },
               {
-                name: "2",
-                value: 2,
+                "name": "2",
+                "value": 2
               },
               {
-                name: "1",
-                value: 1,
-              },
+                "name": "1",
+                "value": 1
+              }
             ],
-            description: "the star rating",
-            description_localizations: {
-              "es-ES": "el grado de estrellas",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "rating",
-            options: undefined,
-            required: true,
-            type: 4,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el grado de estrellas"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view user characters in a specific series",
-        description_localizations: {
-          "es-ES": "visualiza tus personajes de una serie específica",
+        "name": "media",
+        "description": "view user characters in a specific series",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza tus personajes de una serie específica"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "media",
-        options: [
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the title of the series",
-            description_localizations: {
-              "es-ES": "el título de la serie",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "title",
-            options: undefined,
-            required: true,
-            type: 3,
+            "name": "title",
+            "description": "the title of the series",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el título de la serie"
+            }
           },
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "view the sum numbers of a user collection",
-        description_localizations: {
-          "es-ES": "visualiza la suma total de la colección de un usuario",
+        "name": "sum",
+        "description": "view the sum numbers of a user collection",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "visualiza la suma total de la colección de un usuario"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "sum",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user of the list",
-            description_localizations: {
-              "es-ES": "el usuario de la lista",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "community packs management commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "installed",
-    options: [
+    "name": "installed",
+    "description": "community packs management commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "list all the installed packs on a server",
-        description_localizations: {
-          "es-ES": "muestra todos los packs del servidor",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "packs",
-        options: undefined,
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+        "name": "packs",
+        "description": "list all the installed packs on a server",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra todos los packs del servidor"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: 32,
-    description: "community packs management commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "packs",
-    options: [
+    "name": "packs",
+    "description": "community packs management commands",
+    "dm_permission": false,
+    "default_member_permissions": 32,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "community packs disable commands",
-        description_localizations: {
-          "es-ES": undefined,
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "disable",
-        options: [
+        "name": "disable",
+        "description": "community packs disable commands",
+        "type": 2,
+        "required": false,
+        "description_localizations": {},
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "permanently disable the builtin packs",
-            description_localizations: {
-              "es-ES": "permanently disable the builtin packs",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "builtins",
-            options: undefined,
-            required: false,
-            type: 1,
-          },
-        ],
-        required: false,
-        type: 2,
+            "name": "builtins",
+            "description": "permanently disable the builtin packs",
+            "type": 1,
+            "required": false,
+            "description_localizations": {}
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "list all the installed packs on a server",
-        description_localizations: {
-          "es-ES": "muestra todos los packs del servidor",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "installed",
-        options: undefined,
-        required: false,
-        type: 1,
+        "name": "installed",
+        "description": "list all the installed packs on a server",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "muestra todos los packs del servidor"
+        }
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "install a community pack",
-        description_localizations: {
-          "es-ES": "instala un pack de la comunidad",
+        "name": "install",
+        "description": "install a community pack",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "instala un pack de la comunidad"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "install",
-        options: [
+        "options": [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the id of the pack",
-            description_localizations: {
-              "es-ES": "el id del pack",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "id",
-            options: undefined,
-            required: true,
-            type: 3,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "id",
+            "description": "the id of the pack",
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el id del pack"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "uninstall a community pack",
-        description_localizations: {
-          "es-ES": "desinstala un pack de la comunidad",
+        "name": "uninstall",
+        "description": "uninstall a community pack",
+        "type": 1,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "desinstala un pack de la comunidad"
         },
-        max_value: undefined,
-        min_value: undefined,
-        name: "uninstall",
-        options: [
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the id of the pack",
-            description_localizations: {
-              "es-ES": "el id del pack",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "id",
-            options: undefined,
-            required: true,
-            type: 3,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "name": "id",
+            "description": "the id of the pack",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el id del pack"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "manage your characters stat points and skills",
-    description_localizations: {
-      "es-ES": "administra las estadísticas y habilidades de tus personajes",
+    "name": "stats",
+    "description": "manage your characters stat points and skills",
+    "dm_permission": false,
+    "description_localizations": {
+      "es-ES": "administra las estadísticas y habilidades de tus personajes"
     },
-    dm_permission: false,
-    name: "stats",
-    options: [
+    "options": [
       {
-        autocomplete: true,
-        choices: undefined,
-        description: "the name of the character",
-        description_localizations: {
-          "es-ES": "el nombre del personaje",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "quickly set your character stats in one command (format: str-sta-agi)",
-        description_localizations: {
-          "es-ES": "establece las stats de tu personaje rápidamente (formato: FUE-RES-AGI)",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "distribution",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-    type: undefined,
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "characters skill management",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "skills",
-    options: [
+    "name": "skills",
+    "description": "characters skill management",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Show all available skills and their details",
-        description_localizations: {
-          "es-ES": "Show all available skills and their details",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "showall",
-        options: undefined,
-        required: false,
-        type: 1,
+        "name": "showall",
+        "description": "Show all available skills and their details",
+        "type": 1,
+        "required": false,
+        "description_localizations": {},
+        "options": [
+          {
+            "name": "category",
+            "description": "specify a category to display",
+            "type": 3,
+            "choices": [
+              {
+                "value": "buff",
+                "name": "Buff",
+                "name_localizations": {}
+              },
+              {
+                "value": "debuff",
+                "name": "Debuff",
+                "name_localizations": {}
+              },
+              {
+                "value": "support",
+                "name": "Support",
+                "name_localizations": {}
+              },
+              {
+                "value": "offensive",
+                "name": "Offensive",
+                "name_localizations": {}
+              },
+              {
+                "value": "heal",
+                "name": "Heal",
+                "name_localizations": {}
+              }
+            ],
+            "required": false,
+            "description_localizations": {}
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Teach a character a skill",
-        description_localizations: {
-          "es-ES": "Teach a character a skill",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "acquire",
-        options: [
+        "name": "acquire",
+        "description": "Teach a character a skill",
+        "type": 1,
+        "required": false,
+        "description_localizations": {},
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the name of the character",
-            description_localizations: {
-              "es-ES": "el nombre del personaje",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "character",
-            options: undefined,
-            required: true,
-            type: 3,
+            "name": "character",
+            "description": "the name of the character",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el nombre del personaje"
+            }
           },
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the name of the required skill",
-            description_localizations: {
-              "es-ES": "the name of the required skill",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "skill",
-            options: undefined,
-            required: true,
-            type: 3,
-          },
-        ],
-        required: false,
-        type: 1,
+            "name": "skill",
+            "description": "the name of the required skill",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "the name of the required skill"
+            }
+          }
+        ]
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Upgrade a character's skill",
-        description_localizations: {
-          "es-ES": "Upgrade a character's skill",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "upgrade",
-        options: [
+        "name": "upgrade",
+        "description": "Upgrade a character's skill",
+        "type": 1,
+        "required": false,
+        "description_localizations": {},
+        "options": [
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the name of the character",
-            description_localizations: {
-              "es-ES": "el nombre del personaje",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "character",
-            options: undefined,
-            required: true,
-            type: 3,
+            "name": "character",
+            "description": "the name of the character",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "el nombre del personaje"
+            }
           },
           {
-            autocomplete: true,
-            choices: undefined,
-            description: "the name of the required skill",
-            description_localizations: {
-              "es-ES": "the name of the required skill",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "skill",
-            options: undefined,
-            required: true,
-            type: 3,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+            "name": "skill",
+            "description": "the name of the required skill",
+            "autocomplete": true,
+            "type": 3,
+            "required": true,
+            "description_localizations": {
+              "es-ES": "the name of the required skill"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: undefined,
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "Battle",
-    options: undefined,
-    type: 2,
+    "name": "battle",
+    "description": "battle/combat commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
+      {
+        "name": "tower",
+        "description": "Climb the tower to glory and become a fable",
+        "type": 1,
+        "required": false,
+        "description_localizations": {}
+      },
+      {
+        "name": "challenge",
+        "description": "Challenge the tower's next floor",
+        "type": 1,
+        "required": false,
+        "description_localizations": {}
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "battle/combat commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "battle",
-    options: [
+    "name": "bt",
+    "description": "battle/combat commands",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Battle against another player to test your party",
-        description_localizations: {
-          "es-ES": "Battle against another player to test your party",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "friend",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user to battle against",
-            description_localizations: {
-              "es-ES": "el usuario contra el que pelearás",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "versus",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
+        "name": "tower",
+        "description": "Climb the tower to glory and become a fable",
+        "type": 1,
+        "required": false,
+        "description_localizations": {}
       },
       {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Climb the tower to glory and become a fable",
-        description_localizations: {
-          "es-ES": "Climb the tower to glory and become a fable",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "tower",
-        options: undefined,
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
+        "name": "challenge",
+        "description": "Challenge the tower's next floor",
+        "type": 1,
+        "required": false,
+        "description_localizations": {}
+      }
+    ]
   },
   {
-    default_member_permissions: undefined,
-    description: "battle/combat commands",
-    description_localizations: {
-      "es-ES": undefined,
-    },
-    dm_permission: false,
-    name: "bt",
-    options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Battle against another player to test your party",
-        description_localizations: {
-          "es-ES": "Battle against another player to test your party",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "friend",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "the user to battle against",
-            description_localizations: {
-              "es-ES": "el usuario contra el que pelearás",
-            },
-            max_value: undefined,
-            min_value: undefined,
-            name: "versus",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Climb the tower to glory and become a fable",
-        description_localizations: {
-          "es-ES": "Climb the tower to glory and become a fable",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "tower",
-        options: undefined,
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
-  },
-  {
-    default_member_permissions: undefined,
-    description: "Sweep your current battle tower floor for exp",
-    description_localizations: {
-      "es-ES": "Sweep your current battle tower floor for exp",
-    },
-    dm_permission: false,
-    name: "sweep",
-    options: undefined,
-    type: undefined,
-  },
+    "name": "reclear",
+    "description": "Reclear your current tower floor to gain exp",
+    "dm_permission": false,
+    "description_localizations": {}
+  }
 ]
 `;

@@ -1,6 +1,6 @@
 import { inventoriesByUser, usersByDiscordId } from './indices.ts';
 
-import db, { kv, MAX_PULLS, MAX_SWEEPS } from './mod.ts';
+import db, { kv, MAX_KEYS, MAX_PULLS } from './mod.ts';
 
 import { KvError } from '../src/errors.ts';
 
@@ -15,15 +15,10 @@ export const COSTS = {
 export async function addTokens(
   user: Schema.User,
   amount: number,
-  vote?: boolean,
 ): Promise<Schema.User> {
   user.availableTokens ??= 0;
 
   user.availableTokens = user.availableTokens + amount;
-
-  if (vote) {
-    user.lastVote = new Date().toISOString();
-  }
 
   let res = { ok: false }, retries = 0;
 
@@ -48,23 +43,23 @@ export async function addTokens(
 
 export async function addPulls(
   instance: Schema.Instance,
-  user: Schema.User,
+  _user: Schema.User,
   amount: number,
 ): Promise<Schema.Inventory> {
-  user.availableTokens ??= 0;
+  _user.availableTokens ??= 0;
 
-  if (amount > user.availableTokens) {
+  if (amount > _user.availableTokens) {
     throw new Error('INSUFFICIENT_TOKENS');
   }
 
-  user.availableTokens = user.availableTokens - amount;
+  _user.availableTokens = _user.availableTokens - amount;
 
   let res = { ok: false }, retries = 0;
 
   while (!res.ok && retries < 5) {
-    const { inventory, inventoryCheck } = await db.rechargeConsumables(
+    const { user, inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
-      user,
+      _user,
       false,
     );
 
@@ -74,6 +69,7 @@ export async function addPulls(
       inventory.rechargeTimestamp = undefined;
     }
 
+    // don't save likes on the user object
     user.likes = undefined;
 
     res = await kv.atomic()
@@ -118,6 +114,7 @@ export async function addGuarantee(
 
   user.guarantees.push(guarantee);
 
+  // don't save likes on the user object
   user.likes = undefined;
 
   const update = await kv.atomic()
@@ -132,38 +129,39 @@ export async function addGuarantee(
   throw new KvError('failed to update user');
 }
 
-export async function addSweeps(
+export async function addKeys(
   instance: Schema.Instance,
-  user: Schema.User,
+  _user: Schema.User,
   amount: number,
 ): Promise<Schema.Inventory> {
-  user.availableTokens ??= 0;
+  _user.availableTokens ??= 0;
 
-  if (amount > user.availableTokens) {
+  if (amount > _user.availableTokens) {
     throw new Error('INSUFFICIENT_TOKENS');
   }
 
-  user.availableTokens = user.availableTokens - amount;
+  _user.availableTokens = _user.availableTokens - amount;
 
   let res = { ok: false }, retries = 0;
 
   while (!res.ok && retries < 5) {
-    const { inventory, inventoryCheck } = await db.rechargeConsumables(
+    const { user, inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
-      user,
+      _user,
       false,
     );
 
-    inventory.availableSweeps = Math.min(
+    inventory.availableKeys = Math.min(
       99,
       // deno-lint-ignore no-non-null-assertion
-      inventory.availableSweeps! + amount,
+      inventory.availableKeys! + amount,
     );
 
-    if (inventory.availableSweeps >= MAX_SWEEPS) {
-      inventory.sweepsTimestamp = undefined;
+    if (inventory.availableKeys >= MAX_KEYS) {
+      inventory.keysTimestamp = undefined;
     }
 
+    // don't save likes on the user object
     user.likes = undefined;
 
     res = await kv.atomic()

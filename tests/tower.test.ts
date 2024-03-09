@@ -6,27 +6,24 @@ import { FakeTime } from '$std/testing/time.ts';
 
 import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 
-import tower, { getFloorExp, MAX_FLOORS } from '../src/tower.ts';
+import tower, {
+  getEnemyMaxSkillLevel,
+  getEnemyRating,
+  getEnemySkillSlots,
+  getFloorExp,
+  MAX_FLOORS,
+} from '~/src/tower.ts';
 
-import db from '../db/mod.ts';
-import utils from '../src/utils.ts';
-import config from '../src/config.ts';
+import db from '~/db/mod.ts';
+import utils from '~/src/utils.ts';
+import config from '~/src/config.ts';
 
-import { experienceToNextLevel } from '../db/gainExp.ts';
+import { MediaType } from '~/src/types.ts';
 
-import { MediaType } from '../src/types.ts';
-
-import type { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+import type { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
 Deno.test('max floors', () => {
   assertEquals(MAX_FLOORS, 20);
-});
-
-Deno.test('experience to next level', () => {
-  assertEquals(experienceToNextLevel(1), 10);
-  assertEquals(experienceToNextLevel(2), 20);
-  assertEquals(experienceToNextLevel(10), 100);
-  assertEquals(experienceToNextLevel(20), 200);
 });
 
 Deno.test('exp gained amount floors 1-10', () => {
@@ -59,6 +56,98 @@ Deno.test('exp gained amount floors 11-20', () => {
   assertEquals(getFloorExp(19), 3);
 
   assertEquals(getFloorExp(20), 6);
+});
+
+Deno.test('test enemy rating floors 1-10', () => {
+  assertEquals(getEnemyRating(1), 1);
+  assertEquals(getEnemyRating(2), 1);
+  assertEquals(getEnemyRating(3), 1);
+
+  assertEquals(getEnemyRating(4), 2);
+  assertEquals(getEnemyRating(6), 2);
+
+  assertEquals(getEnemyRating(7), 3);
+  assertEquals(getEnemyRating(8), 3);
+  assertEquals(getEnemyRating(9), 3);
+
+  assertEquals(getEnemyRating(5), 4);
+  assertEquals(getEnemyRating(10), 5);
+});
+
+Deno.test('test enemy rating floors 11-20', () => {
+  assertEquals(getEnemyRating(11), 1);
+  assertEquals(getEnemyRating(12), 1);
+  assertEquals(getEnemyRating(13), 1);
+
+  assertEquals(getEnemyRating(14), 2);
+  assertEquals(getEnemyRating(16), 2);
+
+  assertEquals(getEnemyRating(17), 3);
+  assertEquals(getEnemyRating(18), 3);
+  assertEquals(getEnemyRating(19), 3);
+
+  assertEquals(getEnemyRating(15), 4);
+  assertEquals(getEnemyRating(20), 5);
+});
+
+Deno.test('test enemy skill slots floors 1-10', () => {
+  assertEquals(getEnemySkillSlots(1), 0);
+  assertEquals(getEnemySkillSlots(2), 0);
+  assertEquals(getEnemySkillSlots(3), 0);
+  assertEquals(getEnemySkillSlots(4), 0);
+
+  assertEquals(getEnemySkillSlots(5), 1);
+  assertEquals(getEnemySkillSlots(6), 1);
+  assertEquals(getEnemySkillSlots(7), 1);
+  assertEquals(getEnemySkillSlots(8), 1);
+  assertEquals(getEnemySkillSlots(9), 1);
+
+  assertEquals(getEnemySkillSlots(10), 2);
+});
+
+Deno.test('test enemy skill slots floors 11-20', () => {
+  assertEquals(getEnemySkillSlots(11), 2);
+  assertEquals(getEnemySkillSlots(12), 2);
+  assertEquals(getEnemySkillSlots(13), 2);
+  assertEquals(getEnemySkillSlots(14), 2);
+
+  assertEquals(getEnemySkillSlots(15), 3);
+  assertEquals(getEnemySkillSlots(16), 3);
+  assertEquals(getEnemySkillSlots(17), 3);
+  assertEquals(getEnemySkillSlots(18), 3);
+  assertEquals(getEnemySkillSlots(19), 3);
+
+  assertEquals(getEnemySkillSlots(20), 4);
+});
+
+Deno.test('test enemy skill levels floors 1-10', () => {
+  assertEquals(getEnemyMaxSkillLevel(1), 1);
+  assertEquals(getEnemyMaxSkillLevel(2), 1);
+  assertEquals(getEnemyMaxSkillLevel(3), 1);
+  assertEquals(getEnemyMaxSkillLevel(4), 1);
+
+  assertEquals(getEnemyMaxSkillLevel(5), 1);
+  assertEquals(getEnemyMaxSkillLevel(6), 1);
+  assertEquals(getEnemyMaxSkillLevel(7), 1);
+  assertEquals(getEnemyMaxSkillLevel(8), 1);
+  assertEquals(getEnemyMaxSkillLevel(9), 1);
+
+  assertEquals(getEnemyMaxSkillLevel(10), 2);
+});
+
+Deno.test('test enemy skill levels floors 11-20', () => {
+  assertEquals(getEnemyMaxSkillLevel(11), 2);
+  assertEquals(getEnemyMaxSkillLevel(12), 2);
+  assertEquals(getEnemyMaxSkillLevel(13), 2);
+  assertEquals(getEnemyMaxSkillLevel(14), 2);
+
+  assertEquals(getEnemyMaxSkillLevel(15), 3);
+  assertEquals(getEnemyMaxSkillLevel(16), 3);
+  assertEquals(getEnemyMaxSkillLevel(17), 3);
+  assertEquals(getEnemyMaxSkillLevel(18), 3);
+  assertEquals(getEnemyMaxSkillLevel(19), 3);
+
+  assertEquals(getEnemyMaxSkillLevel(20), 4);
 });
 
 Deno.test('/tower view', async (test) => {
@@ -161,16 +250,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  disabled: true,
-                  label: 'Sweep',
+                  custom_id: 'tchallenge=user_id',
+                  disabled: false,
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
-                  disabled: false,
-                  label: 'Challenge',
+                  custom_id: 'treclear',
+                  disabled: true,
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -293,16 +382,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -425,16 +514,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -557,16 +646,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -689,16 +778,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -821,16 +910,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
+                  custom_id: 'tchallenge=user_id',
                   disabled: false,
-                  label: 'Sweep',
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
+                  custom_id: 'treclear',
                   disabled: false,
-                  label: 'Challenge',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -953,16 +1042,16 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  disabled: false,
-                  label: 'Sweep',
+                  custom_id: 'tchallenge=user_id',
+                  disabled: true,
+                  label: '/bt challenge',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'tchallenge=user_id',
-                  disabled: true,
-                  label: 'Challenge',
+                  custom_id: 'treclear',
+                  disabled: false,
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -987,7 +1076,7 @@ Deno.test('/tower view', async (test) => {
   });
 });
 
-Deno.test('/sweep', async (test) => {
+Deno.test('/reclear', async (test) => {
   await test.step('normal', async () => {
     const timeStub = new FakeTime();
 
@@ -1084,10 +1173,10 @@ Deno.test('/sweep', async (test) => {
       () => 'instance' as any,
     );
 
-    const consumeSweepStub = stub(
+    const consumeKeyStub = stub(
       db,
-      'consumeSweep',
-      () => undefined as any,
+      'consumeKey',
+      () => 1,
     );
 
     const getInventoryStub = stub(
@@ -1095,6 +1184,7 @@ Deno.test('/sweep', async (test) => {
       'rechargeConsumables',
       () =>
         ({
+          user: {},
           inventory: {
             floorsCleared: 1,
           },
@@ -1145,15 +1235,15 @@ Deno.test('/sweep', async (test) => {
         }) as any,
     );
 
-    const t = {
-      set: () => t,
+    const atomicMock = {
+      set: () => atomicMock,
       commit: () => ({ ok: true }),
     };
 
     const atomicStub = stub(
       db.kv,
       'atomic',
-      () => t as any,
+      () => atomicMock as any,
     );
 
     config.combat = true;
@@ -1161,7 +1251,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = await tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1203,12 +1293,12 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              title: 'Floor 1',
+              title: 'Floor 1 x1',
               description: '**name 1** 1/10 EXP\n' +
-                '**name 2** 0.5/10 EXP\n' +
-                '**name 3** 0.5/10 EXP\n' +
-                '**name 4** 0.5/10 EXP\n' +
-                '**name 5** 0.5/10 EXP',
+                '**name 2** 1/10 EXP\n' +
+                '**name 3** 1/10 EXP\n' +
+                '**name 4** 1/10 EXP\n' +
+                '**name 5** 1/10 EXP',
             },
           ],
           components: [
@@ -1216,8 +1306,8 @@ Deno.test('/sweep', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  label: '/sweep',
+                  custom_id: 'treclear',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -1239,7 +1329,7 @@ Deno.test('/sweep', async (test) => {
       getUserStub.restore();
       getInventoryStub.restore();
       getUserPartyStub.restore();
-      consumeSweepStub.restore();
+      consumeKeyStub.restore();
       atomicStub.restore();
     }
   });
@@ -1340,10 +1430,22 @@ Deno.test('/sweep', async (test) => {
       () => 'instance' as any,
     );
 
-    const consumeSweepStub = stub(
+    const consumeKeyStub = stub(
       db,
-      'consumeSweep',
-      () => undefined as any,
+      'consumeKey',
+      () => 3,
+    );
+
+    const gainExpStub = stub(
+      db,
+      'gainExp',
+      () => ({
+        levelUp: 1,
+        skillPoints: 1,
+        statPoints: 3,
+        exp: 10,
+        expToLevel: 20,
+      }),
     );
 
     const getInventoryStub = stub(
@@ -1351,6 +1453,287 @@ Deno.test('/sweep', async (test) => {
       'rechargeConsumables',
       () =>
         ({
+          inventory: {
+            floorsCleared: 1,
+          },
+          user: {},
+        }) as any,
+    );
+
+    const getUserPartyStub = stub(
+      db,
+      'getUserParty',
+      () =>
+        ({
+          member1: {
+            id: 'anilist:1',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {
+              level: 1,
+              exp: 29.5,
+            },
+          },
+          member2: {
+            id: 'anilist:2',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {
+              level: 1,
+              exp: 9.85,
+            },
+          },
+          member3: {
+            id: 'anilist:3',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {
+              level: 1,
+              exp: 9.85,
+            },
+          },
+          member4: {
+            id: 'anilist:4',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {
+              level: 1,
+              exp: 9.85,
+            },
+          },
+          member5: {
+            id: 'anilist:5',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {
+              level: 1,
+              exp: 9.85,
+            },
+          },
+        }) as any,
+    );
+
+    const atomicMock = {
+      set: () => atomicMock,
+      commit: () => ({ ok: true }),
+    };
+
+    const atomicStub = stub(
+      db.kv,
+      'atomic',
+      () => atomicMock as any,
+    );
+
+    config.combat = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = tower.reclear({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: 'Floor 1 x3',
+              description:
+                '**name 1** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 2** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 3** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 4** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 5** leveled up and gained 3 stat points and 1 skill point.',
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'treclear',
+                  label: '/reclear',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.combat;
+
+      timeStub.restore();
+      fetchStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getUserStub.restore();
+      getInventoryStub.restore();
+      getUserPartyStub.restore();
+      consumeKeyStub.restore();
+      gainExpStub.restore();
+      atomicStub.restore();
+    }
+  });
+
+  await test.step('level ups 2x', async () => {
+    const timeStub = new FakeTime();
+
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'name 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'name 3',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'name 4',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'name 5',
+        },
+      },
+    ];
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const consumeKeyStub = stub(
+      db,
+      'consumeKey',
+      () => 5,
+    );
+
+    const gainExpStub = stub(
+      db,
+      'gainExp',
+      () => ({
+        levelUp: 2,
+        skillPoints: 2,
+        statPoints: 6,
+        exp: 10,
+        expToLevel: 20,
+      }),
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'rechargeConsumables',
+      () =>
+        ({
+          user: {},
           inventory: {
             floorsCleared: 1,
           },
@@ -1410,15 +1793,15 @@ Deno.test('/sweep', async (test) => {
         }) as any,
     );
 
-    const t = {
-      set: () => t,
+    const atomicMock = {
+      set: () => atomicMock,
       commit: () => ({ ok: true }),
     };
 
     const atomicStub = stub(
       db.kv,
       'atomic',
-      () => t as any,
+      () => atomicMock as any,
     );
 
     config.combat = true;
@@ -1426,7 +1809,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = await tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1468,13 +1851,13 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              title: 'Floor 1',
+              title: 'Floor 1 x5',
               description:
                 '**name 1** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
-                '**name 2** leveled up and gained 3 stat points and 1 skill point.\n' +
-                '**name 3** leveled up and gained 3 stat points and 1 skill point.\n' +
-                '**name 4** leveled up and gained 3 stat points and 1 skill point.\n' +
-                '**name 5** leveled up and gained 3 stat points and 1 skill point.',
+                '**name 2** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
+                '**name 3** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
+                '**name 4** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
+                '**name 5** leveled up 2x and gained 6 stat points and 2 skill points.',
             },
           ],
           components: [
@@ -1482,8 +1865,8 @@ Deno.test('/sweep', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep',
-                  label: '/sweep',
+                  custom_id: 'treclear',
+                  label: '/reclear',
                   style: 2,
                   type: 2,
                 },
@@ -1505,12 +1888,13 @@ Deno.test('/sweep', async (test) => {
       getUserStub.restore();
       getInventoryStub.restore();
       getUserPartyStub.restore();
-      consumeSweepStub.restore();
+      consumeKeyStub.restore();
+      gainExpStub.restore();
       atomicStub.restore();
     }
   });
 
-  await test.step('no sweeps available', async () => {
+  await test.step('no keys available', async () => {
     const timeStub = new FakeTime('2011/1/25 00:00 UTC');
 
     const media: AniListMedia[] = [
@@ -1615,9 +1999,10 @@ Deno.test('/sweep', async (test) => {
       'rechargeConsumables',
       () =>
         ({
+          user: {},
           inventory: {
-            availableSweeps: 0,
-            sweepsTimestamp: date.toISOString(),
+            availableKeys: 0,
+            keysTimestamp: date.toISOString(),
             floorsCleared: 1,
           },
         }) as any,
@@ -1683,7 +2068,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1726,11 +2111,11 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: "You don't have any more sweeps!",
+              description: "You don't have any more keys!",
             },
             {
               type: 'rich',
-              description: '_+5 sweeps <t:1295910000:R>_',
+              description: '_+1 key <t:1295907000:R>_',
             },
           ],
         },
@@ -1795,7 +2180,7 @@ Deno.test('/sweep', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await tower.sweep({
+      const message = await tower.reclear({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1838,7 +2223,8 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Clear at least 1 floor of `/battle tower` first',
+              description:
+                'Clear at least one floor of the `/battle tower` first',
             },
           ],
         },

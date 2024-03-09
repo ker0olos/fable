@@ -1,11 +1,40 @@
 import {
   charactersByInstancePrefix,
   charactersByMediaIdPrefix,
-} from './indices.ts';
+} from '~/db/indices.ts';
 
-import db from './mod.ts';
+import db from '~/db/mod.ts';
 
-import type * as Schema from './schema.ts';
+import type * as Schema from '~/db/schema.ts';
+
+export async function findCharacter(
+  instance: Schema.Instance,
+  id: string,
+): Promise<
+  | {
+    character: Schema.Character;
+    user: Schema.User;
+  }
+  | undefined
+> {
+  const character = await db.getValue<Schema.Character>(
+    [...charactersByInstancePrefix(instance._id), id],
+  );
+
+  if (!character) {
+    return undefined;
+  }
+
+  const user = await db.getValue<Schema.User>(
+    ['users', character.user ?? '_'],
+  );
+
+  if (!user) {
+    return undefined;
+  }
+
+  return { character, user };
+}
 
 export async function findCharacters(
   instance: Schema.Instance,

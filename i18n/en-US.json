@@ -7,7 +7,6 @@
   "found-nothing": "Found _nothing_ matching that query!",
   "support-server": "Discord Support Server",
   "donate": "Donate",
-  "vote": "Vote",
   "prev": "Prev",
   "next": "Next",
   "danger": "DANGER",
@@ -25,14 +24,14 @@
   "uninstalled": "Uninstalled",
 
   "+1-pull": "_+1 pull {0}_",
-  "+1-sweep": "_+5 sweeps {0}_",
+  "+1-token": "_+1 daily token {0}_",
+  "+1-key": "_+1 key {0}_",
   "available-pull": "Available Pull",
   "available-pulls": "Available Pulls",
-  "available-sweep": "Available Sweep",
-  "available-sweeps": "Available Sweeps",
+  "available-key": "Available Key",
+  "available-keys": "Available Keys",
   "daily-token": "Daily Token",
   "daily-tokens": "Daily Tokens",
-  "can-vote-again": "_Can vote again {0}_",
   "steal-cooldown-ends": "_Steal cooldown ends {0}_",
 
   "token": "token",
@@ -41,14 +40,15 @@
   "pulls": "pulls",
   "character": "character",
   "characters": "characters",
-  "thanks-for-voting": "Thanks for voting, {0}, you gained {1} {2}.",
 
   "skip": "Skip",
   "attacking": "Attacking",
+  "attacking-again": "Again",
   "won": "Won",
 
-  "sweep": "Sweep",
-  "sweeps": "Sweeps",
+  "key": "Key",
+  "keys": "Keys",
+  "reclear": "Reclear",
   "floor": "Floor",
   "next-floor": "Next Floor",
   "try-again": "Try Again",
@@ -136,7 +136,7 @@
   "gacha-no-more-characters-left": "There are no more {0}characters left",
   "gacha-no-more-in-range": "There are no more characters left in this range",
 
-  "combat-no-more-sweeps": "You don't have any more sweeps!",
+  "combat-no-more-keys": "You don't have any more keys!",
 
   "no-packs-installed": "Server doesn't have any installed packs",
 
@@ -153,23 +153,23 @@
 
   "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
   "not-enough-unclaimed": "Character doesn't have enough unclaimed points left",
-  "incorrect-distribution": "Incorrect distribution format!\n\n**Correct:** STR-STA-AGI\n**Example:** 1-2-3",
 
   "battle-yourself": "You can't battle yourself",
 
-  "str": "STR",
-  "sta": "STA",
-  "agi": "AGI",
+  "atk": "ATK",
+  "def": "DEF",
+  "spd": "SPD",
 
   "stats": "Stats",
   "skills": "Skills",
   "skill-point": "Skill Point",
   "skill-points": "Skill Points",
   "stat-points": "Stat Points",
-  "strength": "Strength",
-  "stamina": "Stamina",
-  "agility": "Agility",
-  "reset": "Reset",
+
+  "attack": "Attack",
+  "defense": "Defense",
+  "speed": "Speed",
+  "hp": "HP",
 
   "lvl": "LVL",
   "level": "Level",
@@ -184,9 +184,11 @@
   "costs-n-points": "Costs {0} {1}",
   "character-not-enough-skill-points": "Character doesn't have enough skill points left",
   "skill-is-maxed": "Skill is maxed",
+  "maxed-skill-slots": "This character already has the max number of skills possible, and can't acquire new skills",
 
-  "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
-  "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
+  "no-cleared-floors": "Clear at least one floor of the `/battle tower` first",
+  "max-floor-cleared": "You already cleared the hightest floor in the tower",
+  "tower-fail": "`/reclear` the last floor to level up your party and try again!",
   "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
 
@@ -222,22 +224,21 @@
   "help-page4-footer": "> Staying active is the best defense against stealing.",
 
   "help-page10-title": "Combat",
-  "help-page10-combat": "Prepare your characters for combat using `/stats`",
-  "help-page10-starting-points": "__Every character gets a starting amount of stat points__ based on their star rating.",
-  "help-page10-distribution": "__You can distribute those points in 3 different base stats:__ strength, stamina, and agility.",
+  "help-page10-starting-points": "__Every character gets a starting amount of stats and skills__ based on their star rating.",
+  "help-page10-stats-rng": "__Stats and skills are randomly generated for every new character you find__, use `/stats` to check.",
 
-  "help-page10-strength": "__Strength is damage__, the damage you can potentially do to your enemy.",
-  "help-page10-agility": "__Agility is defense__, minimize the damage your enemy can do.",
-  "help-page10-stamina": "__Stamina is health points__, allows you to take more hits and survive longer in battle",
+  "help-page10-attack": "__Attack is the damage__, that you can potentially do to your enemy.",
+  "help-page10-defense": "__Defense is your damage reduction__, minimizing the damage a enemy can do to you.",
+  "help-page10-speed": "__Speed is your turn order__, the faster between you and your enemy gets the first move, an overwhelming speed difference will allow you to attack move than once in the same turn.",
 
-  "help-page10-tower": "Use `/battle tower` to climb the tower, each server has a unique tower and unique enemies and weakness.",
-  "help-page10-sweep": "> Level up your characters and gain extra stat points by `/sweep`ing the same floor a few times.",
+  "help-page10-tower": "Use `/battle tower` to climb the tower, every server has a unique tower and unique enemies.",
+  "help-page10-reclear": "Level up your characters and gain extra stat points by `/reclear`ing the same floor a few times.",
+  "help-page10-distribution": "> Stat points gained from leveling up is random distributed based on the ratio of your starting stats, Skill points can be used to acquire or upgrade `/skills`",
+  "help-page10-keys": "> Challenging and reclearing floors require keys, you get +1 key every {0} minutes, you can also buy more keys from the `/shop`",
 
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
-  "help-page5-daily-tokens": "__You get 1 daily token every day__, automatically added after your first `/gacha` of the day.",
-  "help-page5-voting": "__Voting for Fable on Top.gg awards 1 token__, you can vote once every 12 hours.",
-  "help-page5-voting-weekends": "__Voting on weekends awards 2 tokens__ (_Fridays, Saturdays and Sundays_).",
+  "help-page5-daily-tokens": "__You get 1 daily token every {0} hours__, tokens are added automatically. \n\nYou get 2 daily tokens on weekends.",
   "help-page5-buy-normal": "`/buy normal` gets you extra pulls, they are the exact same as the ones you get every {0} minutes.",
   "help-page5-buy-guaranteed": "`/buy guaranteed` guarantees you get a character from one specific star rating.",
   "help-page5-example": "Example: `/buy guaranteed 5` will guarantee you get one random 5{0}character.",
@@ -295,7 +296,7 @@
 
   "/buy normal": "use tokens to buy normal pulls",
   "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
-  "/buy sweeps": "use tokens to buy tower sweeps",
+  "/buy keys": "use tokens to buy tower keys",
 
   "/installed packs": "list all the installed packs on a server",
   "/logs": "list user last few found characters",
@@ -306,10 +307,10 @@
 
   "/stats": "manage your characters stat points and skills",
 
-  "/battle friend": "Battle against another player to test your party",
   "/battle tower": "Climb the tower to glory and become a fable",
+  "/battle challenge": "Challenge the tower's next floor",
 
-  "/sweep": "Sweep your current battle tower floor for exp",
+  "/reclear": "Reclear your current tower floor to gain exp",
 
   "/skills showall": "Show all available skills and their details",
   "/skills acquire": "Teach a character a skill",
@@ -338,7 +339,7 @@
   "$new-nick": "new nickname",
 
   "$buy-normal-amount": "the amount of pulls you want to buy",
-  "$buy-sweeps-amount": "the amount of sweeps you want to buy",
+  "$buy-keys-amount": "the amount of keys you want to buy",
   "$buy-guaranteed-stars": "the star rating you want to buy",
 
   "$party-spot": "the spot where you want this character",
@@ -346,11 +347,10 @@
   "$party-swap-2": "the second target of the swap",
   "$party-remove-spot": "the spot to empty",
 
-  "$versus": "the user to battle against",
-
-  "$distribution": "quickly set your character stats in one command (format: str-sta-agi)",
-
   "$pack-id": "the id of the pack",
+
+  "page": "page",
+  "category": "category",
 
   "$help-page": "specify a page to display",
   "$help-page-gacha": "Gacha",
@@ -364,12 +364,54 @@
   "$help-page-other-commands": "Other Commands",
   "$help-page-admin-commands": "Admin Commands",
 
-  "crit": "Critical Hit",
-  "crit-desc": "The art of performing the traditional critical hit.",
-  "crit-chance": "Crit Chance",
-  "crit-damage": "Crit Damage",
+  "$skill-categories": "specify a category to display",
 
-  "dodge": "Dodge",
-  "dodge-desc": "Like the wind in the air, or something.",
-  "dodge-chance": "Dodge Chance"
+  "buff": "Buff",
+  "debuff": "Debuff",
+  "offensive": "Offensive",
+  "support": "Support",
+  "heal": "Heal",
+
+  "stunned": "Stunned",
+  "chained": "Chained",
+  "crit": "Crit",
+
+  "~crit": "Critical Hit",
+  "~crit-desc": "The art of performing the traditional critical hit.",
+  "~crit-chance": "Crit Chance",
+  "~crit-damage": "Crit Damage",
+
+  "~boost": "Boost by",
+
+  "~speed-boost": "Speed Boost",
+  "~speed-boost-desc": "Boost the speed of all party members (Not stackable)",
+  "~defense-boost": "Defense Boost",
+  "~defense-boost-desc": "Boost the defense of all party members (Not stackable)",
+
+  "~slow-debuff": "Slow Debuff",
+  "~slow-debuff-desc": "Slow the speed of your enemy party members (Not stackable)",
+
+  "~enrage": "Enraged",
+  "~enrage-desc": "If your health drops to n% boost all stats by n%",
+  "~hp-remaining": "HP Remaining",
+
+  "~heal": "Emergency Healing",
+  "~heal-desc": "Once per battle, once a party member HP drops to below 25%, heal them by n% of the caster's max HP (Not stackable)",
+  "~heal-amount": "Heal by",
+
+  "~lifesteal": "Lifesteal",
+  "~lifesteal-desc": "Every time you damage an enemy heal a portion of the damage you dealt",
+  "~lifesteal-amount": "Heal By of Damage",
+
+  "~stun": "Stun",
+  "~stun-desc": "Adds a chance to stun the enemy skipping their next turn",
+  "~stun-chance": "Stun Chance",
+
+  "~chain": "Chain Attack",
+  "~chain-desc": "Increases the amount of damage on chained attacks",
+  "~chain-2-boost": "x2 Attack Boost",
+  "~chain-3-boost": "x3 Attack Boost",
+
+  "~sneak": "Sneak Attack",
+  "~sneak-desc": "Always target and sneak attack the backline of the enemy party instead"
 }

@@ -1,23 +1,23 @@
 /// <reference lib="deno.unstable" />
 
-import utils, { ImageSize } from './utils.ts';
+import utils, { ImageSize } from '~/src/utils.ts';
 
-import Rating from './rating.ts';
+import Rating from '~/src/rating.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import i18n from './i18n.ts';
+import i18n from '~/src/i18n.ts';
 
-import user from './user.ts';
-import search from './search.ts';
+import user from '~/src/user.ts';
+import search from '~/src/search.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import packs from './packs.ts';
+import packs from '~/src/packs.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import * as Schema from '../db/schema.ts';
+import * as Schema from '~/db/schema.ts';
 
 import {
   Character,
@@ -25,9 +25,14 @@ import {
   DisaggregatedCharacter,
   Media,
   MediaRelation,
-} from './types.ts';
+} from '~/src/types.ts';
 
-import { KvError, NonFetalError, NoPullsError, PoolError } from './errors.ts';
+import {
+  KvError,
+  NonFetalError,
+  NoPullsError,
+  PoolError,
+} from '~/src/errors.ts';
 
 type Variables = {
   roles: { [chance: number]: CharacterRole };
@@ -402,6 +407,9 @@ async function pullAnimation(
     new discord.Component()
       .setLabel('/character')
       .setId(`character`, characterId, '1'),
+    new discord.Component()
+      .setLabel('/stats')
+      .setId(`stats`, characterId),
     new discord.Component()
       .setLabel('/like')
       .setId(`like`, characterId),

@@ -4,14 +4,16 @@ import { assertEquals } from '$std/assert/mod.ts';
 
 import { assertSpyCall, stub } from '$std/testing/mock.ts';
 
-import * as discord from '../src/discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import utils from '../src/utils.ts';
-import config from '../src/config.ts';
+import utils from '~/src/utils.ts';
+import config from '~/src/config.ts';
 
-import { handler } from '../src/interactions.ts';
+import { handler } from '~/src/interactions.ts';
 
-import packs from '../src/packs.ts';
+import packs from '~/src/packs.ts';
+
+import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
 
 config.global = true;
 
@@ -3482,7 +3484,7 @@ Deno.test('community packs', async (test) => {
 });
 
 Deno.test('skills', async (test) => {
-  await test.step('acquire', async () => {
+  await test.step('acquire', async (test) => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3551,18 +3553,7 @@ Deno.test('skills', async (test) => {
         (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(json, {
-        type: 8,
-        data: {
-          choices: [{
-            name: 'Critical Hit',
-            value: 'crit',
-          }, {
-            name: 'Dodge',
-            value: 'dodge',
-          }],
-        },
-      });
+      await assertMonochromeSnapshot(test, json);
     } finally {
       delete config.publicKey;
 
@@ -3571,7 +3562,7 @@ Deno.test('skills', async (test) => {
     }
   });
 
-  await test.step('upgrade', async () => {
+  await test.step('upgrade', async (test) => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3640,18 +3631,7 @@ Deno.test('skills', async (test) => {
         (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(json, {
-        type: 8,
-        data: {
-          choices: [{
-            name: 'Critical Hit',
-            value: 'crit',
-          }, {
-            name: 'Dodge',
-            value: 'dodge',
-          }],
-        },
-      });
+      await assertMonochromeSnapshot(test, json);
     } finally {
       delete config.publicKey;
 

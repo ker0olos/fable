@@ -1,22 +1,22 @@
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import i18n from './i18n.ts';
-import utils from './utils.ts';
+import i18n from '~/src/i18n.ts';
+import utils from '~/src/utils.ts';
 
-import user from './user.ts';
-import packs from './packs.ts';
+import user from '~/src/user.ts';
+import packs from '~/src/packs.ts';
 
-import Rating from './rating.ts';
+import Rating from '~/src/rating.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import { default as srch } from './search.ts';
+import { default as srch } from '~/src/search.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import * as Schema from '../db/schema.ts';
+import * as Schema from '~/db/schema.ts';
 
-import type { Character } from './types.ts';
+import type { Character } from '~/src/types.ts';
 
 async function embed({ guildId, party, locale }: {
   guildId: string;
@@ -98,11 +98,7 @@ async function embed({ guildId, party, locale }: {
     });
 
     embed.setFooter({
-      text: `${i18n.get('lvl', locale)} ${members[i]?.combat?.level ?? 1} (${
-        members[i]?.combat?.stats?.strength ?? 0
-      }-${members[i]?.combat?.stats?.stamina ?? 0}-${
-        members[i]?.combat?.stats?.agility ?? 0
-      })`,
+      text: `${i18n.get('lvl', locale)} ${members[i]?.combat?.level ?? 1}`,
     });
 
     message.addEmbed(embed);
@@ -223,6 +219,9 @@ function assign({
             new discord.Component()
               .setLabel('/character')
               .setId(`character`, characterId),
+            new discord.Component()
+              .setLabel('/stats')
+              .setId(`stats`, characterId),
           ]).patch(token);
       } catch (err) {
         const names = packs.aliasToArray(results[0].name);

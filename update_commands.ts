@@ -2,10 +2,12 @@
 
 import { green } from '$std/fmt/colors.ts';
 
-import { AvailableLocales } from './src/discord.ts';
+import { AvailableLocales } from '~/src/discord.ts';
 
-import EN from './i18n/en-US.json' with { type: 'json' };
-import ES from './i18n/es-ES.json' with { type: 'json' };
+import { skillCategories } from '~/src/types.ts';
+
+import EN from '~/i18n/en-US.json' with { type: 'json' };
+import ES from '~/i18n/es-ES.json' with { type: 'json' };
 
 enum CommandType {
   'CHAT' = 1,
@@ -431,7 +433,7 @@ export const commands = [
           {
             name: EN['$help-page-combat'],
             name_localizations: {
-              'es-ES': ES['$help-page-combat'],
+              // 'es-ES': ES['$help-page-combat'],
             },
             value: 4,
           },
@@ -477,7 +479,7 @@ export const commands = [
   ...Command({
     name: 'now',
     description: '/now',
-    aliases: ['vote', 'tu'],
+    aliases: ['tu'],
   }),
   ...Command({
     name: 'q',
@@ -629,8 +631,8 @@ export const commands = [
         ],
       }),
       Option({
-        name: 'sweeps',
-        description: '/buy sweeps',
+        name: 'keys',
+        description: '/buy keys',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -638,7 +640,7 @@ export const commands = [
             min_value: 1,
             max_value: 99,
             name: 'amount',
-            description: '$buy-sweeps-amount',
+            description: '$buy-keys-amount',
             type: Type.INTEGER,
           }),
         ],
@@ -872,12 +874,6 @@ export const commands = [
         autocomplete: true,
         type: Type.STRING,
       }),
-      Option({
-        name: 'distribution',
-        description: '$distribution',
-        type: Type.STRING,
-        optional: true,
-      }),
     ],
   }),
   ...Command({
@@ -889,6 +885,21 @@ export const commands = [
         description: '/skills showall',
         type: Type.SUB_COMMAND,
         optional: true,
+        options: [
+          Option({
+            name: 'category',
+            description: '$skill-categories',
+            optional: true,
+            type: Type.STRING,
+            choices: skillCategories.map((category) => ({
+              value: category,
+              name: EN[category],
+              name_localizations: {
+                'es-ES': (ES as typeof EN)[category],
+              },
+            })),
+          }),
+        ],
       }),
       Option({
         name: 'acquire',
@@ -933,38 +944,27 @@ export const commands = [
     ],
   }),
   ...Command({
-    name: 'Battle',
-    type: CommandType.USER,
-  }),
-  ...Command({
     name: 'battle',
     description: 'battle/combat commands',
     aliases: ['bt'],
     options: [
-      Option({
-        name: 'friend',
-        description: '/battle friend',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'versus',
-            description: '$versus',
-            type: Type.USER,
-          }),
-        ],
-      }),
       Option({
         name: 'tower',
         description: '/battle tower',
         type: Type.SUB_COMMAND,
         optional: true,
       }),
+      Option({
+        name: 'challenge',
+        description: '/battle challenge',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
     ],
   }),
   ...Command({
-    name: 'sweep',
-    description: '/sweep',
+    name: 'reclear',
+    description: '/reclear',
   }),
 ];
 
@@ -983,9 +983,5 @@ if (import.meta.main) {
     throw new Error('BOT_TOKEN is not defined');
   }
 
-  await put(commands, {
-    APP_ID,
-    BOT_TOKEN,
-    GUILD_ID,
-  });
+  await put(commands, { APP_ID, BOT_TOKEN, GUILD_ID });
 }

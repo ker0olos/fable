@@ -5,4 +5,4 @@ deno.lock
 cov_profile
 lcov.info
 
-migrate
+*.sqlite*

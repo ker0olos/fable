@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-non-null-assertion
+import { stripAnsiCode } from '$std/fmt/colors.ts';
 
 import { assert, assertEquals, assertThrows } from '$std/assert/mod.ts';
 
@@ -8,8 +9,14 @@ import {
   returnsNext,
   stub,
 } from '$std/testing/mock.ts';
+import { assertSnapshot, createAssertSnapshot } from '$std/testing/snapshot.ts';
 
-import utils from '../src/utils.ts';
+import utils from '~/src/utils.ts';
+
+export const assertMonochromeSnapshot = createAssertSnapshot<string>(
+  { serializer: (obj) => stripAnsiCode(JSON.stringify(obj, undefined, 2)) },
+  assertSnapshot,
+);
 
 Deno.test('color hex to color int', () => {
   assertEquals(utils.hexToInt('#3E5F8A'), 4087690);
@@ -233,37 +240,26 @@ Deno.test('recharge timestamps', () => {
   );
 });
 
-Deno.test('voting timestamps', async (test) => {
-  await test.step('cannot vote', () => {
-    const now = new Date();
+Deno.test('recharge keys timestamps', () => {
+  const now = new Date();
 
-    const expected = new Date().setHours(now.getHours() + 12).toString();
+  const expected = new Date().setMinutes(now.getMinutes() + 10).toString();
 
-    const _ = utils.votingTimestamp(now.toISOString());
+  assertEquals(
+    utils.rechargeKeysTimestamp(now.toISOString()),
+    expected.substring(0, expected.length - 3),
+  );
+});
 
-    assertEquals(
-      _.timeLeft,
-      expected.substring(0, expected.length - 3),
-    );
+Deno.test('recharge daily tokens timestamps', () => {
+  const now = new Date();
 
-    assertEquals(
-      _.canVote,
-      false,
-    );
-  });
+  const expected = new Date().setHours(now.getHours() + 12).toString();
 
-  await test.step('can vote', () => {
-    const past = new Date();
-
-    past.setHours(new Date().getHours() - 12).toString();
-
-    const _ = utils.votingTimestamp(past.toISOString());
-
-    assertEquals(
-      _.canVote,
-      true,
-    );
-  });
+  assertEquals(
+    utils.rechargeDailyTimestamp(now.toISOString()),
+    expected.substring(0, expected.length - 3),
+  );
 });
 
 Deno.test('diff days', async (test) => {

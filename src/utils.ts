@@ -11,11 +11,15 @@ import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import { levenshtein } from '../search-index/mod.ts';
+import { levenshtein } from '~/search-index/mod.ts';
 
-import { proxy } from '../images-proxy/mod.ts';
+import { proxy } from '~/images-proxy/mod.ts';
 
-import { RECHARGE_MINS, RECHARGE_SWEEPS_MINS } from '../db/mod.ts';
+import {
+  RECHARGE_DAILY_TOKENS_HOURS,
+  RECHARGE_KEYS_MINS,
+  RECHARGE_MINS,
+} from '~/db/mod.ts';
 
 const TEN_MIB = 1024 * 1024 * 10;
 
@@ -320,10 +324,10 @@ function rechargeTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeSweepTimestamp(v?: string): string {
+function rechargeDailyTimestamp(v?: string): string {
   const parsed = new Date(v ?? new Date());
 
-  parsed.setMinutes(parsed.getMinutes() + RECHARGE_SWEEPS_MINS);
+  parsed.setHours(parsed.getHours() + RECHARGE_DAILY_TOKENS_HOURS);
 
   const ts = parsed.getTime();
 
@@ -331,18 +335,15 @@ function rechargeSweepTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
+function rechargeKeysTimestamp(v?: string): string {
   const parsed = new Date(v ?? new Date());
 
-  parsed.setHours(parsed.getHours() + 12);
+  parsed.setMinutes(parsed.getMinutes() + RECHARGE_KEYS_MINS);
 
   const ts = parsed.getTime();
 
-  return {
-    canVote: Date.now() >= parsed.getTime(),
-    // discord uses seconds not milliseconds
-    timeLeft: Math.floor(ts / 1000).toString(),
-  };
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
 }
 
 function stealTimestamp(v?: string): string {
@@ -478,7 +479,8 @@ const utils = {
   parseInt: _parseInt,
   readJson,
   rechargeTimestamp,
-  rechargeSweepTimestamp,
+  rechargeDailyTimestamp,
+  rechargeKeysTimestamp,
   rng,
   serve,
   serveStatic,
@@ -488,7 +490,6 @@ const utils = {
   truncate,
   validateRequest,
   verifySignature,
-  votingTimestamp,
   wrap,
   pagination,
 };

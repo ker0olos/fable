@@ -1,28 +1,10 @@
-import user from './user.ts';
+import user from '~/src/user.ts';
 
-import i18n from './i18n.ts';
+import i18n from '~/src/i18n.ts';
 
-import config from './config.ts';
+import * as discord from '~/src/discord.ts';
 
-import * as discord from './discord.ts';
-
-import db, { COSTS } from '../db/mod.ts';
-
-export const voteComponent = async (
-  { token, guildId, locale }: {
-    token: string;
-    guildId: string;
-    locale?: discord.AvailableLocales;
-  },
-) => {
-  const ref = await db.createVoteRef({ token, guildId });
-
-  return new discord.Component()
-    .setLabel(i18n.get('vote', locale))
-    .setUrl(
-      `https://top.gg/bot/${config.appId}/vote?ref=${ref}`,
-    );
-};
+import db, { COSTS } from '~/db/mod.ts';
 
 function normal(
   { userId, amount }: { userId: string; amount: number },
@@ -55,8 +37,7 @@ function normal(
   return message;
 }
 
-async function confirmNormal({ token, userId, guildId, amount }: {
-  token: string;
+async function confirmNormal({ userId, guildId, amount }: {
   userId: string;
   guildId: string;
   amount: number;
@@ -111,14 +92,7 @@ async function confirmNormal({ token, userId, guildId, amount }: {
                   ? i18n.get('tokens', locale)
                   : i18n.get('token', locale),
               ),
-            ))
-          .addComponents([
-            await voteComponent({
-              token,
-              guildId,
-              locale,
-            }),
-          ]);
+            ));
       }
       default:
         throw err;
@@ -169,14 +143,10 @@ function guaranteed({
 }
 
 async function confirmGuaranteed({
-  token,
   userId,
-  guildId,
   stars,
 }: {
-  token: string;
   userId: string;
-  guildId: string;
   stars: number;
 }): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
@@ -230,14 +200,7 @@ async function confirmGuaranteed({
                   ? i18n.get('tokens', locale)
                   : i18n.get('token', locale),
               ),
-            ))
-          .addComponents([
-            await voteComponent({
-              token,
-              guildId,
-              locale,
-            }),
-          ]);
+            ));
       }
       default:
         throw err;
@@ -245,7 +208,7 @@ async function confirmGuaranteed({
   }
 }
 
-function sweeps(
+function keys(
   { userId, amount }: { userId: string; amount: number },
 ): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
@@ -266,7 +229,7 @@ function sweeps(
   );
 
   message.addComponents([
-    new discord.Component().setId('buy', 'sweeps', userId, `${amount}`)
+    new discord.Component().setId('buy', 'keys', userId, `${amount}`)
       .setLabel(i18n.get('confirm', locale)),
     new discord.Component().setId('cancel', userId)
       .setStyle(discord.ButtonStyle.Red)
@@ -276,8 +239,7 @@ function sweeps(
   return message;
 }
 
-async function confirmSweeps({ token, userId, guildId, amount }: {
-  token: string;
+async function confirmKeys({ userId, guildId, amount }: {
   userId: string;
   guildId: string;
   amount: number;
@@ -289,7 +251,7 @@ async function confirmSweeps({ token, userId, guildId, amount }: {
   const instance = await db.getInstance(guild);
 
   try {
-    await db.addSweeps(instance, _user, amount);
+    await db.addKeys(instance, _user, amount);
 
     const message = new discord.Message();
 
@@ -299,7 +261,7 @@ async function confirmSweeps({ token, userId, guildId, amount }: {
           'you-bought-pulls',
           locale,
           amount,
-          (amount > 1 ? i18n.get('sweeps', locale) : i18n.get('sweep', locale))
+          (amount > 1 ? i18n.get('keys', locale) : i18n.get('key', locale))
             .toLocaleLowerCase(),
           discord.emotes.add,
         ),
@@ -307,8 +269,11 @@ async function confirmSweeps({ token, userId, guildId, amount }: {
 
     message.addComponents([
       new discord.Component()
-        .setId('tsweep', userId)
-        .setLabel('/sweep'),
+        .setId('tchallenge', userId)
+        .setLabel('/bt challenge'),
+      new discord.Component()
+        .setId('treclear', userId)
+        .setLabel('/reclear'),
     ]);
 
     return message;
@@ -330,14 +295,7 @@ async function confirmSweeps({ token, userId, guildId, amount }: {
                   ? i18n.get('tokens', locale)
                   : i18n.get('token', locale),
               ),
-            ))
-          .addComponents([
-            await voteComponent({
-              token,
-              guildId,
-              locale,
-            }),
-          ]);
+            ));
       }
       default:
         throw err;
@@ -350,8 +308,8 @@ const shop = {
   guaranteed,
   confirmNormal,
   confirmGuaranteed,
-  sweeps,
-  confirmSweeps,
+  keys,
+  confirmKeys,
 };
 
 export default shop;

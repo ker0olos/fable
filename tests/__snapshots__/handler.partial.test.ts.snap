@@ -1,0 +1,101 @@
+export const snapshot = {};
+
+snapshot[`skills > acquire 1`] = `
+{
+  "type": 8,
+  "data": {
+    "choices": [
+      {
+        "name": "Critical Hit",
+        "value": "~crit"
+      },
+      {
+        "name": "Enraged",
+        "value": "~enrage"
+      },
+      {
+        "name": "Stun",
+        "value": "~stun"
+      },
+      {
+        "name": "Chain Attack",
+        "value": "~chain"
+      },
+      {
+        "name": "Lifesteal",
+        "value": "~lifesteal"
+      },
+      {
+        "name": "Speed Boost",
+        "value": "~speed-boost"
+      },
+      {
+        "name": "Sneak Attack",
+        "value": "~sneak"
+      },
+      {
+        "name": "Emergency Healing",
+        "value": "~heal"
+      },
+      {
+        "name": "Defense Boost",
+        "value": "~defense-boost"
+      },
+      {
+        "name": "Slow Debuff",
+        "value": "~slow-debuff"
+      }
+    ]
+  }
+}
+`;
+
+snapshot[`skills > upgrade 1`] = `
+{
+  "type": 8,
+  "data": {
+    "choices": [
+      {
+        "name": "Critical Hit",
+        "value": "~crit"
+      },
+      {
+        "name": "Enraged",
+        "value": "~enrage"
+      },
+      {
+        "name": "Stun",
+        "value": "~stun"
+      },
+      {
+        "name": "Chain Attack",
+        "value": "~chain"
+      },
+      {
+        "name": "Lifesteal",
+        "value": "~lifesteal"
+      },
+      {
+        "name": "Speed Boost",
+        "value": "~speed-boost"
+      },
+      {
+        "name": "Sneak Attack",
+        "value": "~sneak"
+      },
+      {
+        "name": "Emergency Healing",
+        "value": "~heal"
+      },
+      {
+        "name": "Defense Boost",
+        "value": "~defense-boost"
+      },
+      {
+        "name": "Slow Debuff",
+        "value": "~slow-debuff"
+      }
+    ]
+  }
+}
+`;

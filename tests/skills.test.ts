@@ -4,140 +4,62 @@ import { assertSpyCallArgs, stub } from '$std/testing/mock.ts';
 import { FakeTime } from '$std/testing/time.ts';
 
 import { assertEquals, assertRejects, assertThrows } from '$std/assert/mod.ts';
-import { assertSnapshot } from '$std/testing/snapshot.ts';
+import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
 
-import db from '../db/mod.ts';
-import packs from '../src/packs.ts';
-import config from '../src/config.ts';
-import utils from '../src/utils.ts';
+import db from '~/db/mod.ts';
+import packs from '~/src/packs.ts';
+import config from '~/src/config.ts';
+import utils from '~/src/utils.ts';
 
-import skills from '../src/skills.ts';
-import { type Character, CharacterRole, MediaType } from '../src/types.ts';
-import { NonFetalError } from '../src/errors.ts';
+import _skills, { skills } from '~/src/skills.ts';
+
+import { type Character, CharacterRole, MediaType } from '~/src/types.ts';
+
+import { NonFetalError } from '~/src/errors.ts';
 
 Deno.test('all skills', async (test) => {
   await test.step('snapshot', async (test) => {
-    await assertSnapshot(test, skills.skills);
+    await assertMonochromeSnapshot(test, skills);
   });
 
   await test.step('crits', async (test) => {
     await test.step('hit', () => {
-      const critSkill = skills.skills['crit'];
+      const critSkill = skills.crit;
 
       const randomStub = stub(Math, 'random', () => 0);
 
       try {
         const output = critSkill.activation(
           {
-            hp: 1,
-            strength: 5,
-            agility: 1,
-            stamina: 1,
-            skills: {},
+            attacking: {
+              attack: 5,
+            } as any,
+            lvl: 1,
           },
-          {
-            hp: 1,
-            strength: 1,
-            agility: 1,
-            stamina: 1,
-            skills: {},
-          },
-          1,
         );
 
-        assertEquals(output.damage, 5 * 0.3);
+        assertEquals(output.damage, 2);
       } finally {
         randomStub.restore();
       }
     });
 
     await test.step('miss', () => {
-      const critSkill = skills.skills['crit'];
+      const critSkill = skills.crit;
 
       const randomStub = stub(Math, 'random', () => 1);
 
       try {
         const output = critSkill.activation(
           {
-            hp: 1,
-            strength: 5,
-            agility: 1,
-            stamina: 1,
-            skills: {},
+            attacking: {
+              attack: 5,
+            } as any,
+            lvl: 1,
           },
-          {
-            hp: 1,
-            strength: 1,
-            agility: 1,
-            stamina: 1,
-            skills: {},
-          },
-          1,
         );
 
         assertEquals(output.damage, undefined);
-      } finally {
-        randomStub.restore();
-      }
-    });
-  });
-
-  await test.step('dodge', async (test) => {
-    await test.step('hit', () => {
-      const critSkill = skills.skills['dodge'];
-
-      const randomStub = stub(Math, 'random', () => 0);
-
-      try {
-        const output = critSkill.activation(
-          {
-            hp: 1,
-            strength: 5,
-            agility: 1,
-            stamina: 1,
-            skills: {},
-          },
-          {
-            hp: 1,
-            strength: 1,
-            agility: 1,
-            stamina: 1,
-            skills: {},
-          },
-          1,
-        );
-
-        assertEquals(output.dodge, true);
-      } finally {
-        randomStub.restore();
-      }
-    });
-
-    await test.step('miss', () => {
-      const critSkill = skills.skills['dodge'];
-
-      const randomStub = stub(Math, 'random', () => 1);
-
-      try {
-        const output = critSkill.activation(
-          {
-            hp: 1,
-            strength: 5,
-            agility: 1,
-            stamina: 1,
-            skills: {},
-          },
-          {
-            hp: 1,
-            strength: 1,
-            agility: 1,
-            stamina: 1,
-            skills: {},
-          },
-          1,
-        );
-
-        assertEquals(output.dodge, undefined);
       } finally {
         randomStub.restore();
       }
@@ -147,9 +69,9 @@ Deno.test('all skills', async (test) => {
 
 Deno.test('/skills showall', async (test) => {
   await test.step('page 0', async (test) => {
-    const message = skills.all(0);
+    const message = _skills.all(0);
 
-    await assertSnapshot(test, message.json());
+    await assertMonochromeSnapshot(test, message.json());
   });
 });
 
@@ -231,7 +153,7 @@ Deno.test('/skills acquire', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = skills.preAcquire({
+      const message = _skills.preAcquire({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -421,7 +343,7 @@ Deno.test('/skills acquire', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = skills.preAcquire({
+      const message = _skills.preAcquire({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -611,7 +533,7 @@ Deno.test('/skills acquire', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = skills.preAcquire({
+      const message = _skills.preAcquire({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -775,7 +697,7 @@ Deno.test('/skills acquire', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = skills.preAcquire({
+      const message = _skills.preAcquire({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -929,7 +851,7 @@ Deno.test('/skills acquire', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = skills.preAcquire({
+      const message = _skills.preAcquire({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1032,7 +954,7 @@ Deno.test('/skills acquire', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = skills.preAcquire({
+      const message = _skills.preAcquire({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1094,12 +1016,12 @@ Deno.test('/skills acquire', async (test) => {
   await test.step("skill doesn't exist", () => {
     assertThrows(
       () =>
-        skills.preAcquire({
+        _skills.preAcquire({
           token: 'test_token',
           userId: 'user_id',
           guildId: 'guild_id',
           character: 'character',
-          skillKey: 'skill',
+          skillKey: 'skill' as any,
         }),
       Error,
       '404',
@@ -1140,7 +1062,7 @@ Deno.test('acquire skill', async (test) => {
     );
 
     try {
-      const message = await skills.acquire({
+      const message = await _skills.acquire({
         userId: 'user_id',
         guildId: 'guild_id',
         characterId: 'character_id',
@@ -1150,7 +1072,7 @@ Deno.test('acquire skill', async (test) => {
       assertSpyCallArgs(acquireSkillStub, 0, [
         'inventory',
         'character_id',
-        skills.skills['crit'],
+        skills.crit,
       ]);
 
       assertEquals(
@@ -1219,7 +1141,7 @@ Deno.test('acquire skill', async (test) => {
     );
 
     try {
-      const message = await skills.acquire({
+      const message = await _skills.acquire({
         userId: 'user_id',
         guildId: 'guild_id',
         characterId: 'character_id',
@@ -1229,7 +1151,7 @@ Deno.test('acquire skill', async (test) => {
       assertSpyCallArgs(acquireSkillStub, 0, [
         'inventory',
         'character_id',
-        skills.skills['crit'],
+        skills.crit,
       ]);
 
       assertEquals(
@@ -1302,7 +1224,7 @@ Deno.test('acquire skill', async (test) => {
     try {
       await assertRejects(
         () =>
-          skills.acquire({
+          _skills.acquire({
             userId: 'user_id',
             guildId: 'guild_id',
             characterId: 'character_id',
@@ -1356,7 +1278,7 @@ Deno.test('acquire skill', async (test) => {
     try {
       await assertRejects(
         () =>
-          skills.acquire({
+          _skills.acquire({
             userId: 'user_id',
             guildId: 'guild_id',
             characterId: 'character_id',
@@ -1410,7 +1332,7 @@ Deno.test('acquire skill', async (test) => {
     try {
       await assertRejects(
         () =>
-          skills.acquire({
+          _skills.acquire({
             userId: 'user_id',
             guildId: 'guild_id',
             characterId: 'character_id',
@@ -1464,7 +1386,7 @@ Deno.test('acquire skill', async (test) => {
     try {
       await assertRejects(
         () =>
-          skills.acquire({
+          _skills.acquire({
             userId: 'user_id',
             guildId: 'guild_id',
             characterId: 'character_id',
@@ -1485,11 +1407,11 @@ Deno.test('acquire skill', async (test) => {
   await test.step('skill not found', async () => {
     await assertRejects(
       () =>
-        skills.acquire({
+        _skills.acquire({
           userId: 'user_id',
           guildId: 'guild_id',
           characterId: 'character_id',
-          skillKey: 'skill',
+          skillKey: 'skill' as any,
         }),
       Error,
       '404',

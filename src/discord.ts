@@ -1,9 +1,9 @@
 import { json } from 'sift';
 
-import i18n from './i18n.ts';
-import utils, { ImageSize } from './utils.ts';
+import i18n from '~/src/i18n.ts';
+import utils, { ImageSize } from '~/src/utils.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
 const splitter = '=';
 
@@ -65,6 +65,10 @@ export const emotes = {
   clearedFloor: '<:clearedfloor:1131872032456446053>',
   undiscoveredFloor: '<:undiscoveredfloor:1128724910609551481>',
   rightArrow: '<:rarrow:1170533290105655428>',
+  enraged: '<:ENRAGED:1214241073518481428>',
+  stunned: '<:STUNNED:1214576287415541814>',
+  slowed: '<:SLOWED:1215255510706683905>',
+  sneaky: '<:sneaky:1215575668490764288>',
 };
 
 export const join = (...args: string[]): string => {
@@ -741,10 +745,12 @@ export class Message {
     return this;
   }
 
-  clearEmbedsAndAttachments(): Message {
+  clearEmbedsAndAttachments(offset?: number): Message {
     this.#files = [];
-    this.#data.embeds = [];
     this.#data.attachments = [];
+    this.#data.embeds = typeof offset === 'number'
+      ? this.#data.embeds.slice(offset - 1, offset)
+      : [];
     return this;
   }
 

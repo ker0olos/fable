@@ -1,8 +1,6 @@
-import { inventoriesByUser, usersByDiscordId } from './indices.ts';
+import { inventoriesByUser } from '~/db/indices.ts';
 
-import type * as Schema from './schema.ts';
-
-import db from './mod.ts';
+import type * as Schema from '~/db/schema.ts';
 
 export function clearFloor(
   op: Deno.AtomicOperation,
@@ -18,36 +16,34 @@ export function clearFloor(
   return inventory.floorsCleared;
 }
 
-export function consumeSweep(
+export function consumeKey(
   {
     op,
-    user,
     inventory,
     inventoryCheck,
+    amount,
   }: {
     op: Deno.AtomicOperation;
     inventory: Schema.Inventory;
-    user: Schema.User;
     inventoryCheck: Deno.AtomicCheck;
+    amount?: number;
   },
-): void {
-  // deno-lint-ignore no-non-null-assertion
-  inventory.availableSweeps = inventory.availableSweeps! - 1;
+): number {
+  if (typeof inventory.availableKeys === 'undefined') {
+    throw new Error("available keys shouldn't be undefined");
+  }
 
-  inventory.lastSweep = new Date().toISOString();
-  inventory.sweepsTimestamp ??= new Date().toISOString();
+  const keys = amount ?? inventory.availableKeys;
 
-  db.checkDailyTimestamp(user);
+  inventory.availableKeys -= keys;
 
-  // don't save likes on the user object
-  user.likes = undefined;
+  inventory.lastPVE = new Date().toISOString();
+  inventory.keysTimestamp ??= new Date().toISOString();
 
   op
     .check(inventoryCheck)
-    //
-    .set(['users', user._id], user)
-    .set(usersByDiscordId(user.id), user)
-    //
     .set(['inventories', inventory._id], inventory)
     .set(inventoriesByUser(inventory.instance, inventory.user), inventory);
+
+  return keys;
 }

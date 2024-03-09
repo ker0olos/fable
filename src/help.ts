@@ -1,11 +1,18 @@
-import i18n from './i18n.ts';
-import user from './user.ts';
+import i18n from '~/src/i18n.ts';
+import user from '~/src/user.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import { COOLDOWN_DAYS, COSTS, MAX_PULLS, RECHARGE_MINS } from '../db/mod.ts';
+import {
+  COOLDOWN_DAYS,
+  COSTS,
+  MAX_PULLS,
+  RECHARGE_DAILY_TOKENS_HOURS,
+  RECHARGE_MINS,
+} from '~/db/mod.ts';
 
-import { PARTY_PROTECTION_PERIOD } from './steal.ts';
+import { PARTY_PROTECTION_PERIOD } from '~/src/steal.ts';
+import { RECHARGE_KEYS_MINS } from '~/db/mod.ts';
 
 function pages(
   { userId, index }: { userId: string; index: number },
@@ -149,29 +156,28 @@ function pages(
         new discord.Embed()
           .setAuthor({ name: i18n.get('help-page10-title', locale) })
           .setDescription([
-            i18n.get('help-page10-combat', locale),
-            '',
             i18n.get('help-page10-starting-points', locale),
             '',
-            i18n.get('help-page10-distribution', locale),
+            i18n.get('help-page10-stats-rng', locale),
             '',
-            i18n.get('help-page10-strength', locale),
+            i18n.get('help-page10-attack', locale),
             '',
-            i18n.get('help-page10-agility', locale),
+            i18n.get('help-page10-defense', locale),
             '',
-            i18n.get('help-page10-stamina', locale),
+            i18n.get('help-page10-speed', locale),
             '',
             i18n.get('help-page10-tower', locale),
             '',
-            i18n.get('help-page10-sweep', locale),
+            i18n.get('help-page10-reclear', locale),
+            '',
+            i18n.get('help-page10-distribution', locale),
+            '',
+            i18n.get('help-page10-keys', locale, RECHARGE_KEYS_MINS),
             discord.empty,
           ].join('\n')),
       ),
     new discord.Message()
       .addComponents([
-        new discord.Component()
-          .setLabel('/vote')
-          .setId('now', userId),
         new discord.Component()
           .setId('buy', 'bguaranteed', userId, '5')
           .setLabel(`/buy guaranteed 5`),
@@ -182,11 +188,11 @@ function pages(
           .setDescription([
             i18n.get('help-page5-shop', locale),
             '',
-            i18n.get('help-page5-daily-tokens', locale),
-            '',
-            i18n.get('help-page5-voting', locale),
-            '',
-            i18n.get('help-page5-voting-weekends', locale),
+            i18n.get(
+              'help-page5-daily-tokens',
+              locale,
+              RECHARGE_DAILY_TOKENS_HOURS,
+            ),
             '',
             i18n.get('help-page5-buy-normal', locale, RECHARGE_MINS),
             '',
@@ -251,7 +257,7 @@ function pages(
             `- \`/q\`: _${i18n.get('/q', locale)}_`,
             `- \`/pull\` \`/guaranteed\`: _${i18n.get('/pull', locale)}_`,
             '',
-            `- \`/now\` \`/vote\` \`/tu\`: _${i18n.get('/now', locale)}_`,
+            `- \`/now\` \`/tu\`: _${i18n.get('/now', locale)}_`,
             `- \`/search\` \`/anime\` \`/manga\` \`/series\`: _${
               i18n.get('/search', locale)
             }_`,
@@ -287,7 +293,7 @@ function pages(
             `- \`/give\` \`/gift\`: _${i18n.get('/give', locale)}_`,
             '',
             `- \`/battle tower\`: _${i18n.get('/battle tower', locale)}_`,
-            `- \`/sweep\`: _${i18n.get('/sweep', locale)}_`,
+            `- \`/reclear\`: _${i18n.get('/reclear', locale)}_`,
           ].join('\n')),
       ),
     new discord.Message()

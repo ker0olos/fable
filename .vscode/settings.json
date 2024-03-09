@@ -5,15 +5,17 @@
     "**/target": true,
     "**/__snapshots__": true
   },
+  "discord.enabled": true,
   "discord.buttonEnabled": true,
   "discord.buttonLabel": "Add Fable to Your Server",
   "discord.buttonUrl": "https://discord.com/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot",
+  //
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "README.md": "LICENSE,.gitignore",
+    "README.md": "LICENSE,.gitignore,ToS.md,Policy.md",
     ".env.example": ".env",
     "deno.json": "deno.lock"
   },
@@ -27,6 +29,7 @@
     "./db",
     "./tests",
     "./update_commands.ts",
+    "./upload_emote.ts",
     "./update_commands.test.ts",
     "./update_topgg_stats.ts",
     "./setup.ts"
@@ -58,5 +61,8 @@
         "packs/*/manifest.json"
       ]
     }
-  ]
+  ],
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file://.github/workflows/deploy.yml"
+  }
 }

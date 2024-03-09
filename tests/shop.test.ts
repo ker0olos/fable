@@ -110,7 +110,6 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmNormal({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 1,
@@ -184,7 +183,6 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmNormal({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 5,
@@ -231,7 +229,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('normal insufficient votes', async () => {
+  await test.step('normal insufficient tokens', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -261,17 +259,10 @@ Deno.test('/buy', async (test) => {
       },
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await shop.confirmNormal({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,
@@ -281,17 +272,7 @@ Deno.test('/buy', async (test) => {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                label: 'Vote',
-                type: 2,
-                style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
             description: 'You need **1 more token** before you can do this.',
@@ -305,11 +286,10 @@ Deno.test('/buy', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       addPullsStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
-  await test.step('normal insufficient votes (plural)', async () => {
+  await test.step('normal insufficient tokens (plural)', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -339,17 +319,10 @@ Deno.test('/buy', async (test) => {
       },
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await shop.confirmNormal({
-        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,
@@ -359,17 +332,7 @@ Deno.test('/buy', async (test) => {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                label: 'Vote',
-                type: 2,
-                style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
             description: 'You need **5 more tokens** before you can do this.',
@@ -383,7 +346,6 @@ Deno.test('/buy', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       addPullsStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
@@ -522,9 +484,7 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmGuaranteed({
-        token: 'token',
         userId: 'user_id',
-        guildId: 'guild_id',
         stars: 3,
       });
 
@@ -590,9 +550,7 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmGuaranteed({
-        token: 'token',
         userId: 'user_id',
-        guildId: 'guild_id',
         stars: 4,
       });
 
@@ -658,9 +616,7 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmGuaranteed({
-        token: 'token',
         userId: 'user_id',
-        guildId: 'guild_id',
         stars: 5,
       });
 
@@ -699,7 +655,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('guaranteed insufficient votes', async () => {
+  await test.step('guaranteed insufficient tokens', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -729,19 +685,11 @@ Deno.test('/buy', async (test) => {
       },
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await shop.confirmGuaranteed({
-        token: 'token',
         userId: 'user_id',
-        guildId: 'guild_id',
         stars: 4,
       });
 
@@ -749,17 +697,7 @@ Deno.test('/buy', async (test) => {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                label: 'Vote',
-                type: 2,
-                style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
             description: 'You need **1 more token** before you can do this.',
@@ -773,11 +711,10 @@ Deno.test('/buy', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       addGuaranteeStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
-  await test.step('guaranteed insufficient votes (plural)', async () => {
+  await test.step('guaranteed insufficient tokens (plural)', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -807,19 +744,11 @@ Deno.test('/buy', async (test) => {
       },
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
       const message = await shop.confirmGuaranteed({
-        token: 'token',
         userId: 'user_id',
-        guildId: 'guild_id',
         stars: 4,
       });
 
@@ -827,17 +756,7 @@ Deno.test('/buy', async (test) => {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                label: 'Vote',
-                type: 2,
-                style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
             description: 'You need **7 more tokens** before you can do this.',
@@ -851,12 +770,11 @@ Deno.test('/buy', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       addGuaranteeStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
-  await test.step('sweep dialog', () => {
-    const message = shop.sweeps({
+  await test.step('keys dialog', () => {
+    const message = shop.keys({
       userId: 'user_id',
       amount: 1,
     });
@@ -869,7 +787,7 @@ Deno.test('/buy', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'buy=sweeps=user_id=1',
+              custom_id: 'buy=keys=user_id=1',
               label: 'Confirm',
               style: 2,
               type: 2,
@@ -891,8 +809,8 @@ Deno.test('/buy', async (test) => {
     });
   });
 
-  await test.step('sweep dialog (plural)', () => {
-    const message = shop.sweeps({
+  await test.step('keys dialog (plural)', () => {
+    const message = shop.keys({
       userId: 'user_id',
       amount: 4,
     });
@@ -905,7 +823,7 @@ Deno.test('/buy', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'buy=sweeps=user_id=4',
+              custom_id: 'buy=keys=user_id=4',
               label: 'Confirm',
               style: 2,
               type: 2,
@@ -927,7 +845,7 @@ Deno.test('/buy', async (test) => {
     });
   });
 
-  await test.step('sweep confirmed', async () => {
+  await test.step('keys confirmed', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -948,13 +866,12 @@ Deno.test('/buy', async (test) => {
 
     const addPullsStub = stub(
       db,
-      'addSweeps',
+      'addKeys',
       () => '_' as any,
     );
 
     try {
-      const message = await shop.confirmSweeps({
-        token: 'token',
+      const message = await shop.confirmKeys({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 1,
@@ -974,8 +891,14 @@ Deno.test('/buy', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'tsweep=user_id',
-                label: '/sweep',
+                custom_id: 'tchallenge=user_id',
+                label: '/bt challenge',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'treclear=user_id',
+                label: '/reclear',
                 style: 2,
                 type: 2,
               },
@@ -983,7 +906,7 @@ Deno.test('/buy', async (test) => {
           }],
           embeds: [{
             type: 'rich',
-            description: 'You bought **1** sweep <:add:1099004747123523644>',
+            description: 'You bought **1** key <:add:1099004747123523644>',
           }],
         },
       });
@@ -995,7 +918,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('sweep confirmed (plural)', async () => {
+  await test.step('keys confirmed (plural)', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -1016,13 +939,12 @@ Deno.test('/buy', async (test) => {
 
     const addPullsStub = stub(
       db,
-      'addSweeps',
+      'addKeys',
       () => '_' as any,
     );
 
     try {
-      const message = await shop.confirmSweeps({
-        token: 'token',
+      const message = await shop.confirmKeys({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 4,
@@ -1042,8 +964,14 @@ Deno.test('/buy', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'tsweep=user_id',
-                label: '/sweep',
+                custom_id: 'tchallenge=user_id',
+                label: '/bt challenge',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'treclear=user_id',
+                label: '/reclear',
                 style: 2,
                 type: 2,
               },
@@ -1051,7 +979,7 @@ Deno.test('/buy', async (test) => {
           }],
           embeds: [{
             type: 'rich',
-            description: 'You bought **4** sweeps <:add:1099004747123523644>',
+            description: 'You bought **4** keys <:add:1099004747123523644>',
           }],
         },
       });
@@ -1063,7 +991,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('sweep insufficient votes', async () => {
+  await test.step('keys insufficient tokens', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -1087,23 +1015,16 @@ Deno.test('/buy', async (test) => {
 
     const addPullsStub = stub(
       db,
-      'addSweeps',
+      'addKeys',
       () => {
         throw new Error('INSUFFICIENT_TOKENS');
       },
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
-      const message = await shop.confirmSweeps({
-        token: 'token',
+      const message = await shop.confirmKeys({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,
@@ -1113,17 +1034,7 @@ Deno.test('/buy', async (test) => {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                label: 'Vote',
-                type: 2,
-                style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
             description: 'You need **1 more token** before you can do this.',
@@ -1137,11 +1048,10 @@ Deno.test('/buy', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       addPullsStub.restore();
-      createVoteRefStub.restore();
     }
   });
 
-  await test.step('sweep insufficient votes (plural)', async () => {
+  await test.step('keys insufficient tokens (plural)', async () => {
     const getUserStub = stub(
       db,
       'getUser',
@@ -1165,23 +1075,16 @@ Deno.test('/buy', async (test) => {
 
     const addPullsStub = stub(
       db,
-      'addSweeps',
+      'addKeys',
       () => {
         throw new Error('INSUFFICIENT_TOKENS');
       },
     );
 
-    const createVoteRefStub = stub(
-      db,
-      'createVoteRef',
-      () => Promise.resolve('fake_ref'),
-    );
-
     config.appId = 'app_id';
 
     try {
-      const message = await shop.confirmSweeps({
-        token: 'token',
+      const message = await shop.confirmKeys({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,
@@ -1191,17 +1094,7 @@ Deno.test('/buy', async (test) => {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                label: 'Vote',
-                type: 2,
-                style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
             description: 'You need **5 more tokens** before you can do this.',
@@ -1215,7 +1108,6 @@ Deno.test('/buy', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       addPullsStub.restore();
-      createVoteRefStub.restore();
     }
   });
 });

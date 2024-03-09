@@ -74,6 +74,7 @@ const packs = {
   confirmDisableBuiltins,
   cachedGuilds,
   characters,
+  aggregatedCharacters,
   disableBuiltins,
   formatToString,
   install,
@@ -746,6 +747,22 @@ async function characters({ ids, search, guildId }: {
   } else {
     return [];
   }
+}
+
+async function aggregatedCharacters({ ids, search, guildId }: {
+  ids?: string[];
+  search?: string;
+  guildId: string;
+}): Promise<Character[]> {
+  const characters = await packs.characters({ ids, search, guildId });
+
+  const aggregatedCharacters = await Promise.all(
+    characters.map((character) =>
+      packs.aggregate<Character>({ character, guildId })
+    ),
+  );
+
+  return aggregatedCharacters;
 }
 
 async function mediaCharacters({ id, search, guildId, index }: {

@@ -2557,6 +2557,12 @@ Deno.test('/character', async (test) => {
                 style: 2,
                 type: 2,
               },
+              {
+                custom_id: 'stats=pack-id:1',
+                label: '/stats',
+                style: 2,
+                type: 2,
+              },
             ],
           }],
           attachments: [],

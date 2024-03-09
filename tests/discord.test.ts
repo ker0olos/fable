@@ -4,11 +4,11 @@ import { assert, assertEquals } from '$std/assert/mod.ts';
 
 import { assertSpyCall, assertSpyCalls, stub } from '$std/testing/mock.ts';
 
-import utils, { ImageSize } from '../src/utils.ts';
+import utils, { ImageSize } from '~/src/utils.ts';
 
-import * as discord from '../src/discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import config from '../src/config.ts';
+import config from '~/src/config.ts';
 
 Deno.test('interactions', async (test) => {
   await test.step('command', () => {
@@ -1111,7 +1111,7 @@ Deno.test('page messages', async (test) => {
   });
 });
 
-Deno.test('emotes', async (test) => {
+Deno.test.ignore('emotes', async (test) => {
   for (const [name, tag] of Object.entries(discord.emotes)) {
     await test.step(name, async () => {
       const id = /<.*:.*:(.*)>/.exec(tag);

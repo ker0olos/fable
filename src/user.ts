@@ -1,25 +1,23 @@
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import db, { COSTS, MAX_PULLS, MAX_SWEEPS } from '../db/mod.ts';
+import db, { COSTS, MAX_KEYS, MAX_PULLS } from '~/db/mod.ts';
 
-import i18n from './i18n.ts';
-import utils from './utils.ts';
-import packs from './packs.ts';
+import i18n from '~/src/i18n.ts';
+import utils from '~/src/utils.ts';
+import packs from '~/src/packs.ts';
 
-import Rating from './rating.ts';
+import Rating from '~/src/rating.ts';
 
-import { voteComponent } from './shop.ts';
+import { default as srch, relationFilter } from '~/src/search.ts';
 
-import { default as srch, relationFilter } from './search.ts';
-
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
 import {
   Character,
   DisaggregatedCharacter,
   DisaggregatedMedia,
   Media,
-} from './types.ts';
+} from '~/src/types.ts';
 
 const cachedGuilds: Record<string, {
   locale: discord.AvailableLocales;
@@ -30,12 +28,10 @@ const cachedUsers: Record<string, {
 }> = {};
 
 async function now({
-  token,
   userId,
   guildId,
   mention,
 }: {
-  token: string;
   userId: string;
   guildId: string;
   mention?: boolean;
@@ -43,30 +39,32 @@ async function now({
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
-  const user = await db.getUser(userId);
+  const _user = await db.getUser(userId);
   const guild = await db.getGuild(guildId);
   const instance = await db.getInstance(guild);
 
-  const { inventory } = await db.rechargeConsumables(instance, user);
+  const { user, inventory } = await db.rechargeConsumables(instance, _user);
 
   const {
     availablePulls,
-    sweepsTimestamp,
-    availableSweeps,
+    keysTimestamp,
+    availableKeys,
     stealTimestamp,
     rechargeTimestamp,
-    lastSweep,
+    lastPVE,
+    floorsCleared,
   } = inventory;
+
+  const { dailyTimestamp, availableTokens } = user;
 
   const message = new discord.Message();
 
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
-  const sweepsRecharge = utils.rechargeSweepTimestamp(sweepsTimestamp);
+  const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
+  const keysRecharge = utils.rechargeKeysTimestamp(keysTimestamp);
 
-  const showSweeps = typeof lastSweep === 'string' &&
-    utils.isWithin14Days(new Date(lastSweep));
-
-  const voting = utils.votingTimestamp(user.lastVote);
+  const showKeys = typeof lastPVE === 'string' &&
+    utils.isWithin14Days(new Date(lastPVE));
 
   const guarantees = Array.from(new Set(user.guarantees ?? []))
     .sort((a, b) => b - a);
@@ -86,24 +84,24 @@ async function now({
       }),
   );
 
-  if (showSweeps) {
+  if (showKeys) {
     message.addEmbed(
       new discord.Embed()
-        .setTitle(`**${availableSweeps}**`)
+        .setTitle(`**${availableKeys}**`)
         .setFooter({
-          text: availableSweeps === 1
-            ? i18n.get('available-sweep', locale)
-            : i18n.get('available-sweeps', locale),
+          text: availableKeys === 1
+            ? i18n.get('available-key', locale)
+            : i18n.get('available-keys', locale),
         }),
     );
   }
 
-  if (user.availableTokens) {
+  if (availableTokens) {
     message.addEmbed(
       new discord.Embed()
-        .setTitle(`**${user.availableTokens}**`)
+        .setTitle(`**${availableTokens}**`)
         .setFooter({
-          text: user.availableTokens === 1
+          text: availableTokens === 1
             ? i18n.get('daily-token', locale)
             : i18n.get('daily-tokens', locale),
         }),
@@ -124,25 +122,21 @@ async function now({
     );
   }
 
-  // deno-lint-ignore no-non-null-assertion
-  if (showSweeps && availableSweeps! < MAX_SWEEPS) {
+  if (dailyTimestamp) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          i18n.get('+1-sweep', locale, `<t:${sweepsRecharge}:R>`),
+          i18n.get('+1-token', locale, `<t:${dailyTokenRecharge}:R>`),
         ),
     );
   }
 
-  if (user.lastVote && !voting.canVote) {
+  // deno-lint-ignore no-non-null-assertion
+  if (showKeys && availableKeys! < MAX_KEYS) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          i18n.get(
-            'can-vote-again',
-            locale,
-            `<t:${utils.votingTimestamp(user.lastVote).timeLeft}:R>`,
-          ),
+          i18n.get('+1-key', locale, `<t:${keysRecharge}:R>`),
         ),
     );
   }
@@ -172,12 +166,12 @@ async function now({
   }
 
   // deno-lint-ignore no-non-null-assertion
-  if (showSweeps && availableSweeps! > 0) {
+  if (showKeys && floorsCleared && availableKeys! > 0) {
     message.addComponents([
-      // `/sweep` shortcut
+      // `/reclear` shortcut
       new discord.Component()
-        .setId('tsweep', userId)
-        .setLabel('/sweep'),
+        .setId('treclear', userId)
+        .setLabel('/reclear'),
     ]);
   }
 
@@ -203,12 +197,6 @@ async function now({
       new discord.Component()
         .setId('pull', userId, `${guarantees[0]}`)
         .setLabel(`/pull ${guarantees[0]}`),
-    ]);
-  }
-
-  if (!user.lastVote || voting.canVote) {
-    message.addComponents([
-      await voteComponent({ token, guildId, locale }),
     ]);
   }
 

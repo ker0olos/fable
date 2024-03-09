@@ -1,5 +1,7 @@
 import type { Manifest } from '../src/types.ts';
 
+import type { SkillKey } from '~/src/types.ts';
+
 interface Collection {
   _id: string;
 }
@@ -21,9 +23,8 @@ export interface Instance extends Collection {
 export interface User extends Collection {
   id: string;
   inventories: string[];
-  lastVote?: string;
   availableTokens?: number;
-  dailyTimestamp?: string;
+  dailyTimestamp: string;
   guarantees?: number[];
   likes?: Like[];
 }
@@ -33,13 +34,14 @@ export interface Inventory extends Collection {
   instance: string;
   availablePulls: number;
   lastPull?: string;
+
   rechargeTimestamp?: string;
   stealTimestamp?: string;
 
   floorsCleared?: number;
-  availableSweeps?: number;
-  sweepsTimestamp?: string;
-  lastSweep?: string;
+  availableKeys?: number;
+  keysTimestamp?: string;
+  lastPVE?: string;
 
   party?: {
     member1?: string;
@@ -82,17 +84,18 @@ export interface CharacterCombat {
   level?: number;
 
   skillPoints?: number;
-  skillSlots?: number;
-  skills?: Record<string, AcquiredCharacterSkill>;
+  skills?: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
 
-  stats?: CharacterStats;
+  // unclaimedStatsPoints?: number;
+  curStats?: CharacterStats;
+  baseStats?: CharacterStats;
 }
 
 export interface CharacterStats {
-  unclaimed?: number;
-  strength?: number;
-  stamina?: number;
-  agility?: number;
+  attack: number;
+  defense: number;
+  speed: number;
+  hp: number;
 }
 
 export interface Like {

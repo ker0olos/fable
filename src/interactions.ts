@@ -1,30 +1,32 @@
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import search, { idPrefix } from './search.ts';
+import search, { idPrefix } from '~/src/search.ts';
 
-import i18n from './i18n.ts';
-import user from './user.ts';
-import party from './party.ts';
-import packs from './packs.ts';
-import utils from './utils.ts';
-import gacha from './gacha.ts';
-import trade from './trade.ts';
-import steal from './steal.ts';
-import shop from './shop.ts';
-import stats from './stats.ts';
-import skills from './skills.ts';
-import battle from './battle.ts';
-import tower from './tower.ts';
-import help from './help.ts';
+import i18n from '~/src/i18n.ts';
+import user from '~/src/user.ts';
+import party from '~/src/party.ts';
+import packs from '~/src/packs.ts';
+import utils from '~/src/utils.ts';
+import gacha from '~/src/gacha.ts';
+import trade from '~/src/trade.ts';
+import steal from '~/src/steal.ts';
+import shop from '~/src/shop.ts';
+import stats from '~/src/stats.ts';
+import battle from '~/src/battle.ts';
+import tower from '~/src/tower.ts';
+import help from '~/src/help.ts';
 
-import merge from './merge.ts';
+import _skills, { skills } from '~/src/skills.ts';
 
-import * as webhooks from './webhooks.ts';
-import * as communityAPI from './communityAPI.ts';
+import merge from '~/src/merge.ts';
 
-import config, { initConfig } from './config.ts';
+import * as communityAPI from '~/src/communityAPI.ts';
 
-import { NonFetalError, NoPermissionError } from './errors.ts';
+import config, { initConfig } from '~/src/config.ts';
+
+import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
+
+import type { SkillCategory, SkillKey } from '~/src/types.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -289,7 +291,7 @@ export const handler = async (r: Request) => {
 
           const distance: Record<string, number> = {};
 
-          let _skills = Object.values(skills.skills);
+          let _skills = Object.values(skills);
 
           // sort suggestion based on distance
           _skills.forEach((skill) => {
@@ -574,12 +576,10 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'now':
-          case 'vote':
           case 'tu': {
             return (await user.now({
               userId: member.user.id,
               guildId,
-              token,
             }))
               .send();
           }
@@ -676,8 +676,8 @@ export const handler = async (r: Request) => {
                   userId: member.user.id,
                   amount: options['amount'] as number,
                 }).send();
-              case 'sweeps':
-                return shop.sweeps({
+              case 'keys':
+                return shop.keys({
                   userId: member.user.id,
                   amount: options['amount'] as number,
                 }).send();
@@ -686,20 +686,11 @@ export const handler = async (r: Request) => {
             }
             break;
           }
-          case 'installed': {
-            //deno-lint-ignore no-non-null-assertion
-            switch (subcommand!) {
-              case 'packs':
-                return (await packs.pages({
-                  guildId,
-                  userId: member.user.id,
-                })).send();
-            }
-            break;
-          }
+          case 'installed':
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
+              default:
               case 'installed': {
                 return (await packs.pages({
                   guildId,
@@ -736,23 +727,12 @@ export const handler = async (r: Request) => {
                 })
                   .send();
               }
-              // case 'popular': {
-              //   return (await community.popularPacks({
-              //     guildId,
-              //     userId: member.user.id,
-              //     index: 0,
-              //   }))
-              //     .setFlags(discord.MessageFlags.Ephemeral)
-              //     .send();
-              // }
               case 'disable builtins': {
                 return (await packs.disableBuiltins({
                   userId: member.user.id,
                   guildId,
                 })).send();
               }
-              default:
-                break;
             }
             break;
           }
@@ -768,27 +748,27 @@ export const handler = async (r: Request) => {
           case 'stats': {
             const character = options['name'] as string;
 
-            const distribution = options['distribution'] as string;
-
             return stats.view({
               token,
               guildId,
               character,
-              distribution,
               userId: member.user.id,
             }).send();
           }
           case 'skills': {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'showall':
-                return skills.all(0, locale).send();
+              case 'showall': {
+                const category = options['category'] as SkillCategory;
+
+                return _skills.all(0, category, locale).send();
+              }
               case 'upgrade':
               case 'acquire': {
-                const skillKey = options['skill'] as string;
+                const skillKey = options['skill'] as SkillKey;
                 const character = options['character'] as string;
 
-                return skills.preAcquire({
+                return _skills.preAcquire({
                   token,
                   skillKey,
                   guildId,
@@ -813,24 +793,25 @@ export const handler = async (r: Request) => {
                 })
                   .send();
               }
-              default:
-              case 'friend': {
-                const targetId = options['versus'] as string ??
-                  options['user'] as string;
-
-                return battle.challengeFriend({
+              case 'challenge': {
+                return battle.challengeTower({
                   token,
                   guildId,
-                  userId: member.user.id,
-                  targetId: targetId,
+                  user: member.user,
                 })
                   .send();
+              }
+              // case 'friend':
+              default: { // default is used to respond to users context-menu "Battle" option
+                //   const targetId = options['versus'] as string ??
+                //     options['user'] as string;
+                break;
               }
             }
             break;
           }
-          case 'sweep': {
-            return tower.sweep({
+          case 'reclear': {
+            return tower.reclear({
               token,
               guildId,
               userId: member.user.id,
@@ -991,7 +972,6 @@ export const handler = async (r: Request) => {
               mention: true,
               userId: member.user.id,
               guildId,
-              token,
             })).send();
           }
           case 'help': {
@@ -1023,16 +1003,13 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'guaranteed':
                   return (await shop.confirmGuaranteed({
-                    token,
-                    guildId,
                     userId: member.user.id,
                     stars: value,
                   }))
                     .setType(discord.MessageType.Update)
                     .send();
-                case 'sweeps':
-                  return (await shop.confirmSweeps({
-                    token,
+                case 'keys':
+                  return (await shop.confirmKeys({
                     guildId,
                     userId: member.user.id,
                     amount: value,
@@ -1041,7 +1018,6 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'normal':
                   return (await shop.confirmNormal({
-                    token,
                     guildId,
                     userId: member.user.id,
                     amount: value,
@@ -1156,35 +1132,16 @@ export const handler = async (r: Request) => {
           }
           case 'stats': {
             // deno-lint-ignore no-non-null-assertion
-            const type = customValues![0];
+            const characterId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![1];
-
-            // deno-lint-ignore no-non-null-assertion
-            const characterId = customValues![2];
-
-            if (userId === member.user.id) {
-              switch (type) {
-                case 'str':
-                case 'sta':
-                case 'agi':
-                case 'reset':
-                  return (await stats.update({
-                    type,
-                    token,
-                    guildId,
-                    characterId,
-                    userId: member.user.id,
-                  }))
-                    .setType(discord.MessageType.Update)
-                    .send();
-                default:
-                  break;
-              }
-            }
-
-            throw new NoPermissionError();
+            return stats.view({
+              token,
+              guildId,
+              character: `${idPrefix}${characterId}`,
+              userId: member.user.id,
+            })
+              .setType(discord.MessageType.Update)
+              .send();
           }
           case 'cacquire': {
             // deno-lint-ignore no-non-null-assertion
@@ -1194,15 +1151,35 @@ export const handler = async (r: Request) => {
             const characterId = customValues![1];
 
             // deno-lint-ignore no-non-null-assertion
-            const skillKey = customValues![2];
+            const skillKey = customValues![2] as SkillKey;
 
             if (userId === member.user.id) {
-              return (await skills.acquire({
+              return (await _skills.acquire({
                 guildId,
                 characterId,
                 userId,
                 skillKey,
               }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'passign': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![1];
+
+            if (userId === member.user.id) {
+              return party.assign({
+                token,
+                userId: member.user.id,
+                guildId,
+                id: characterId,
+              })
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1233,14 +1210,17 @@ export const handler = async (r: Request) => {
           }
           case 'skills': {
             // deno-lint-ignore no-non-null-assertion
+            const category = customValues![0] as SkillCategory;
+
+            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return skills.all(index, locale)
+            return _skills.all(index, category, locale)
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'tsweep': {
-            return tower.sweep({
+          case 'treclear': {
+            return tower.reclear({
               token,
               guildId,
               userId: member.user.id,
@@ -1252,11 +1232,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            return battle.challengeTower({
-              token,
-              guildId,
-              userId: member.user.id,
-            })
+            return battle.challengeTower({ token, guildId, user: member.user })
               .setType(
                 userId === member.user.id
                   ? discord.MessageType.Update
@@ -1407,14 +1383,13 @@ if (import.meta.main) {
     '/api/publish': communityAPI.publish,
     '/api/popular': communityAPI.popular,
     '/api/pack/:packId+': communityAPI.pack,
-    '/webhooks/topgg': webhooks.topgg,
     '/external/*': utils.handleProxy,
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       baseUrl: import.meta.url,
     }),
     '/invite': () =>
       Response.redirect(
-        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
+        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
       ),
     '/robots.txt': () => {
       return new Response(

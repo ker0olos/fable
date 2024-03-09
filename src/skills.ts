@@ -1,95 +1,262 @@
-import _user from './user.ts';
+// deno-lint-ignore-file no-non-null-assertion
 
-import i18n from './i18n.ts';
-import config from './config.ts';
-import utils from './utils.ts';
+import _user from '~/src/user.ts';
 
-import packs from './packs.ts';
+import i18n from '~/src/i18n.ts';
+import config from '~/src/config.ts';
+import utils from '~/src/utils.ts';
 
-import search, { idPrefix } from './search.ts';
+import packs from '~/src/packs.ts';
 
-import db from '../db/mod.ts';
+import search, { idPrefix } from '~/src/search.ts';
 
-import * as discord from './discord.ts';
+import db from '~/db/mod.ts';
 
-import { NonFetalError } from './errors.ts';
+import * as discord from '~/src/discord.ts';
 
-import type { CharacterSkill, SkillOutput } from './types.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
-const skills: Record<string, CharacterSkill> = {
-  'crit': {
+import type {
+  CharacterAdditionalStat,
+  CharacterSkill,
+  SkillCategory,
+  SkillOutput,
+} from '~/src/types.ts';
+
+type SkillKey = keyof typeof skills;
+
+const skills = {
+  crit: {
     cost: 2,
-    key: 'crit',
-    descKey: 'crit-desc',
-    activationTurn: 'user',
-    activation: function (char, _target, lvl): SkillOutput {
-      const [critChance, critDamageMultiplier] = this.stats;
+    key: '~crit',
+    descKey: '~crit-desc',
+    categories: ['offensive'],
+    activation: function ({
+      lvl,
+      attacking: char,
+    }): SkillOutput {
+      const [critChance, critDamageMultiplier] = this.stats!;
 
-      const isCrit = Math.random() * 100 <= critChance.scale[lvl - 1];
+      const rng = Math.random() * 100;
+      const isCrit = rng <= critChance.scale![lvl - 1];
 
       if (isCrit) {
         return {
-          damage: char.strength * (critDamageMultiplier.scale[lvl - 1] / 100),
+          damage: Math.max(
+            Math.round(
+              char.attack * (critDamageMultiplier.scale![lvl - 1] / 100),
+            ),
+            1,
+          ),
         };
       }
 
       return {};
     },
+    max: 3,
     stats: [{
-      key: 'crit-chance',
+      key: '~crit-chance',
       scale: [0.5, 5, 15],
       suffix: '%',
     }, {
-      key: 'crit-damage',
+      key: '~crit-damage',
       scale: [30, 45, 60],
       suffix: '%',
     }],
   },
-  'dodge': {
-    cost: 3,
-    key: 'dodge',
-    descKey: 'dodge-desc',
-    activationTurn: 'enemy',
-    activation: function (_char, _target, lvl): SkillOutput {
-      const [dodgeChance] = this.stats;
+  speed: {
+    key: '~speed-boost',
+    descKey: '~speed-boost-desc',
+    categories: ['buff', 'support'],
+    cost: 1,
+    max: Infinity,
+    stats: [{
+      key: '~boost',
+      suffix: '%',
+      factor: 1,
+    }],
+  },
+  defense: {
+    key: '~defense-boost',
+    descKey: '~defense-boost-desc',
+    categories: ['buff', 'support'],
+    cost: 1,
+    max: Infinity,
+    stats: [{
+      key: '~boost',
+      suffix: '%',
+      factor: 1,
+    }],
+  },
+  slow: {
+    key: '~slow-debuff',
+    descKey: '~slow-debuff-desc',
+    categories: ['debuff', 'support'],
+    cost: 1,
+    max: Infinity,
+    stats: [{
+      key: '~boost',
+      suffix: '%',
+      factor: 1,
+    }],
+  },
+  enrage: {
+    cost: 2,
+    key: '~enrage',
+    descKey: '~enrage-desc',
+    categories: ['buff', 'offensive'],
+    max: 3,
+    stats: [{
+      key: '~hp-remaining',
+      scale: [5, 15, 25],
+      suffix: '%',
+    }, {
+      key: '~boost',
+      scale: [15, 25, 50],
+      suffix: '%',
+    }],
+  },
+  heal: {
+    cost: 2,
+    key: '~heal',
+    descKey: '~heal-desc',
+    categories: ['support', 'heal'],
+    activation: function ({
+      lvl,
+      attacking: char,
+    }): SkillOutput {
+      const [healPercent] = this.stats!;
 
-      const isDodged = Math.random() * 100 <= dodgeChance.scale[lvl - 1];
+      return {
+        heal: Math.max(
+          Math.round(char.maxHP * (healPercent.scale![lvl - 1] / 100)),
+          1,
+        ),
+      };
+    },
+    max: 3,
+    stats: [{
+      key: '~heal-amount',
+      scale: [5, 15, 25],
+      suffix: '%',
+    }],
+  },
+  lifesteal: {
+    cost: 2,
+    key: '~lifesteal',
+    descKey: '~lifesteal-desc',
+    categories: ['heal', 'offensive'],
+    activation: function ({ attacking, lvl, damage }): SkillOutput {
+      const [stealPercent] = this.stats!;
 
-      if (isDodged) {
+      const missing = attacking.maxHP - attacking.hp;
+
+      const heal = Math.round(damage! * (stealPercent.scale![lvl - 1] / 100));
+
+      return {
+        heal: Math.min(heal, missing),
+      };
+    },
+    max: 3,
+    stats: [{
+      key: '~lifesteal-amount',
+      scale: [10, 25, 50],
+      suffix: '%',
+    }],
+  },
+  stun: {
+    cost: 2,
+    key: '~stun',
+    descKey: '~stun-desc',
+    categories: ['offensive'],
+    max: 3,
+    activation: function ({ lvl }): SkillOutput {
+      const [stunChance] = this.stats!;
+
+      const rng = Math.random() * 100;
+      const isStunned = rng <= stunChance.scale![lvl - 1];
+
+      return {
+        stun: isStunned,
+      };
+    },
+    stats: [{
+      key: '~stun-chance',
+      scale: [5, 15, 80],
+      suffix: '%',
+    }],
+  },
+  chain: {
+    cost: 10,
+    key: '~chain',
+    descKey: '~chain-desc',
+    categories: ['offensive'],
+    activation: function ({ combo, damage }): SkillOutput {
+      const [chain2, chain3] = this.stats!;
+
+      if (combo === 2) {
         return {
-          dodge: true,
+          damage: Math.max(Math.round(damage! * (chain2.scale![0] / 100)), 1),
+        };
+      } else if (combo === 3) {
+        return {
+          damage: Math.max(Math.round(damage! * (chain3.scale![0] / 100)), 1),
         };
       }
 
       return {};
     },
+    max: 1,
     stats: [{
-      key: 'dodge-chance',
-      scale: [0.5, 5, 15],
+      key: '~chain-2-boost',
+      scale: [25],
+      suffix: '%',
+    }, {
+      key: '~chain-3-boost',
+      scale: [50],
       suffix: '%',
     }],
   },
-};
+  grab: {
+    cost: 5,
+    key: '~sneak',
+    descKey: '~sneak-desc',
+    categories: ['offensive'],
+    max: 1,
+    stats: [],
+  },
+} satisfies Record<string, CharacterSkill>;
 
 const format = (
   skill: CharacterSkill,
   locale?: discord.AvailableLocales,
-  options?: {
-    maxed?: boolean;
-    lvl?: number;
-  },
+  options?: { maxed?: boolean; lvl?: number },
 ): string => {
-  const stats = skill.stats.map((s, index) =>
-    `${index + 1}. _${i18n.get(s.key, locale)} (${
-      s.scale
-        .slice(
-          Math.max(options?.lvl ? options?.lvl - 2 : 0, 0),
-          options?.lvl ? options?.lvl : undefined,
-        )
-        .map((t) => `${s.prefix ?? ''}${t}${s.suffix ?? ''}`)
-        .join(options?.lvl ? ` ${discord.emotes.rightArrow} ` : ', ')
-    })_`
-  );
+  function generateStatsString(
+    s: CharacterAdditionalStat,
+    options?: { lvl?: number },
+  ): string {
+    const { scale, prefix, suffix, factor } = s;
+    const startIndex = Math.max(options?.lvl ? options?.lvl - 2 : 0, 0);
+    const endIndex = options?.lvl ? options?.lvl : undefined;
+
+    const stats = scale
+      ? scale.slice(startIndex, endIndex).map((t) =>
+        `${prefix ?? ''}${t}${suffix ?? ''}`
+      )
+      : [1, 2, 3].slice(startIndex, endIndex).map((lvl) =>
+        `${prefix ?? ''}${factor! * lvl}${suffix ?? ''}`
+      );
+
+    return stats.join(options?.lvl ? ` ${discord.emotes.rightArrow} ` : ', ');
+  }
+
+  const stats =
+    skill.stats?.map((s, index) =>
+      `${index + 1}. _${i18n.get(s.key, locale)} (${
+        generateStatsString(s, options)
+      })_`
+    ) ?? [];
 
   const cost = options?.maxed
     ? ` **(${i18n.get('lvl', locale)} ${i18n.get('max', locale)})**`
@@ -118,7 +285,7 @@ const format = (
 function preAcquire(
   { token, skillKey, guildId, character, userId }: {
     token: string;
-    skillKey: string;
+    skillKey: SkillKey;
     guildId: string;
     character: string;
     userId: string;
@@ -213,11 +380,11 @@ function preAcquire(
 
       message.addEmbed(embed);
 
-      const skill = skills[skillKey];
+      const skill: CharacterSkill = skills[skillKey];
 
-      const existingSkill = existing[0].combat?.skills?.[skill.key];
+      const existingSkill = existing[0].combat?.skills?.[skillKey];
 
-      const maxed = skill.stats[0].scale.length <= (existingSkill?.level ?? 1);
+      const maxed = skill.max <= (existingSkill?.level ?? 1);
 
       const formatted = format(skill, locale, {
         maxed,
@@ -306,7 +473,7 @@ function preAcquire(
 
 async function acquire(
   { skillKey, guildId, characterId, userId }: {
-    skillKey: string;
+    skillKey: SkillKey;
     guildId: string;
     characterId: string;
     userId: string;
@@ -359,6 +526,10 @@ async function acquire(
         throw new NonFetalError(
           i18n.get('skill-is-maxed', locale),
         );
+      case 'CHARACTER_HAS_MAX_SKILLS_SLOTS':
+        throw new NonFetalError(
+          i18n.get('maxed-skill-slots', locale),
+        );
       case 'NOT_ENOUGH_SKILL_POINTS':
         throw new NonFetalError(
           i18n.get('character-not-enough-skill-points', locale),
@@ -379,11 +550,20 @@ async function acquire(
 
 function all(
   index: number,
+  category?: SkillCategory,
   locale?: discord.AvailableLocales,
 ): discord.Message {
   const message = new discord.Message();
 
-  const pages = utils.chunks(Object.values(skills), 3);
+  const __skills = Object.values(skills)
+    .filter((skill) => {
+      if (category && !(skill.categories as string[]).includes(category)) {
+        return false;
+      }
+      return true;
+    });
+
+  const pages = utils.chunks(__skills, 3);
 
   const page = pages[index];
 
@@ -398,13 +578,16 @@ function all(
     message,
     total: pages.length,
     type: 'skills',
+    target: category ?? '',
+    next: index + 1 < pages.length,
     locale,
   });
 }
 
+export { skills };
+
 export default {
   preAcquire,
   acquire,
-  skills,
   all,
 };

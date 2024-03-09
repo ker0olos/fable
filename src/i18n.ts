@@ -1,9 +1,14 @@
-import { AvailableLocales } from './discord.ts';
+import { AvailableLocales } from '~/src/discord.ts';
 
-import EN from '../i18n/en-US.json' with { type: 'json' };
-import ES from '../i18n/es-ES.json' with { type: 'json' };
+import EN from '~/i18n/en-US.json' with { type: 'json' };
+import ES from '~/i18n/es-ES.json' with { type: 'json' };
 
 export type Keys = keyof typeof EN;
+
+const dict = {
+  'en-US': EN,
+  'es-ES': ES,
+};
 
 function get(
   key: Keys,
@@ -14,14 +19,16 @@ function get(
 
   switch (locale) {
     case 'es-ES':
-      value = ES[key];
+      value = key in i18n.dict[locale]
+        ? i18n.dict[locale][key as keyof typeof ES]
+        : i18n.dict['en-US'][key];
       break;
     default:
-      value = EN[key];
+      value = i18n.dict['en-US'][key];
       break;
   }
 
-  value ??= key;
+  value ??= i18n.dict['en-US'][key] ?? key;
 
   if (args?.length) {
     value = value.replaceAll(
@@ -33,6 +40,6 @@ function get(
   return value;
 }
 
-const i18n = { get };
+const i18n = { get, dict };
 
 export default i18n;

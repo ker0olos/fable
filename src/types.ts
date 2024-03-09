@@ -1,6 +1,10 @@
-import type { Keys } from '../src/i18n.ts';
+import type { Keys } from '~/src/i18n.ts';
 
-import type { AcquiredCharacterSkill } from '../db/schema.ts';
+import type { AcquiredCharacterSkill, CharacterStats } from '~/db/schema.ts';
+
+import { skills } from '~/src/skills.ts';
+
+import type { PartyMember } from '~/src/battle.types.ts';
 
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
@@ -169,30 +173,47 @@ export interface Manifest {
 
 // Combat
 
-export type CharacterLive = {
-  skills: Record<string, AcquiredCharacterSkill>;
-  strength: Readonly<number>;
-  stamina: Readonly<number>;
-  agility: Readonly<number>;
+export type SkillKey = keyof typeof skills;
+
+export type CharacterBattleStats = CharacterStats & {
+  skills: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
   hp: number;
+  maxHP: number;
 };
 
 export interface SkillOutput {
-  dodge?: boolean;
   damage?: number;
+  heal?: number;
+  stun?: boolean;
 }
+
+export const skillCategories = [
+  'buff',
+  'debuff',
+  'support',
+  'offensive',
+  'heal',
+] as const;
+
+export type SkillCategory = typeof skillCategories[number];
 
 export interface CharacterSkill {
   key: Keys;
   descKey: Keys;
+  max: number;
+
+  categories: SkillCategory[];
 
   cost: number;
 
-  activationTurn: 'user' | 'enemy';
-  activation: (
-    char: CharacterLive,
-    target: CharacterLive,
-    lvl: number,
+  activation?: (
+    args: {
+      lvl: number;
+      attacking: PartyMember;
+      receiving?: PartyMember;
+      damage?: number;
+      combo?: number;
+    },
   ) => SkillOutput;
 
   stats: CharacterAdditionalStat[];
@@ -200,7 +221,8 @@ export interface CharacterSkill {
 
 export interface CharacterAdditionalStat {
   key: Keys;
-  scale: number[];
+  scale?: number[];
+  factor?: number;
   prefix?: string;
   suffix?: string;
 }

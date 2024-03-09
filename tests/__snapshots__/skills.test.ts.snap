@@ -2,98 +2,253 @@ export const snapshot = {};
 
 snapshot[`all skills > snapshot 1`] = `
 {
-  crit: {
-    activation: [Function: activation],
-    activationTurn: "user",
-    cost: 2,
-    descKey: "crit-desc",
-    key: "crit",
-    stats: [
+  "crit": {
+    "cost": 2,
+    "key": "~crit",
+    "descKey": "~crit-desc",
+    "categories": [
+      "offensive"
+    ],
+    "max": 3,
+    "stats": [
       {
-        key: "crit-chance",
-        scale: [
+        "key": "~crit-chance",
+        "scale": [
           0.5,
           5,
-          15,
+          15
         ],
-        suffix: "%",
+        "suffix": "%"
       },
       {
-        key: "crit-damage",
-        scale: [
+        "key": "~crit-damage",
+        "scale": [
           30,
           45,
-          60,
+          60
         ],
-        suffix: "%",
-      },
-    ],
+        "suffix": "%"
+      }
+    ]
   },
-  dodge: {
-    activation: [Function: activation],
-    activationTurn: "enemy",
-    cost: 3,
-    descKey: "dodge-desc",
-    key: "dodge",
-    stats: [
+  "speed": {
+    "key": "~speed-boost",
+    "descKey": "~speed-boost-desc",
+    "categories": [
+      "buff",
+      "support"
+    ],
+    "cost": 1,
+    "max": null,
+    "stats": [
       {
-        key: "dodge-chance",
-        scale: [
-          0.5,
+        "key": "~boost",
+        "suffix": "%",
+        "factor": 1
+      }
+    ]
+  },
+  "defense": {
+    "key": "~defense-boost",
+    "descKey": "~defense-boost-desc",
+    "categories": [
+      "buff",
+      "support"
+    ],
+    "cost": 1,
+    "max": null,
+    "stats": [
+      {
+        "key": "~boost",
+        "suffix": "%",
+        "factor": 1
+      }
+    ]
+  },
+  "slow": {
+    "key": "~slow-debuff",
+    "descKey": "~slow-debuff-desc",
+    "categories": [
+      "debuff",
+      "support"
+    ],
+    "cost": 1,
+    "max": null,
+    "stats": [
+      {
+        "key": "~boost",
+        "suffix": "%",
+        "factor": 1
+      }
+    ]
+  },
+  "enrage": {
+    "cost": 2,
+    "key": "~enrage",
+    "descKey": "~enrage-desc",
+    "categories": [
+      "buff",
+      "offensive"
+    ],
+    "max": 3,
+    "stats": [
+      {
+        "key": "~hp-remaining",
+        "scale": [
           5,
           15,
+          25
         ],
-        suffix: "%",
+        "suffix": "%"
       },
-    ],
+      {
+        "key": "~boost",
+        "scale": [
+          15,
+          25,
+          50
+        ],
+        "suffix": "%"
+      }
+    ]
   },
+  "heal": {
+    "cost": 2,
+    "key": "~heal",
+    "descKey": "~heal-desc",
+    "categories": [
+      "support",
+      "heal"
+    ],
+    "max": 3,
+    "stats": [
+      {
+        "key": "~heal-amount",
+        "scale": [
+          5,
+          15,
+          25
+        ],
+        "suffix": "%"
+      }
+    ]
+  },
+  "lifesteal": {
+    "cost": 2,
+    "key": "~lifesteal",
+    "descKey": "~lifesteal-desc",
+    "categories": [
+      "heal",
+      "offensive"
+    ],
+    "max": 3,
+    "stats": [
+      {
+        "key": "~lifesteal-amount",
+        "scale": [
+          10,
+          25,
+          50
+        ],
+        "suffix": "%"
+      }
+    ]
+  },
+  "stun": {
+    "cost": 2,
+    "key": "~stun",
+    "descKey": "~stun-desc",
+    "categories": [
+      "offensive"
+    ],
+    "max": 3,
+    "stats": [
+      {
+        "key": "~stun-chance",
+        "scale": [
+          5,
+          15,
+          80
+        ],
+        "suffix": "%"
+      }
+    ]
+  },
+  "chain": {
+    "cost": 10,
+    "key": "~chain",
+    "descKey": "~chain-desc",
+    "categories": [
+      "offensive"
+    ],
+    "max": 1,
+    "stats": [
+      {
+        "key": "~chain-2-boost",
+        "scale": [
+          25
+        ],
+        "suffix": "%"
+      },
+      {
+        "key": "~chain-3-boost",
+        "scale": [
+          50
+        ],
+        "suffix": "%"
+      }
+    ]
+  },
+  "grab": {
+    "cost": 5,
+    "key": "~sneak",
+    "descKey": "~sneak-desc",
+    "categories": [
+      "offensive"
+    ],
+    "max": 1,
+    "stats": []
+  }
 }
 `;
 
 snapshot[`/skills showall > page 0 1`] = `
 {
-  data: {
-    attachments: [],
-    components: [
+  "type": 4,
+  "data": {
+    "embeds": [
       {
-        components: [
-          {
-            custom_id: "skills==0=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "_",
-            disabled: true,
-            label: "1/1",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "skills==0=next",
-            label: "Next",
-            style: 2,
-            type: 2,
-          },
-        ],
-        type: 1,
-      },
+        "type": "rich",
+        "description": "**Critical Hit** (2 Skill Points)\\nThe art of performing the traditional critical hit.\\n1. _Crit Chance (0.5%, 5%, 15%)_\\n2. _Crit Damage (30%, 45%, 60%)_\\n\\n**Speed Boost** (1 Skill Point)\\nBoost the speed of all party members (Not stackable)\\n1. _Boost by (1%, 2%, 3%)_\\n\\n**Defense Boost** (1 Skill Point)\\nBoost the defense of all party members (Not stackable)\\n1. _Boost by (1%, 2%, 3%)_"
+      }
     ],
-    embeds: [
+    "attachments": [],
+    "components": [
       {
-        description: "**Critical Hit** (2 Skill Points)
-The art of performing the traditional critical hit.
-1. _Crit Chance (0.5%, 5%, 15%)_
-2. _Crit Damage (30%, 45%, 60%)_
-
-**Dodge** (3 Skill Points)
-Like the wind in the air, or something.
-1. _Dodge Chance (0.5%, 5%, 15%)_",
-        type: "rich",
-      },
-    ],
-  },
-  type: 4,
+        "type": 1,
+        "components": [
+          {
+            "type": 2,
+            "custom_id": "skills==3=prev",
+            "label": "Prev",
+            "style": 2
+          },
+          {
+            "type": 2,
+            "custom_id": "_",
+            "label": "1/4",
+            "disabled": true,
+            "style": 2
+          },
+          {
+            "type": 2,
+            "custom_id": "skills==1=next",
+            "label": "Next",
+            "style": 2
+          }
+        ]
+      }
+    ]
+  }
 }
 `;

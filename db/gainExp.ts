@@ -4,17 +4,13 @@ import {
   charactersByInstancePrefix,
   charactersByInventoryPrefix,
   charactersByMediaIdPrefix,
-} from './indices.ts';
+} from '~/db/indices.ts';
 
-import { newUnclaimed } from '../src/stats.ts';
+import db from '~/db/mod.ts';
 
-import type * as Schema from './schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
 export const MAX_LEVEL = 10;
-
-export const experienceToNextLevel = (level: number): number => {
-  return level * 10;
-};
 
 type Status = {
   levelUp: number;
@@ -23,6 +19,89 @@ type Status = {
   exp: number;
   expToLevel: number;
 };
+
+export const experienceToNextLevel = (level?: number): number => {
+  return (level || 0) * 10;
+};
+
+export function distributeNewStats(
+  character: Schema.Character,
+  newStatPoints: number,
+  levelUp: number,
+): Schema.Character {
+  if (
+    !character.combat ||
+    !character.combat?.baseStats ||
+    !character.combat?.curStats
+  ) {
+    throw new Error('CHARACTER_NOT_INITIATED');
+  }
+
+  const { baseStats } = character.combat;
+
+  const baseStatsSum = baseStats.attack + baseStats.defense + baseStats.speed;
+
+  if (baseStatsSum === 0) {
+    throw new Error('');
+  }
+
+  const attackPercentage = baseStats.attack / baseStatsSum;
+  const defensePercentage = baseStats.defense / baseStatsSum;
+  const speedPercentage = baseStats.speed / baseStatsSum;
+
+  let distributedAttack = Math.round(newStatPoints * attackPercentage);
+  let distributedDefense = Math.round(newStatPoints * defensePercentage);
+  let distributedSpeed = Math.round(newStatPoints * speedPercentage);
+
+  let distributedSum = distributedAttack + distributedDefense +
+    distributedSpeed;
+
+  while (distributedSum > newStatPoints) {
+    if (
+      distributedAttack > distributedDefense &&
+      distributedAttack > distributedSpeed
+    ) {
+      distributedAttack -= 1;
+    } else if (
+      distributedDefense > distributedAttack &&
+      distributedDefense > distributedSpeed
+    ) {
+      distributedDefense -= 1;
+    } else {
+      distributedSpeed -= 1;
+    }
+
+    distributedSum = distributedAttack + distributedDefense +
+      distributedSpeed;
+  }
+
+  while (distributedSum < newStatPoints) {
+    if (
+      distributedAttack < distributedDefense &&
+      distributedAttack < distributedSpeed
+    ) {
+      distributedAttack += 1;
+    } else if (
+      distributedDefense < distributedAttack &&
+      distributedDefense < distributedSpeed
+    ) {
+      distributedDefense += 1;
+    } else {
+      distributedSpeed += 1;
+    }
+
+    distributedSum = distributedAttack + distributedDefense +
+      distributedSpeed;
+  }
+
+  character.combat.curStats.attack += distributedAttack;
+  character.combat.curStats.defense += distributedDefense;
+  character.combat.curStats.speed += distributedSpeed;
+
+  character.combat.curStats.hp += 5 * levelUp;
+
+  return character;
+}
 
 export function gainExp(
   op: Deno.AtomicOperation,
@@ -40,54 +119,63 @@ export function gainExp(
 
   character.combat ??= {};
 
-  character.combat.level ??= 1;
   character.combat.exp ??= 0;
+  character.combat.level ??= 1;
   character.combat.skillPoints ??= 0;
-  character.combat.stats ??= { unclaimed: newUnclaimed(character.rating) };
-
-  if (character.combat.level >= MAX_LEVEL) {
-    return status;
-  }
 
   character.combat.exp += gainExp;
 
-  while (
-    character.combat.exp >= experienceToNextLevel(character.combat.level)
-  ) {
-    character.combat.exp -= experienceToNextLevel(character.combat.level);
+  // character.combat.unclaimedStatsPoints ??= 0;
 
-    character.combat.level += 1;
-    character.combat.skillPoints += 1;
-    character.combat.stats!.unclaimed! += 3;
+  if (character.combat.level >= MAX_LEVEL) {
+    return status;
+  } else {
+    while (
+      character.combat.exp >= experienceToNextLevel(character.combat.level)
+    ) {
+      character.combat.exp -= experienceToNextLevel(character.combat.level);
 
-    status.levelUp += 1;
-    status.skillPoints += 1;
-    status.statPoints += 3;
-
-    // extra skill points based on level
-    if (character.combat.level >= 10) {
+      character.combat.level += 1;
       character.combat.skillPoints += 1;
+      // character.combat.unclaimedStatsPoints! += 3;
+
+      status.levelUp += 1;
       status.skillPoints += 1;
+      status.statPoints += 3;
 
-      character.combat.stats!.unclaimed! += 3 * 2;
-      status.statPoints += 3 * 2;
-    } else if (character.combat.level >= 20) {
-      character.combat.skillPoints += 2;
-      status.skillPoints += 2;
+      // extra skill points based on level
+      if (character.combat.level >= 10) {
+        character.combat.skillPoints += 1;
+        status.skillPoints += 1;
 
-      character.combat.stats!.unclaimed! += 3 * 3;
-      status.statPoints += 3 * 3;
-    } else if (character.combat.level >= 40) {
-      character.combat.skillPoints += 3;
-      status.skillPoints += 3;
+        // character.combat.unclaimedStatsPoints! += 3 * 2;
+        status.statPoints += 3 * 2;
+      } else if (character.combat.level >= 20) {
+        character.combat.skillPoints += 2;
+        status.skillPoints += 2;
 
-      character.combat.stats!.unclaimed! += 3 * 5;
-      status.statPoints += 3 * 5;
+        // character.combat.unclaimedStatsPoints! += 3 * 3;
+        status.statPoints += 3 * 3;
+      } else if (character.combat.level >= 40) {
+        character.combat.skillPoints += 3;
+        status.skillPoints += 3;
+
+        // character.combat.unclaimedStatsPoints! += 3 * 5;
+        status.statPoints += 3 * 5;
+      }
+    }
+
+    if (status.statPoints > 0) {
+      character = db.distributeNewStats(
+        character,
+        status.statPoints,
+        status.levelUp,
+      );
     }
   }
 
-  status.exp = character.combat.exp;
-  status.expToLevel = experienceToNextLevel(character.combat.level);
+  status.exp = character.combat?.exp || 0;
+  status.expToLevel = experienceToNextLevel(character.combat?.level);
 
   op
     .set(['characters', character._id], character)

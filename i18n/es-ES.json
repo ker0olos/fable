@@ -1,5 +1,4 @@
 {
-  "aliases": "aliases",
   "declined": "Rechazado",
   "cancelled": "Cancelado",
   "unimplemented": "No implementado o eliminado.",
@@ -7,7 +6,6 @@
   "found-nothing": "No se encontraron resultados!",
   "support-server": "Servidor de Soporte en Discord",
   "donate": "Donar",
-  "vote": "Votar",
   "prev": "Anterior",
   "next": "Siguiente",
   "danger": "DANGER",
@@ -25,39 +23,17 @@
   "uninstalled": "Desinstalado",
 
   "+1-pull": "_+1 tirada {0}_",
-  "+1-sweep": "_+5 sweeps {0}_",
   "available-pull": "Tirada disponible",
   "available-pulls": "Tiradas disponibles",
-  "available-sweep": "Available Sweep",
-  "available-sweeps": "Available Sweeps",
+
   "daily-token": "Token Diario",
   "daily-tokens": "Tokens Diarios",
-  "can-vote-again": "_Puedes volver a votar {0}_",
   "steal-cooldown-ends": "_El enfriamiento de Steal termina {0}_",
 
-  "token": "token",
-  "tokens": "tokens",
   "pull": "tirada",
   "pulls": "tiradas",
   "character": "personaje",
   "characters": "personajes",
-  "thanks-for-voting": "Gracias por votar, {0}, obtuviste {1} {2}.",
-
-  "skip": "Skip",
-
-  "attacking": "Attacking",
-  "won": "Won",
-
-  "sweep": "Sweep",
-  "sweeps": "Sweeps",
-  "floor": "Floor",
-  "try-again": "Try Again",
-  "next-floor": "Next Floor",
-  "challenge": "Challenge",
-
-  "undiscovered": "Undiscovered",
-  "cleared": "Cleared",
-  "current": "Current",
 
   "spent-tokens-normal": "¿Quieres gastar **{0} {1}** {2}?",
   "spent-tokens-guaranteed": "¿Quieres gastar **{0} tokens** {1} en **{2}**{3}?",
@@ -137,59 +113,16 @@
   "gacha-no-more-characters-left": "Ya no quedan personajes de {0}",
   "gacha-no-more-in-range": "Ya no quedan personajes con este grado de estrellas",
 
-  "combat-no-more-sweeps": "You don't have any more sweeps!",
-
-  "no-packs-installed": "Server doesn't have any installed packs",
-
   "uninstall-pack-confirmation": "**¿Seguro que quieres desinstalar este pack?**\n\nDesinstalar un pack desactivará cualquier personaje del pack que los miembros de tu servidor posean, lo que puede generar descontento.",
-  "disable-builtins-confirmation": "**Once you disable builtin packs, you can never enable them again.**\n\n1. __Disabling builtin packs might negatively impact your gacha pulls,__ possibly resulting in a lot of empty pulls that don't give any characters.\n2. __Your server will be permanently excluded from across-servers activities and events.__",
-  "disable-builtins-confirmed": "**Builtin packs have been disabled, this action is irreversible.**\n\n __Your server is permanently excluded from across-servers activities and events.__",
 
   "pack-doesnt-exist": "Este pack no existe",
   "pack-is-private": "Este pack es privado y no puedes instalarlo",
   "pack-characters-disabled": "**Todos los personajes de este pack han sido deshabilitados**",
 
-  "your-party-empty": "Your party is empty",
-  "user-party-empty": "{0} party is empty",
-
   "not-fit-for-combat": "El personaje debe aún ser encontrado y no se encuentra listo para el combate",
   "not-enough-unclaimed": "El personaje no tiene puntos restantes sin asignar",
-  "incorrect-distribution": "¡Formato de distribución incorrecto!\n\n**Forma correcta:** FUE-RES-AGI\n**Ejemplo:** 1-2-3",
 
   "battle-yourself": "No puedes combatirte a ti mismo",
-
-  "str": "FUE",
-  "sta": "RES",
-  "agi": "AGI",
-
-  "stats": "Stats",
-  "skills": "Skills",
-  "skill-point": "Skill Point",
-  "skill-points": "Skill Points",
-  "stat-points": "Stat Points",
-  "strength": "Fuerza",
-  "stamina": "Resistencia",
-  "agility": "Agilidad",
-  "reset": "Reiniciar",
-
-  "lvl": "LVL",
-  "level": "Level",
-  "max": "MAX",
-
-  "acquire-skill": "Acquire Skill",
-  "skill-acquired": "Skill Acquired",
-
-  "upgrade-skill": "Upgrade Skill",
-  "skill-upgraded": "Skill Upgraded",
-
-  "costs-n-points": "Costs {0} {1}",
-  "character-not-enough-skill-points": "Character doesn't have enough skill points left",
-  "skill-is-maxed": "Skill is maxed",
-
-  "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
-  "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
-  "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
-  "exp-gained": "**{0}** {1}/{2} EXP",
 
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
   "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutos (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",
@@ -223,22 +156,9 @@
   "help-page4-footer": "> Mantenerse activo es la mejor defensa contra el robo.",
 
   "help-page10-title": "Combate",
-  "help-page10-combat": "Prepara tus personajes para el combate utilizando `/stats`",
-  "help-page10-starting-points": "__Cada personaje comienza con una cantidad de puntos sin asignar__ basados en su grado de estrellas.",
-  "help-page10-distribution": "__Puedes distribuir esos puntos sin asignar en 3 estadísticas base diferentes:__ fuerza, resistencia, y agilidad.",
-
-  "help-page10-strength": "__Strength is damage__, the damage you can potentially do to your enemy.",
-  "help-page10-agility": "__Agility is defense__, minimize the damage your enemy can do.",
-  "help-page10-stamina": "__Stamina is health points__, allows you to take more hits and survive longer in battle",
-
-  "help-page10-tower": "Use `/battle tower` to climb the tower, each server has a unique tower and unique enemies and weakness.",
-  "help-page10-sweep": "> Level up your characters and gain extra stat points by `/sweep`ing the same floor a few times.",
 
   "help-page5-title": "Tienda",
   "help-page5-shop": "La tienda es una forma de comprar tiradas extra y tiradas garantizadas.",
-  "help-page5-daily-tokens": "__Obtienes 1 Token diario__, automáticamente añadido después de tu primer `/gacha` del día.",
-  "help-page5-voting": "__Votar a Fable en Top.gg te otorga 1 token__, puedes votar una vez cada 12 horas.",
-  "help-page5-voting-weekends": "__Votar en fines de semana te otorga 2 tokens__ (_viernes, sábados y domingos_).",
   "help-page5-buy-normal": "`/buy normal` te otorga una tirada extra, exactamente iguales a las que obtienes cada {0} minutos.",
   "help-page5-buy-guaranteed": "`/buy guaranteed` te garantiza un personaje de un grado de estrellas específico.",
   "help-page5-example": "Example: `/buy guaranteed 5` te garantiza un personaje 5{0}aleatorio.",
@@ -296,25 +216,14 @@
 
   "/buy normal": "usa tokens para comprar tiradas normales",
   "/buy guaranteed": "usa tokens para comprar tiradas de un grado garantizado",
-  "/buy sweeps": "use tokens to buy tower sweeps",
 
   "/installed packs": "muestra todos los packs del servidor",
   "/logs": "muestra los últimos personajes obtenidos",
 
   "/packs install": "instala un pack de la comunidad",
   "/packs uninstall": "desinstala un pack de la comunidad",
-  "/packs disable builtins": "permanently disable the builtin packs",
 
   "/stats": "administra las estadísticas y habilidades de tus personajes",
-
-  "/battle friend": "Battle against another player to test your party",
-  "/battle tower": "Climb the tower to glory and become a fable",
-
-  "/sweep": "Sweep your current battle tower floor for exp",
-
-  "/skills showall": "Show all available skills and their details",
-  "/skills acquire": "Teach a character a skill",
-  "/skills upgrade": "Upgrade a character's skill",
 
   "/help": "¿Necesitas más información? No te preocupes",
 
@@ -339,17 +248,12 @@
   "$new-nick": "nuevo apodo",
 
   "$buy-normal-amount": "la cantidad de tiradas a comprar",
-  "$buy-sweeps-amount": "the amount of sweeps you want to buy",
   "$buy-guaranteed-stars": "el grado de estrellas a comprar",
 
   "$party-spot": "el puesto en el que quieres a este personaje",
   "$party-swap-1": "el primer objetivo del intercambio",
   "$party-swap-2": "el segundo objetivo del intercambio",
   "$party-remove-spot": "el puesto a liberar",
-
-  "$versus": "el usuario contra el que pelearás",
-
-  "$distribution": "establece las stats de tu personaje rápidamente (formato: FUE-RES-AGI)",
 
   "$pack-id": "el id del pack",
 
@@ -358,19 +262,9 @@
   "$help-page-merging": "Combinar (merge)",
   "$help-page-party": "Equipo (party)",
   "$help-page-stealing": "Robar",
-  "$help-page-combat": "Combat",
   "$help-page-shop": "Tienda",
   "$help-page-roadmap": "Futuro del bot",
   "$help-page-essential-commands": "Comandos Esenciales",
   "$help-page-other-commands": "Otros Comandos",
-  "$help-page-admin-commands": "Comandos de Administrador",
-
-  "crit": "Critical Hit",
-  "crit-desc": "The art of performing the traditional critical hit.",
-  "crit-chance": "Crit Chance",
-  "crit-damage": "Crit Damage",
-
-  "dodge": "Dodge",
-  "dodge-desc": "Like the wind in the air, or something.",
-  "dodge-chance": "Dodge Chance"
+  "$help-page-admin-commands": "Comandos de Administrador"
 }

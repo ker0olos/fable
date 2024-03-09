@@ -286,6 +286,8 @@ function character(
       ]);
     })
     .then(async ([character, existing]) => {
+      const characterId = `${character.packId}:${character.id}`;
+
       const media = character.media?.edges?.[0]?.node;
 
       if (
@@ -311,10 +313,18 @@ function character(
         userId: existing?.[1]?.id,
       });
 
+      if (existing?.[0]) {
+        message.insertComponents([
+          new discord.Component()
+            .setLabel('/stats')
+            .setId(`stats`, characterId),
+        ]);
+      }
+
       message.insertComponents([
         new discord.Component()
           .setLabel('/like')
-          .setId(`like`, `${character.packId}:${character.id}`),
+          .setId(`like`, characterId),
       ]);
 
       return await message.patch(token);

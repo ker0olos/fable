@@ -1,18 +1,28 @@
-import _user from './user.ts';
-import packs from './packs.ts';
+import _user from '~/src/user.ts';
+import packs from '~/src/packs.ts';
 
-import utils from './utils.ts';
-import i18n from './i18n.ts';
+import utils from '~/src/utils.ts';
+import i18n from '~/src/i18n.ts';
 
-import db from '../db/mod.ts';
+import gacha from '~/src/gacha.ts';
 
-import * as discord from './discord.ts';
+import { skills } from '~/src/skills.ts';
 
-import config from './config.ts';
+import db from '~/db/mod.ts';
 
-import { NonFetalError } from './errors.ts';
+import { randomStats } from '~/db/assignStats.ts';
 
-import type * as Schema from '../db/schema.ts';
+import { usersByDiscordId } from '~/db/indices.ts';
+
+import * as discord from '~/src/discord.ts';
+
+import config from '~/src/config.ts';
+
+import { NonFetalError, PoolError } from '~/src/errors.ts';
+
+import type * as Schema from '~/db/schema.ts';
+
+import type { Character, CharacterBattleStats, SkillKey } from '~/src/types.ts';
 
 export const MAX_FLOORS = 20;
 
@@ -50,6 +60,157 @@ export const getFloorExp = (floor: number): number => {
 
   return exp * base;
 };
+
+export const getEnemyRating = (floor: number): number => {
+  switch (floor % 10) {
+    case 1:
+    case 2:
+    case 3:
+      return 1;
+    case 4:
+    case 6:
+      return 2;
+    case 7:
+    case 8:
+    case 9:
+      return 3;
+    case 5:
+      return 4;
+    // 10nth floor
+    case 0:
+      return 5;
+    default:
+      throw new Error('');
+  }
+};
+
+export const getEnemySkillSlots = (floor: number): number => {
+  const skillsPool = Object.keys(skills);
+
+  return Math.min(Math.floor(floor / 5), skillsPool.length);
+};
+
+export const getEnemyMaxSkillLevel = (floor: number): number => {
+  return Math.max(Math.floor(floor / 5), 1);
+};
+
+export const createEnemyStats = (
+  floor: number,
+  seed: string,
+): CharacterBattleStats => {
+  const skillRng = new utils.LehmerRNG(seed);
+
+  const totalStats = 9 * getEnemyRating(floor);
+
+  const _skills: CharacterBattleStats['skills'] = {};
+
+  const skillsPool = Object.keys(skills) as SkillKey[];
+
+  const skillsSlots = getEnemySkillSlots(floor);
+  const skillLevel = getEnemyMaxSkillLevel(floor);
+
+  for (let i = 0; i < skillsSlots; i++) {
+    if (!skillsPool.length) {
+      break;
+    }
+
+    const randomSkillKey = skillsPool.splice(
+      Math.floor(skillRng.nextFloat() * skillsPool.length),
+      1,
+    )[0];
+
+    _skills[randomSkillKey] = {
+      level: Math.min(skillLevel, skills[randomSkillKey].max),
+    };
+  }
+
+  const state: CharacterBattleStats = {
+    ...randomStats(totalStats, seed),
+    skills: _skills,
+    maxHP: 0,
+  };
+
+  const multiplier = 0.5;
+
+  const base = floor;
+
+  state.attack = Math.round(
+    state.attack * Math.pow(base, multiplier),
+  );
+
+  state.defense = Math.round(
+    state.defense * Math.pow(base, multiplier),
+  );
+
+  state.speed = Math.round(
+    state.speed * Math.pow(base, multiplier),
+  );
+
+  state.hp =
+    state.maxHP =
+      Math.round(
+        state.hp * Math.pow(base, multiplier),
+      );
+
+  return state;
+};
+
+export async function getEnemyCharacter(
+  floor: number,
+  seed: string,
+  guildId: string,
+): Promise<Character> {
+  const random = new utils.LehmerRNG(seed);
+
+  const { pool, validate } = await gacha.guaranteedPool({
+    seed,
+    guildId,
+    guarantee: getEnemyRating(floor),
+  });
+
+  let character: Character | undefined = undefined;
+
+  while (pool.length > 0) {
+    const i = Math.floor(random.nextFloat() * pool.length);
+
+    const characterId = pool.splice(i, 1)[0].id;
+
+    if (packs.isDisabled(characterId, guildId)) {
+      continue;
+    }
+
+    const results = await packs.aggregatedCharacters({
+      guildId,
+      ids: [characterId],
+    });
+
+    if (!results.length || !validate(results[0])) {
+      continue;
+    }
+
+    const media = results[0].media?.edges?.[0];
+
+    if (!media || !validate(results[0]) || !results[0]?.images?.length) {
+      continue;
+    }
+
+    if (
+      packs.isDisabled(`${media.node.packId}:${media.node.id}`, guildId)
+    ) {
+      continue;
+    }
+
+    character = results[0];
+
+    break;
+  }
+
+  if (!character) {
+    throw new PoolError();
+  }
+
+  return character;
+}
 
 function getMessage(
   cleared: number,
@@ -99,20 +260,15 @@ function getMessage(
   message.addEmbed(new discord.Embed()
     .setDescription(s.join('\n')));
 
-  // sweep button
-  message.addComponents([
-    new discord.Component()
-      .setId('tsweep')
-      .setLabel(i18n.get('sweep', locale))
-      .setDisabled(cleared <= 0),
-  ]);
-
-  // challenge button
   message.addComponents([
     new discord.Component()
       .setId('tchallenge', userId)
-      .setLabel(i18n.get('challenge', locale))
+      .setLabel('/bt challenge')
       .setDisabled(MAX_FLOORS <= cleared),
+    new discord.Component()
+      .setId('treclear')
+      .setLabel('/reclear')
+      .setDisabled(cleared <= 0),
   ]);
 
   return message;
@@ -171,7 +327,7 @@ function view({ token, guildId, userId }: {
   return loading;
 }
 
-function sweep({ token, guildId, userId }: {
+function reclear({ token, guildId, userId }: {
   token: string;
   guildId: string;
   userId: string;
@@ -192,13 +348,14 @@ function sweep({ token, guildId, userId }: {
         const guild = await db.getGuild(guildId);
         const instance = await db.getInstance(guild);
 
-        const user = await db.getUser(userId);
+        const _user = await db.getUser(userId);
 
-        const { inventory, inventoryCheck } = await db.rechargeConsumables(
-          instance,
-          user,
-          false,
-        );
+        const { user, inventory, inventoryCheck } = await db
+          .rechargeConsumables(
+            instance,
+            _user,
+            false,
+          );
 
         if (!inventory.floorsCleared) {
           throw new NonFetalError(
@@ -207,20 +364,20 @@ function sweep({ token, guildId, userId }: {
         }
 
         // deno-lint-ignore no-non-null-assertion
-        if (inventory.availableSweeps! <= 0) {
+        if (inventory.availableKeys! <= 0) {
           return await new discord.Message()
             .addEmbed(
               new discord.Embed()
-                .setDescription(i18n.get('combat-no-more-sweeps', locale)),
+                .setDescription(i18n.get('combat-no-more-keys', locale)),
             )
             .addEmbed(
               new discord.Embed()
                 .setDescription(
                   i18n.get(
-                    '+1-sweep',
+                    '+1-key',
                     locale,
                     `<t:${
-                      utils.rechargeSweepTimestamp(inventory.sweepsTimestamp)
+                      utils.rechargeKeysTimestamp(inventory.keysTimestamp)
                     }:R>`,
                   ),
                 ),
@@ -240,21 +397,21 @@ function sweep({ token, guildId, userId }: {
 
         const op = db.kv.atomic();
 
-        db.consumeSweep({ op, user, inventory, inventoryCheck });
+        const keys = db.consumeKey({ op, inventory, inventoryCheck });
 
-        // deno-lint-ignore no-non-null-assertion
-        const expGained = getFloorExp(inventory.floorsCleared!);
+        const expGained = getFloorExp(inventory.floorsCleared ?? 1) * keys;
 
-        const status = party1.map((character, index) =>
-          db.gainExp(
-            op,
-            inventory,
-            character,
-            index === 0 ? expGained : expGained * 0.5,
-          )
+        const status = party1.map((character) =>
+          db.gainExp(op, inventory, character, expGained)
         );
 
         const update = await op.commit();
+
+        // don't save likes on the user object
+        user.likes = undefined;
+
+        op.set(['users', user._id], user);
+        op.set(usersByDiscordId(user.id), user);
 
         if (update.ok) {
           const message = new discord.Message();
@@ -269,7 +426,13 @@ function sweep({ token, guildId, userId }: {
           });
 
           const statusText = status.map(
-            ({ levelUp, skillPoints, statPoints, exp, expToLevel }, index) => {
+            ({
+              levelUp,
+              skillPoints,
+              statPoints,
+              exp,
+              expToLevel,
+            }, index) => {
               if (levelUp >= 1) {
                 return i18n.get(
                   'leveled-up',
@@ -302,16 +465,17 @@ function sweep({ token, guildId, userId }: {
             new discord.Embed()
               .setTitle(
                 // deno-lint-ignore no-non-null-assertion
-                `${i18n.get('floor', locale)} ${inventory.floorsCleared!}`,
+                `${i18n.get('floor', locale)} ${inventory
+                  .floorsCleared!} x${keys}`,
               )
               .setDescription(statusText),
           );
 
-          // sweep button
+          // reclear button
           message.addComponents([
             new discord.Component()
-              .setId('tsweep')
-              .setLabel(`/sweep`),
+              .setId('treclear')
+              .setLabel(`/reclear`),
           ]);
 
           return await message.patch(token);
@@ -349,9 +513,11 @@ function sweep({ token, guildId, userId }: {
 }
 
 async function onFail(
-  { token, userId, message, locale }: {
+  { token, message, userId, inventory, inventoryCheck, locale }: {
     token: string;
     userId: string;
+    inventory: Schema.Inventory;
+    inventoryCheck: Deno.AtomicCheck;
     message: discord.Message;
     locale: discord.AvailableLocales;
   },
@@ -362,11 +528,11 @@ async function onFail(
       .setDescription(i18n.get('tower-fail', locale)),
   );
 
-  // sweep button
+  // reclear button
   message.addComponents([
     new discord.Component()
-      .setId('tsweep')
-      .setLabel(`/sweep`),
+      .setId('treclear')
+      .setLabel(`/reclear`),
   ]);
 
   // try again button
@@ -376,19 +542,36 @@ async function onFail(
       .setLabel(i18n.get('try-again', locale)),
   ]);
 
-  await message.patch(token);
+  let retires = 0;
+
+  const op = db.kv.atomic();
+
+  db.consumeKey({ op, inventory, inventoryCheck, amount: 1 });
+
+  while (retires < 5) {
+    const update = await op.commit();
+
+    if (update.ok) {
+      await message.patch(token);
+      return;
+    }
+
+    retires += 1;
+  }
 }
 
 async function onSuccess(
-  { token, message, inventory, party, userId, guildId, locale }: {
-    token: string;
-    userId: string;
-    guildId: string;
-    message: discord.Message;
-    inventory: Schema.Inventory;
-    party: Schema.Character[];
-    locale: discord.AvailableLocales;
-  },
+  { token, message, inventory, inventoryCheck, party, userId, guildId, locale }:
+    {
+      token: string;
+      userId: string;
+      guildId: string;
+      message: discord.Message;
+      inventory: Schema.Inventory;
+      inventoryCheck: Deno.AtomicCheck;
+      party: Schema.Character[];
+      locale: discord.AvailableLocales;
+    },
 ): Promise<void> {
   const op = db.kv.atomic();
 
@@ -396,13 +579,8 @@ async function onSuccess(
 
   const expGained = getFloorExp(floor);
 
-  const status = party.map((character, index) =>
-    db.gainExp(
-      op,
-      inventory,
-      character,
-      index === 0 ? expGained : expGained * 0.5,
-    )
+  const status = party.map((character) =>
+    db.gainExp(op, inventory, character, expGained)
   );
 
   const _characters = await packs.characters({
@@ -410,12 +588,18 @@ async function onSuccess(
     ids: party.map(({ id }) => id),
   });
 
+  db.consumeKey({ op, inventory, inventoryCheck, amount: 1 });
+
   const characters = party.map(({ id }) => {
     return _characters.find((c) => id === `${c.packId}:${c.id}`);
   });
 
   const statusText = status.map(
-    ({ levelUp, skillPoints, statPoints }, index) => {
+    ({
+      levelUp,
+      skillPoints,
+      statPoints,
+    }, index) => {
       if (levelUp >= 1) {
         return i18n.get(
           'leveled-up',
@@ -425,7 +609,10 @@ async function onSuccess(
             packs.aliasToArray(characters[index]!.name)[0],
           levelUp === 1 ? ' ' : ` ${levelUp}x `,
           statPoints,
+          i18n.get('stat-points').toLowerCase(),
           skillPoints,
+          i18n.get(skillPoints === 1 ? 'skill-point' : 'skill-points')
+            .toLowerCase(),
         );
       } else {
         return undefined;
@@ -433,27 +620,26 @@ async function onSuccess(
     },
   ).filter(Boolean).join('\n');
 
+  message.addEmbed(
+    new discord.Embed()
+      .setTitle(i18n.get('you-succeeded', locale))
+      .setDescription(statusText),
+  );
+
+  // next floor challenge button
+  message.addComponents([
+    new discord.Component()
+      .setId(discord.join('tchallenge', userId))
+      .setLabel(i18n.get('next-floor', locale)),
+  ]);
+
   let retires = 0;
 
   while (retires < 5) {
     const update = await op.commit();
 
     if (update.ok) {
-      message.addEmbed(
-        new discord.Embed()
-          .setTitle(i18n.get('you-succeeded', locale))
-          .setDescription(statusText),
-      );
-
-      // next floor challenge button
-      message.addComponents([
-        new discord.Component()
-          .setId(discord.join('tchallenge', userId))
-          .setLabel(i18n.get('next-floor', locale)),
-      ]);
-
       await message.patch(token);
-
       return;
     }
 
@@ -463,9 +649,11 @@ async function onSuccess(
 
 const tower = {
   view,
-  sweep,
+  reclear,
   onFail,
   onSuccess,
+  getEnemyCharacter,
+  createEnemyStats,
 };
 
 export default tower;

@@ -1,4 +1,4 @@
-import { ulid } from 'ulid';
+import { ulid } from '$std/ulid/mod.ts';
 
 import {
   charactersByInstancePrefix,
@@ -41,11 +41,11 @@ export async function addCharacter(
     const guild = await db.getGuild(guildId);
     const instance = await db.getInstance(guild);
 
-    const user = await db.getUser(userId);
+    const _user = await db.getUser(userId);
 
-    const { inventory, inventoryCheck } = await db.rechargeConsumables(
+    const { user, inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
-      user,
+      _user,
       false,
     );
 
@@ -99,8 +99,6 @@ export async function addCharacter(
     } else {
       inventory.availablePulls = inventory.availablePulls - 1;
     }
-
-    db.checkDailyTimestamp(user);
 
     inventory.lastPull = new Date().toISOString();
     inventory.rechargeTimestamp ??= new Date().toISOString();

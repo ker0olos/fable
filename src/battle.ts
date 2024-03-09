@@ -1,248 +1,56 @@
-import _user from './user.ts';
-import packs from './packs.ts';
-import utils from './utils.ts';
-import i18n from './i18n.ts';
+import _user from '~/src/user.ts';
+import packs from '~/src/packs.ts';
+import utils from '~/src/utils.ts';
+import i18n from '~/src/i18n.ts';
 
-import db from '../db/mod.ts';
+import db, { kv } from '~/db/mod.ts';
 
-import * as dynImages from '../dyn-images/mod.ts';
+import * as dynImages from '~/dyn-images/mod.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import gacha from './gacha.ts';
-import tower from './tower.ts';
-import skills from './skills.ts';
+import tower from '~/src/tower.ts';
 
-import * as Schema from '../db/schema.ts';
+import { skills } from '~/src/skills.ts';
 
-import { newUnclaimed } from './stats.ts';
+import {
+  getBattleStats,
+  PartyMember,
+  type StatusEffect,
+} from '~/src/battle.types.ts';
 
-import { NonFetalError, PoolError } from './errors.ts';
+import { MAX_FLOORS } from '~/src/tower.ts';
 
-import type {
-  Character,
-  CharacterLive,
-  DisaggregatedCharacter,
-  SkillOutput,
-} from './types.ts';
+import * as Schema from '~/db/schema.ts';
+
+import { NonFetalError } from '~/src/errors.ts';
+
+import type { Character } from './types.ts';
+
+import type { SkillKey } from '~/src/types.ts';
 
 type BattleData = { playing: boolean };
+type UsedSkills = Partial<Record<SkillKey, boolean>>;
 
-// 2 seconds
-const MESSAGE_DELAY = 2;
+const MESSAGE_DELAY = 2; // 2 seconds
+const MAX_TIME = 3 * 60 * 1000; // 3 minutes
 
-// 3 minutes
-const MAX_TIME = 3 * 60 * 1000;
-
-export const getEnemyRating = (floor: number): number => {
-  switch (floor % 10) {
-    case 1:
-    case 2:
-    case 3:
-      return 1;
-    case 4:
-    case 6:
-      return 2;
-    case 7:
-    case 8:
-    case 9:
-      return 3;
-    case 5:
-      return 4;
-    case 0:
-      return 5;
-    default:
-      throw new Error('');
-  }
-};
-
-export const getEnemySkillSlots = (floor: number): number => {
-  const skillsPool = Object.keys(skills.skills);
-  return Math.min(Math.floor(floor / 10), skillsPool.length);
-};
-
-export const getEnemyMaxSkillLevel = (floor: number): number => {
-  return Math.max(Math.floor(floor / 5), 1);
-};
-
-const getStats = (char: Schema.Character): CharacterLive => {
-  return {
-    skills: char.combat?.skills ?? {},
-    agility: char.combat?.stats?.agility ?? 0,
-    strength: char.combat?.stats?.strength ?? 1,
-    stamina: char.combat?.stats?.stamina ?? 1,
-    hp: char.combat?.stats?.stamina ?? 1,
-  };
-};
-
-const getEnemyStats = (floor: number, seed: string): CharacterLive => {
-  const rng = new utils.LehmerRNG(seed);
-  const skillRng = new utils.LehmerRNG(seed);
-
-  const totalStats = newUnclaimed(getEnemyRating(floor));
-
-  const _skills: CharacterLive['skills'] = {};
-
-  const skillsPool = Object.values(skills.skills);
-  const skillsSlots = getEnemySkillSlots(floor);
-  const maxSkillLevel = getEnemyMaxSkillLevel(floor);
-
-  for (let i = 0; i < skillsSlots; i++) {
-    const randomSkill = skillsPool[
-      Math.floor(skillRng.nextFloat() * skillsPool.length)
-    ];
-
-    _skills[randomSkill.key] = {
-      level: Math.min(maxSkillLevel, randomSkill.stats[0].scale.length),
-    };
-  }
-
-  const stats: CharacterLive = {
-    skills: _skills,
-    agility: 0,
-    strength: 0,
-    stamina: 0,
-    hp: 0,
-  };
-
-  for (let i = 0; i < totalStats; i++) {
-    const rand = Math.floor(rng.nextFloat() * 3);
-
-    if (rand === 0) {
-      stats.agility += 1;
-    } else if (rand === 1) {
-      stats.strength += 1;
-    } else {
-      stats.stamina += 1;
-    }
-  }
-
-  const multiplier = 0.5;
-  const base = floor;
-
-  stats.stamina = stats.hp = Math.max(
-    Math.round(
-      stats.stamina * Math.pow(base, multiplier),
-    ),
-    1,
-  );
-
-  stats.strength = Math.round(
-    stats.strength * Math.pow(base, multiplier),
-  );
-
-  stats.agility = Math.round(
-    stats.agility * Math.pow(base, multiplier),
-  );
-
-  return stats;
-};
-
-const addEmbed = (message: discord.Message, {
-  character,
-  existing,
-  stats,
-  damage,
-  state,
-  color,
-}: {
-  character: Character | DisaggregatedCharacter;
-  stats: CharacterLive;
-  existing?: Schema.Character;
-  damage?: number;
-  state?: string;
-  color?: string;
-}) => {
-  damage = damage || 0;
-
-  const uuid = crypto.randomUUID();
-
-  let _state = state ?? discord.empty;
-
-  if (damage > 0) {
-    _state = `-${damage}`;
-  }
-
-  const embed = new discord.Embed()
-    .setColor(damage > 0 ? '#DE2626' : color)
-    .setThumbnail({ url: existing?.image ?? character.images?.[0]?.url })
-    .setImage({ url: `attachment://${uuid}.png` })
-    .setDescription(
-      `## ${
-        existing?.nickname ?? packs.aliasToArray(character.name)[0]
-      }\n_${_state}_\n${stats.hp}/${stats.stamina}`,
-    );
-
-  const percent = Math.round((stats.hp / stats.stamina) * 100);
-  const _damage = Math.round((damage / stats.stamina) * 100);
-
-  message.addAttachment({
-    type: 'image/png',
-    arrayBuffer: dynImages.hp(percent, _damage).buffer,
-    filename: `${uuid}.png`,
-  });
-
-  message.addEmbed(embed);
-};
-
-function attack(
-  char: CharacterLive,
-  target: CharacterLive,
-): SkillOutput {
-  let damage = 0;
-
-  // activate character skills
-  Object.entries(char.skills).map(([key, s]) => {
-    const skill = skills.skills[key];
-
-    if (skill.activationTurn === 'user') {
-      const outcome = skill.activation(char, target, s.level);
-
-      if (outcome.damage) {
-        damage += Math.round(outcome.damage);
-      }
-    }
-  });
-
-  damage += Math.max(char.strength - target.agility, 1);
-
-  // activate enemy/target skills
-  Object.entries(target.skills).map(([key, s]) => {
-    const skill = skills.skills[key];
-
-    if (skill.activationTurn === 'enemy') {
-      const outcome = skill.activation(char, target, s.level);
-
-      if (outcome.dodge) {
-        damage = 0;
-      }
-    }
-  });
-
-  target.hp = Math.max(target.hp - damage, 0);
-
-  return { damage };
+function skipBattle(battleId: string): Promise<void> {
+  return kv.delete(['active_battle', battleId]);
 }
 
-function challengeFriend({ token, guildId, userId, targetId }: {
+function challengeTower({ token, guildId, user }: {
   token: string;
   guildId: string;
-  userId: string;
-  targetId: string;
+  user: discord.User;
 }): discord.Message {
-  const locale = _user.cachedUsers[userId]?.locale;
+  const locale = _user.cachedUsers[user.id]?.locale;
 
   if (!config.combat) {
     throw new NonFetalError(
       i18n.get('maintenance-combat', locale),
-    );
-  }
-
-  if (userId === targetId) {
-    throw new NonFetalError(
-      i18n.get('battle-yourself', locale),
     );
   }
 
@@ -251,235 +59,115 @@ function challengeFriend({ token, guildId, userId, targetId }: {
       const guild = await db.getGuild(guildId);
       const instance = await db.getInstance(guild);
 
-      const [_user, _target] = [
-        await db.getUser(userId),
-        await db.getUser(targetId),
-      ];
+      const __user = await db.getUser(user.id);
 
-      const [{ inventory: userInventory }, { inventory: targetInventory }] = [
-        await db.getInventory(instance, _user),
-        await db.getInventory(instance, _target),
-      ];
+      const { user: _user, inventory, inventoryCheck } = await db
+        .rechargeConsumables(instance, __user, false);
 
-      const [userParty, targetParty] = [
-        await db.getUserParty(userInventory),
-        await db.getUserParty(targetInventory),
-      ];
+      const floor = (inventory.floorsCleared || 0) + 1;
 
-      const party1 = [
-        userParty?.member1,
-        userParty?.member2,
-        userParty?.member3,
-        userParty?.member4,
-        userParty?.member5,
-      ].filter(Boolean) as Schema.Character[];
-
-      const party2 = [
-        targetParty?.member1,
-        targetParty?.member2,
-        targetParty?.member3,
-        targetParty?.member4,
-        targetParty?.member5,
-      ].filter(Boolean) as Schema.Character[];
-
-      if (party1.length <= 0) {
-        throw new NonFetalError(i18n.get('your-party-empty', locale));
-      } else if (party2.length <= 0) {
-        throw new NonFetalError(
-          i18n.get('user-party-empty', locale, `<@${targetId}>'s`),
-        );
+      if (MAX_FLOORS <= floor) {
+        throw new NonFetalError(i18n.get('max-floor-cleared', locale));
       }
 
-      const [characters] = await Promise.all([
-        packs.characters({ guildId, ids: [party1[0].id, party2[0].id] }),
-      ]);
-
-      const [userCharacter, targetCharacter] = [
-        characters.find(({ packId, id }) => party1[0].id === `${packId}:${id}`),
-        characters.find(({ packId, id }) => party2[0].id === `${packId}:${id}`),
-      ];
-
-      if (!userCharacter || !targetCharacter) {
-        throw new NonFetalError(i18n.get('some-characters-disabled', locale));
-      }
-
-      await startCombat({
-        token,
-        locale,
-        userId,
-        targetId,
-        character1: userCharacter,
-        character2: targetCharacter,
-        character1Existing: party1[0],
-        character2Existing: party2[0],
-        character1Stats: getStats(party1[0]),
-        character2Stats: getStats(party2[0]),
-      });
-    })
-    .catch(async (err) => {
-      if (err instanceof NonFetalError) {
+      // deno-lint-ignore no-non-null-assertion
+      if (inventory.availableKeys! <= 0) {
         return await new discord.Message()
-          .addEmbed(new discord.Embed().setDescription(err.message))
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(i18n.get('combat-no-more-keys', locale)),
+          )
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(
+                i18n.get(
+                  '+1-key',
+                  locale,
+                  `<t:${
+                    utils.rechargeKeysTimestamp(inventory.keysTimestamp)
+                  }:R>`,
+                ),
+              ),
+          )
           .patch(token);
       }
 
-      if (!config.sentry) {
-        throw err;
-      }
-
-      const refId = utils.captureException(err);
-
-      await discord.Message.internal(refId).patch(token);
-    });
-
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
-}
-
-function challengeTower({ token, guildId, userId }: {
-  token: string;
-  guildId: string;
-  userId: string;
-}): discord.Message {
-  const locale = _user.cachedUsers[userId]?.locale;
-
-  if (!config.combat) {
-    throw new NonFetalError(
-      i18n.get('maintenance-combat', locale),
-    );
-  }
-
-  Promise.resolve()
-    .then(async () => {
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
-      const _user = await db.getUser(userId);
-
-      const { inventory } = await db.getInventory(instance, _user);
-
-      const floor = (inventory.floorsCleared ?? 0) + 1;
-
       const seed = `${guildId}${floor}`;
 
-      const random = new utils.LehmerRNG(seed);
+      const _party = await db.getUserParty(inventory);
 
-      const party = await db.getUserParty(inventory);
+      const party = Object.values(_party)
+        .filter(Boolean) as Schema.Character[];
 
-      const party1 = [
-        party?.member1,
-        party?.member2,
-        party?.member3,
-        party?.member4,
-        party?.member5,
-      ].filter(Boolean) as Schema.Character[];
-
-      if (party1.length <= 0) {
+      if (party.length <= 0) {
         throw new NonFetalError(i18n.get('your-party-empty', locale));
+      } else if (
+        party.some((char) => !char.combat?.baseStats || !char.combat?.curStats)
+      ) {
+        throw new Error('non-stats initialized characters are in the party');
       }
 
-      const characters = await packs.characters({
+      const _characters = await packs.characters({
         guildId,
-        ids: [party1[0].id],
+        ids: party.map(({ id }) => id),
       });
 
-      const userCharacter = characters.find(({ packId, id }) =>
-        party1[0].id === `${packId}:${id}`
-      );
+      const characters = party.map((member) =>
+        _characters.find(({ packId, id }) => member.id === `${packId}:${id}`)
+      ).filter(Boolean) as Character[];
 
-      if (!userCharacter) {
+      if (!characters.length) {
         throw new NonFetalError(i18n.get('character-disabled', locale));
       }
 
-      const userCharacterStats = getStats(party1[0]);
+      const enemyStats = tower.createEnemyStats(floor, seed);
 
-      const { pool, validate } = await gacha.guaranteedPool({
+      const enemyCharacter = await tower.getEnemyCharacter(
+        floor,
         seed,
-        guarantee: getEnemyRating(floor),
         guildId,
-      });
+      );
 
-      let enemyCharacter: Character | undefined = undefined;
-      // let enemyMedia: Media | undefined = undefined;
-
-      while (pool.length > 0) {
-        const i = Math.floor(random.nextFloat() * pool.length);
-
-        const characterId = pool.splice(i, 1)[0].id;
-
-        if (packs.isDisabled(characterId, guildId)) {
-          continue;
-        }
-
-        const results = await packs.characters({ guildId, ids: [characterId] });
-
-        if (!results.length || !validate(results[0])) {
-          continue;
-        }
-
-        const candidate = await packs.aggregate<Character>({
-          guildId,
-          character: results[0],
-          end: 1,
-        });
-
-        const edge = candidate.media?.edges?.[0];
-
-        if (!edge || !validate(candidate) || !candidate?.images?.length) {
-          continue;
-        }
-
-        if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
-          continue;
-        }
-
-        // enemyMedia = edge.node;
-        enemyCharacter = candidate;
-
-        break;
-      }
-
-      if (!enemyCharacter) {
-        throw new PoolError();
-      }
-
-      const enemyStats: CharacterLive = getEnemyStats(floor, seed);
-
-      const [userWon, _lastMessage] = await startCombat({
+      const { winnerId, lastMessage } = await startCombat({
+        user,
+        floor,
         token,
         locale,
-        userId,
-        title: `${i18n.get('floor', locale)} ${floor}`,
-        targetName: packs.aliasToArray(enemyCharacter.name)[0],
-        character1: userCharacter,
-        character2: enemyCharacter,
-        character1Existing: party1[0],
-        character2Existing: undefined,
-        character1Stats: userCharacterStats,
-        character2Stats: enemyStats,
+        party1: party.map((existing, idx) =>
+          new PartyMember({
+            existing,
+            character: characters[idx],
+            stats: getBattleStats(existing),
+            owner: 'party1',
+          })
+        ),
+        party2: [
+          new PartyMember({
+            character: enemyCharacter,
+            stats: enemyStats,
+            owner: 'party2',
+          }),
+        ],
       });
 
-      if (userWon) {
-        tower.onSuccess({
+      if (winnerId === user.id) {
+        await tower.onSuccess({
           token,
-          userId,
           guildId,
-          message: _lastMessage,
-          party: party1,
+          userId: user.id,
+          message: lastMessage,
+          party,
           inventory,
+          inventoryCheck,
           locale,
         });
       } else {
-        tower.onFail({
+        await tower.onFail({
           token,
-          message: _lastMessage,
-          userId,
+          userId: user.id,
+          inventory,
+          inventoryCheck,
+          message: lastMessage,
           locale,
         });
       }
@@ -513,200 +201,490 @@ function challengeTower({ token, guildId, userId }: {
 async function startCombat(
   {
     token,
-    title,
-    character1,
-    character2,
-    character1Existing,
-    character2Existing,
-    character1Stats,
-    character2Stats,
-    userId,
-    targetId,
-    targetName,
+    user,
+    target,
+    party1,
+    party2,
     locale,
+    floor,
   }: {
     token: string;
-    title?: string;
-    character1: Character | DisaggregatedCharacter;
-    character2: Character | DisaggregatedCharacter;
-    character1Existing: Schema.Character;
-    character2Existing?: Schema.Character;
-    character1Stats: CharacterLive;
-    character2Stats: CharacterLive;
-    userId: string;
-    targetId?: string;
-    targetName?: string;
+    user: discord.User;
+    target?: discord.User;
+    party1: PartyMember[];
+    party2: PartyMember[];
     locale: discord.AvailableLocales;
+    floor?: number;
   },
-): Promise<[boolean, discord.Message]> {
-  let initiative = 0;
-
-  const message = new discord.Message();
-
+): Promise<{ winnerId?: string; lastMessage: discord.Message }> {
   const battleId = utils.nanoid(5);
+
   const battleKey = ['active_battle', battleId];
 
-  // add battle to db to allow skip functionality
-  db.setValue(battleKey, {
-    playing: true,
-  } as BattleData, { expireIn: MAX_TIME });
+  let battleData: BattleData | null = { playing: true };
 
-  // skip button
-  message.addComponents([
-    new discord.Component()
-      .setId(discord.join('sbattle', battleId, userId))
-      .setLabel(i18n.get('skip', locale)),
-  ]);
+  await db.setValue(battleKey, battleData, { expireIn: MAX_TIME });
 
-  const data = () => db.getValue<BattleData>(battleKey);
+  const battleDataReader = kv
+    .watch<[BattleData]>([battleKey])
+    .getReader();
+
+  // written this way instead of the recommend for of loop
+  // to allow the stream reader to be disposed at the end of the battle
+  type Stream = ReadableStreamReadResult<[Deno.KvEntryMaybe<BattleData>]>;
+
+  const read = (result: Stream): Promise<Stream | void> => {
+    if (result.done || !battleData?.playing) {
+      return Promise.resolve();
+    }
+
+    battleData = result.value?.[0]?.value;
+
+    return battleDataReader.read().then(read);
+  };
+
+  battleDataReader.read()
+    .then(read)
+    .catch(console.error);
+
+  const message = new discord.Message()
+    .addComponents([
+      new discord.Component()
+        .setId(discord.join('sbattle', battleId, user.id))
+        .setLabel(i18n.get('skip', locale)),
+    ]);
+
+  if (floor) {
+    message.addEmbed(
+      new discord.Embed().setTitle(`${i18n.get('floor', locale)} ${floor}`),
+    );
+  }
+
+  const party1UsedSkills: Partial<Record<SkillKey, boolean>> = {};
+  const party2UsedSkills: Partial<Record<SkillKey, boolean>> = {};
 
   while (true) {
-    // switch initiative
+    const party1Alive = party1.filter((m) => m.alive);
+    const party2Alive = party2.filter((m) => m.alive);
 
-    initiative = initiative === 0 ? 1 : 0;
-
-    const [attacker, defender] = initiative === 0
-      ? [character1, character2]
-      : [character2, character1];
-
-    const [attackerExisting, defenderExisting] = initiative === 0
-      ? [character1Existing, character2Existing]
-      : [character2Existing, character1Existing];
-
-    const [attackerStats, defenderStats] = initiative === 0
-      ? [character1Stats, character2Stats]
-      : [character2Stats, character1Stats];
-
-    // state message
-
-    message.clearEmbedsAndAttachments();
-
-    if (title) {
-      message.addEmbed(
-        new discord.Embed().setTitle(title),
-      );
+    // no one is still alive
+    if (!party1Alive.length || !party2Alive.length) {
+      break;
     }
 
-    const stateUX = [
-      () =>
-        addEmbed(message, {
-          color: '#5d56c7',
-          character: attacker,
-          existing: attackerExisting,
-          stats: attackerStats,
-          state: i18n.get('attacking', locale),
-        }),
-      () =>
-        addEmbed(message, {
-          character: defender,
-          existing: defenderExisting,
-          stats: defenderStats,
-        }),
+    const party1Character: PartyMember = party1Alive[0];
+    const party2Character: PartyMember = party2Alive[0];
+
+    const fastestCharacter = determineFastest(party1Character, party2Character);
+
+    const speedDiffPercent = calculateSpeedDiffPercent(
+      party1Character,
+      party2Character,
+    );
+
+    const extraTurnsBonus = calculateExtraTurns(speedDiffPercent);
+
+    const turns: ReturnType<typeof determineFastest>[] = [
+      fastestCharacter,
+      ...Array(extraTurnsBonus).fill(fastestCharacter),
+      fastestCharacter === 'party1' ? 'party2' : 'party1',
     ];
 
-    if (initiative === 1) {
-      stateUX.reverse();
-    }
+    for (let i = 0; i < turns.length; i++) {
+      const turn = turns[i];
 
-    stateUX.forEach((func) => func());
+      if (!party1Character.alive || !party2Character.alive) {
+        break;
+      }
 
-    (await data())?.playing && await utils.sleep(MESSAGE_DELAY);
-    (await data())?.playing && await message.patch(token);
+      // const attackingParty = turn === 'party1' ? party1Alive : party2Alive;
+      const receivingParty = turn === 'party1' ? party2Alive : party1Alive;
 
-    const { damage } = attack(attackerStats, defenderStats);
+      let receiving = turn === 'party1' ? party2Character : party1Character;
+      const attacking = turn === 'party1' ? party1Character : party2Character;
 
-    // damage message
+      const receivingUsedSkills = turn === 'party1'
+        ? party2UsedSkills
+        : party1UsedSkills;
 
-    message.clearEmbedsAndAttachments();
+      const { stunned } = attacking.effects;
 
-    if (title) {
-      message.addEmbed(
-        new discord.Embed().setTitle(title),
-      );
-    }
+      const combo = i > 0 && i < turns.length - 1 ? i + 1 : 0;
 
-    const damageUX = [
-      () =>
-        addEmbed(message, {
-          character: attacker,
-          existing: attackerExisting,
-          stats: attackerStats,
-        }),
-      () =>
-        addEmbed(message, {
-          character: defender,
-          existing: defenderExisting,
-          stats: defenderStats,
-          damage,
-        }),
-    ];
+      // skip extra turns if character is stunned
+      if (stunned?.active && combo > 1) {
+        continue;
+      }
 
-    if (initiative === 1) {
-      damageUX.reverse();
-    }
+      prepRound({
+        combo,
+        message,
+        attacking,
+        receiving,
+        locale,
+      });
 
-    damageUX.forEach((func) => func());
+      battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+      battleData?.playing && await message.patch(token);
 
-    (await data())?.playing && await utils.sleep(MESSAGE_DELAY);
-    (await data())?.playing && await message.patch(token);
+      // sneak attack the backline if the attacking character has the skill
+      if (attacking.canSneakAttack) {
+        receiving = receivingParty.filter((m) => m.alive).slice(-1)[0];
+        attacking.effects.sneaky = { active: true };
+      }
 
-    // battle end message (if hp <= 0)
+      // if stunned skip attack and cancel the stun
+      if (stunned?.active) {
+        stunned.active = false;
+      } else {
+        actionRound({
+          message,
+          attacking,
+          receiving,
+          combo,
+          locale,
+        });
 
-    if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
-      // const message = new discord.Message();
+        battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+        battleData?.playing && await message.patch(token);
 
-      // if (title) {
-      //   message.addEmbed(
-      //     new discord.Embed().setTitle(title),
-      //   );
-      // }
+        delete attacking.effects.sneaky;
+        delete receiving.effects.sneaky;
+      }
 
-      // addEmbed(message, {
-      //   character: character1,
-      //   existing: character1Existing,
-      //   stats: character1Stats,
-      // });
-
-      // addEmbed(message, {
-      //   character: character2,
-      //   existing: character2Existing,
-      //   stats: character2Stats,
-      // });
-
-      message.clearComponents();
-
-      message.addEmbed(
-        new discord.Embed()
-          .setDescription(
-            `### ${
-              character1Stats.hp <= 0
-                ? (targetName ?? `<@${targetId}>`)
-                : `<@${userId}>`
-            } ${i18n.get('won', locale)}`,
-          ),
-      );
-
-      (await data())?.playing && await utils.sleep(MESSAGE_DELAY);
-
-      await message.patch(token);
-
-      return [character1Stats.hp > 0, message];
+      if (
+        healRound({
+          message,
+          healing: receiving,
+          receiving: attacking,
+          receivingUsedSkills,
+          receivingParty,
+          locale,
+        })
+      ) {
+        battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+        battleData?.playing && await message.patch(token);
+      }
     }
   }
+
+  const party1Win = party1.some((m) => m.alive);
+
+  battleData?.playing && await utils.sleep(MESSAGE_DELAY);
+
+  // dispose of the database watch stream
+  battleDataReader.cancel();
+
+  return {
+    lastMessage: message.clearComponents(),
+    winnerId: party1Win ? user.id : target?.id,
+  };
 }
 
-async function skipBattle(battleId: string): Promise<void> {
-  const battleKey = ['active_battle', battleId];
+function determineFastest(
+  party1Character: PartyMember,
+  party2Character: PartyMember,
+): 'party1' | 'party2' {
+  return party1Character.speed > party2Character.speed ? 'party1' : 'party2';
+}
 
-  await db.setValue(battleKey, { playing: false } as BattleData, {
-    expireIn: MAX_TIME,
+function calculateSpeedDiffPercent(
+  party1Character: PartyMember,
+  party2Character: PartyMember,
+): number {
+  let party1Speed = party1Character.speed;
+  let party2Speed = party2Character.speed;
+
+  // swap speeds to get the correct diff from the algorithm
+  if (party2Speed > party1Speed) {
+    const t = party1Speed;
+    party1Speed = party2Speed;
+    party2Speed = t;
+  }
+
+  return ((party1Speed - party2Speed) / party2Speed) * 100;
+}
+
+function calculateExtraTurns(speedDiffPercent: number): number {
+  return Math.min(Math.floor(speedDiffPercent / 50), 2);
+}
+
+function prepRound(
+  { message, attacking, receiving, combo, locale }: {
+    combo: number;
+    message: discord.Message;
+    attacking: PartyMember;
+    receiving: PartyMember;
+    locale: discord.AvailableLocales;
+  },
+): void {
+  const { stunned } = attacking.effects;
+
+  message.clearEmbedsAndAttachments(1);
+
+  const embeds: Parameters<typeof addEmbed>[0][] = [
+    { message, type: 'normal', character: receiving, locale },
+    {
+      message,
+      type: stunned?.active ? 'stunned' : 'attacking',
+      character: attacking,
+      locale,
+      combo,
+    },
+  ];
+
+  if (receiving.owner === 'party1') {
+    embeds.reverse();
+  }
+
+  embeds.forEach(addEmbed);
+}
+
+function healRound(
+  { message, healing, receiving, receivingParty, receivingUsedSkills, locale }:
+    {
+      message: discord.Message;
+      healing: PartyMember;
+      receiving: PartyMember;
+      receivingParty: PartyMember[];
+      receivingUsedSkills: UsedSkills;
+      locale: discord.AvailableLocales;
+    },
+): boolean {
+  if (
+    receiving.alive &&
+    receiving.isHpBelowOrEquals(25) &&
+    !receivingUsedSkills.heal
+  ) {
+    const healers = receivingParty
+      .filter((char) => char.skills.heal?.level)
+      .sort((a, b) =>
+        // deno-lint-ignore no-non-null-assertion
+        b.skills.heal!.level - a.skills.heal!.level
+      );
+
+    if (healers.length) {
+      const healer = healers[0];
+
+      const skill = skills.heal.activation({
+        attacking: healer,
+        // deno-lint-ignore no-non-null-assertion
+        lvl: healer.skills.heal!.level,
+      });
+
+      receivingUsedSkills.heal = true;
+
+      if (skill.heal) {
+        receiving.heal(skill.heal);
+
+        message.clearEmbedsAndAttachments(1);
+
+        const embeds: Parameters<typeof addEmbed>[0][] = [
+          { message, type: 'normal', character: receiving, locale },
+          {
+            message,
+            type: 'heal',
+            character: healing,
+            locale,
+            diff: skill.heal,
+          },
+        ];
+
+        if (receiving.owner === 'party1') {
+          embeds.reverse();
+        }
+
+        embeds.forEach(addEmbed);
+
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function actionRound(
+  { message, attacking, receiving, combo, locale }: {
+    message: discord.Message;
+    attacking: PartyMember;
+    receiving: PartyMember;
+    combo: number;
+    locale: discord.AvailableLocales;
+  },
+): void {
+  const subtitle: string[] = [];
+
+  let damage = Math.max(attacking.attack - receiving.defense, 1);
+
+  if (attacking.skills.chain?.level) {
+    const lvl = attacking.skills.chain.level;
+
+    const { damage: extraDamage } = skills.chain.activation({
+      lvl,
+      damage,
+      attacking,
+      combo,
+    });
+
+    if (extraDamage) {
+      damage += extraDamage;
+      subtitle.push(i18n.get('chained', locale));
+    }
+  }
+
+  if (attacking.skills.crit?.level) {
+    const lvl = attacking.skills.crit.level;
+
+    const { damage: extraDamage } = skills.crit.activation({ attacking, lvl });
+
+    if (extraDamage) {
+      damage += extraDamage;
+      subtitle.push(i18n.get('crit', locale));
+    }
+  }
+
+  if (attacking.skills.stun?.level) {
+    const lvl = attacking.skills.stun.level;
+
+    const { stun } = skills.stun.activation({ attacking, lvl });
+
+    if (stun) {
+      receiving.effects.stunned = { active: true };
+    }
+  }
+
+  receiving.damage(damage);
+
+  let heal = 0;
+
+  if (attacking.skills.lifesteal?.level) {
+    const skill = skills.lifesteal.activation({
+      attacking,
+      lvl: attacking.skills.lifesteal.level,
+      damage,
+    });
+
+    if (skill.heal) {
+      attacking.heal(heal = skill.heal);
+    }
+  }
+
+  message.clearEmbedsAndAttachments(1);
+
+  const embeds: Parameters<typeof addEmbed>[0][] = [
+    {
+      message,
+      subtitle,
+      type: 'hit',
+      character: receiving,
+      diff: -damage,
+      locale,
+    },
+    {
+      message,
+      type: heal > 0 ? 'heal' : 'normal',
+      diff: heal || undefined,
+      character: attacking,
+      locale,
+    },
+  ];
+
+  if (receiving.owner === 'party1') {
+    embeds.reverse();
+  }
+
+  embeds.forEach(addEmbed);
+}
+
+const addEmbed = ({
+  message,
+  subtitle,
+  character,
+  type,
+  diff,
+  combo,
+  locale,
+}: {
+  message: discord.Message;
+  subtitle?: string[];
+  character: PartyMember;
+  type: 'normal' | 'attacking' | 'hit' | 'heal' | 'stunned';
+  diff?: number;
+  combo?: number;
+  locale: discord.AvailableLocales;
+}) => {
+  diff ??= 0;
+
+  let state = discord.empty;
+  let statusEmotes = '';
+
+  const embed = new discord.Embed();
+
+  const uuid = crypto.randomUUID();
+
+  switch (type) {
+    case 'stunned':
+      embed.setColor('#FEB500');
+      state = i18n.get('stunned', locale);
+      break;
+    case 'attacking':
+      embed.setColor('#5D56C7');
+      state = i18n.get('attacking', locale);
+      if (combo) state = `${state} x${combo}`;
+      break;
+    case 'heal':
+      embed.setColor('#2BB540');
+      state = `+${diff}`;
+      break;
+    case 'hit':
+      embed.setColor('#DE2626');
+      state = `${diff}`;
+      break;
+    default:
+      break;
+  }
+
+  const effects = Object.entries(character.effects) as [
+    keyof typeof character.effects,
+    StatusEffect | undefined,
+  ][];
+
+  effects.forEach(([name, value]) => {
+    if (value?.active) statusEmotes += discord.emotes[name];
   });
-}
 
-const battle = {
-  challengeFriend,
-  challengeTower,
-  skipBattle,
+  embed
+    .setThumbnail({
+      url: character.existing?.image ?? character.character.images?.[0]?.url,
+    })
+    .setDescription(
+      [
+        `## ${
+          character?.existing?.nickname ??
+            packs.aliasToArray(character.character.name)[0]
+        }${statusEmotes}`,
+        state,
+        subtitle?.length ? `*${subtitle?.join(' ')}*` : undefined,
+      ].filter(Boolean).join('\n'),
+    )
+    .setImage({ url: `attachment://${uuid}.png` })
+    .setFooter({
+      text: `${character.hp}/${character.maxHP}`,
+    });
+
+  const left = Math.round((character.hp / character.maxHP) * 100);
+  const _diff = Math.round((Math.abs(diff) / character.maxHP) * 100);
+
+  message.addAttachment({
+    type: 'image/png',
+    filename: `${uuid}.png`,
+    arrayBuffer: dynImages.hp(left, diff < 0 ? -_diff : _diff).buffer,
+  });
+
+  message.addEmbed(embed);
 };
+
+const battle = { challengeTower, skipBattle };
 
 export default battle;

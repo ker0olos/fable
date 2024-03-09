@@ -3,20 +3,19 @@
 import { assert, assertEquals, assertRejects } from '$std/assert/mod.ts';
 
 import { assertSpyCalls, stub } from '$std/testing/mock.ts';
+import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
 
-import { assertSnapshot } from '$std/testing/snapshot.ts';
+import validate, { assertValidManifest } from '~/src/validate.ts';
 
-import validate, { assertValidManifest } from '../src/validate.ts';
+import utils from '~/src/utils.ts';
 
-import utils from '../src/utils.ts';
+import packs from '~/src/packs.ts';
 
-import packs from '../src/packs.ts';
+import config from '~/src/config.ts';
 
-import config from '../src/config.ts';
+import db from '~/db/mod.ts';
 
-import db from '../db/mod.ts';
-
-import * as Schema from '../db/schema.ts';
+import * as Schema from '~/db/schema.ts';
 
 import {
   Character,
@@ -27,11 +26,11 @@ import {
   MediaFormat,
   MediaRelation,
   MediaType,
-} from '../src/types.ts';
+} from '~/src/types.ts';
 
-import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
-import { NonFetalError } from '../src/errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
 Deno.test('list', async (test) => {
   await test.step('anilist', async (test) => {
@@ -62,7 +61,7 @@ Deno.test('list', async (test) => {
 
       assertValidManifest(pack.manifest);
 
-      await assertSnapshot(test, pack);
+      await assertMonochromeSnapshot(test, pack);
     } finally {
       getGuildStub.restore();
       getInstanceStub.restore();
@@ -98,7 +97,7 @@ Deno.test('list', async (test) => {
 
       assertValidManifest(pack.manifest);
 
-      await assertSnapshot(test, pack);
+      await assertMonochromeSnapshot(test, pack);
     } finally {
       getGuildStub.restore();
       getInstanceStub.restore();
