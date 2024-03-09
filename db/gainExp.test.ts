@@ -20,8 +20,8 @@ Deno.test('distribute new stat points', async (test) => {
   await test.step('1-0-0 (add 1 new point)', () => {
     const character = {
       combat: {
-        baseStats: { attack: 1, defense: 0, speed: 0 },
-        curStats: { attack: 0, defense: 0, speed: 0 },
+        baseStats: { attack: 1, defense: 0, speed: 0, hp: 10 },
+        curStats: { attack: 0, defense: 0, speed: 0, hp: 10 },
       },
     };
 
@@ -30,18 +30,20 @@ Deno.test('distribute new stat points', async (test) => {
     const updatedCharacter = db.distributeNewStats(
       character as any,
       newStatPoints,
+      1,
     );
 
     assertEquals(updatedCharacter.combat?.curStats?.attack, 1);
     assertEquals(updatedCharacter.combat?.curStats?.defense, 0);
     assertEquals(updatedCharacter.combat?.curStats?.speed, 0);
+    assertEquals(updatedCharacter.combat?.curStats?.hp, 15);
   });
 
   await test.step('0-1-0 (add 1 new point)', () => {
     const character = {
       combat: {
-        baseStats: { attack: 0, defense: 1, speed: 0 },
-        curStats: { attack: 0, defense: 0, speed: 0 },
+        baseStats: { attack: 0, defense: 1, speed: 0, hp: 10 },
+        curStats: { attack: 0, defense: 0, speed: 0, hp: 10 },
       },
     };
 
@@ -50,18 +52,20 @@ Deno.test('distribute new stat points', async (test) => {
     const updatedCharacter = db.distributeNewStats(
       character as any,
       newStatPoints,
+      1,
     );
 
     assertEquals(updatedCharacter.combat?.curStats?.attack, 0);
     assertEquals(updatedCharacter.combat?.curStats?.defense, 1);
     assertEquals(updatedCharacter.combat?.curStats?.speed, 0);
+    assertEquals(updatedCharacter.combat?.curStats?.hp, 15);
   });
 
   await test.step('0-0-1 (add 1 new point)', () => {
     const character = {
       combat: {
-        baseStats: { attack: 0, defense: 0, speed: 1 },
-        curStats: { attack: 0, defense: 0, speed: 0 },
+        baseStats: { attack: 0, defense: 0, speed: 1, hp: 10 },
+        curStats: { attack: 0, defense: 0, speed: 0, hp: 10 },
       },
     };
 
@@ -70,18 +74,20 @@ Deno.test('distribute new stat points', async (test) => {
     const updatedCharacter = db.distributeNewStats(
       character as any,
       newStatPoints,
+      1,
     );
 
     assertEquals(updatedCharacter.combat?.curStats?.attack, 0);
     assertEquals(updatedCharacter.combat?.curStats?.defense, 0);
     assertEquals(updatedCharacter.combat?.curStats?.speed, 1);
+    assertEquals(updatedCharacter.combat?.curStats?.hp, 15);
   });
 
   await test.step('1-1-1 (add 1 new point)', () => {
     const character = {
       combat: {
-        baseStats: { attack: 1, defense: 1, speed: 1 },
-        curStats: { attack: 0, defense: 0, speed: 0 },
+        baseStats: { attack: 1, defense: 1, speed: 1, hp: 10 },
+        curStats: { attack: 0, defense: 0, speed: 0, hp: 10 },
       },
     };
 
@@ -90,18 +96,20 @@ Deno.test('distribute new stat points', async (test) => {
     const updatedCharacter = db.distributeNewStats(
       character as any,
       newStatPoints,
+      1,
     );
 
     assertEquals(updatedCharacter.combat?.curStats?.attack, 0);
     assertEquals(updatedCharacter.combat?.curStats?.defense, 0);
     assertEquals(updatedCharacter.combat?.curStats?.speed, 1);
+    assertEquals(updatedCharacter.combat?.curStats?.hp, 15);
   });
 
   await test.step('1-1-1 (add 50 new point)', () => {
     const character = {
       combat: {
-        baseStats: { attack: 1, defense: 1, speed: 1 },
-        curStats: { attack: 0, defense: 0, speed: 0 },
+        baseStats: { attack: 1, defense: 1, speed: 1, hp: 25 },
+        curStats: { attack: 0, defense: 0, speed: 0, hp: 25 },
       },
     };
 
@@ -110,11 +118,13 @@ Deno.test('distribute new stat points', async (test) => {
     const updatedCharacter = db.distributeNewStats(
       character as any,
       newStatPoints,
+      4,
     );
 
     assertEquals(updatedCharacter.combat?.curStats?.attack, 17);
     assertEquals(updatedCharacter.combat?.curStats?.defense, 17);
     assertEquals(updatedCharacter.combat?.curStats?.speed, 16);
+    assertEquals(updatedCharacter.combat?.curStats?.hp, 45);
   });
 
   await test.step('2-1-1 (from 1 to 4 points)', async (test) => {
@@ -131,6 +141,7 @@ Deno.test('distribute new stat points', async (test) => {
       const updatedCharacter = db.distributeNewStats(
         character as any,
         newStatPoints,
+        1,
       );
 
       assertEquals(updatedCharacter.combat?.curStats?.attack, 1);
@@ -151,6 +162,7 @@ Deno.test('distribute new stat points', async (test) => {
       const updatedCharacter = db.distributeNewStats(
         character as any,
         newStatPoints,
+        1,
       );
 
       assertEquals(updatedCharacter.combat?.curStats?.attack, 1);
@@ -171,6 +183,7 @@ Deno.test('distribute new stat points', async (test) => {
       const updatedCharacter = db.distributeNewStats(
         character as any,
         newStatPoints,
+        1,
       );
 
       assertEquals(updatedCharacter.combat?.curStats?.attack, 1);
@@ -191,6 +204,7 @@ Deno.test('distribute new stat points', async (test) => {
       const updatedCharacter = db.distributeNewStats(
         character as any,
         newStatPoints,
+        1,
       );
 
       assertEquals(updatedCharacter.combat?.curStats?.attack, 2);
@@ -213,6 +227,7 @@ Deno.test('distribute new stat points', async (test) => {
       const updatedCharacter = db.distributeNewStats(
         character as any,
         newStatPoints,
+        1,
       );
 
       assertEquals(updatedCharacter.combat?.curStats?.attack, 1);
@@ -233,6 +248,7 @@ Deno.test('distribute new stat points', async (test) => {
       const updatedCharacter = db.distributeNewStats(
         character as any,
         newStatPoints,
+        1,
       );
 
       assertEquals(updatedCharacter.combat?.curStats?.attack, 2);
@@ -253,6 +269,7 @@ Deno.test('distribute new stat points', async (test) => {
       const updatedCharacter = db.distributeNewStats(
         character as any,
         newStatPoints,
+        1,
       );
 
       assertEquals(updatedCharacter.combat?.curStats?.attack, 3);
@@ -273,6 +290,7 @@ Deno.test('distribute new stat points', async (test) => {
       const updatedCharacter = db.distributeNewStats(
         character as any,
         newStatPoints,
+        1,
       );
 
       assertEquals(updatedCharacter.combat?.curStats?.attack, 4);

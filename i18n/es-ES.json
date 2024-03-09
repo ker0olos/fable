@@ -156,9 +156,6 @@
   "help-page4-footer": "> Mantenerse activo es la mejor defensa contra el robo.",
 
   "help-page10-title": "Combate",
-  "help-page10-combat": "Prepara tus personajes para el combate utilizando `/stats`",
-  "help-page10-starting-points": "__Cada personaje comienza con una cantidad de puntos sin asignar__ basados en su grado de estrellas.",
-  "help-page10-distribution": "__Puedes distribuir esos puntos sin asignar en 3 estadísticas base diferentes:__ fuerza, resistencia, y agilidad.",
 
   "help-page5-title": "Tienda",
   "help-page5-shop": "La tienda es una forma de comprar tiradas extra y tiradas garantizadas.",

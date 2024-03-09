@@ -12,6 +12,7 @@ import {
 } from '~/db/mod.ts';
 
 import { PARTY_PROTECTION_PERIOD } from '~/src/steal.ts';
+import { RECHARGE_KEYS_MINS } from '~/db/mod.ts';
 
 function pages(
   { userId, index }: { userId: string; index: number },
@@ -155,21 +156,23 @@ function pages(
         new discord.Embed()
           .setAuthor({ name: i18n.get('help-page10-title', locale) })
           .setDescription([
-            i18n.get('help-page10-combat', locale),
-            '',
             i18n.get('help-page10-starting-points', locale),
             '',
-            i18n.get('help-page10-distribution', locale),
+            i18n.get('help-page10-stats-rng', locale),
             '',
-            i18n.get('help-page10-strength', locale),
+            i18n.get('help-page10-attack', locale),
             '',
-            i18n.get('help-page10-agility', locale),
+            i18n.get('help-page10-defense', locale),
             '',
-            i18n.get('help-page10-stamina', locale),
+            i18n.get('help-page10-speed', locale),
             '',
             i18n.get('help-page10-tower', locale),
             '',
             i18n.get('help-page10-reclear', locale),
+            '',
+            i18n.get('help-page10-distribution', locale),
+            '',
+            i18n.get('help-page10-keys', locale, RECHARGE_KEYS_MINS),
             discord.empty,
           ].join('\n')),
       ),

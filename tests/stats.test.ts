@@ -72,6 +72,7 @@ Deno.test('/stats', async (test) => {
                 attack: 1,
                 defense: 2,
                 speed: 3,
+                hp: 28,
               },
             } satisfies Schema.CharacterCombat,
           },
@@ -139,7 +140,8 @@ Deno.test('/stats', async (test) => {
                 },
                 {
                   name: 'Stats',
-                  value: 'Skill Points: 0\nAttack: 1\nDefense: 2\nSpeed: 3',
+                  value:
+                    'Skill Points: 0\nAttack: 1\nDefense: 2\nSpeed: 3\nHP: 28',
                 },
               ],
             },
@@ -262,6 +264,7 @@ Deno.test('/stats', async (test) => {
                 attack: 1,
                 defense: 2,
                 speed: 3,
+                hp: 18,
               },
             } satisfies Schema.CharacterCombat,
           },
@@ -333,7 +336,8 @@ Deno.test('/stats', async (test) => {
                 },
                 {
                   name: 'Stats',
-                  value: 'Skill Points: 2\nAttack: 1\nDefense: 2\nSpeed: 3',
+                  value:
+                    'Skill Points: 2\nAttack: 1\nDefense: 2\nSpeed: 3\nHP: 18',
                 },
               ],
             },
@@ -455,6 +459,7 @@ Deno.test('/stats', async (test) => {
                 attack: 1,
                 defense: 2,
                 speed: 3,
+                hp: 8,
               },
             } satisfies Schema.CharacterCombat,
           },
@@ -522,7 +527,8 @@ Deno.test('/stats', async (test) => {
                 },
                 {
                   name: 'Stats',
-                  value: 'Skill Points: 0\nAttack: 1\nDefense: 2\nSpeed: 3',
+                  value:
+                    'Skill Points: 0\nAttack: 1\nDefense: 2\nSpeed: 3\nHP: 8',
                 },
               ],
             },

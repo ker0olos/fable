@@ -40,6 +40,7 @@ Deno.test('initStats', async (test) => {
         attack: 1,
         defense: 1,
         speed: 1,
+        hp: 10,
       });
 
       assertEquals(result.character.combat?.skills, {});
@@ -119,6 +120,7 @@ Deno.test('initStats', async (test) => {
         attack: 3,
         defense: 2,
         speed: 1,
+        hp: 10,
       });
 
       assertEquals(result.character.combat?.skills, {});
@@ -198,6 +200,7 @@ Deno.test('initStats', async (test) => {
         attack: 5,
         defense: 2,
         speed: 2,
+        hp: 10,
       });
 
       assertEquals(result.character.combat?.skills, {});
@@ -277,6 +280,7 @@ Deno.test('initStats', async (test) => {
         attack: 6,
         defense: 4,
         speed: 2,
+        hp: 10,
       });
 
       assertEquals(result.character.combat?.skills, {
@@ -358,6 +362,7 @@ Deno.test('initStats', async (test) => {
         attack: 8,
         defense: 4,
         speed: 3,
+        hp: 10,
       });
 
       assertEquals(result.character.combat?.skills, {

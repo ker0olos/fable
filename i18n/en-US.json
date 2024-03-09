@@ -224,16 +224,17 @@
   "help-page4-footer": "> Staying active is the best defense against stealing.",
 
   "help-page10-title": "Combat",
-  "help-page10-combat": "Prepare your characters for combat using `/stats`",
-  "help-page10-starting-points": "__Every character gets a starting amount of stat points__ based on their star rating.",
-  "help-page10-distribution": "__You can distribute those points in 3 different base stats:__ strength, stamina, and agility.",
+  "help-page10-starting-points": "__Every character gets a starting amount of stats and skills__ based on their star rating.",
+  "help-page10-stats-rng": "__Stats and skills are randomly generated for every new character you find__, use `/stats` to check.",
 
-  "help-page10-strength": "__Strength is damage__, the damage you can potentially do to your enemy.",
-  "help-page10-agility": "__Agility is defense__, minimize the damage your enemy can do.",
-  "help-page10-stamina": "__Stamina is health points__, allows you to take more hits and survive longer in battle",
+  "help-page10-attack": "__Attack is the damage__, that you can potentially do to your enemy.",
+  "help-page10-defense": "__Defense is your damage reduction__, minimizing the damage a enemy can do to you.",
+  "help-page10-speed": "__Speed is your turn order__, the faster between you and your enemy gets the first move, an overwhelming speed difference will allow you to attack move than once in the same turn.",
 
-  "help-page10-tower": "Use `/battle tower` to climb the tower, each server has a unique tower and unique enemies and weakness.",
-  "help-page10-reclear": "> Level up your characters and gain extra stat points by `/reclear`ing the same floor a few times.",
+  "help-page10-tower": "Use `/battle tower` to climb the tower, every server has a unique tower and unique enemies.",
+  "help-page10-reclear": "Level up your characters and gain extra stat points by `/reclear`ing the same floor a few times.",
+  "help-page10-distribution": "> Stat points gained from leveling up is random distributed based on the ratio of your starting stats, Skill points can be used to acquire or upgrade `/skills`",
+  "help-page10-keys": "> Challenging and reclearing floors require keys, you get +1 key every {0} minutes, you can also buy more keys from the `/shop`",
 
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",

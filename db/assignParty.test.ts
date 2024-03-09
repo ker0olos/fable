@@ -50,6 +50,7 @@ Deno.test('assign character', async (test) => {
         attack: 0,
         defense: 9,
         speed: 0,
+        hp: 10,
       });
 
       assertEquals(result.combat?.skills, {});
