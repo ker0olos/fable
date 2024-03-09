@@ -27,6 +27,7 @@ export const experienceToNextLevel = (level?: number): number => {
 export function distributeNewStats(
   character: Schema.Character,
   newStatPoints: number,
+  levelUp: number,
 ): Schema.Character {
   if (
     !character.combat ||
@@ -97,6 +98,8 @@ export function distributeNewStats(
   character.combat.curStats.defense += distributedDefense;
   character.combat.curStats.speed += distributedSpeed;
 
+  character.combat.curStats.hp += 5 * levelUp;
+
   return character;
 }
 
@@ -163,7 +166,11 @@ export function gainExp(
     }
 
     if (status.statPoints > 0) {
-      character = db.distributeNewStats(character, status.statPoints);
+      character = db.distributeNewStats(
+        character,
+        status.statPoints,
+        status.levelUp,
+      );
     }
   }
 

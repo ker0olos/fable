@@ -189,6 +189,7 @@ function view({ token, character, characterSchema, userId, guildId }: {
             `${i18n.get('attack', locale)}: ${stats.attack}`,
             `${i18n.get('defense', locale)}: ${stats.defense}`,
             `${i18n.get('speed', locale)}: ${stats.speed}`,
+            `${i18n.get('hp', locale)}: ${stats.hp}`,
           ].join('\n'),
         });
 

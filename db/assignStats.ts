@@ -8,6 +8,8 @@ import { skills } from '~/src/skills.ts';
 
 import db, { kv } from '~/db/mod.ts';
 
+import utils from '~/src/utils.ts';
+
 import { KvError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
@@ -29,22 +31,20 @@ const newUnclaimed = (rating: number): number => {
   return 3 * rating;
 };
 
-export function ensureInitStats(character: Schema.Character): Schema.Character {
-  if (character.combat?.baseStats !== undefined) {
-    return character;
-  }
-
-  const total = newUnclaimed(character.rating);
-  const slots = newSkills(character.rating);
-
-  //
-
+export const randomStats = (
+  total: number,
+  seed?: string,
+): Schema.CharacterStats => {
   let attack = 0;
   let defense = 0;
   let speed = 0;
 
+  const rng = seed ? new utils.LehmerRNG(seed) : undefined;
+
   for (let i = 0; i < total; i++) {
-    const rand = Math.floor(Math.random() * 3);
+    const rand = rng
+      ? Math.floor(rng.nextFloat() * 3)
+      : Math.floor(Math.random() * 3);
 
     if (rand === 0) {
       attack += 1;
@@ -55,15 +55,28 @@ export function ensureInitStats(character: Schema.Character): Schema.Character {
     }
   }
 
+  return {
+    attack,
+    defense,
+    speed,
+    hp: 10,
+  };
+};
+
+export function ensureInitStats(character: Schema.Character): Schema.Character {
+  if (character.combat?.baseStats !== undefined) {
+    return character;
+  }
+
+  const total = newUnclaimed(character.rating);
+  const slots = newSkills(character.rating);
+
   character.combat ??= {};
   character.combat.skills = {};
 
+  character.combat.baseStats = randomStats(total);
+  character.combat.curStats = { ...character.combat.baseStats };
   // character.combat.unclaimedStatsPoints ??= 0;
-
-  character.combat.baseStats = { attack, defense, speed };
-  character.combat.curStats = { attack, defense, speed };
-
-  //
 
   const skillsPool = Object.keys(skills) as SkillKey[];
 

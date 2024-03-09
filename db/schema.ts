@@ -95,6 +95,7 @@ export interface CharacterStats {
   attack: number;
   defense: number;
   speed: number;
+  hp: number;
 }
 
 export interface Like {

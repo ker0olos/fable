@@ -169,6 +169,7 @@
   "attack": "Attack",
   "defense": "Defense",
   "speed": "Speed",
+  "hp": "HP",
 
   "lvl": "LVL",
   "level": "Level",

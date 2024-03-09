@@ -33,8 +33,8 @@ export class PartyMember {
     this.effects = {};
     this.#stats = stats;
     this.character = character;
-    this.#boost = { attack: 0, defense: 0, speed: 0 };
-    this.#debuff = { attack: 0, defense: 0, speed: 0 };
+    this.#boost = { attack: 0, defense: 0, speed: 0, hp: 0 };
+    this.#debuff = { attack: 0, defense: 0, speed: 0, hp: 0 };
     this.existing = existing;
     this.owner = owner;
   }
@@ -179,7 +179,7 @@ export const getBattleStats = (
     speed: char.combat?.curStats?.speed || 1,
     defense: char.combat?.curStats?.defense || 1,
     //
-    hp: char.combat?.curStats?.defense || 1,
-    maxHP: char.combat?.curStats?.defense || 1,
+    hp: char.combat?.curStats?.hp || 1,
+    maxHP: char.combat?.curStats?.hp || 1,
   };
 };

@@ -10,6 +10,8 @@ import { skills } from '~/src/skills.ts';
 
 import db from '~/db/mod.ts';
 
+import { randomStats } from '~/db/assignStats.ts';
+
 import { usersByDiscordId } from '~/db/indices.ts';
 
 import * as discord from '~/src/discord.ts';
@@ -96,10 +98,8 @@ export const createEnemyStats = (
   floor: number,
   seed: string,
 ): CharacterBattleStats => {
-  const rng = new utils.LehmerRNG(seed);
   const skillRng = new utils.LehmerRNG(seed);
 
-  // same as player characters
   const totalStats = 9 * getEnemyRating(floor);
 
   const _skills: CharacterBattleStats['skills'] = {};
@@ -125,43 +125,32 @@ export const createEnemyStats = (
   }
 
   const state: CharacterBattleStats = {
+    ...randomStats(totalStats, seed),
     skills: _skills,
-    attack: 0,
-    defense: 0,
-    speed: 0,
-    hp: 0,
     maxHP: 0,
   };
 
-  for (let i = 0; i < totalStats; i++) {
-    const rand = Math.floor(rng.nextFloat() * 3);
-
-    if (rand === 0) {
-      state.attack += 1;
-    } else if (rand === 1) {
-      state.defense += 1;
-    } else {
-      state.speed += 1;
-    }
-  }
-
   const multiplier = 0.5;
+
   const base = floor;
 
   state.attack = Math.round(
     state.attack * Math.pow(base, multiplier),
   );
 
-  state.defense = state.maxHP = state.hp = Math.max(
-    Math.round(
-      state.defense * Math.pow(base, multiplier),
-    ),
-    1,
+  state.defense = Math.round(
+    state.defense * Math.pow(base, multiplier),
   );
 
   state.speed = Math.round(
     state.speed * Math.pow(base, multiplier),
   );
+
+  state.hp =
+    state.maxHP =
+      Math.round(
+        state.hp * Math.pow(base, multiplier),
+      );
 
   return state;
 };
