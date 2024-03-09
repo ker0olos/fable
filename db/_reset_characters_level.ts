@@ -33,7 +33,7 @@ if (import.meta.main) {
 
   const func = async (list: typeof _characters) => {
     for await (const { key, value } of list) {
-      if (!value.combat) {
+      if (!value.combat || JSON.stringify(value.combat) === '{}') {
         continue;
       }
 
