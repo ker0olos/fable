@@ -499,7 +499,7 @@ async function acquire(
     const existingSkill = await db.acquireSkill(
       inventory,
       characterId,
-      skill,
+      skillKey,
     );
 
     const formatted = format(skill, locale, {

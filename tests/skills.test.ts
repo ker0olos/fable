@@ -1072,7 +1072,7 @@ Deno.test('acquire skill', async (test) => {
       assertSpyCallArgs(acquireSkillStub, 0, [
         'inventory',
         'character_id',
-        skills.crit,
+        'crit',
       ]);
 
       assertEquals(
@@ -1151,7 +1151,7 @@ Deno.test('acquire skill', async (test) => {
       assertSpyCallArgs(acquireSkillStub, 0, [
         'inventory',
         'character_id',
-        skills.crit,
+        'crit',
       ]);
 
       assertEquals(

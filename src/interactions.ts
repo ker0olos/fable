@@ -291,30 +291,30 @@ export const handler = async (r: Request) => {
 
           const distance: Record<string, number> = {};
 
-          let _skills = Object.values(skills);
+          let _skills = Object.entries(skills);
 
           // sort suggestion based on distance
-          _skills.forEach((skill) => {
+          _skills.forEach(([skillKey, skill]) => {
             const skillName = i18n.get(skill.key, locale);
 
             const d = utils.distance(skill.key, name);
             const d2 = utils.distance(skillName, name);
 
             if (d > d2) {
-              distance[skill.key] = d2;
+              distance[skillKey] = d2;
             } else {
-              distance[skill.key] = d;
+              distance[skillKey] = d;
             }
           });
 
-          _skills = _skills.sort((a, b) => distance[b.key] - distance[a.key]);
+          _skills = _skills.sort((a, b) => distance[a[0]] - distance[b[0]]);
 
-          _skills?.forEach((skill) => {
+          _skills?.forEach(([skillKey, skill]) => {
             const skillName = i18n.get(skill.key, locale);
 
             message.addSuggestions({
               name: skillName,
-              value: skill.key,
+              value: skillKey,
             });
           });
 

@@ -9,7 +9,7 @@
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20community%20server&color=blue)][discord]
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests&logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deploy.yml?branch=main&label=tests&logo=github)
 [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC&label=codecov&logo=codecov)](https://app.codecov.io/github/ker0olos/fable)
 
 [![Kofi](https://img.shields.io/badge/Support%20us%20on%20Ko--fi-orange?logo=ko-fi&logoColor=white)][kofi]
