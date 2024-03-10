@@ -28,7 +28,7 @@ if (import.meta.main) {
   const op = batchedAtomic(kv);
 
   for await (const { value } of _inventories) {
-    const response = await db.getManyValues<Schema.Character>([
+    const response = await kv.getMany<Schema.Character[]>([
       ['characters', value.party?.member1 ?? ''],
       ['characters', value.party?.member2 ?? ''],
       ['characters', value.party?.member3 ?? ''],
@@ -36,7 +36,7 @@ if (import.meta.main) {
       ['characters', value.party?.member5 ?? ''],
     ]);
 
-    for (let member of response) {
+    for (let { value: member } of response) {
       if (!member) {
         continue;
       }

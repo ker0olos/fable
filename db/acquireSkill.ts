@@ -10,16 +10,16 @@ import { KvError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type { CharacterSkill } from '~/src/types.ts';
-
 import type { SkillKey } from '~/src/types.ts';
+
+import { skills } from '~/src/skills.ts';
 
 export const MAX_SKILL_SLOTS = 5;
 
 export async function acquireSkill(
   inventory: Schema.Inventory,
   characterId: string,
-  skill: CharacterSkill,
+  skillKey: SkillKey,
 ): Promise<Schema.AcquiredCharacterSkill> {
   let retries = 0;
 
@@ -34,6 +34,7 @@ export async function acquireSkill(
     }
 
     const character = response.value;
+    const skill = skills[skillKey];
 
     if (character.inventory !== inventory._id) {
       throw new Error('CHARACTER_NOT_OWNED');
@@ -53,22 +54,20 @@ export async function acquireSkill(
       throw new Error('NOT_ENOUGH_SKILL_POINTS');
     }
 
-    const key = skill.key as SkillKey;
-
     if (
-      typeof character.combat.skills[key]?.level !== 'number'
+      typeof character.combat.skills[skillKey]?.level !== 'number'
     ) {
-      character.combat.skills[key] = { level: 1 };
+      character.combat.skills[skillKey] = { level: 1 };
     } else {
       // deno-lint-ignore no-non-null-assertion
-      const maxed = skill.max <= character.combat.skills[key]!.level;
+      const maxed = skill.max <= character.combat.skills[skillKey]!.level;
 
       if (maxed) {
         throw new Error('SKILL_MAXED');
       }
 
       // deno-lint-ignore no-non-null-assertion
-      character.combat.skills[key]!.level += 1;
+      character.combat.skills[skillKey]!.level += 1;
     }
 
     const update = await kv.atomic()
@@ -102,7 +101,7 @@ export async function acquireSkill(
 
     if (update.ok) {
       // deno-lint-ignore no-non-null-assertion
-      return character.combat.skills[key]!;
+      return character.combat.skills[skillKey]!;
     }
 
     retries += 1;
