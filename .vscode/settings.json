@@ -32,6 +32,7 @@
     "./upload_emote.ts",
     "./update_commands.test.ts",
     "./update_topgg_stats.ts",
+    "./update_indexes.ts",
     "./setup.ts"
   ],
   //
