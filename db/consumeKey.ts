@@ -1,49 +1,39 @@
-import { inventoriesByUser } from '~/db/indices.ts';
+import database from '~/db/mod.ts';
+import type * as Schema from './schema.ts';
 
-import type * as Schema from '~/db/schema.ts';
+export async function clearFloor(
+  userId: string,
+  guildId: string,
+): Promise<Schema.Inventory | null> {
+  const inventory = await database.inventories.findOneAndUpdate(
+    { userId, guildId },
+    { $inc: { floorsCleared: 1 } },
+    { returnDocument: 'after' },
+  );
 
-export function clearFloor(
-  op: Deno.AtomicOperation,
-  inventory: Schema.Inventory,
-): number {
-  inventory.floorsCleared ??= 0;
-  inventory.floorsCleared += 1;
-
-  op
-    .set(['inventories', inventory._id], inventory)
-    .set(inventoriesByUser(inventory.instance, inventory.user), inventory);
-
-  return inventory.floorsCleared;
+  return inventory;
 }
 
-export function consumeKey(
-  {
-    op,
-    inventory,
-    inventoryCheck,
-    amount,
-  }: {
-    op: Deno.AtomicOperation;
-    inventory: Schema.Inventory;
-    inventoryCheck: Deno.AtomicCheck;
-    amount?: number;
-  },
-): number {
-  if (typeof inventory.availableKeys === 'undefined') {
-    throw new Error("available keys shouldn't be undefined");
+export async function consumeKey(
+  userId: string,
+  guildId: string,
+  amount?: number,
+): Promise<number | undefined> {
+  if (amount) {
+    const inventory = await database.inventories.findOneAndUpdate(
+      { userId, guildId, availableKeys: { $gte: amount } },
+      { $inc: { availableKeys: -amount } },
+      { returnDocument: 'after' },
+    );
+
+    return inventory ? amount : undefined;
+  } else {
+    const inventory = await database.inventories.findOneAndUpdate(
+      { userId, guildId },
+      { $set: { availableKeys: 0 } },
+      { returnDocument: 'before' },
+    );
+
+    return inventory?.availableKeys;
   }
-
-  const keys = amount ?? inventory.availableKeys;
-
-  inventory.availableKeys -= keys;
-
-  inventory.lastPVE = new Date().toISOString();
-  inventory.keysTimestamp ??= new Date().toISOString();
-
-  op
-    .check(inventoryCheck)
-    .set(['inventories', inventory._id], inventory)
-    .set(inventoriesByUser(inventory.instance, inventory.user), inventory);
-
-  return keys;
 }

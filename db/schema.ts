@@ -1,78 +1,95 @@
-import type { Manifest } from '../src/types.ts';
+import type { ObjectId, WithId } from 'mongodb';
 
-import type { SkillKey } from '~/src/types.ts';
+import type { Manifest, SkillKey } from '~/src/types.ts';
 
-interface Collection {
-  _id: string;
+export interface Guild {
+  discordId: string;
+
+  excluded: boolean;
+  builtinsDisabled: boolean;
+
+  packIds: ObjectId[];
+  inventoryIds: ObjectId[];
 }
 
-export interface Guild extends Collection {
-  id: string;
-  instances: string[];
+export interface User {
+  discordId: string;
+  availableTokens: number;
+  dailyTimestamp: Date;
+  guarantees: number[];
+  likes: Like[];
+
+  inventoryIds: ObjectId[];
 }
 
-export interface Instance extends Collection {
-  main: boolean;
-  excluded?: boolean;
-  builtinsDisabled?: boolean;
-  inventories: string[];
-  guild: string;
-  packs: PackInstall[];
-}
+export interface Inventory {
+  userId: string;
+  guildId: string;
 
-export interface User extends Collection {
-  id: string;
-  inventories: string[];
-  availableTokens?: number;
-  dailyTimestamp: string;
-  guarantees?: number[];
-  likes?: Like[];
-}
-
-export interface Inventory extends Collection {
-  user: string;
-  instance: string;
   availablePulls: number;
-  lastPull?: string;
+  availableKeys: number;
 
-  rechargeTimestamp?: string;
-  stealTimestamp?: string;
+  floorsCleared: number;
 
-  floorsCleared?: number;
-  availableKeys?: number;
-  keysTimestamp?: string;
-  lastPVE?: string;
+  lastPVE?: Date;
+  lastPull?: Date;
+  rechargeTimestamp?: Date;
+  keysTimestamp?: Date;
+  stealTimestamp?: Date;
 
-  party?: {
-    member1?: string;
-    member2?: string;
-    member3?: string;
-    member4?: string;
-    member5?: string;
+  party: {
+    member1Id?: ObjectId;
+    member2Id?: ObjectId;
+    member3Id?: ObjectId;
+    member4Id?: ObjectId;
+    member5Id?: ObjectId;
   };
 }
 
-export interface Character extends Collection {
-  id: string;
+export type PopulatedInventory = WithId<Inventory> & {
+  user: WithId<User>;
+  guild: WithId<Guild>;
+  party: {
+    member1?: Character;
+    member2?: Character;
+    member3?: Character;
+    member4?: Character;
+    member5?: Character;
+  };
+};
+
+export interface Character {
+  characterId: string;
   mediaId: string;
+
   rating: number;
   nickname?: string;
   image?: string;
-  combat?: CharacterCombat;
-  instance: string;
-  inventory: string;
-  user: string;
+
+  combat: CharacterCombat;
+
+  guildId: string;
+  userId: string;
+  inventoryId: ObjectId;
 }
 
-export interface Pack extends Collection {
+export type PopulatedCharacter = WithId<Inventory> & {
+  user: WithId<User>;
+  guild: WithId<Guild>;
+  inventory: WithId<Inventory>;
+};
+
+export interface Pack {
   owner: string;
-  added: string;
-  updated: string;
-  version: number;
+  createdAt: Date;
+  updatedAt: Date;
   manifest: Manifest;
-  servers?: number;
-  approved?: boolean;
-  hidden?: boolean;
+  approved: boolean;
+  hidden: boolean;
+
+  // version: number;
+  // servers?: number;
+  // guildIds: ObjectId[];
 }
 
 export interface AcquiredCharacterSkill {
@@ -80,15 +97,15 @@ export interface AcquiredCharacterSkill {
 }
 
 export interface CharacterCombat {
-  exp?: number;
-  level?: number;
+  exp: number;
+  level: number;
 
-  skillPoints?: number;
-  skills?: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
+  skillPoints: number;
+  skills: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
 
   // unclaimedStatsPoints?: number;
-  curStats?: CharacterStats;
-  baseStats?: CharacterStats;
+  curStats: CharacterStats;
+  baseStats: CharacterStats;
 }
 
 export interface CharacterStats {
@@ -103,11 +120,11 @@ export interface Like {
   characterId?: string;
 }
 
-export interface PackInstall {
-  pack: string;
-  timestamp: string;
-  by: string;
-}
+// export interface PackInstall {
+//   pack: string;
+//   timestamp: string;
+//   by: string;
+// }
 
 export interface Party {
   member1?: Character;

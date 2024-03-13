@@ -1,23 +1,23 @@
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import packs from './packs.ts';
+import packs from '~/src/packs.ts';
 
-import { default as srch } from './search.ts';
+import { default as srch } from '~/src/search.ts';
 
-import i18n from './i18n.ts';
-import utils from './utils.ts';
+import i18n from '~/src/i18n.ts';
+import utils from '~/src/utils.ts';
 
-import user from './user.ts';
+import user from '~/src/user.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import { Character, DisaggregatedCharacter } from './types.ts';
+import { Character, DisaggregatedCharacter } from '~/src/types.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
-import type * as Schema from '../db/schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
 export const PARTY_PROTECTION_PERIOD = 4;
 

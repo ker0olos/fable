@@ -1,167 +1,91 @@
-import { ulid } from '$std/ulid/mod.ts';
-
-import db, { kv } from '~/db/mod.ts';
-
-import { packByManifestId, packsByMaintainerId } from '~/db/indices.ts';
-
-import { KvError } from '~/src/errors.ts';
+import database from '~/db/mod.ts';
 
 import type { Manifest } from '~/src/types.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
 export async function publishPack(
-  userDiscordId: string,
+  userId: string,
   manifest: Manifest,
-): Promise<Schema.Pack> {
-  const existingPack = await db.getValue<Schema.Pack>(
-    packByManifestId(manifest.id),
-  );
-
-  if (
-    existingPack &&
-    existingPack.owner !== userDiscordId &&
-    !existingPack.manifest.maintainers?.includes(userDiscordId)
-  ) {
-    throw new Error('PERMISSION_DENIED');
-  }
-
-  const oldMaintainers = existingPack?.manifest.maintainers ?? [];
-  const newMaintainers = manifest.maintainers ?? [];
-
-  const removedMaintainers = oldMaintainers.filter((oldMaintainer) =>
-    !newMaintainers.includes(oldMaintainer)
-  );
-
-  const pack: Schema.Pack = existingPack ?? {
-    _id: ulid(),
-    version: 0,
-    added: new Date().toISOString(),
-    updated: new Date().toISOString(),
-    owner: userDiscordId,
+): Promise<void> {
+  const newPack: Schema.Pack = {
+    owner: userId,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    approved: false,
+    hidden: false,
     manifest,
-  } satisfies Schema.Pack;
+  };
 
-  pack.manifest = manifest;
-  pack.version = pack.version + 1;
-  pack.updated = new Date().toISOString();
-
-  const op = kv.atomic();
-
-  // update the indices used to query packs by the maintainer/owner id
-  // they only refer to the pack id instead of the entire pack object
-  // this is to avoid updating all the indices every time the pack is installed or uninstalled
-  op.set(packsByMaintainerId(pack.owner, pack._id), 1);
-
-  newMaintainers.forEach((discordId) => {
-    op.set(packsByMaintainerId(discordId, pack._id), 1);
-  });
-
-  removedMaintainers.forEach((discordId) => {
-    op.delete(packsByMaintainerId(discordId, pack._id));
-  });
-  //
-
-  const insert = await op
-    .set(['packs', pack._id], pack)
-    .set(packByManifestId(pack.manifest.id), pack)
-    .commit();
-
-  if (!insert.ok) {
-    throw new KvError('failed to insert/update pack');
-  }
-
-  return pack;
+  await database.packs.updateOne(
+    {
+      'manifest.id': manifest.id,
+      $or: [
+        { owner: userId },
+        { 'manifest.maintainers': { $in: [userId] } },
+      ],
+    },
+    {
+      $setOnInsert: newPack, // new
+      $set: { manifest, updatedAt: new Date() }, // update existing
+    },
+    { upsert: true },
+  );
 }
 
 export async function addPack(
-  instance: Schema.Instance,
-  userDiscordId: string,
-  packManifestId: string,
-): Promise<Schema.Pack> {
-  const pack = await db.getValue<Schema.Pack>(
-    packByManifestId(packManifestId),
+  userId: string,
+  guildId: string,
+  manifestId: string,
+): Promise<Schema.Pack | null> {
+  const pack = await database.packs.findOne(
+    { 'manifest.id': manifestId },
   );
 
   if (!pack) {
-    throw new Error('PACK_NOT_FOUND');
+    return null;
   }
 
   if (
-    pack.manifest.private &&
-    userDiscordId !== pack.owner &&
-    !pack.manifest.maintainers?.includes(userDiscordId)
+    pack.manifest.private && pack.owner !== userId &&
+    !pack.manifest.maintainers?.includes(userId)
   ) {
-    throw new Error('PACK_PRIVATE');
+    return null;
   }
 
-  // already installed
-  if (instance.packs.map(({ pack }) => pack).includes(pack._id)) {
-    return pack;
-  }
+  const guild = await database.guilds.findOneAndUpdate(
+    { discordId: guildId },
+    { $addToSet: { packIds: pack._id } },
+    { returnDocument: 'after' },
+  );
 
-  const install: Schema.PackInstall = {
-    by: userDiscordId,
-    pack: pack._id,
-    timestamp: new Date().toISOString(),
-  };
-
-  instance.packs.push(install);
-
-  pack.servers = (pack.servers ?? 0) + 1;
-
-  const update = await kv.atomic()
-    //
-    .set(['packs', pack._id], pack)
-    .set(packByManifestId(packManifestId), pack)
-    //
-    .set(['instances', instance._id], instance)
-    //
-    .commit();
-
-  if (!update.ok) {
-    throw new KvError('failed to update instance');
+  if (!guild) {
+    return null;
   }
 
   return pack;
 }
 
 export async function removePack(
-  instance: Schema.Instance,
-  packManifestId: string,
-): Promise<Schema.Pack> {
-  const pack = await db.getValue<Schema.Pack>(
-    packByManifestId(packManifestId),
+  guildId: string,
+  manifestId: string,
+): Promise<Schema.Pack | null> {
+  const pack = await database.packs.findOne(
+    { 'manifest.id': manifestId },
   );
 
   if (!pack) {
-    throw new Error('PACK_NOT_FOUND');
+    return null;
   }
 
-  const index = instance.packs.findIndex((installed) =>
-    installed.pack === pack._id
+  const guild = await database.guilds.findOneAndUpdate(
+    { discordId: guildId },
+    { $pull: { packIds: pack._id } },
+    { returnDocument: 'after' },
   );
 
-  // not installed
-  if (index <= -1) {
-    throw new Error('PACK_NOT_INSTALLED');
-  }
-
-  instance.packs.splice(index, 1);
-
-  pack.servers = Math.max(0, (pack.servers ?? 0) - 1);
-
-  const update = await kv.atomic()
-    //
-    .set(['packs', pack._id], pack)
-    .set(packByManifestId(packManifestId), pack)
-    //
-    .set(['instances', instance._id], instance)
-    //
-    .commit();
-
-  if (!update.ok) {
-    throw new KvError('failed to update instance');
+  if (!guild) {
+    return null;
   }
 
   return pack;

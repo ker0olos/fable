@@ -42,8 +42,8 @@ jobs:
       - uses: codecov/codecov-action@v3
 
   deploy:
-    runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    runs-on: ubuntu-latest
     needs:
       - test
     permissions:
@@ -56,8 +56,8 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - name: update database indexes
-        run: deno run -A --env update_indexes.ts
+      - name: create database indexes
+        run: deno run -A --env db/_create_indexes.ts
         env:
           MONGO_URL: ${{ secrets.MONGO_URL }}
       - uses: denoland/deployctl@v1

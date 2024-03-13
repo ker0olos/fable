@@ -1,342 +1,226 @@
-/// <reference lib="deno.unstable" />
+import database from '~/db/mod.ts';
 
-import {
-  charactersByInstancePrefix,
-  charactersByInventoryPrefix,
-  charactersByMediaIdPrefix,
-  inventoriesByUser,
-} from './indices.ts';
+import type * as Schema from '~/db/schema.ts';
 
-import db, { kv } from './mod.ts';
-
-import { KvError } from '../src/errors.ts';
-
-import type * as Schema from './schema.ts';
-
-export const COOLDOWN_DAYS = 3;
+export const STEAL_COOLDOWN_HOURS = 3 * 24;
 
 export async function tradeCharacters(
   {
-    aUser,
-    bUser,
-    aInventory,
-    bInventory,
-    instance,
+    aUserId,
+    bUserId,
+    guildId,
     giveIds,
     takeIds,
   }: {
-    aUser: Schema.User;
-    bUser: Schema.User;
-    aInventory: Schema.Inventory;
-    bInventory: Schema.Inventory;
-    instance: Schema.Instance;
+    aUserId: string;
+    bUserId: string;
+    guildId: string;
     giveIds: string[];
     takeIds: string[];
   },
-): Promise<{ ok: boolean }> {
-  let retries = 0;
+): Promise<void> {
+  const session = database.client.startSession();
 
-  while (retries < 5) {
-    const op = kv.atomic();
+  try {
+    session.startTransaction();
 
-    const [giveCharacters, takeCharacters] = await Promise.all([
-      db.getManyValues<Schema.Character>(
-        giveIds.map((id) => [...charactersByInstancePrefix(instance._id), id]),
-      ),
-      db.getManyValues<Schema.Character>(
-        takeIds.map((id) => [...charactersByInstancePrefix(instance._id), id]),
-      ),
-    ]);
+    // TODO can be grouped using aggregate
+    //   {
+    //     $match: {
+    //       id: { $in: [...giveIds, ...takeIds] },
+    //       guildId,
+    //       $or: [
+    //         { userId: aUserId },
+    //         { userId: bUserId },
+    //       ],
+    //     },
+    //  },
+    //  {
+    //     $group: {
+    //       _id: "$userId",
+    //       characters: {
+    //         $push: {
+    //           id: "$id",
+    //           // Include any other fields you need from the characters
+    //         },
+    //       },
+    //     },
+    //  },
+    //
+
+    const giveCharacters = await database.characters.aggregate()
+      .match({
+        id: { $in: giveIds },
+        userId: aUserId,
+        guildId,
+      })
+      .lookup({
+        localField: 'inventoryId',
+        foreignField: '_id',
+        from: 'inventories',
+        as: 'inventory',
+      })
+      .unwind('inventory')
+      .toArray() as Schema.PopulatedCharacter[];
+
+    const takeCharacters = await database.characters.aggregate()
+      .match({
+        id: { $in: takeIds },
+        userId: bUserId,
+        guildId,
+      })
+      .lookup({
+        localField: 'inventoryId',
+        foreignField: '_id',
+        from: 'inventories',
+        as: 'inventory',
+      })
+      .unwind('inventory')
+      .toArray() as Schema.PopulatedCharacter[];
 
     if (
-      giveCharacters.some((character) => !character) ||
-      takeCharacters.some((character) => !character)
+      giveCharacters.length !== giveIds.length ||
+      takeCharacters.length !== takeIds.length
     ) {
-      throw new Error('CHARACTER_NOT_FOUND');
+      throw new Error();
     }
 
-    if (
-      giveCharacters.some((character) => character?.user !== aUser._id) ||
-      takeCharacters.some((character) => character?.user !== bUser._id)
-    ) {
-      throw new Error('CHARACTER_NOT_OWNED');
-    }
+    const aInventory = giveCharacters[0].inventory;
+    const bInventory = takeCharacters[0].inventory;
 
     const aParty = [
-      aInventory.party?.member1,
-      aInventory.party?.member2,
-      aInventory.party?.member3,
-      aInventory.party?.member4,
-      aInventory.party?.member5,
+      aInventory.party.member1Id,
+      aInventory.party.member2Id,
+      aInventory.party.member3Id,
+      aInventory.party.member4Id,
+      aInventory.party.member5Id,
     ];
 
     const bParty = [
-      bInventory.party?.member1,
-      bInventory.party?.member2,
-      bInventory.party?.member3,
-      bInventory.party?.member4,
-      bInventory.party?.member5,
+      bInventory.party.member1Id,
+      bInventory.party.member2Id,
+      bInventory.party.member3Id,
+      bInventory.party.member4Id,
+      bInventory.party.member5Id,
     ];
 
     if (
       giveCharacters
-        .some((character) => character && aParty.includes(character._id))
-    ) {
-      throw new Error('CHARACTER_IN_PARTY');
-    }
-
-    if (
+        .some((character) => aParty.includes(character._id)) ||
       takeCharacters
-        .some((character) => character && bParty.includes(character._id))
+        .some((character) => bParty.includes(character._id))
     ) {
-      throw new Error('CHARACTER_IN_PARTY');
+      throw new Error();
     }
 
-    giveCharacters.forEach((character) => {
-      // deno-lint-ignore no-non-null-assertion
-      character!.user = bUser._id;
-      // deno-lint-ignore no-non-null-assertion
-      character!.inventory = bInventory._id;
+    const bulk: Parameters<typeof database.characters.bulkWrite>[0] = [];
 
-      op
-        // deno-lint-ignore no-non-null-assertion
-        .set(['characters', character!._id], character)
-        .set(
-          [
-            ...charactersByInstancePrefix(instance._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!.id,
-          ],
-          character,
-        )
-        .delete(
-          [
-            ...charactersByInventoryPrefix(aInventory._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-        )
-        .set(
-          [
-            ...charactersByInventoryPrefix(bInventory._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-          character,
-        )
-        .set(
-          [
-            // deno-lint-ignore no-non-null-assertion
-            ...charactersByMediaIdPrefix(instance._id, character!.mediaId),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-          character,
-        );
-    });
+    bulk.push(
+      {
+        updateMany: {
+          filter: { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
+          update: { $set: { userId: bUserId, inventoryId: bInventory._id } },
+        },
+      },
+    );
 
-    takeCharacters.forEach((character) => {
-      // deno-lint-ignore no-non-null-assertion
-      character!.user = aUser._id;
-      // deno-lint-ignore no-non-null-assertion
-      character!.inventory = aInventory._id;
+    bulk.push(
+      {
+        updateMany: {
+          filter: { _id: { $in: takeCharacters.map(({ _id }) => _id) } },
+          update: { $set: { userId: aUserId, inventoryId: aInventory._id } },
+        },
+      },
+    );
 
-      op
-        // deno-lint-ignore no-non-null-assertion
-        .set(['characters', character!._id], character)
-        .set(
-          [
-            ...charactersByInstancePrefix(instance._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!.id,
-          ],
-          character,
-        )
-        .delete(
-          [
-            ...charactersByInventoryPrefix(bInventory._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-        )
-        .set(
-          [
-            ...charactersByInventoryPrefix(aInventory._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-          character,
-        )
-        .set(
-          [
-            // deno-lint-ignore no-non-null-assertion
-            ...charactersByMediaIdPrefix(instance._id, character!.mediaId),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-          character,
-        );
-    });
+    await database.characters.bulkWrite(bulk, { session });
 
-    const res = await op.commit();
-
-    if (res.ok) {
-      return { ok: true };
-    }
-
-    retries += 1;
+    await session.commitTransaction();
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    await session.endSession();
   }
-
-  throw new KvError('failed to trade characters');
 }
 
 export async function stealCharacter(
-  {
-    aUser,
-    aInventory,
-    aInventoryCheck,
-    bInventoryId,
-    instance,
-    characterId,
-  }: {
-    aUser: Schema.User;
-    aInventory: Schema.Inventory;
-    aInventoryCheck: Deno.AtomicCheck;
-    bInventoryId: string;
-    instance: Schema.Instance;
-    characterId: string;
-  },
-): Promise<Schema.Character> {
-  const character = await db.getValue<Schema.Character>([
-    ...charactersByInstancePrefix(instance._id),
-    characterId,
-  ]);
+  userId: string,
+  guildId: string,
+  characterId: string,
+): Promise<void> {
+  const session = database.client.startSession();
 
-  if (!character) {
-    throw new Error('CHARACTER_NOT_FOUND');
-  }
+  try {
+    session.startTransaction();
 
-  const bInventoryMaybe = await db.getValueAndTimestamp<Schema.Inventory>([
-    'inventories',
-    bInventoryId,
-  ]);
-
-  if (
-    !bInventoryMaybe?.value || character.inventory !== bInventoryMaybe.value._id
-  ) {
-    throw new Error('CHARACTER_NOT_OWNED');
-  }
-
-  const bInventory = bInventoryMaybe.value;
-
-  bInventory.party ??= {};
-
-  character.user = aUser._id;
-  character.inventory = aInventory._id;
-
-  if (bInventory.party.member1 === character._id) {
-    bInventory.party.member1 = undefined;
-  } else if (bInventory.party.member2 === character._id) {
-    bInventory.party.member2 = undefined;
-  } else if (bInventory.party.member3 === character._id) {
-    bInventory.party.member3 = undefined;
-  } else if (bInventory.party.member4 === character._id) {
-    bInventory.party.member4 = undefined;
-  } else if (bInventory.party.member5 === character._id) {
-    bInventory.party.member5 = undefined;
-  }
-
-  let retries = 0;
-
-  const stealTimestamp = new Date();
-
-  stealTimestamp.setDate(stealTimestamp.getDate() + COOLDOWN_DAYS);
-
-  aInventory.stealTimestamp = stealTimestamp.toISOString();
-
-  while (retries < 5) {
-    const update = await kv.atomic()
-      .check(aInventoryCheck)
-      .check({
-        key: ['inventories', bInventoryId],
-        versionstamp: bInventoryMaybe.versionstamp,
+    const [character] = await database.characters.aggregate()
+      .match({ characterId, guildId })
+      .lookup({
+        localField: 'inventoryId',
+        foreignField: '_id',
+        from: 'inventories',
+        as: 'inventory',
       })
-      //
-      .set(['inventories', aInventory._id], aInventory)
-      .set(inventoriesByUser(instance._id, aUser._id), aInventory)
-      //
-      .set(['inventories', bInventory._id], bInventory)
-      .set(inventoriesByUser(instance._id, bInventory.user), bInventory)
-      //
-      .set(['characters', character._id], character)
-      .set(
-        [
-          ...charactersByInstancePrefix(instance._id),
-          character.id,
-        ],
-        character,
-      )
-      .set(
-        [
-          ...charactersByInventoryPrefix(aInventory._id),
-          character._id,
-        ],
-        character,
-      )
-      .set(
-        [
-          ...charactersByMediaIdPrefix(instance._id, character.mediaId),
-          character._id,
-        ],
-        character,
-      )
-      //
-      .delete(
-        [
-          ...charactersByInventoryPrefix(bInventory._id),
-          character._id,
-        ],
-      )
-      //
-      .commit();
+      .unwind('inventory')
+      .toArray() as Schema.PopulatedCharacter[];
 
-    if (update.ok) {
-      return character;
+    if (!character) {
+      throw new Error('');
     }
 
-    retries += 1;
-  }
+    const partyMembers: (keyof typeof character.inventory.party)[] = [
+      'member1Id',
+      'member2Id',
+      'member3Id',
+      'member4Id',
+      'member5Id',
+    ];
 
-  throw new KvError('failed to update character');
+    // if stealing a party member
+    // we must remove hte character from the target user party
+    // in the same transaction
+    partyMembers.forEach(async (memberId) => {
+      const target = character.inventory;
+
+      if (character._id === target.party[memberId]) {
+        await database.inventories.updateOne(
+          { _id: target._id },
+          { $unset: { [`party.${memberId}`]: '' } },
+          { session },
+        );
+      }
+    });
+
+    const inventory = await database.inventories.findOneAndUpdate(
+      { userId, guildId },
+      { $set: { stealTimestamp: new Date() } },
+      { session },
+    );
+
+    if (!inventory) {
+      throw new Error();
+    }
+
+    await database.characters.updateOne({ _id: character._id }, {
+      $set: { userId, inventoryId: inventory._id },
+    });
+
+    await session.commitTransaction();
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    await session.endSession();
+  }
 }
 
 export async function failSteal(
-  inventory: Schema.Inventory,
-  inventoryCheck: Deno.AtomicCheck,
-): Promise<Schema.Inventory> {
-  let retries = 0;
-
-  const stealTimestamp = new Date();
-
-  stealTimestamp.setDate(stealTimestamp.getDate() + COOLDOWN_DAYS);
-
-  inventory.stealTimestamp = stealTimestamp.toISOString();
-
-  while (retries < 5) {
-    const update = await kv.atomic()
-      .check(inventoryCheck)
-      //
-      .set(['inventories', inventory._id], inventory)
-      .set(inventoriesByUser(inventory.instance, inventory.user), inventory)
-      //
-      .commit();
-
-    if (update.ok) {
-      return inventory;
-    }
-
-    retries += 1;
-  }
-
-  throw new KvError('failed to update inventory');
+  userId: string,
+  guildId: string,
+): Promise<void> {
+  await database.inventories.updateOne(
+    { userId, guildId },
+    { $set: { stealTimestamp: new Date() } },
+  );
 }

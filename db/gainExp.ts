@@ -1,14 +1,8 @@
 // deno-lint-ignore-file
 
-import {
-  charactersByInstancePrefix,
-  charactersByInventoryPrefix,
-  charactersByMediaIdPrefix,
-} from '~/db/indices.ts';
+import database from '~/db/mod.ts';
 
-import db from '~/db/mod.ts';
-
-import type * as Schema from '~/db/schema.ts';
+import type * as Schema from './schema.ts';
 
 export const MAX_LEVEL = 10;
 
@@ -25,19 +19,11 @@ export const experienceToNextLevel = (level?: number): number => {
 };
 
 export function distributeNewStats(
-  character: Schema.Character,
+  combat: Schema.CharacterCombat,
   newStatPoints: number,
   levelUp: number,
-): Schema.Character {
-  if (
-    !character.combat ||
-    !character.combat?.baseStats ||
-    !character.combat?.curStats
-  ) {
-    throw new Error('CHARACTER_NOT_INITIATED');
-  }
-
-  const { baseStats } = character.combat;
+): Schema.CharacterCombat {
+  const { baseStats } = combat;
 
   const baseStatsSum = baseStats.attack + baseStats.defense + baseStats.speed;
 
@@ -94,21 +80,23 @@ export function distributeNewStats(
       distributedSpeed;
   }
 
-  character.combat.curStats.attack += distributedAttack;
-  character.combat.curStats.defense += distributedDefense;
-  character.combat.curStats.speed += distributedSpeed;
+  combat.curStats.attack += distributedAttack;
+  combat.curStats.defense += distributedDefense;
+  combat.curStats.speed += distributedSpeed;
 
-  character.combat.curStats.hp += 5 * levelUp;
+  combat.curStats.hp += 5 * levelUp;
 
-  return character;
+  return combat;
 }
 
-export function gainExp(
-  op: Deno.AtomicOperation,
-  inventory: Schema.Inventory,
-  character: Schema.Character,
+export async function gainExp(
+  userId: string,
+  guildId: string,
+  characterId: string,
   gainExp: number,
-): Status {
+): Promise<Status> {
+  const session = database.client.startSession();
+
   const status: Status = {
     levelUp: 0,
     skillPoints: 0,
@@ -117,92 +105,84 @@ export function gainExp(
     expToLevel: 0,
   };
 
-  character.combat ??= {};
+  try {
+    session.startTransaction();
 
-  character.combat.exp ??= 0;
-  character.combat.level ??= 1;
-  character.combat.skillPoints ??= 0;
+    const character = await database.characters.findOneAndUpdate(
+      { userId, guildId, characterId },
+      { $inc: { 'combat.exp': gainExp } },
+      { returnDocument: 'after' },
+    );
 
-  character.combat.exp += gainExp;
+    if (!character) {
+      throw new Error();
+    }
 
-  // character.combat.unclaimedStatsPoints ??= 0;
+    if (character.combat.level < MAX_LEVEL) {
+      while (
+        character.combat.exp >= experienceToNextLevel(character.combat.level)
+      ) {
+        character.combat.exp -= experienceToNextLevel(character.combat.level);
 
-  if (character.combat.level >= MAX_LEVEL) {
-    return status;
-  } else {
-    while (
-      character.combat.exp >= experienceToNextLevel(character.combat.level)
-    ) {
-      character.combat.exp -= experienceToNextLevel(character.combat.level);
-
-      character.combat.level += 1;
-      character.combat.skillPoints += 1;
-      // character.combat.unclaimedStatsPoints! += 3;
-
-      status.levelUp += 1;
-      status.skillPoints += 1;
-      status.statPoints += 3;
-
-      // extra skill points based on level
-      if (character.combat.level >= 10) {
+        character.combat.level += 1;
         character.combat.skillPoints += 1;
+        // character.combat.unclaimedStatsPoints! += 3;
+
+        status.levelUp += 1;
         status.skillPoints += 1;
+        status.statPoints += 3;
 
-        // character.combat.unclaimedStatsPoints! += 3 * 2;
-        status.statPoints += 3 * 2;
-      } else if (character.combat.level >= 20) {
-        character.combat.skillPoints += 2;
-        status.skillPoints += 2;
+        // extra skill points based on level
+        if (character.combat.level >= 10) {
+          character.combat.skillPoints += 1;
+          status.skillPoints += 1;
 
-        // character.combat.unclaimedStatsPoints! += 3 * 3;
-        status.statPoints += 3 * 3;
-      } else if (character.combat.level >= 40) {
-        character.combat.skillPoints += 3;
-        status.skillPoints += 3;
+          // character.combat.unclaimedStatsPoints! += 3 * 2;
+          status.statPoints += 3 * 2;
+        } else if (character.combat.level >= 20) {
+          character.combat.skillPoints += 2;
+          status.skillPoints += 2;
 
-        // character.combat.unclaimedStatsPoints! += 3 * 5;
-        status.statPoints += 3 * 5;
+          // character.combat.unclaimedStatsPoints! += 3 * 3;
+          status.statPoints += 3 * 3;
+        } else if (character.combat.level >= 40) {
+          character.combat.skillPoints += 3;
+          status.skillPoints += 3;
+
+          // character.combat.unclaimedStatsPoints! += 3 * 5;
+          status.statPoints += 3 * 5;
+        }
       }
     }
 
+    status.exp = character.combat.exp || 0;
+    status.expToLevel = experienceToNextLevel(character.combat.level);
+
+    // character leveled
     if (status.statPoints > 0) {
-      character = db.distributeNewStats(
-        character,
+      character.combat = distributeNewStats(
+        character.combat,
         status.statPoints,
         status.levelUp,
       );
+
+      const update = await database.characters.updateOne(
+        { userId, guildId, characterId },
+        { $set: { combat: character.combat } },
+      );
+
+      if (!update.matchedCount) {
+        throw new Error();
+      }
     }
+
+    await session.commitTransaction();
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    await session.endSession();
   }
-
-  status.exp = character.combat?.exp || 0;
-  status.expToLevel = experienceToNextLevel(character.combat?.level);
-
-  op
-    .set(['characters', character._id], character)
-    .set(
-      [
-        ...charactersByInstancePrefix(inventory.instance),
-        character.id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByInventoryPrefix(inventory._id),
-        character._id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByMediaIdPrefix(
-          inventory.instance,
-          character.mediaId,
-        ),
-        character._id,
-      ],
-      character,
-    );
 
   return status;
 }

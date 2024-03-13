@@ -24,6 +24,8 @@ import * as communityAPI from '~/src/communityAPI.ts';
 
 import config, { initConfig } from '~/src/config.ts';
 
+import database from '~/db/mod.ts';
+
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
 import type { SkillCategory, SkillKey } from '~/src/types.ts';
@@ -1375,6 +1377,8 @@ export const handler = async (r: Request) => {
 if (import.meta.main) {
   await initConfig();
 
+  await database.client.connect();
+
   utils.initSentry({ dsn: config.sentry });
 
   utils.serve({
@@ -1398,4 +1402,6 @@ if (import.meta.main) {
       );
     },
   });
+
+  await database.client.close();
 }

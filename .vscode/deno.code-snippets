@@ -7,20 +7,12 @@
   "deno test": {
     "scope": "javascript,typescript",
     "prefix": "test",
-    "body": [
-      "Deno.test('${1:test}', async (test) => {",
-      "  $0",
-      "});"
-    ]
+    "body": ["Deno.test('${1:test}', async (test) => {", "  $0", "});"]
   },
   "deno test step": {
     "scope": "javascript,typescript",
     "prefix": "step",
-    "body": [
-      "await test.step('${1:test}', () => {",
-      "  $0",
-      "});"
-    ]
+    "body": ["await test.step('${1:test}', () => {", "  $0", "});"]
   },
   "deno test step try finally": {
     "scope": "javascript,typescript",
@@ -33,6 +25,24 @@
       "  } finally {",
       "  }",
       "});"
+    ]
+  },
+  "mongodb atomic transaction": {
+    "scope": "javascript,typescript",
+    "prefix": "database atomic transaction",
+    "body": [
+      "const session = database.client.startSession();",
+      "",
+      "try {",
+      "        session.startTransaction();",
+      "        $0",
+      "        await session.commitTransaction();",
+      "      } catch (err) {",
+      "        await session.abortTransaction();",
+      "        throw err;",
+      "      } finally {",
+      "        await session.endSession();",
+      "}"
     ]
   }
 }

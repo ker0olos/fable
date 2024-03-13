@@ -313,8 +313,8 @@ async function readJson<T>(filePath: string): Promise<T> {
   }
 }
 
-function rechargeTimestamp(v?: string): string {
-  const parsed = new Date(v ?? new Date());
+function rechargeTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
 
   parsed.setMinutes(parsed.getMinutes() + RECHARGE_MINS);
 
@@ -324,8 +324,8 @@ function rechargeTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeDailyTimestamp(v?: string): string {
-  const parsed = new Date(v ?? new Date());
+function rechargeDailyTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
 
   parsed.setHours(parsed.getHours() + RECHARGE_DAILY_TOKENS_HOURS);
 
@@ -335,8 +335,8 @@ function rechargeDailyTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeKeysTimestamp(v?: string): string {
-  const parsed = new Date(v ?? new Date());
+function rechargeKeysTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
 
   parsed.setMinutes(parsed.getMinutes() + RECHARGE_KEYS_MINS);
 
@@ -346,8 +346,8 @@ function rechargeKeysTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function stealTimestamp(v?: string): string {
-  const parsed = new Date(v ?? new Date());
+function stealTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
 
   const ts = parsed.getTime();
 

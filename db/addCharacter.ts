@@ -1,18 +1,101 @@
-import { ulid } from '$std/ulid/mod.ts';
+import database from '~/db/mod.ts';
 
-import {
-  charactersByInstancePrefix,
-  charactersByInventoryPrefix,
-  charactersByMediaIdPrefix,
-  inventoriesByUser,
-  usersByDiscordId,
-} from './indices.ts';
+import utils from '~/src/utils.ts';
 
-import db, { kv } from './mod.ts';
+import skills from '~/src/skills.ts';
 
-import { KvError, NoPullsError } from '../src/errors.ts';
+import { NoPullsError } from '~/src/errors.ts';
+
+import type { ObjectId } from '~/db/mod.ts';
 
 import type * as Schema from './schema.ts';
+
+import type { SkillKey } from '~/src/types.ts';
+
+const newSkills = (rating: number): number => {
+  switch (rating) {
+    case 5:
+      return 2;
+    case 4:
+      return 1;
+    default:
+      return 0;
+  }
+};
+
+const newUnclaimed = (rating: number): number => {
+  return 3 * rating;
+};
+
+export const randomStats = (
+  total: number,
+  seed?: string,
+): Schema.CharacterStats => {
+  let attack = 0;
+  let defense = 0;
+  let speed = 0;
+
+  const rng = seed ? new utils.LehmerRNG(seed) : undefined;
+
+  for (let i = 0; i < total; i++) {
+    const rand = rng
+      ? Math.floor(rng.nextFloat() * 3)
+      : Math.floor(Math.random() * 3);
+
+    if (rand === 0) {
+      attack += 1;
+    } else if (rand === 1) {
+      defense += 1;
+    } else {
+      speed += 1;
+    }
+  }
+
+  return {
+    attack,
+    defense,
+    speed,
+    hp: 10,
+  };
+};
+
+const ensureCombat = (
+  character: Partial<Schema.Character>,
+): Schema.Character => {
+  if (character.combat !== undefined) {
+    return character as Schema.Character;
+  }
+
+  // deno-lint-ignore no-non-null-assertion
+  const total = newUnclaimed(character.rating!);
+
+  // deno-lint-ignore no-non-null-assertion
+  const slots = newSkills(character.rating!);
+
+  character.combat = {
+    exp: 0,
+    level: 1,
+    skillPoints: 0,
+    skills: {},
+    baseStats: randomStats(total),
+    curStats: { attack: 0, defense: 0, hp: 0, speed: 0 },
+  };
+
+  character.combat.curStats = { ...character.combat.baseStats };
+
+  const skillsPool = Object.keys(skills) as SkillKey[];
+
+  for (let i = 0; i < slots; i++) {
+    const randomSkillKey = skillsPool.splice(
+      Math.floor(Math.random() * skillsPool.length),
+      1,
+    )[0];
+
+    character.combat.skills[randomSkillKey] = { level: 1 };
+  }
+
+  return character as Schema.Character;
+};
 
 export async function addCharacter(
   {
@@ -30,23 +113,17 @@ export async function addCharacter(
     guaranteed: boolean;
     userId: string;
     guildId: string;
-    sacrifices?: Deno.KvEntry<Schema.Character>[];
+    sacrifices?: ObjectId[];
   },
-): Promise<{ ok: boolean }> {
-  let retries = 0;
+): Promise<void> {
+  const session = database.client.startSession();
 
-  while (retries < 5) {
-    const op = kv.atomic();
+  try {
+    session.startTransaction();
 
-    const guild = await db.getGuild(guildId);
-    const instance = await db.getInstance(guild);
-
-    const _user = await db.getUser(userId);
-
-    const { user, inventory, inventoryCheck } = await db.rechargeConsumables(
-      instance,
-      _user,
-      false,
+    const { user, ...inventory } = await database.rechargeConsumables(
+      guildId,
+      userId,
     );
 
     if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
@@ -54,107 +131,62 @@ export async function addCharacter(
     }
 
     if (
-      guaranteed && !sacrifices?.length && !user.guarantees?.includes(rating)
+      guaranteed && !sacrifices?.length && !user?.guarantees?.includes(rating)
     ) {
       throw new Error('403');
     }
 
-    const newCharacter: Schema.Character = {
-      _id: ulid(),
-      rating,
+    const newCharacter: Schema.Character = ensureCombat({
+      inventoryId: inventory._id,
+      characterId,
+      guildId,
+      userId,
       mediaId,
-      id: characterId,
-      inventory: inventory._id,
-      instance: inventory.instance,
-      user: user._id,
+      rating,
+    });
+
+    const update: Partial<Schema.Inventory> = {
+      lastPull: new Date(),
     };
 
+    const deleteSacrifices: Parameters<
+      typeof database.characters.bulkWrite
+    >[0] = [];
+
+    // if sacrifices (merge)
     if (sacrifices?.length) {
-      for (const { key, value: char, versionstamp } of sacrifices) {
-        op
-          .check({ key, versionstamp })
-          .delete(['characters', char._id])
-          .delete([
-            ...charactersByInstancePrefix(inventory.instance),
-            char.id,
-          ])
-          .delete([
-            ...charactersByInventoryPrefix(inventory._id),
-            char._id,
-          ])
-          .delete([
-            ...charactersByMediaIdPrefix(
-              inventory.instance,
-              newCharacter.mediaId,
-            ),
-            char._id,
-          ]);
-      }
+      deleteSacrifices.push({
+        deleteMany: { filter: { _id: { $in: sacrifices } } },
+      });
     } else if (guaranteed) {
-      // deno-lint-ignore no-non-null-assertion
-      const i = user.guarantees!.indexOf(rating);
+      // if guaranteed pull
+      const i = user.guarantees.indexOf(rating);
 
-      // deno-lint-ignore no-non-null-assertion
-      user.guarantees!.splice(i, 1);
+      user.guarantees.splice(i, 1);
+
+      await database.users.updateOne({ _id: user._id }, {
+        $set: { guarantees: user.guarantees },
+      }, { session });
     } else {
-      inventory.availablePulls = inventory.availablePulls - 1;
+      // if normal pull
+      update.availablePulls = inventory.availablePulls - 1;
+      update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
     }
 
-    inventory.lastPull = new Date().toISOString();
-    inventory.rechargeTimestamp ??= new Date().toISOString();
+    await database.inventories.updateOne({ _id: inventory._id }, {
+      $set: update,
+    }, { session });
 
-    // don't save likes on the user object
-    user.likes = undefined;
+    await database.characters.bulkWrite([
+      ...deleteSacrifices,
+      { insertOne: { document: newCharacter } },
+    ], { session });
 
-    const res = await op
-      .check(inventoryCheck)
-      .check({
-        versionstamp: null,
-        key: [
-          ...charactersByInstancePrefix(inventory.instance),
-          newCharacter.id,
-        ],
-      })
-      //
-      .set(['characters', newCharacter._id], newCharacter)
-      .set(
-        [
-          ...charactersByInstancePrefix(inventory.instance),
-          newCharacter.id,
-        ],
-        newCharacter,
-      )
-      .set(
-        [
-          ...charactersByInventoryPrefix(inventory._id),
-          newCharacter._id,
-        ],
-        newCharacter,
-      )
-      .set(
-        [
-          ...charactersByMediaIdPrefix(
-            inventory.instance,
-            newCharacter.mediaId,
-          ),
-          newCharacter._id,
-        ],
-        newCharacter,
-      )
-      //
-      .set(['users', user._id], user)
-      .set(usersByDiscordId(user.id), user)
-      //
-      .set(['inventories', inventory._id], inventory)
-      .set(inventoriesByUser(inventory.instance, user._id), inventory)
-      .commit();
-
-    if (res.ok) {
-      return { ok: true };
-    }
-
-    retries += 1;
+    await session.commitTransaction();
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    await session.endSession();
   }
-
-  throw new KvError('failed to add character');
 }
