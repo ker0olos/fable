@@ -14,39 +14,35 @@ export const RECHARGE_KEYS_MINS = 10;
 
 export const RECHARGE_DAILY_TOKENS_HOURS = 12;
 
-export async function getUser(userId: string): Promise<Schema.User> {
-  const newUser: Schema.User = {
-    discordId: userId,
-    dailyTimestamp: new Date(),
-    availableTokens: 0,
-    inventoryIds: [],
-    guarantees: [],
-    likes: [],
-  };
+export const newUser = (userId: string): Schema.User => ({
+  discordId: userId,
+  dailyTimestamp: new Date(),
+  availableTokens: 0,
+  guarantees: [],
+  likes: [],
+});
 
+export const newGuild = (guildId: string): Schema.Guild => ({
+  excluded: false,
+  builtinsDisabled: false,
+  discordId: guildId,
+  packIds: [],
+});
+
+export const newInventory = (guildId: string, userId: string) => ({
+  guildId,
+  userId,
+  availablePulls: MAX_NEW_PULLS,
+  availableKeys: MAX_KEYS,
+  floorsCleared: 0,
+  party: {},
+});
+
+export async function getUser(userId: string): Promise<Schema.User> {
   // deno-lint-ignore no-non-null-assertion
   const result = (await database.users.findOneAndUpdate(
     { discordId: userId },
-    { $setOnInsert: newUser }, // only invoked if document isn't found
-    { upsert: true, returnDocument: 'after' },
-  ))!;
-
-  return result;
-}
-
-export async function getGuild(guildId: string): Promise<Schema.Guild> {
-  const newGuild: Schema.Guild = {
-    excluded: false,
-    builtinsDisabled: false,
-    discordId: guildId,
-    inventoryIds: [],
-    packIds: [],
-  };
-
-  // deno-lint-ignore no-non-null-assertion
-  const result = (await database.guilds.findOneAndUpdate(
-    { discordId: guildId },
-    { $setOnInsert: newGuild }, // only invoked if document isn't found
+    { $setOnInsert: newUser(userId) }, // only invoked if document isn't found
     { upsert: true, returnDocument: 'after' },
   ))!;
 
@@ -57,19 +53,10 @@ export async function getInventory(
   guildId: string,
   userId: string,
 ): Promise<Schema.PopulatedInventory> {
-  const newInventory: Schema.Inventory = {
-    guildId,
-    userId,
-    availablePulls: MAX_NEW_PULLS,
-    availableKeys: MAX_KEYS,
-    floorsCleared: 0,
-    party: {},
-  };
-
   // deno-lint-ignore no-non-null-assertion
   const { _id } = (await database.inventories.findOneAndUpdate(
     { guildId, userId },
-    { $setOnInsert: newInventory }, // only invoked if document isn't found
+    { $setOnInsert: newInventory(guildId, userId) }, // only invoked if document isn't found
     { upsert: true, returnDocument: 'after' },
   ))!;
 

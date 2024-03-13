@@ -1,5 +1,7 @@
 import database from '~/db/mod.ts';
 
+import { newGuild } from '~/db/getInventory.ts';
+
 import type { Manifest } from '~/src/types.ts';
 
 import type * as Schema from '~/db/schema.ts';
@@ -55,8 +57,11 @@ export async function addPack(
 
   const guild = await database.guilds.findOneAndUpdate(
     { discordId: guildId },
-    { $addToSet: { packIds: pack._id } },
-    { returnDocument: 'after' },
+    {
+      $setOnInsert: newGuild(guildId),
+      $addToSet: { packIds: pack._id },
+    },
+    { upsert: true, returnDocument: 'after' },
   );
 
   if (!guild) {

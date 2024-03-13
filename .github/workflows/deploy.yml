@@ -56,8 +56,7 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - name: create database indexes
-        run: deno run -A --env db/_create_indexes.ts
+      - run: deno task index
         env:
           MONGO_URL: ${{ secrets.MONGO_URL }}
       - uses: denoland/deployctl@v1

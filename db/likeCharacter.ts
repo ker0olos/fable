@@ -1,6 +1,5 @@
 import database from '~/db/mod.ts';
-
-import type * as Schema from './schema.ts';
+import { newUser } from '~/db/getInventory.ts';
 
 export async function likeCharacter(
   userId: string,
@@ -8,7 +7,11 @@ export async function likeCharacter(
 ): Promise<void> {
   await database.users.updateOne(
     { userId },
-    { $push: { likes: { characterId } } },
+    {
+      $setOnInsert: newUser(userId),
+      $push: { likes: { characterId } },
+    },
+    { upsert: true },
   );
 }
 
@@ -28,7 +31,11 @@ export async function likeMedia(
 ): Promise<void> {
   await database.users.updateOne(
     { userId },
-    { $push: { likes: { mediaId } } },
+    {
+      $setOnInsert: newUser(userId),
+      $push: { likes: { mediaId } },
+    },
+    { upsert: true },
   );
 }
 

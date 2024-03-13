@@ -4,12 +4,9 @@ import type { Manifest, SkillKey } from '~/src/types.ts';
 
 export interface Guild {
   discordId: string;
-
   excluded: boolean;
   builtinsDisabled: boolean;
-
   packIds: ObjectId[];
-  inventoryIds: ObjectId[];
 }
 
 export interface User {
@@ -18,8 +15,6 @@ export interface User {
   dailyTimestamp: Date;
   guarantees: number[];
   likes: Like[];
-
-  inventoryIds: ObjectId[];
 }
 
 export interface Inventory {

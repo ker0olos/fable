@@ -2,7 +2,6 @@ import { MongoClient } from 'mongodb';
 
 import {
   getActiveUsersIfLiked,
-  getGuild,
   getInventory,
   getUser,
   getUserCharacters,
@@ -26,6 +25,7 @@ import {
 
 import {
   failSteal,
+  giveCharacters,
   STEAL_COOLDOWN_HOURS,
   stealCharacter,
   tradeCharacters,
@@ -67,7 +67,7 @@ import { getAllPublicPacks, getPacksByMaintainerId } from '~/db/getPack.ts';
 
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
-import { disableBuiltins } from '~/db/manageInstance.ts';
+import { disableBuiltins } from '~/db/manageGuild.ts';
 
 import type * as Schema from './schema.ts';
 
@@ -83,7 +83,6 @@ const db = {
   characters: client.db().collection<Schema.Character>('characters'),
   packs: client.db().collection<Schema.Pack>('packs'),
   //
-  getGuild,
   getInventory,
   getUser,
   getUserCharacters,
@@ -99,6 +98,7 @@ const db = {
   //
   failSteal,
   stealCharacter,
+  giveCharacters,
   tradeCharacters,
   //
   setCharacterImage,

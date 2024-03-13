@@ -173,9 +173,11 @@ export async function addCharacter(
       update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
     }
 
-    await database.inventories.updateOne({ _id: inventory._id }, {
-      $set: update,
-    }, { session });
+    await database.inventories.updateOne(
+      { _id: inventory._id },
+      { $set: update },
+      { session },
+    );
 
     await database.characters.bulkWrite([
       ...deleteSacrifices,

@@ -1,8 +1,86 @@
 import database from '~/db/mod.ts';
 
+import { newInventory } from '~/db/getInventory.ts';
+
 import type * as Schema from '~/db/schema.ts';
 
 export const STEAL_COOLDOWN_HOURS = 3 * 24;
+
+export async function giveCharacters(
+  {
+    aUserId,
+    bUserId,
+    guildId,
+    giveIds,
+  }: {
+    aUserId: string;
+    bUserId: string;
+    guildId: string;
+    giveIds: string[];
+  },
+): Promise<void> {
+  const session = database.client.startSession();
+
+  try {
+    session.startTransaction();
+
+    const giveCharacters = await database.characters.aggregate()
+      .match({
+        id: { $in: giveIds },
+        userId: aUserId,
+        guildId,
+      })
+      .lookup({
+        localField: 'inventoryId',
+        foreignField: '_id',
+        from: 'inventories',
+        as: 'inventory',
+      })
+      .unwind('inventory')
+      .toArray() as Schema.PopulatedCharacter[];
+
+    if (giveCharacters.length !== giveIds.length) {
+      throw new Error();
+    }
+
+    const aInventory = giveCharacters[0].inventory;
+
+    const aParty = [
+      aInventory.party.member1Id,
+      aInventory.party.member2Id,
+      aInventory.party.member3Id,
+      aInventory.party.member4Id,
+      aInventory.party.member5Id,
+    ];
+
+    if (
+      giveCharacters
+        .some((character) => aParty.includes(character._id))
+    ) {
+      throw new Error();
+    }
+
+    // deno-lint-ignore no-non-null-assertion
+    const bInventory = (await database.inventories.findOneAndUpdate(
+      { userId: bUserId, guildId },
+      { $setOnInsert: newInventory(guildId, bUserId) },
+      { upsert: true, returnDocument: 'after' },
+    ))!;
+
+    await database.characters.updateMany(
+      { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
+      { $set: { userId: bUserId, inventoryId: bInventory._id } },
+      { session },
+    );
+
+    await session.commitTransaction();
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    await session.endSession();
+  }
+}
 
 export async function tradeCharacters(
   {
@@ -216,11 +294,15 @@ export async function stealCharacter(
 }
 
 export async function failSteal(
-  userId: string,
   guildId: string,
+  userId: string,
 ): Promise<void> {
   await database.inventories.updateOne(
-    { userId, guildId },
-    { $set: { stealTimestamp: new Date() } },
+    { guildId, userId },
+    {
+      $setOnInsert: newInventory(guildId, userId),
+      $set: { stealTimestamp: new Date() },
+    },
+    { upsert: true },
   );
 }
