@@ -191,6 +191,7 @@
   "tower-fail": "`/reclear` the last floor to level up your party and try again!",
   "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
+  "exp": "EXP",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",

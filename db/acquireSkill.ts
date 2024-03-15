@@ -13,7 +13,7 @@ export async function acquireSkill(
   guildId: string,
   characterId: string,
   skillKey: SkillKey,
-): Promise<Schema.AcquiredCharacterSkill | undefined> {
+): Promise<Schema.AcquiredCharacterSkill> {
   const lvl = `combat.skills.${skillKey}.level`;
 
   const skill = skills[skillKey];
@@ -33,5 +33,10 @@ export async function acquireSkill(
     { returnDocument: 'after' },
   );
 
-  return document?.combat.skills[skillKey];
+  if (!document || !document.combat.skills[skillKey]?.level) {
+    throw new Error();
+  }
+
+  // deno-lint-ignore no-non-null-assertion
+  return document.combat.skills[skillKey]!;
 }

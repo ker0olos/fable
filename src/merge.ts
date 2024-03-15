@@ -1,76 +1,74 @@
-/// <reference lib="deno.unstable" />
+import config from '~/src/config.ts';
 
-import config from './config.ts';
+import * as discord from '~/src/discord.ts';
 
-import * as discord from './discord.ts';
+import packs from '~/src/packs.ts';
+import user from '~/src/user.ts';
+import gacha from '~/src/gacha.ts';
 
-import packs from './packs.ts';
-import user from './user.ts';
-import gacha from './gacha.ts';
+import i18n from '~/src/i18n.ts';
+import utils from '~/src/utils.ts';
 
-import i18n from './i18n.ts';
-import utils from './utils.ts';
+import db from '~/db/mod.ts';
 
-import db from '../db/mod.ts';
+import { NonFetalError, PoolError } from '~/src/errors.ts';
 
-import type { Character } from './types.ts';
+import type { Character } from '~/src/types.ts';
 
-import type * as Schema from '../db/schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
-import { NonFetalError, PoolError } from './errors.ts';
+import type { WithId } from 'mongodb';
+
+type CharacterWithId = WithId<Schema.Character>;
 
 async function getFilteredCharacters(
   { userId, guildId }: { userId: string; guildId: string },
-): Promise<Deno.KvEntry<Schema.Character>[]> {
-  const user = await db.getUser(userId);
-  const guild = await db.getGuild(guildId);
+): Promise<WithId<CharacterWithId>[]> {
+  const { user, party } = await db.getInventory(guildId, userId);
 
-  const instance = await db.getInstance(guild);
-
-  const { inventory } = await db.getInventory(instance, user);
-
-  const likes = user.likes ?? [];
-
-  const [party, characters] = await Promise.all([
-    db.getUserParty(inventory),
-    db.getUserCharacters(inventory),
-  ]);
+  const characters = await db.getUserCharacters(guildId, userId);
 
   const partyIds = [
-    party.member1?.id,
-    party.member2?.id,
-    party.member3?.id,
-    party.member4?.id,
-    party.member5?.id,
+    party.member1?.characterId,
+    party.member2?.characterId,
+    party.member3?.characterId,
+    party.member4?.characterId,
+    party.member5?.characterId,
   ];
 
-  const likesIds = likes
-    ?.map(({ characterId, mediaId }) => characterId ?? mediaId);
+  const likesCharactersIds = user.likes
+    ?.map(({ characterId }) => characterId)
+    .filter(utils.nonNullable);
+
+  const likesMediaIds = user.likes
+    ?.map(({ mediaId }) => mediaId)
+    .filter(utils.nonNullable);
 
   return characters
     .filter((char) => {
-      const { id } = char.value;
+      if (
+        partyIds.includes(char.characterId) ||
+        likesCharactersIds.includes(char.characterId) ||
+        likesMediaIds.includes(char.mediaId)
+      ) {
+        return false;
+      }
 
-      return (
-        // filter party members
-        !partyIds.includes(id) &&
-        // filter liked characters
-        !likesIds?.some((likeId) => likeId === id)
-      );
+      return true;
     });
 }
 
 function getSacrifices(
-  characters: Deno.KvEntry<Schema.Character>[],
+  characters: CharacterWithId[],
   mode: 'target' | 'min' | 'max',
   target?: number,
   locale?: discord.AvailableLocales,
-): [Deno.KvEntry<Schema.Character>[], number] {
+): { sacrifices: CharacterWithId[]; target: number } {
   // I'm sure there is a faster way to do this with just math
   // but i am not smart enough to figure it out
   // the important thing is that all the tests pass
 
-  const split: Record<number, Deno.KvEntry<Schema.Character>[]> = {
+  const split: Record<number, CharacterWithId[]> = {
     1: [],
     2: [],
     3: [],
@@ -80,12 +78,12 @@ function getSacrifices(
 
   // separate each rating into its own array
   characters
-    .toSorted((a, b) => a.value.rating - b.value.rating)
+    .toSorted((a, b) => a.rating - b.rating)
     .forEach((char) => {
-      split[char.value.rating === 5 ? 4 : char.value.rating].push(char);
+      split[char.rating === 5 ? 4 : char.rating].push(char);
     });
 
-  const possibilities: Record<number, Deno.KvEntry<Schema.Character>[][]> = {
+  const possibilities: Record<number, CharacterWithId[][]> = {
     1: [],
     2: [],
     3: [],
@@ -162,12 +160,15 @@ function getSacrifices(
     );
   }
 
-  return [possibilities[target][index], target];
+  return {
+    target,
+    sacrifices: possibilities[target][index],
+  };
 }
 
 function characterPreview(
   character: Character,
-  existing: Partial<Schema.Character>,
+  existing: Partial<CharacterWithId>,
 ): discord.Embed {
   const image = existing?.image
     ? { url: existing?.image }
@@ -214,7 +215,7 @@ async function synthesize({ token, userId, guildId, mode, target }: {
 
   const characters = await synthesis.getFilteredCharacters({ userId, guildId });
 
-  let [sacrifices, _target] = getSacrifices(
+  let { sacrifices, target: _target } = getSacrifices(
     characters,
     mode,
     target,
@@ -222,14 +223,14 @@ async function synthesize({ token, userId, guildId, mode, target }: {
   );
 
   sacrifices = sacrifices
-    .sort((a, b) => b.value.rating - a.value.rating);
+    .sort((a, b) => b.rating - a.rating);
 
   // highlight the top characters
   const highlights = sacrifices
     .slice(0, 5);
 
   packs.characters({
-    ids: highlights.map(({ value: char }) => char.id),
+    ids: highlights.map((char) => char.characterId),
     guildId,
   })
     .then(async (highlightedCharacters) => {
@@ -242,7 +243,7 @@ async function synthesize({ token, userId, guildId, mode, target }: {
       for (const existing of highlights) {
         const index = highlightedCharacters
           .findIndex((char) =>
-            existing.value.id === `${char.packId}:${char.id}`
+            existing.characterId === `${char.packId}:${char.id}`
           );
 
         if (index > -1) {
@@ -255,7 +256,7 @@ async function synthesize({ token, userId, guildId, mode, target }: {
 
           if (
             packs.isDisabled(`${character.packId}:${character.id}`, guildId) ||
-            (packs.isDisabled(existing.value.mediaId, guildId)) ||
+            (packs.isDisabled(existing.mediaId, guildId)) ||
             (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
           ) {
             highlightedCharacters.splice(index, 1);
@@ -263,7 +264,7 @@ async function synthesize({ token, userId, guildId, mode, target }: {
           }
 
           message.addEmbed(
-            synthesis.characterPreview(character, existing.value),
+            synthesis.characterPreview(character, existing),
           );
         }
       }
@@ -325,13 +326,18 @@ function confirmed({
 
   synthesis.getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
-      const [sacrifices] = getSacrifices(characters, 'target', target, locale);
+      const { sacrifices } = getSacrifices(
+        characters,
+        'target',
+        target,
+        locale,
+      );
 
       const pull = await gacha.rngPull({
         userId,
         guildId,
         guarantee: target,
-        sacrifices,
+        sacrifices: sacrifices.map(({ _id }) => _id),
       });
 
       return gacha.pullAnimation({

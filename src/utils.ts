@@ -19,6 +19,7 @@ import {
   RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
+  STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
 
 const TEN_MIB = 1024 * 1024 * 10;
@@ -346,8 +347,10 @@ function rechargeKeysTimestamp(v?: Date): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function stealTimestamp(v?: Date): string {
+function rechargeStealTimestamp(v?: Date): string {
   const parsed = v ?? new Date();
+
+  parsed.setHours(parsed.getHours() + STEAL_COOLDOWN_HOURS);
 
   const ts = parsed.getTime();
 
@@ -432,6 +435,10 @@ function captureOutage(id: string): Promise<Response> {
   );
 }
 
+function nonNullable<T>(value: T): value is NonNullable<T> {
+  return Boolean(value);
+}
+
 function isWithin14Days(date: Date): boolean {
   const fourteenDaysAgo = new Date();
   fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
@@ -465,6 +472,7 @@ const utils = {
   chunks: chunk,
   comma,
   compact,
+  nonNullable,
   decodeDescription,
   diffInDays,
   diffInMinutes,
@@ -481,12 +489,12 @@ const utils = {
   rechargeTimestamp,
   rechargeDailyTimestamp,
   rechargeKeysTimestamp,
+  rechargeStealTimestamp,
   rng,
   serve,
   serveStatic,
   shuffle,
   sleep,
-  stealTimestamp,
   truncate,
   validateRequest,
   verifySignature,

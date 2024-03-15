@@ -18,22 +18,9 @@ export async function consumeKey(
   userId: string,
   guildId: string,
   amount?: number,
-): Promise<number | undefined> {
-  if (amount) {
-    const inventory = await database.inventories.findOneAndUpdate(
-      { userId, guildId, availableKeys: { $gte: amount } },
-      { $inc: { availableKeys: -amount } },
-      { returnDocument: 'after' },
-    );
-
-    return inventory ? amount : undefined;
-  } else {
-    const inventory = await database.inventories.findOneAndUpdate(
-      { userId, guildId },
-      { $set: { availableKeys: 0 } },
-      { returnDocument: 'before' },
-    );
-
-    return inventory?.availableKeys;
-  }
+): Promise<void> {
+  await database.inventories.updateOne(
+    { userId, guildId, availableKeys: { $gte: amount } },
+    { $inc: { availableKeys: -1 } },
+  );
 }

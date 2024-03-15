@@ -8,6 +8,9 @@ export interface Guild {
   builtinsDisabled: boolean;
   packIds: ObjectId[];
 }
+export type PopulatedGuild = WithId<Guild> & {
+  packs: Pack[];
+};
 
 export interface User {
   discordId: string;
@@ -43,13 +46,13 @@ export interface Inventory {
 
 export type PopulatedInventory = WithId<Inventory> & {
   user: WithId<User>;
-  guild: WithId<Guild>;
+  // guild?: WithId<Guild>;
   party: {
-    member1?: Character;
-    member2?: Character;
-    member3?: Character;
-    member4?: Character;
-    member5?: Character;
+    member1?: WithId<Character>;
+    member2?: WithId<Character>;
+    member3?: WithId<Character>;
+    member4?: WithId<Character>;
+    member5?: WithId<Character>;
   };
 };
 
@@ -61,6 +64,8 @@ export interface Character {
   nickname?: string;
   image?: string;
 
+  createdAt: Date;
+
   combat: CharacterCombat;
 
   guildId: string;
@@ -68,7 +73,7 @@ export interface Character {
   inventoryId: ObjectId;
 }
 
-export type PopulatedCharacter = WithId<Inventory> & {
+export type PopulatedCharacter = WithId<Character> & {
   user: WithId<User>;
   guild: WithId<Guild>;
   inventory: WithId<Inventory>;
@@ -81,10 +86,13 @@ export interface Pack {
   manifest: Manifest;
   approved: boolean;
   hidden: boolean;
-
   // version: number;
   // servers?: number;
   // guildIds: ObjectId[];
+}
+
+export interface BattleData {
+  createdAt: Date;
 }
 
 export interface AcquiredCharacterSkill {

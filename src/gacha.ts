@@ -1,5 +1,3 @@
-/// <reference lib="deno.unstable" />
-
 import utils, { ImageSize } from '~/src/utils.ts';
 
 import Rating from '~/src/rating.ts';
@@ -11,13 +9,11 @@ import i18n from '~/src/i18n.ts';
 import user from '~/src/user.ts';
 import search from '~/src/search.ts';
 
-import db from '~/db/mod.ts';
+import db, { ObjectId } from '~/db/mod.ts';
 
 import packs from '~/src/packs.ts';
 
 import * as discord from '~/src/discord.ts';
-
-import * as Schema from '~/db/schema.ts';
 
 import {
   Character,
@@ -27,12 +23,7 @@ import {
   MediaRelation,
 } from '~/src/types.ts';
 
-import {
-  KvError,
-  NonFetalError,
-  NoPullsError,
-  PoolError,
-} from '~/src/errors.ts';
+import { NonFetalError, NoPullsError, PoolError } from '~/src/errors.ts';
 
 type Variables = {
   roles: { [chance: number]: CharacterRole };
@@ -213,7 +204,7 @@ async function rngPull(
     guildId: string;
     userId?: string;
     guarantee?: number;
-    sacrifices?: Deno.KvEntry<Schema.Character>[];
+    sacrifices?: ObjectId[];
   },
 ): Promise<Pull> {
   const { pool, validate } = typeof guarantee === 'number'
@@ -270,7 +261,7 @@ async function rngPull(
     // add character to user's inventory
     if (userId) {
       try {
-        const response = await db.addCharacter({
+        await db.addCharacter({
           characterId,
           guildId,
           userId,
@@ -279,12 +270,8 @@ async function rngPull(
           rating: rating.stars,
           sacrifices,
         });
-
-        if (!response?.ok) {
-          continue;
-        }
       } catch (err) {
-        if (err instanceof KvError) {
+        if (err.message === 'WRITE_ERROR') {
           continue;
         }
 
@@ -429,25 +416,14 @@ async function pullAnimation(
   if (guildId && userId && !background) {
     const pings = new Set<string>();
 
-    const guild = await db.getGuild(guildId);
-    const instance = await db.getInstance(guild);
+    const inventories = await db.getActiveUsersIfLiked(
+      guildId,
+      characterId,
+      mediaIds,
+    );
 
-    const inventories = await db.getInstanceInventories(instance);
-
-    inventories.forEach(([, user]) => {
-      if (
-        user.id !== userId &&
-        (
-          (user.likes?.map(({ characterId }) => characterId)
-            ?.filter(Boolean) as string[])
-            ?.includes(characterId) ||
-          (user.likes?.map(({ mediaId }) => mediaId)
-            ?.filter(Boolean) as string[])
-            ?.some((id) => mediaIds.includes(id))
-        )
-      ) {
-        pings.add(`<@${user.id}>`);
-      }
+    inventories.forEach((userId) => {
+      pings.add(`<@${userId}>`);
     });
 
     if (pings.size > 0) {

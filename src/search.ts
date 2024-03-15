@@ -1,18 +1,18 @@
-import packs from './packs.ts';
+import packs from '~/src/packs.ts';
 
-import Rating from './rating.ts';
+import Rating from '~/src/rating.ts';
 
-import utils from './utils.ts';
+import utils from '~/src/utils.ts';
 
-import user from './user.ts';
+import user from '~/src/user.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import type * as Schema from '../db/schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
 import {
   Character,
@@ -21,9 +21,9 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
-} from './types.ts';
+} from '~/src/types.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
 export const idPrefix = 'id=';
 
@@ -40,18 +40,6 @@ const musicUrlRegex = /youtube|spotify/;
 
 const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|netflix\\.com|crunchyroll\.com|tapas\.io|webtoons\.com|amazon\.com)[\S]*$/;
-
-const findCharacter = async (
-  guildId: string,
-  characterId: string,
-) => {
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
-
-  const results = await db.findCharacters(instance, [characterId]);
-
-  return results[0];
-};
 
 function media(
   { token, id, search, debug, guildId }: {
@@ -282,7 +270,7 @@ function character(
           character: results[0],
           end: 4,
         }),
-        findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
+        db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
       ]);
     })
     .then(async ([character, existing]) => {
@@ -292,8 +280,8 @@ function character(
 
       if (
         (
-          existing?.[0] &&
-          packs.isDisabled(existing[0].mediaId, guildId)
+          existing &&
+          packs.isDisabled(existing.mediaId, guildId)
         ) ||
         (
           media &&
@@ -309,11 +297,11 @@ function character(
       }
 
       const message = characterMessage(character, {
-        existing: existing?.[0],
-        userId: existing?.[1]?.id,
+        existing: existing ?? undefined,
+        userId: existing?.user.discordId,
       });
 
-      if (existing?.[0]) {
+      if (existing) {
         message.insertComponents([
           new discord.Component()
             .setLabel('/stats')
@@ -530,7 +518,7 @@ function characterEmbed(
         text: [
           utils.capitalize(character.gender),
           character.age,
-        ].filter(Boolean).join(', '),
+        ].filter(utils.nonNullable).join(', '),
       },
     );
   }
@@ -638,7 +626,7 @@ async function mediaCharacters(
       end: 1,
     }),
     // find if the character is owned
-    findCharacter(guildId, `${node.packId}:${node.id}`),
+    db.findCharacter(guildId, `${node.packId}:${node.id}`),
   ]);
 
   const message = characterMessage(character, {
@@ -647,8 +635,8 @@ async function mediaCharacters(
     description: true,
     externalLinks: true,
     footer: true,
-    existing: existing?.[0],
-    userId: existing?.[1]?.id,
+    existing: existing ?? undefined,
+    userId: existing?.user.discordId,
   }).addComponents([
     new discord.Component()
       .setId('media', `${media.packId}:${media.id}`)
@@ -718,31 +706,28 @@ function mediaFound(
         ).map(({ node }) => node) ?? []),
       ];
 
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
       const characters = await db.findMediaCharacters(
-        instance,
+        guildId,
         media.map(({ packId, id }) => `${packId}:${id}`),
       );
 
       const chunks = utils.chunks(
         characters.sort((a, b) => {
-          if (a[0].mediaId < b[0].mediaId) {
+          if (a.mediaId < b.mediaId) {
             return -1;
           }
 
-          if (a[0].mediaId > b[0].mediaId) {
+          if (a.mediaId > b.mediaId) {
             return 1;
           }
 
-          return b[0].rating - a[0].rating;
+          return b.rating - a.rating;
         }),
         5,
       );
 
       const _characters = await packs.characters({
-        ids: chunks[index]?.map(([{ id }]) => id),
+        ids: chunks[index]?.map(({ characterId }) => characterId),
         guildId,
       });
 
@@ -750,12 +735,12 @@ function mediaFound(
         const char = _characters[i];
 
         // deno-lint-ignore no-non-null-assertion
-        const existing = chunks[index].find(([{ id }]) =>
-          id === `${char.packId}:${char.id}`
+        const existing = chunks[index].find(({ characterId }) =>
+          characterId === `${char.packId}:${char.id}`
         )!;
 
         const _media = media.find(({ packId, id }) =>
-          `${packId}:${id}` === existing[0].mediaId
+          `${packId}:${id}` === existing.mediaId
         );
 
         const mediaTitle = _media?.title
@@ -774,8 +759,8 @@ function mediaFound(
           continue;
         }
 
-        const name = `${existing[0].rating}${discord.emotes.smolStar} ${`<@${
-          existing[1]?.id
+        const name = `${existing.rating}${discord.emotes.smolStar} ${`<@${
+          existing?.user.discordId
         }>`} ${utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
         embed.addField({

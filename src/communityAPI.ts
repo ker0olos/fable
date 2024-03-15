@@ -1,16 +1,12 @@
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import utils from './utils.ts';
+import utils from '~/src/utils.ts';
 
-import validate, { purgeReservedProps } from './validate.ts';
+import validate, { purgeReservedProps } from '~/src/validate.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import { packByManifestId } from '../db/indices.ts';
-
-import type { Manifest } from './types.ts';
-
-import type * as Schema from '../db/schema.ts';
+import type { Manifest } from '~/src/types.ts';
 
 export async function user(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -44,24 +40,24 @@ export async function user(req: Request): Promise<Response> {
 
   const { id: userId } = await auth.json();
 
-  const packs = await db.getPacksByMaintainerId(userId);
+  const limit = +(url.searchParams.get('limit') ?? 20);
+  const offset = +(url.searchParams.get('offset') ?? 0);
 
-  // sort by recently updated
-  packs.sort((a, b) =>
-    new Date(b.updated).getTime() - new Date(a.updated).getTime()
-  );
+  const packs = await db.getPacksByMaintainerId(userId, offset, limit);
 
-  const data = utils.pagination(url, packs, 'packs');
-
-  data.packs = data.packs.map((pack) => ({
-    ...pack,
-    manifest: {
-      id: pack.manifest.id,
-      title: pack.manifest.title,
-      description: pack.manifest.description,
-      image: pack.manifest.image,
-    },
-  }));
+  const data = {
+    packs: packs.map((pack) => ({
+      ...pack,
+      manifest: {
+        id: pack.manifest.id,
+        title: pack.manifest.title,
+        description: pack.manifest.description,
+        image: pack.manifest.image,
+      },
+    })),
+    limit,
+    offset,
+  };
 
   return utils.json(data);
 }
@@ -148,25 +144,27 @@ export async function popular(req: Request): Promise<Response> {
     );
   }
 
-  const packs = await db.getAllPublicPacks();
+  const limit = +(url.searchParams.get('limit') ?? 20);
+  const offset = +(url.searchParams.get('offset') ?? 0);
 
-  // sort by most used
-  packs.sort((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
+  const packs = await db.getPopularPacks(offset, limit);
 
-  const data = utils.pagination(url, packs, 'packs');
-
-  data.packs = data.packs.map((pack) => ({
-    ...pack,
-    manifest: {
-      id: pack.manifest.id,
-      title: pack.manifest.title,
-      description: pack.manifest.description,
-      image: pack.manifest.image,
-      media: pack.manifest.media?.new?.length ?? 0,
-      characters: pack.manifest.characters?.new?.length ?? 0,
-      // deno-lint-ignore no-explicit-any
-    } as any,
-  }));
+  const data = {
+    packs: packs.map((pack) => ({
+      ...pack,
+      manifest: {
+        id: pack.manifest.id,
+        title: pack.manifest.title,
+        description: pack.manifest.description,
+        image: pack.manifest.image,
+        media: pack.manifest.media?.new?.length ?? 0,
+        characters: pack.manifest.characters?.new?.length ?? 0,
+        // deno-lint-ignore no-explicit-any
+      } as any,
+    })),
+    limit,
+    offset,
+  };
 
   return utils.json(data);
 }
@@ -222,7 +220,7 @@ export async function pack(
     }
   }
 
-  const pack = await db.getValue<Schema.Pack>(packByManifestId(packId));
+  const pack = await db.getPack(packId);
 
   if (!pack) {
     return utils.json(

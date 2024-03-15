@@ -7,11 +7,14 @@ export async function assignCharacter(
   guildId: string,
   characterId: string,
   spot?: 1 | 2 | 3 | 4 | 5,
-): Promise<void> {
-  // deno-lint-ignore no-non-null-assertion
-  const character = (await database.characters.findOne(
+): Promise<Schema.Character> {
+  const character = await database.characters.findOne(
     { userId, guildId, characterId },
-  ))!;
+  );
+
+  if (!character) {
+    throw new Error();
+  }
 
   // deno-lint-ignore no-non-null-assertion
   const inventory = (await database.inventories.findOne({ userId, guildId }))!;
@@ -64,6 +67,8 @@ export async function assignCharacter(
     { _id: inventory._id },
     { $set: { party: inventory.party } },
   );
+
+  return character;
 }
 
 export async function swapSpots(

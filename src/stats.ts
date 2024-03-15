@@ -22,55 +22,6 @@ import type * as Schema from '~/db/schema.ts';
 
 import type { SkillKey } from '~/src/types.ts';
 
-// async function update(
-//   { token, type, characterId, userId, guildId }: {
-//     token: string;
-//     type: string;
-//     characterId: string;
-//     guildId: string;
-//     userId: string;
-//   },
-// ): Promise<discord.Message> {
-//   const locale = _user.cachedUsers[userId]?.locale;
-
-//   const guild = await db.getGuild(guildId);
-//   const instance = await db.getInstance(guild);
-
-//   const user = await db.getUser(userId);
-
-//   const { inventory } = await db.getInventory(instance, user);
-
-//   try {
-//     const characterSchema = await db.upgradeStats(
-//       inventory,
-//       characterId,
-//       type,
-//       1,
-//     );
-
-//     return stats.view({
-//       token,
-//       character: `id=${characterId}`,
-//       characterSchema,
-//       userId,
-//       guildId,
-//     });
-//   } catch (err) {
-//     switch (err.message) {
-//       case 'CHARACTER_NOT_FOUND':
-//         throw new NonFetalError(
-//           i18n.get('character-hasnt-been-found', locale, 'Character'),
-//         );
-//       case 'CHARACTER_NOT_OWNED':
-//         throw new NonFetalError(
-//           i18n.get('invalid-permission', locale),
-//         );
-//       default:
-//         throw err;
-//     }
-//   }
-// }
-
 function view({ token, character, characterSchema, userId, guildId }: {
   token: string;
   character: string;
@@ -193,27 +144,6 @@ function view({ token, character, characterSchema, userId, guildId }: {
           ].join('\n'),
         });
 
-      // if (characterSchema || existing.user?.id === userId) {
-      //   const charId = `${character.packId}:${character.id}`;
-      //
-      //   message.addComponents([
-      //     new discord.Component()
-      //       .setLabel(`+1 ${i18n.get('atk', locale)}`)
-      //       .setDisabled(unclaimed <= 0)
-      //       .setId('stats', 'atk', userId, charId),
-
-      //     new discord.Component()
-      //       .setLabel(`+1 ${i18n.get('def', locale)}`)
-      //       .setDisabled(unclaimed <= 0)
-      //       .setId('stats', 'def', userId, charId),
-
-      //     new discord.Component()
-      //       .setLabel(`+1 ${i18n.get('spd', locale)}`)
-      //       .setDisabled(unclaimed <= 0)
-      //       .setId('stats', 'spd', userId, charId),
-      //   ]);
-      // }
-
       message.addComponents([
         new discord.Component()
           .setLabel('/character')
@@ -226,7 +156,7 @@ function view({ token, character, characterSchema, userId, guildId }: {
             .setLabel('/p assign')
             .setId(`passign`, userId, existing.character.id)
           : undefined,
-      ].filter(Boolean) as discord.Component[]);
+      ].filter(utils.nonNullable));
 
       message.addEmbed(embed);
 
@@ -268,9 +198,6 @@ function view({ token, character, characterSchema, userId, guildId }: {
   return loading;
 }
 
-const stats = {
-  view,
-  // update,
-};
+const stats = { view };
 
 export default stats;

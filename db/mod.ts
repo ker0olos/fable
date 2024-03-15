@@ -2,6 +2,7 @@ import { MongoClient } from 'mongodb';
 
 import {
   getActiveUsersIfLiked,
+  getGuild,
   getInventory,
   getUser,
   getUserCharacters,
@@ -63,16 +64,22 @@ import { distributeNewStats, gainExp, MAX_LEVEL } from '~/db/gainExp.ts';
 
 import { clearFloor, consumeKey } from '~/db/consumeKey.ts';
 
-import { getAllPublicPacks, getPacksByMaintainerId } from '~/db/getPack.ts';
+import {
+  getPack,
+  getPacksByMaintainerId,
+  getPopularPacks,
+} from '~/db/getPack.ts';
 
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
 import { disableBuiltins } from '~/db/manageGuild.ts';
 
-import type * as Schema from './schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
 // deno-lint-ignore no-non-null-assertion
-const client = new MongoClient(Deno.env.get('MONGO_URL')!);
+const client = new MongoClient(Deno.env.get('MONGO_URL')!, {
+  retryWrites: true,
+});
 
 const db = {
   client,
@@ -82,9 +89,11 @@ const db = {
   inventories: client.db().collection<Schema.Inventory>('inventories'),
   characters: client.db().collection<Schema.Character>('characters'),
   packs: client.db().collection<Schema.Pack>('packs'),
+  battles: client.db().collection<Schema.BattleData>('battles'),
   //
   getInventory,
   getUser,
+  getGuild,
   getUserCharacters,
   rechargeConsumables,
   getActiveUsersIfLiked,
@@ -125,9 +134,10 @@ const db = {
   consumeKey,
   clearFloor,
   //
+  getPack,
   addPack,
   getPacksByMaintainerId,
-  getAllPublicPacks,
+  getPopularPacks,
   publishPack,
   removePack,
   //

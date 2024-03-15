@@ -1,20 +1,20 @@
-import search, { idPrefix } from './search.ts';
+import search, { idPrefix } from '~/src/search.ts';
 
-import packs from './packs.ts';
+import packs from '~/src/packs.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import i18n from './i18n.ts';
-import user from './user.ts';
-import utils from './utils.ts';
+import i18n from '~/src/i18n.ts';
+import user from '~/src/user.ts';
+import utils from '~/src/utils.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import { Character } from './types.ts';
+import { Character } from '~/src/types.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
 function pre({ token, userId, guildId, targetId, give, take }: {
   token: string;
@@ -63,7 +63,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
     ),
   ])
     // filter undefined results
-    .then((results) => results.filter(Boolean))
+    .then((results) => results.filter(utils.nonNullable))
     .then(async (results) => {
       const message = new discord.Message();
 
@@ -133,33 +133,19 @@ function pre({ token, userId, guildId, targetId, give, take }: {
         takeCharacters.map(({ name }) => packs.aliasToArray(name)[0]),
       ];
 
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+      const userInventory = await db.getInventory(guildId, userId);
 
-      const user = await db.getUser(userId);
-      const target = await db.getUser(targetId);
+      const targetInventory = await db.getInventory(guildId, targetId);
 
-      const { inventory: userInventory } = await db.getInventory(
-        instance,
-        user,
-      );
+      const giveCollection = await db.getUserCharacters(userId, guildId);
 
-      const { inventory: targetInventory } = await db.getInventory(
-        instance,
-        target,
-      );
-
-      const giveCollection = (await db.getUserCharacters(userInventory))
-        .map(({ value }) => value);
-
-      const takeCollection = take.length
-        ? (await db.getUserCharacters(targetInventory))
-          .map(({ value }) => value)
+      const takeCollection = targetId && take.length
+        ? (await db.getUserCharacters(targetId, guildId))
         : undefined;
 
       const giveEmbeds = giveCharacters.map((character) => {
-        const i = giveCollection.findIndex(({ id }) =>
-          `${character.packId}:${character.id}` === id
+        const i = giveCollection.findIndex(({ characterId }) =>
+          `${character.packId}:${character.id}` === characterId
         );
 
         return search.characterEmbed(character, {
@@ -176,22 +162,20 @@ function pre({ token, userId, guildId, targetId, give, take }: {
         });
       });
 
-      const _giveParty = await db.getUserParty(userInventory);
-
-      const giveParty: string[] = ([
-        _giveParty?.member1?.id,
-        _giveParty?.member2?.id,
-        _giveParty?.member3?.id,
-        _giveParty?.member4?.id,
-        _giveParty?.member5?.id,
+      const giveParty = ([
+        userInventory.party.member1?.characterId,
+        userInventory.party.member2?.characterId,
+        userInventory.party.member3?.characterId,
+        userInventory.party.member4?.characterId,
+        userInventory.party.member5?.characterId,
       ]
-        .filter(Boolean) as string[])
+        .filter(utils.nonNullable))
         .filter((id) => giveIds.includes(id));
 
       const giveFilter = giveParty.length
         ? giveParty
         : giveIds.filter((id) =>
-          !giveCollection.some((char) => char.id === id)
+          !giveCollection.some((char) => char.characterId === id)
         );
 
       // not owned
@@ -216,8 +200,8 @@ function pre({ token, userId, guildId, targetId, give, take }: {
 
       if (takeCollection) {
         const takeEmbeds = takeCharacters.map((character) => {
-          const i = takeCollection.findIndex(({ id }) =>
-            `${character.packId}:${character.id}` === id
+          const i = takeCollection.findIndex(({ characterId }) =>
+            `${character.packId}:${character.id}` === characterId
           );
 
           return search.characterEmbed(character, {
@@ -234,22 +218,22 @@ function pre({ token, userId, guildId, targetId, give, take }: {
           });
         });
 
-        const _takeParty = await db.getUserParty(targetInventory);
+        const _takeParty = targetInventory.party;
 
-        const takeParty: string[] = ([
-          _takeParty?.member1?.id,
-          _takeParty?.member2?.id,
-          _takeParty?.member3?.id,
-          _takeParty?.member4?.id,
-          _takeParty?.member5?.id,
+        const takeParty = ([
+          _takeParty.member1?.characterId,
+          _takeParty.member2?.characterId,
+          _takeParty.member3?.characterId,
+          _takeParty.member4?.characterId,
+          _takeParty.member5?.characterId,
         ]
-          .filter(Boolean) as string[])
+          .filter(utils.nonNullable))
           .filter((id) => takeIds.includes(id));
 
         const takeFilter = takeParty.length
           ? takeParty
           : takeIds.filter((id) => {
-            return !takeCollection.some((char) => char.id === id);
+            return !takeCollection.some((char) => char.characterId === id);
           });
 
         // not owned
@@ -402,114 +386,76 @@ function give({
 
   Promise.resolve()
     .then(async () => {
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+      await db.giveCharacters({
+        guildId,
+        aUserId: userId,
+        bUserId: targetId,
+        giveIds: giveCharactersIds,
+      });
 
-      const user = await db.getUser(userId);
-      const target = await db.getUser(targetId);
+      const results = await packs.characters({
+        ids: giveCharactersIds,
+        guildId,
+      });
 
-      const { inventory: userInventory } = await db.getInventory(
-        instance,
-        user,
+      const updateMessage = new discord.Message();
+
+      const newMessage = new discord.Message().setContent(`<@${targetId}>`);
+
+      updateMessage.addEmbed(
+        new discord.Embed().setDescription(
+          i18n.get('give-sent-to', locale, `<@${targetId}>`),
+        ),
       );
 
-      const { inventory: targetInventory } = await db.getInventory(
-        instance,
-        target,
+      newMessage.addEmbed(
+        new discord.Embed().setDescription(
+          i18n.get('give-received', locale, `<@${userId}>`),
+        ),
       );
 
-      try {
-        const _ = await db.tradeCharacters({
-          instance,
-          aInventory: userInventory,
-          bInventory: targetInventory,
-          aUser: user,
-          bUser: target,
-          giveIds: giveCharactersIds,
-          takeIds: [],
-        });
+      const giveCharacters = await Promise.all(
+        giveCharactersIds.map((characterId) =>
+          packs.aggregate<Character>({
+            guildId,
+            character: results.find(({ packId, id }) =>
+              `${packId}:${id}` === characterId
+            ),
+            end: 1,
+          })
+        ),
+      );
 
-        const results = await packs.characters({
-          ids: giveCharactersIds,
-          guildId,
-        });
+      giveCharacters.forEach((character) => {
+        const embed = search.characterEmbed(character, {
+          rating: true,
+          mode: 'thumbnail',
+          footer: false,
+          description: false,
+          media: { title: true },
+        }).addField({ value: `${discord.emotes.add}` });
 
-        const updateMessage = new discord.Message();
+        newMessage.addEmbed(embed);
+      });
 
-        const newMessage = new discord.Message().setContent(`<@${targetId}>`);
+      if (giveCharacters.length === 1) {
+        const characterId = `${giveCharacters[0].packId}:${
+          giveCharacters[0].id
+        }`;
 
-        updateMessage.addEmbed(
-          new discord.Embed().setDescription(
-            i18n.get('give-sent-to', locale, `<@${targetId}>`),
-          ),
-        );
-
-        newMessage.addEmbed(
-          new discord.Embed().setDescription(
-            i18n.get('give-received', locale, `<@${userId}>`),
-          ),
-        );
-
-        const giveCharacters = await Promise.all(
-          giveCharactersIds.map((characterId) =>
-            packs.aggregate<Character>({
-              guildId,
-              character: results.find(({ packId, id }) =>
-                `${packId}:${id}` === characterId
-              ),
-              end: 1,
-            })
-          ),
-        );
-
-        giveCharacters.forEach((character) => {
-          const embed = search.characterEmbed(character, {
-            rating: true,
-            mode: 'thumbnail',
-            footer: false,
-            description: false,
-            media: { title: true },
-          }).addField({ value: `${discord.emotes.add}` });
-
-          newMessage.addEmbed(embed);
-        });
-
-        if (giveCharacters.length === 1) {
-          const characterId = `${giveCharacters[0].packId}:${
-            giveCharacters[0].id
-          }`;
-
-          newMessage.addComponents([
-            new discord.Component()
-              .setLabel('/character')
-              .setId(`character`, characterId, '1'),
-            new discord.Component()
-              .setLabel('/like')
-              .setId(`like`, characterId),
-          ]);
-        }
-
-        await updateMessage.patch(token);
-
-        return newMessage.followup(token);
-      } catch (err) {
-        switch (err.message) {
-          case 'CHARACTER_IN_PARTY':
-            throw new NonFetalError(
-              i18n.get('give-you-party-members', locale),
-            );
-          case 'CHARACTER_NOT_OWNED':
-            throw new NonFetalError(
-              i18n.get('character-no-longer-owned', locale),
-            );
-          case 'CHARACTER_NOT_FOUND':
-            throw new NonFetalError(
-              i18n.get('some-characters-disabled', locale),
-            );
-          default:
-            throw err;
-        }
+        newMessage.addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(`character`, characterId, '1'),
+          new discord.Component()
+            .setLabel('/like')
+            .setId(`like`, characterId),
+        ]);
       }
+
+      await updateMessage.patch(token);
+
+      return newMessage.followup(token);
     })
     .catch(async (err) => {
       if (err instanceof NonFetalError) {
@@ -562,135 +508,98 @@ function accepted({
 
   Promise.resolve()
     .then(async () => {
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+      const _ = await db.tradeCharacters({
+        guildId,
+        aUserId: userId,
+        bUserId: targetId,
+        giveIds: giveCharactersIds,
+        takeIds: takeCharactersIds,
+      });
 
-      const user = await db.getUser(userId);
-      const target = await db.getUser(targetId);
+      const results = await packs.characters({
+        ids: [...giveCharactersIds, ...takeCharactersIds],
+        guildId,
+      });
 
-      const { inventory: userInventory } = await db.getInventory(
-        instance,
-        user,
+      const updateMessage = new discord.Message();
+
+      const newMessage = new discord.Message().setContent(
+        i18n.get(
+          'trade-offer-accepted',
+          locale ?? guildLocale,
+          `<@${userId}>`,
+        ),
       );
 
-      const { inventory: targetInventory } = await db.getInventory(
-        instance,
-        target,
-      );
+      updateMessage.setContent(`<@${userId}>`);
 
-      try {
-        const _ = await db.tradeCharacters({
-          instance,
-          aInventory: userInventory,
-          bInventory: targetInventory,
-          aUser: user,
-          bUser: target,
-          giveIds: giveCharactersIds,
-          takeIds: takeCharactersIds,
-        });
-
-        const results = await packs.characters({
-          ids: [...giveCharactersIds, ...takeCharactersIds],
-          guildId,
-        });
-
-        const updateMessage = new discord.Message();
-
-        const newMessage = new discord.Message().setContent(
+      updateMessage.addEmbed(
+        new discord.Embed().setDescription(
           i18n.get(
-            'trade-offer-accepted',
+            'trade-offer-accepted2',
             locale ?? guildLocale,
-            `<@${userId}>`,
+            `<@${targetId}>`,
           ),
-        );
+        ),
+      );
 
-        updateMessage.setContent(`<@${userId}>`);
-
-        updateMessage.addEmbed(
-          new discord.Embed().setDescription(
-            i18n.get(
-              'trade-offer-accepted2',
-              locale ?? guildLocale,
-              `<@${targetId}>`,
+      const giveCharacters = await Promise.all(
+        giveCharactersIds.map((characterId) =>
+          packs.aggregate<Character>({
+            guildId,
+            character: results.find(({ packId, id }) =>
+              `${packId}:${id}` === characterId
             ),
-          ),
-        );
+            end: 1,
+          })
+        ),
+      );
 
-        const giveCharacters = await Promise.all(
-          giveCharactersIds.map((characterId) =>
-            packs.aggregate<Character>({
-              guildId,
-              character: results.find(({ packId, id }) =>
-                `${packId}:${id}` === characterId
-              ),
-              end: 1,
-            })
-          ),
-        );
+      const takeCharacters = await Promise.all(
+        takeCharactersIds.map((characterId) =>
+          packs.aggregate<Character>({
+            guildId,
+            character: results.find(({ packId, id }) =>
+              `${packId}:${id}` === characterId
+            ),
+            end: 1,
+          })
+        ),
+      );
 
-        const takeCharacters = await Promise.all(
-          takeCharactersIds.map((characterId) =>
-            packs.aggregate<Character>({
-              guildId,
-              character: results.find(({ packId, id }) =>
-                `${packId}:${id}` === characterId
-              ),
-              end: 1,
-            })
-          ),
-        );
+      takeCharacters.forEach((character) => {
+        const embed = search.characterEmbed(
+          character,
+          {
+            rating: true,
+            mode: 'thumbnail',
+            footer: false,
+            description: false,
+            media: { title: true },
+          },
+        ).addField({ value: `${discord.emotes.add}` });
 
-        takeCharacters.forEach((character) => {
-          const embed = search.characterEmbed(
-            character,
-            {
-              rating: true,
-              mode: 'thumbnail',
-              footer: false,
-              description: false,
-              media: { title: true },
-            },
-          ).addField({ value: `${discord.emotes.add}` });
+        updateMessage.addEmbed(embed);
+      });
 
-          updateMessage.addEmbed(embed);
-        });
+      giveCharacters.forEach((character) => {
+        const embed = search.characterEmbed(
+          character,
+          {
+            rating: true,
+            mode: 'thumbnail',
+            footer: false,
+            description: false,
+            media: { title: true },
+          },
+        ).addField({ value: `${discord.emotes.remove}` });
 
-        giveCharacters.forEach((character) => {
-          const embed = search.characterEmbed(
-            character,
-            {
-              rating: true,
-              mode: 'thumbnail',
-              footer: false,
-              description: false,
-              media: { title: true },
-            },
-          ).addField({ value: `${discord.emotes.remove}` });
+        updateMessage.addEmbed(embed);
+      });
 
-          updateMessage.addEmbed(embed);
-        });
+      await updateMessage.patch(token);
 
-        await updateMessage.patch(token);
-
-        return newMessage.followup(token);
-      } catch (err) {
-        switch (err.message) {
-          case 'CHARACTER_IN_PARTY':
-            throw new NonFetalError(
-              i18n.get('trade-party-members', locale ?? guildLocale),
-            );
-          case 'CHARACTER_NOT_OWNED':
-            throw new NonFetalError(
-              i18n.get('character-no-longer-owned', locale ?? guildLocale),
-            );
-          case 'CHARACTER_NOT_FOUND':
-            throw new NonFetalError(
-              i18n.get('some-characters-disabled', locale ?? guildLocale),
-            );
-          default:
-            throw err;
-        }
-      }
+      return newMessage.followup(token);
     })
     .catch(async (err) => {
       if (err instanceof NonFetalError) {

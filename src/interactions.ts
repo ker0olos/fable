@@ -374,7 +374,7 @@ export const handler = async (r: Request) => {
           case 'party':
           case 'team':
           case 'p': {
-            const spot = options['spot'] as number;
+            const spot = options['spot'] as 1 | 2 | 3 | 4 | 5;
             const character = options['name'] as string;
 
             // deno-lint-ignore no-non-null-assertion
@@ -395,8 +395,8 @@ export const handler = async (r: Request) => {
                   token,
                   guildId,
                   userId: member.user.id,
-                  a: options['a'] as number,
-                  b: options['b'] as number,
+                  a: options['a'] as 1 | 2 | 3 | 4 | 5,
+                  b: options['b'] as 1 | 2 | 3 | 4 | 5,
                 }).send();
               case 'remove':
                 return party.remove({
@@ -538,18 +538,17 @@ export const handler = async (r: Request) => {
               options['give'] as string,
               options['give2'] as string,
               options['give3'] as string,
-            ].filter(Boolean);
+            ].filter(utils.nonNullable);
 
             const takeCharacters = [
               options['take'] as string,
               options['take2'] as string,
               options['take3'] as string,
-            ].filter(Boolean);
+            ].filter(utils.nonNullable);
 
             const message = trade.pre({
               token,
               guildId,
-
               userId: member.user.id,
               targetId: options['user'] as string,
               give: giveCharacters,
@@ -1403,5 +1402,5 @@ if (import.meta.main) {
     },
   });
 
-  await database.client.close();
+  // await database.client.close();
 }

@@ -4,6 +4,8 @@ import utils from '~/src/utils.ts';
 
 import type * as Schema from './schema.ts';
 
+import type { WithId } from 'mongodb';
+
 export const MAX_PULLS = 5;
 export const MAX_NEW_PULLS = 10;
 
@@ -29,7 +31,10 @@ export const newGuild = (guildId: string): Schema.Guild => ({
   packIds: [],
 });
 
-export const newInventory = (guildId: string, userId: string) => ({
+export const newInventory = (
+  guildId: string,
+  userId: string,
+): Schema.Inventory => ({
   guildId,
   userId,
   availablePulls: MAX_NEW_PULLS,
@@ -38,7 +43,7 @@ export const newInventory = (guildId: string, userId: string) => ({
   party: {},
 });
 
-export async function getUser(userId: string): Promise<Schema.User> {
+export async function getUser(userId: string): Promise<WithId<Schema.User>> {
   // deno-lint-ignore no-non-null-assertion
   const result = (await database.users.findOneAndUpdate(
     { discordId: userId },
@@ -47,6 +52,38 @@ export async function getUser(userId: string): Promise<Schema.User> {
   ))!;
 
   return result;
+}
+
+export async function forceNewUser(userId: string): Promise<Schema.User> {
+  const user = newUser(userId);
+  return (await database.users.insertOne(user), user);
+}
+
+export async function getGuild(
+  guildId: string,
+): Promise<Schema.PopulatedGuild> {
+  // deno-lint-ignore no-non-null-assertion
+  const { _id } = (await database.guilds.findOneAndUpdate(
+    { guildId },
+    { $setOnInsert: newGuild(guildId) }, // only invoked if document isn't found
+    { upsert: true, returnDocument: 'after' },
+  ))!;
+
+  // populate the guild with the relevant relations
+  // unfortunately cannot be done in the same step as findOrInsert
+  const [result] = await database.guilds.aggregate()
+    .match({ _id })
+    //
+    .lookup({
+      localField: 'packIds',
+      foreignField: '_id',
+      from: 'packs',
+      as: 'packs',
+    })
+    .unwind('$packs')
+    .toArray();
+
+  return result as Schema.PopulatedGuild;
 }
 
 export async function getInventory(
@@ -71,16 +108,6 @@ export async function getInventory(
       from: 'users',
       as: 'user',
     })
-    .lookup({
-      localField: 'guildId',
-      foreignField: 'discordId',
-      from: 'guilds',
-      as: 'guild',
-    })
-    //
-    .unwind('user')
-    .unwind('guild')
-    //
     .lookup({
       localField: 'party.member1Id',
       foreignField: '_id',
@@ -111,14 +138,53 @@ export async function getInventory(
       from: 'characters',
       as: 'party.member5',
     })
-    //
-    .unwind('party.member1')
-    .unwind('party.member2')
-    .unwind('party.member3')
-    .unwind('party.member4')
-    .unwind('party.member5')
-    //
-    .toArray();
+    .toArray() as Schema.PopulatedInventory[];
+
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.user)) {
+    result.user = result.user.length
+      ? result.user[0]
+      : await forceNewUser(userId);
+  }
+
+  // manually unwind relation arrays
+
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member1)) {
+    result.party.member1 = result.party.member1.length
+      ? result.party.member1[0]
+      : undefined;
+  }
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member2)) {
+    result.party.member2 = result.party.member2.length
+      ? result.party.member2[0]
+      : undefined;
+  }
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member3)) {
+    result.party.member3 = result.party.member3.length
+      ? result.party.member3[0]
+      : undefined;
+  }
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member4)) {
+    result.party.member4 = result.party.member4.length
+      ? result.party.member4[0]
+      : undefined;
+  }
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member5)) {
+    result.party.member5 = result.party.member5.length
+      ? result.party.member5[0]
+      : undefined;
+  }
 
   return result as Schema.PopulatedInventory;
 }
@@ -127,7 +193,7 @@ export async function rechargeConsumables(
   guildId: string,
   userId: string,
 ): Promise<Schema.PopulatedInventory> {
-  const inventory = await getInventory(guildId, userId);
+  const inventory = await database.getInventory(guildId, userId);
 
   const { user } = inventory;
 
@@ -157,8 +223,7 @@ export async function rechargeConsumables(
     ),
   );
 
-  // deno-lint-ignore no-non-null-assertion
-  const dailyTimestamp = user!.dailyTimestamp;
+  const { dailyTimestamp } = user;
 
   const dailyTimestampThreshold = new Date();
 
@@ -166,8 +231,7 @@ export async function rechargeConsumables(
     dailyTimestamp.getHours() + RECHARGE_DAILY_TOKENS_HOURS,
   );
 
-  const newDailyTokens = dailyTimestamp &&
-    dailyTimestamp <= dailyTimestampThreshold;
+  const newDailyTokens = dailyTimestamp >= dailyTimestampThreshold;
 
   const stealTimestamp = inventory.stealTimestamp;
 
@@ -178,7 +242,7 @@ export async function rechargeConsumables(
   );
 
   const resetSteal = stealTimestamp &&
-    stealTimestamp <= stealTimestampThreshold;
+    stealTimestamp >= stealTimestampThreshold;
 
   if (
     newPulls === currentPulls &&
@@ -236,7 +300,7 @@ export async function rechargeConsumables(
 export async function getActiveUsersIfLiked(
   guildId: string,
   characterId: string,
-  mediaId: string,
+  mediaIds: string[],
 ): Promise<string[]> {
   const twoWeeks = new Date();
 
@@ -258,7 +322,7 @@ export async function getActiveUsersIfLiked(
     })
     .match({
       $or: [
-        { 'user.likes': { $in: [{ mediaId }] } },
+        { 'user.likes': { $in: mediaIds.map((mediaId) => ({ mediaId })) } },
         { 'user.likes': { $in: [{ characterId }] } },
       ],
     })
@@ -271,6 +335,6 @@ export async function getActiveUsersIfLiked(
 export async function getUserCharacters(
   userId: string,
   guildId: string,
-): Promise<Schema.Character[]> {
+): Promise<WithId<Schema.Character>[]> {
   return await database.characters.find({ userId, guildId }).toArray();
 }

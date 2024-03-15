@@ -137,6 +137,7 @@ export async function addCharacter(
     }
 
     const newCharacter: Schema.Character = ensureCombat({
+      createdAt: new Date(),
       inventoryId: inventory._id,
       characterId,
       guildId,
@@ -179,10 +180,14 @@ export async function addCharacter(
       { session },
     );
 
-    await database.characters.bulkWrite([
+    const t = await database.characters.bulkWrite([
       ...deleteSacrifices,
       { insertOne: { document: newCharacter } },
     ], { session });
+
+    if (t.hasWriteErrors()) {
+      throw new Error('WRITE_ERROR');
+    }
 
     await session.commitTransaction();
   } catch (err) {

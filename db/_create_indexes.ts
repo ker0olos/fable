@@ -4,6 +4,8 @@ import { green } from '$std/fmt/colors.ts';
 
 import database from '~/db/mod.ts';
 
+import { MAX_BATTLE_TIME } from '~/src/battle.ts';
+
 enum Direction {
   ascending = 1,
   descending = -1,
@@ -15,6 +17,7 @@ try {
   await createInventoriesIndexes();
   await createCharactersIndexes();
   await createPacksIndexes();
+  await createBattleIndexes();
 
   console.log(green('Done'));
 } finally {
@@ -24,10 +27,13 @@ try {
 async function createGuildsIndexes() {
   await database.guilds // Uniqueness Index
     .createIndex({ discordId: Direction.ascending }, { unique: true });
+
+  await database.guilds // Uniqueness Index
+    .createIndex({ packIds: Direction.ascending });
 }
 
 async function createUsersIndexes() {
-  await database.users // Uniqueness Index
+  await database.users // Compound Index (speeds up queries)
     .createIndex({ discordId: Direction.ascending }, { unique: true });
 }
 
@@ -66,4 +72,11 @@ async function createPacksIndexes() {
       owner: Direction.ascending,
       'manifest.maintainers': Direction.ascending,
     });
+}
+
+async function createBattleIndexes() {
+  await database.packs // TTL Index
+    .createIndex({
+      'createdAt': Direction.ascending,
+    }, { expireAfterSeconds: MAX_BATTLE_TIME });
 }
