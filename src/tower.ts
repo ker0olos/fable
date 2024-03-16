@@ -8,7 +8,7 @@ import gacha from '~/src/gacha.ts';
 
 import { skills } from '~/src/skills.ts';
 
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import { randomStats } from '~/db/addCharacter.ts';
 
@@ -288,7 +288,7 @@ function view({ token, guildId, userId }: {
 
   Promise.resolve()
     .then(async () => {
-      const { floorsCleared } = await database.getInventory(guildId, userId);
+      const { floorsCleared } = await db.getInventory(guildId, userId);
 
       await getMessage(floorsCleared, userId, locale)
         .patch(token);
@@ -334,7 +334,7 @@ function reclear({ token, guildId, userId }: {
 
   Promise.resolve()
     .then(async () => {
-      const inventory = await database
+      const inventory = await db
         .rechargeConsumables(guildId, userId);
 
       if (inventory.floorsCleared <= 0) {
@@ -373,7 +373,7 @@ function reclear({ token, guildId, userId }: {
         inventory.party.member5,
       ].filter(utils.nonNullable);
 
-      const status = await database.gainExp(
+      const status = await db.gainExp(
         userId,
         guildId,
         inventory.floorsCleared,
@@ -518,10 +518,10 @@ async function onSuccess(
     locale: discord.AvailableLocales;
   },
 ): Promise<void> {
-  const inventory = await database
+  const inventory = await db
     .getInventory(guildId, userId);
 
-  const status = await database.gainExp(
+  const status = await db.gainExp(
     userId,
     guildId,
     inventory.floorsCleared + 1,

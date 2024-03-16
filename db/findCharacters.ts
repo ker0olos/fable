@@ -1,11 +1,11 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
 async function aggregateCharacters(
   matchCondition: import('mongodb').Document,
 ): Promise<Schema.PopulatedCharacter[]> {
-  const result = await database.characters.aggregate()
+  const result = await db.characters.aggregate()
     .match(matchCondition)
     //
     .lookup({

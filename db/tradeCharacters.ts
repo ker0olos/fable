@@ -1,4 +1,4 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import { newInventory } from '~/db/getInventory.ts';
 
@@ -19,12 +19,12 @@ export async function giveCharacters(
     giveIds: string[];
   },
 ): Promise<void> {
-  const session = database.client.startSession();
+  const session = db.client.startSession();
 
   try {
     session.startTransaction();
 
-    const giveCharacters = await database.characters.aggregate()
+    const giveCharacters = await db.characters.aggregate()
       .match({
         id: { $in: giveIds },
         userId: aUserId,
@@ -60,13 +60,13 @@ export async function giveCharacters(
     }
 
     // deno-lint-ignore no-non-null-assertion
-    const bInventory = (await database.inventories.findOneAndUpdate(
+    const bInventory = (await db.inventories.findOneAndUpdate(
       { userId: bUserId, guildId },
       { $setOnInsert: newInventory(guildId, bUserId) },
       { upsert: true, returnDocument: 'after' },
     ))!;
 
-    await database.characters.updateMany(
+    await db.characters.updateMany(
       { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
       { $set: { userId: bUserId, inventoryId: bInventory._id } },
       { session },
@@ -96,7 +96,7 @@ export async function tradeCharacters(
     takeIds: string[];
   },
 ): Promise<void> {
-  const session = database.client.startSession();
+  const session = db.client.startSession();
 
   try {
     session.startTransaction();
@@ -125,7 +125,7 @@ export async function tradeCharacters(
     //  },
     //
 
-    const giveCharacters = await database.characters.aggregate()
+    const giveCharacters = await db.characters.aggregate()
       .match({
         id: { $in: giveIds },
         userId: aUserId,
@@ -139,7 +139,7 @@ export async function tradeCharacters(
       })
       .toArray() as Schema.PopulatedCharacter[];
 
-    const takeCharacters = await database.characters.aggregate()
+    const takeCharacters = await db.characters.aggregate()
       .match({
         id: { $in: takeIds },
         userId: bUserId,
@@ -188,7 +188,7 @@ export async function tradeCharacters(
       throw new Error();
     }
 
-    const bulk: Parameters<typeof database.characters.bulkWrite>[0] = [];
+    const bulk: Parameters<typeof db.characters.bulkWrite>[0] = [];
 
     bulk.push(
       {
@@ -208,7 +208,7 @@ export async function tradeCharacters(
       },
     );
 
-    await database.characters.bulkWrite(bulk, { session });
+    await db.characters.bulkWrite(bulk, { session });
 
     await session.commitTransaction();
   } catch (err) {
@@ -224,12 +224,12 @@ export async function stealCharacter(
   guildId: string,
   characterId: string,
 ): Promise<void> {
-  const session = database.client.startSession();
+  const session = db.client.startSession();
 
   try {
     session.startTransaction();
 
-    const [character] = await database.characters.aggregate()
+    const [character] = await db.characters.aggregate()
       .match({ characterId, guildId })
       .lookup({
         localField: 'inventoryId',
@@ -258,7 +258,7 @@ export async function stealCharacter(
       const target = character.inventory;
 
       if (character._id === target.party[memberId]) {
-        await database.inventories.updateOne(
+        await db.inventories.updateOne(
           { _id: target._id },
           { $unset: { [`party.${memberId}`]: '' } },
           { session },
@@ -266,7 +266,7 @@ export async function stealCharacter(
       }
     });
 
-    const inventory = await database.inventories.findOneAndUpdate(
+    const inventory = await db.inventories.findOneAndUpdate(
       { userId, guildId },
       { $set: { stealTimestamp: new Date() } },
       { session },
@@ -276,7 +276,7 @@ export async function stealCharacter(
       throw new Error();
     }
 
-    await database.characters.updateOne({ _id: character._id }, {
+    await db.characters.updateOne({ _id: character._id }, {
       $set: { userId, inventoryId: inventory._id },
     });
 
@@ -293,7 +293,7 @@ export async function failSteal(
   guildId: string,
   userId: string,
 ): Promise<void> {
-  await database.inventories.updateOne(
+  await db.inventories.updateOne(
     { guildId, userId },
     {
       $setOnInsert: newInventory(guildId, userId),

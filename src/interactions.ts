@@ -24,7 +24,7 @@ import * as communityAPI from '~/src/communityAPI.ts';
 
 import config, { initConfig } from '~/src/config.ts';
 
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
@@ -1376,7 +1376,7 @@ export const handler = async (r: Request) => {
 if (import.meta.main) {
   await initConfig();
 
-  await database.connect();
+  await db.connect();
 
   utils.initSentry({ dsn: config.sentry });
 

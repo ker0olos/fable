@@ -1,4 +1,4 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -116,12 +116,12 @@ export async function addCharacter(
     sacrifices?: ObjectId[];
   },
 ): Promise<void> {
-  const session = database.client.startSession();
+  const session = db.client.startSession();
 
   try {
     session.startTransaction();
 
-    const { user, ...inventory } = await database.rechargeConsumables(
+    const { user, ...inventory } = await db.rechargeConsumables(
       guildId,
       userId,
     );
@@ -151,7 +151,7 @@ export async function addCharacter(
     };
 
     const deleteSacrifices: Parameters<
-      typeof database.characters.bulkWrite
+      typeof db.characters.bulkWrite
     >[0] = [];
 
     // if sacrifices (merge)
@@ -165,7 +165,7 @@ export async function addCharacter(
 
       user.guarantees.splice(i, 1);
 
-      await database.users.updateOne({ _id: user._id }, {
+      await db.users.updateOne({ _id: user._id }, {
         $set: { guarantees: user.guarantees },
       }, { session });
     } else {
@@ -174,13 +174,13 @@ export async function addCharacter(
       update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
     }
 
-    await database.inventories.updateOne(
+    await db.inventories.updateOne(
       { _id: inventory._id },
       { $set: update },
       { session },
     );
 
-    const t = await database.characters.bulkWrite([
+    const t = await db.characters.bulkWrite([
       ...deleteSacrifices,
       { insertOne: { document: newCharacter } },
     ], { session });

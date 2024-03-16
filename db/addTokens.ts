@@ -1,4 +1,4 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -12,7 +12,7 @@ export async function addTokens(
   userId: string,
   amount: number,
 ): Promise<void> {
-  await database.users.updateOne(
+  await db.users.updateOne(
     { discordId: userId },
     { $inc: { availableTokens: amount } },
   );
@@ -23,12 +23,12 @@ export async function addPulls(
   guildId: string,
   amount: number,
 ): Promise<void> {
-  const session = database.client.startSession();
+  const session = db.client.startSession();
 
   try {
     session.startTransaction();
 
-    const { modifiedCount } = await database.users.updateOne({
+    const { modifiedCount } = await db.users.updateOne({
       discordId: userId,
       availableTokens: { $gte: amount },
     }, { $inc: { availableTokens: -amount } });
@@ -37,7 +37,7 @@ export async function addPulls(
       throw new Error();
     }
 
-    await database.inventories.updateOne(
+    await db.inventories.updateOne(
       { userId, guildId },
       { $inc: { availablePulls: amount } },
     );
@@ -61,7 +61,7 @@ export async function addGuarantee(
     ? COSTS.FOUR
     : COSTS.THREE;
 
-  const user = await database.users.findOneAndUpdate({
+  const user = await db.users.findOneAndUpdate({
     discordId: userId,
     availableTokens: { $gte: cost },
   }, {
@@ -77,12 +77,12 @@ export async function addKeys(
   guildId: string,
   amount: number,
 ): Promise<void> {
-  const session = database.client.startSession();
+  const session = db.client.startSession();
 
   try {
     session.startTransaction();
 
-    const { modifiedCount } = await database.users.updateOne({
+    const { modifiedCount } = await db.users.updateOne({
       discordId: userId,
       availableTokens: { $gte: amount },
     }, { $inc: { availableTokens: -amount } });
@@ -91,7 +91,7 @@ export async function addKeys(
       throw new Error();
     }
 
-    await database.inventories.updateOne(
+    await db.inventories.updateOne(
       { userId, guildId },
       { $inc: { availableKeys: amount } },
     );

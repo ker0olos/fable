@@ -1,4 +1,4 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -6,7 +6,7 @@ export async function getPopularPacks(
   offset = 0,
   limit = 20,
 ): Promise<Schema.Pack[]> {
-  const packs = await database.guilds.aggregate()
+  const packs = await db.guilds.aggregate()
     .lookup({
       from: 'packs',
       localField: 'packIds',
@@ -45,7 +45,7 @@ export async function getPacksByMaintainerId(
   offset = 0,
   limit = 20,
 ): Promise<Schema.Pack[]> {
-  const packs = await database.packs
+  const packs = await db.packs
     .find({ owner: userId, 'manifest.maintainers': { $in: [userId] } })
     .sort({ updatedAt: -1 })
     .skip(offset)
@@ -58,6 +58,6 @@ export async function getPacksByMaintainerId(
 export async function getPack(
   manifestId: string,
 ): Promise<Schema.Pack | null> {
-  return await database.packs
+  return await db.packs
     .findOne({ 'manifest.id': manifestId });
 }

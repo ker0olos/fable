@@ -1,6 +1,6 @@
 // deno-lint-ignore-file
 
-import database, { type ObjectId } from '~/db/mod.ts';
+import db, { type ObjectId } from '~/db/mod.ts';
 
 import { getFloorExp } from '~/src/tower.ts';
 
@@ -100,18 +100,18 @@ export async function gainExp(
   party: ObjectId[],
   keys: number,
 ): Promise<Status[]> {
-  const session = database.client.startSession();
+  const session = db.client.startSession();
 
   const status: Status[] = [];
 
   const bulk: Parameters<
-    typeof database.characters.bulkWrite
+    typeof db.characters.bulkWrite
   >[0] = [];
 
   try {
     session.startTransaction();
 
-    const inventory = await database.inventories.updateOne(
+    const inventory = await db.inventories.updateOne(
       { userId, guildId },
       { $inc: { availableKeys: -keys }, $set: { floorsCleared: floor } },
       { session },
@@ -121,7 +121,7 @@ export async function gainExp(
       throw new Error();
     }
 
-    const characters = await database.characters.find(
+    const characters = await db.characters.find(
       { userId, guildId, _id: { $in: party } },
     ).toArray();
 
@@ -201,7 +201,7 @@ export async function gainExp(
       });
     });
 
-    const update = await database.characters.bulkWrite(bulk, { session });
+    const update = await db.characters.bulkWrite(bulk, { session });
 
     if (update.modifiedCount !== characters.length) {
       throw new Error();

@@ -1,4 +1,4 @@
-import database, { STEAL_COOLDOWN_HOURS } from '~/db/mod.ts';
+import db, { STEAL_COOLDOWN_HOURS } from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -45,7 +45,7 @@ export const newInventory = (
 
 export async function getUser(userId: string): Promise<WithId<Schema.User>> {
   // deno-lint-ignore no-non-null-assertion
-  const result = (await database.users.findOneAndUpdate(
+  const result = (await db.users.findOneAndUpdate(
     { discordId: userId },
     { $setOnInsert: newUser(userId) }, // only invoked if document isn't found
     { upsert: true, returnDocument: 'after' },
@@ -56,14 +56,14 @@ export async function getUser(userId: string): Promise<WithId<Schema.User>> {
 
 export async function forceNewUser(userId: string): Promise<Schema.User> {
   const user = newUser(userId);
-  return (await database.users.insertOne(user), user);
+  return (await db.users.insertOne(user), user);
 }
 
 export async function getGuild(
   guildId: string,
 ): Promise<Schema.PopulatedGuild> {
   // deno-lint-ignore no-non-null-assertion
-  const { _id } = (await database.guilds.findOneAndUpdate(
+  const { _id } = (await db.guilds.findOneAndUpdate(
     { guildId },
     { $setOnInsert: newGuild(guildId) }, // only invoked if document isn't found
     { upsert: true, returnDocument: 'after' },
@@ -71,7 +71,7 @@ export async function getGuild(
 
   // populate the guild with the relevant relations
   // unfortunately cannot be done in the same step as findOrInsert
-  const [result] = await database.guilds.aggregate()
+  const [result] = await db.guilds.aggregate()
     .match({ _id })
     //
     .lookup({
@@ -90,7 +90,7 @@ export async function getInventory(
   userId: string,
 ): Promise<Schema.PopulatedInventory> {
   // deno-lint-ignore no-non-null-assertion
-  const { _id } = (await database.inventories.findOneAndUpdate(
+  const { _id } = (await db.inventories.findOneAndUpdate(
     { guildId, userId },
     { $setOnInsert: newInventory(guildId, userId) }, // only invoked if document isn't found
     { upsert: true, returnDocument: 'after' },
@@ -98,7 +98,7 @@ export async function getInventory(
 
   // populate the inventory with the relevant relations
   // unfortunately cannot be done in the same step as findOrInsert
-  const [result] = await database.inventories.aggregate()
+  const [result] = await db.inventories.aggregate()
     .match({ _id })
     //
     .lookup({
@@ -192,7 +192,7 @@ export async function rechargeConsumables(
   guildId: string,
   userId: string,
 ): Promise<Schema.PopulatedInventory> {
-  const inventory = await database.getInventory(guildId, userId);
+  const inventory = await db.getInventory(guildId, userId);
 
   const { user } = inventory;
 
@@ -276,7 +276,7 @@ export async function rechargeConsumables(
       ? 2 // increase by 2 tokens on weekends
       : 1; // increase by 1 on weekdays
 
-    await database.users.updateOne({ discordId: user.discordId }, {
+    await db.users.updateOne({ discordId: user.discordId }, {
       $set: {
         dailyTimestamp: new Date(),
         availableTokens: user.availableTokens + newTokens,
@@ -288,7 +288,7 @@ export async function rechargeConsumables(
     $unset.stealTimestamp = '';
   }
 
-  await database.inventories.updateOne(
+  await db.inventories.updateOne(
     { _id: inventory._id },
     { $set, $unset },
   );
@@ -305,7 +305,7 @@ export async function getActiveUsersIfLiked(
 
   twoWeeks.setDate(twoWeeks.getDate() - (7 * 2));
 
-  const results = await database.inventories.aggregate()
+  const results = await db.inventories.aggregate()
     .match({
       guildId,
       $or: [
@@ -335,5 +335,5 @@ export async function getUserCharacters(
   userId: string,
   guildId: string,
 ): Promise<WithId<Schema.Character>[]> {
-  return await database.characters.find({ userId, guildId }).toArray();
+  return await db.characters.find({ userId, guildId }).toArray();
 }

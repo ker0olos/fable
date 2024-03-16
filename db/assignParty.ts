@@ -1,4 +1,4 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -8,7 +8,7 @@ export async function assignCharacter(
   characterId: string,
   spot?: 1 | 2 | 3 | 4 | 5,
 ): Promise<Schema.Character> {
-  const character = await database.characters.findOne(
+  const character = await db.characters.findOne(
     { userId, guildId, characterId },
   );
 
@@ -17,7 +17,7 @@ export async function assignCharacter(
   }
 
   // deno-lint-ignore no-non-null-assertion
-  const inventory = (await database.inventories.findOne({ userId, guildId }))!;
+  const inventory = (await db.inventories.findOne({ userId, guildId }))!;
 
   // remove character from party
   // if they already are in it
@@ -63,7 +63,7 @@ export async function assignCharacter(
     inventory.party.member5Id = character._id;
   }
 
-  await database.inventories.updateOne(
+  await db.inventories.updateOne(
     { _id: inventory._id },
     { $set: { party: inventory.party } },
   );
@@ -81,7 +81,7 @@ export async function swapSpots(
   inventory.party[`member${a}Id`] = inventory.party[`member${b}Id`];
   inventory.party[`member${b}Id`] = temp;
 
-  await database.inventories.updateOne(
+  await db.inventories.updateOne(
     { _id: inventory._id },
     { $set: { party: inventory.party } },
   );
@@ -92,7 +92,7 @@ export async function unassignCharacter(
   guildId: string,
   spot: 1 | 2 | 3 | 4 | 5,
 ): Promise<void> {
-  await database.inventories.updateOne(
+  await db.inventories.updateOne(
     { userId, guildId },
     { $unset: { [`party.member${spot}Id`]: '' } },
   );

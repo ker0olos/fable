@@ -1,4 +1,4 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import type * as Schema from './schema.ts';
 
@@ -18,7 +18,7 @@ export async function acquireSkill(
 
   const skill = skills[skillKey];
 
-  const document = await database.characters.findOneAndUpdate(
+  const document = await db.characters.findOneAndUpdate(
     {
       userId,
       guildId,

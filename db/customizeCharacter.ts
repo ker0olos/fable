@@ -1,4 +1,4 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import type * as Schema from './schema.ts';
 
@@ -8,7 +8,7 @@ export async function setCharacterNickname(
   characterId: string,
   nickname?: string,
 ): Promise<Schema.Character | null> {
-  const character = await database.characters.findOneAndUpdate(
+  const character = await db.characters.findOneAndUpdate(
     { userId, guildId, characterId },
     nickname ? { $set: { nickname } } : { $unset: { nickname: '' } },
     { returnDocument: 'after' },
@@ -23,7 +23,7 @@ export async function setCharacterImage(
   characterId: string,
   image?: string,
 ): Promise<Schema.Character | null> {
-  const character = await database.characters.findOneAndUpdate(
+  const character = await db.characters.findOneAndUpdate(
     { userId, guildId, characterId },
     image ? { $set: { image } } : { $unset: { image: '' } },
     { returnDocument: 'after' },

@@ -1,4 +1,4 @@
-import database from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import { newGuild } from '~/db/getInventory.ts';
 
@@ -19,7 +19,7 @@ export async function publishPack(
     manifest,
   };
 
-  await database.packs.updateOne(
+  await db.packs.updateOne(
     {
       'manifest.id': manifest.id,
       $or: [
@@ -40,7 +40,7 @@ export async function addPack(
   guildId: string,
   manifestId: string,
 ): Promise<Schema.Pack | null> {
-  const pack = await database.packs.findOne(
+  const pack = await db.packs.findOne(
     { 'manifest.id': manifestId },
   );
 
@@ -55,7 +55,7 @@ export async function addPack(
     return null;
   }
 
-  const guild = await database.guilds.findOneAndUpdate(
+  const guild = await db.guilds.findOneAndUpdate(
     { discordId: guildId },
     {
       $setOnInsert: newGuild(guildId),
@@ -75,7 +75,7 @@ export async function removePack(
   guildId: string,
   manifestId: string,
 ): Promise<Schema.Pack | null> {
-  const pack = await database.packs.findOne(
+  const pack = await db.packs.findOne(
     { 'manifest.id': manifestId },
   );
 
@@ -83,7 +83,7 @@ export async function removePack(
     return null;
   }
 
-  const guild = await database.guilds.findOneAndUpdate(
+  const guild = await db.guilds.findOneAndUpdate(
     { discordId: guildId },
     { $pull: { packIds: pack._id } },
     { returnDocument: 'after' },
