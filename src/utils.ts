@@ -33,6 +33,15 @@ export enum ImageSize {
   Large = 'large',
 }
 
+type DayOfWeek =
+  | 'Sunday'
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday';
+
 class LehmerRNG {
   private seed: number;
 
@@ -362,6 +371,10 @@ function diffInDays(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 3600000 / 24);
 }
 
+function diffInHours(a: Date, b: Date): number {
+  return Math.floor(Math.abs(a.getTime() - b.getTime()) / 3600000);
+}
+
 function diffInMinutes(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 60000);
 }
@@ -463,6 +476,20 @@ function pagination<T, X extends string>(
   } as { [K in X]: T[] } & { length: number; offset: number; limit: number };
 }
 
+function getDayOfWeek(): DayOfWeek {
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+
+  return days[new Date().getUTCDay()] as DayOfWeek;
+}
+
 const utils = {
   LehmerRNG,
   isWithin14Days,
@@ -476,6 +503,8 @@ const utils = {
   decodeDescription,
   diffInDays,
   diffInMinutes,
+  diffInHours,
+  getDayOfWeek,
   distance,
   fetchWithRetry,
   getRandomFloat,

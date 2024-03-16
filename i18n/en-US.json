@@ -123,13 +123,14 @@
   "steal-try-again": "You can try again {0}",
   "steal-unexpected": "Something happened and affected your chances of stealing **{0}**, Please try again!",
 
-  "global-maintenance": "Fable is under maintenance, try again later!",
+  "global-maintenance": "Fable is under maintenance, check back in a few hours!",
   "maintenance-gacha": "Gacha is under maintenance, try again later!",
   "maintenance-merge": "Merging is under maintenance, try again later!",
   "maintenance-trade": "Trading is under maintenance, try again later!",
   "maintenance-steal": "Stealing is under maintenance, try again later!",
   "maintenance-combat": "Combat is under maintenance, try again later!",
   "maintenance-packs": "Community Packs are under maintenance, try again later!",
+  "maintenance-shop": "Shop is under maintenance, try again later!",
 
   "gacha-no-more-pulls": "You don't have any more pulls!",
   "gacha-no-guarantees": "You don`t have any {0}pulls",

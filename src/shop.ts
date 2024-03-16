@@ -2,14 +2,24 @@ import user from '~/src/user.ts';
 
 import i18n from '~/src/i18n.ts';
 
+import config from '~/src/config.ts';
+
 import * as discord from '~/src/discord.ts';
 
 import db, { COSTS } from '~/db/mod.ts';
+
+import { NonFetalError } from '~/src/errors.ts';
 
 function normal(
   { userId, amount }: { userId: string; amount: number },
 ): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
+
+  if (!config.shop) {
+    throw new NonFetalError(
+      i18n.get('maintenance-shop', locale),
+    );
+  }
 
   const message = new discord.Message();
 
@@ -96,6 +106,12 @@ function guaranteed({
   stars: number;
 }): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
+
+  if (!config.shop) {
+    throw new NonFetalError(
+      i18n.get('maintenance-shop', locale),
+    );
+  }
 
   const message = new discord.Message();
 
@@ -190,6 +206,12 @@ function keys(
   { userId, amount }: { userId: string; amount: number },
 ): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
+
+  if (!config.shop) {
+    throw new NonFetalError(
+      i18n.get('maintenance-shop', locale),
+    );
+  }
 
   const message = new discord.Message();
 

@@ -64,7 +64,7 @@ export async function getGuild(
 ): Promise<Schema.PopulatedGuild> {
   // deno-lint-ignore no-non-null-assertion
   const { _id } = (await db.guilds().findOneAndUpdate(
-    { guildId },
+    { discordId: guildId },
     { $setOnInsert: newGuild(guildId) }, // only invoked if document isn't found
     { upsert: true, returnDocument: 'after' },
   ))!;
@@ -224,28 +224,18 @@ export async function rechargeConsumables(
 
   const { dailyTimestamp } = user;
 
-  const dailyTimestampThreshold = new Date();
-
-  dailyTimestampThreshold.setHours(
-    dailyTimestamp.getHours() + RECHARGE_DAILY_TOKENS_HOURS,
-  );
-
-  const newDailyTokens = dailyTimestamp >= dailyTimestampThreshold;
+  const newDailyTokens = utils.diffInHours(dailyTimestamp, new Date()) >=
+    RECHARGE_DAILY_TOKENS_HOURS;
 
   const stealTimestamp = inventory.stealTimestamp;
 
-  const stealTimestampThreshold = new Date();
-
-  stealTimestampThreshold.setHours(
-    stealTimestampThreshold.getHours() + STEAL_COOLDOWN_HOURS,
-  );
-
   const resetSteal = stealTimestamp &&
-    stealTimestamp >= stealTimestampThreshold;
+    utils.diffInHours(stealTimestamp, new Date()) >=
+      STEAL_COOLDOWN_HOURS;
 
   if (
-    newPulls === currentPulls &&
-    newKeys === currentKeys &&
+    !newPulls &&
+    !newKeys &&
     !newDailyTokens &&
     !resetSteal
   ) {
@@ -255,32 +245,49 @@ export async function rechargeConsumables(
   const rechargedPulls = currentPulls + newPulls;
   const rechargedKeys = currentKeys + newKeys;
 
+  const $userSet: Partial<Schema.User> = {};
+
   const $set: Partial<Schema.Inventory> = {};
   const $unset: Partial<{ [K in keyof Schema.Inventory]: '' }> = {};
 
   $set.availablePulls = Math.min(99, rechargedPulls);
   $set.availableKeys = Math.min(99, rechargedKeys);
 
-  $set.rechargeTimestamp = rechargedPulls >= MAX_PULLS
-    ? undefined
-    : new Date(pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS * 60000));
+  if (rechargedPulls < MAX_PULLS) {
+    $set.rechargeTimestamp = new Date(
+      pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS * 60000),
+    );
+  } else {
+    $unset.rechargeTimestamp = '';
+  }
 
-  $set.keysTimestamp = rechargedKeys >= MAX_KEYS ? undefined : new Date(
-    keysTimestamp.getTime() + (newKeys * RECHARGE_KEYS_MINS * 60000),
-  );
+  if (rechargedKeys < MAX_KEYS) {
+    $set.keysTimestamp = new Date(
+      keysTimestamp.getTime() + (newKeys * RECHARGE_KEYS_MINS * 60000),
+    );
+  } else {
+    $unset.keysTimestamp = '';
+  }
 
   if (newDailyTokens) {
-    const dayOfWeek = new Date().getUTCDay();
+    let newTokens = 1;
 
-    const newTokens = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5
-      ? 2 // increase by 2 tokens on weekends
-      : 1; // increase by 1 on weekdays
+    // reward extra token on weekends
+    switch (utils.getDayOfWeek()) {
+      case 'Friday':
+      case 'Saturday':
+      case 'Sunday':
+        newTokens += 1;
+        break;
+      default:
+        break;
+    }
+
+    $userSet.dailyTimestamp = new Date();
+    $userSet.availableTokens = user.availableTokens + newTokens;
 
     await db.users().updateOne({ discordId: user.discordId }, {
-      $set: {
-        dailyTimestamp: new Date(),
-        availableTokens: user.availableTokens + newTokens,
-      },
+      $set: $userSet,
     });
   }
 
@@ -293,7 +300,15 @@ export async function rechargeConsumables(
     { $set, $unset },
   );
 
-  return { ...inventory, ...$set };
+  const t = { ...inventory, ...$set };
+
+  t.user = { ...t.user, ...$userSet };
+
+  Object.keys($unset).forEach((key) => {
+    delete t[key as keyof Schema.PopulatedInventory];
+  });
+
+  return t;
 }
 
 export async function getActiveUsersIfLiked(
