@@ -1376,7 +1376,7 @@ export const handler = async (r: Request) => {
 if (import.meta.main) {
   await initConfig();
 
-  await database.client.connect();
+  await database.connect();
 
   utils.initSentry({ dsn: config.sentry });
 

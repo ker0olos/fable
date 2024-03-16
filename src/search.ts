@@ -759,9 +759,10 @@ function mediaFound(
           continue;
         }
 
-        const name = `${existing.rating}${discord.emotes.smolStar} ${`<@${
-          existing?.user.discordId
-        }>`} ${utils.wrap(packs.aliasToArray(char.name)[0])}`;
+        const name =
+          `${existing.rating}${discord.emotes.smolStar} ${`<@${existing?.user.discordId}>`} ${
+            utils.wrap(packs.aliasToArray(char.name)[0])
+          }`;
 
         embed.addField({
           inline: false,

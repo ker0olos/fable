@@ -75,14 +75,14 @@ import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 import { disableBuiltins } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
+
 // deno-lint-ignore no-non-null-assertion
 const client = new MongoClient(Deno.env.get('MONGO_URI')!, {
   retryWrites: true,
 });
 
 const db = {
-  client,
-  //
+  connect: client.connect,
   users: client.db().collection<Schema.User>('users'),
   guilds: client.db().collection<Schema.Guild>('guilds'),
   inventories: client.db().collection<Schema.Inventory>('inventories'),
