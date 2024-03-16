@@ -151,7 +151,7 @@ export async function addCharacter(
     };
 
     const deleteSacrifices: Parameters<
-      typeof db.characters.bulkWrite
+      ReturnType<typeof db.characters>['bulkWrite']
     >[0] = [];
 
     // if sacrifices (merge)
@@ -165,7 +165,7 @@ export async function addCharacter(
 
       user.guarantees.splice(i, 1);
 
-      await db.users.updateOne({ _id: user._id }, {
+      await db.users().updateOne({ _id: user._id }, {
         $set: { guarantees: user.guarantees },
       }, { session });
     } else {
@@ -174,13 +174,13 @@ export async function addCharacter(
       update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
     }
 
-    await db.inventories.updateOne(
+    await db.inventories().updateOne(
       { _id: inventory._id },
       { $set: update },
       { session },
     );
 
-    const t = await db.characters.bulkWrite([
+    const t = await db.characters().bulkWrite([
       ...deleteSacrifices,
       { insertOne: { document: newCharacter } },
     ], { session });

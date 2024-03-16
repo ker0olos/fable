@@ -38,7 +38,7 @@ export const MAX_BATTLE_TIME = 3 * 60; // 3 minutes
 
 async function skipBattle(hexId: string): Promise<void> {
   const battleId = ObjectId.createFromHexString(hexId);
-  await db.battles.deleteOne({ _id: battleId });
+  await db.battles().deleteOne({ _id: battleId });
 }
 
 function challengeTower({ token, guildId, user }: {
@@ -220,9 +220,9 @@ async function startCombat(
   let battleData: Schema.BattleData | null = { createdAt: new Date() };
 
   // deno-lint-ignore no-non-null-assertion
-  const { insertedId: battleId } = await db.battles.insertOne(battleData!);
+  const { insertedId: battleId } = await db.battles().insertOne(battleData!);
 
-  const watchStream = db.battles.watch([{
+  const watchStream = db.battles().watch([{
     $match: { _id: battleId },
   }]);
 

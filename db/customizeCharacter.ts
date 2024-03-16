@@ -8,7 +8,7 @@ export async function setCharacterNickname(
   characterId: string,
   nickname?: string,
 ): Promise<Schema.Character | null> {
-  const character = await db.characters.findOneAndUpdate(
+  const character = await db.characters().findOneAndUpdate(
     { userId, guildId, characterId },
     nickname ? { $set: { nickname } } : { $unset: { nickname: '' } },
     { returnDocument: 'after' },
@@ -23,7 +23,7 @@ export async function setCharacterImage(
   characterId: string,
   image?: string,
 ): Promise<Schema.Character | null> {
-  const character = await db.characters.findOneAndUpdate(
+  const character = await db.characters().findOneAndUpdate(
     { userId, guildId, characterId },
     image ? { $set: { image } } : { $unset: { image: '' } },
     { returnDocument: 'after' },

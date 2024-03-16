@@ -6,7 +6,7 @@ export async function likeCharacter(
   userId: string,
   characterId: string,
 ): Promise<void> {
-  await db.users.updateOne(
+  await db.users().updateOne(
     { userId },
     {
       $setOnInsert: newUser(userId),
@@ -20,7 +20,7 @@ export async function unlikeCharacter(
   userId: string,
   characterId: string,
 ): Promise<void> {
-  await db.users.updateOne(
+  await db.users().updateOne(
     { userId },
     { $pull: { likes: { characterId } } },
   );
@@ -30,7 +30,7 @@ export async function likeMedia(
   userId: string,
   mediaId: string,
 ): Promise<void> {
-  await db.users.updateOne(
+  await db.users().updateOne(
     { userId },
     {
       $setOnInsert: newUser(userId),
@@ -44,7 +44,7 @@ export async function unlikeMedia(
   userId: string,
   mediaId: string,
 ): Promise<void> {
-  await db.users.updateOne(
+  await db.users().updateOne(
     { userId },
     { $pull: { likes: { mediaId } } },
   );

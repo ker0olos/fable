@@ -1,3 +1,5 @@
+import { MongoClient } from 'mongodb';
+
 import * as discord from '~/src/discord.ts';
 
 import search, { idPrefix } from '~/src/search.ts';
@@ -1376,9 +1378,11 @@ export const handler = async (r: Request) => {
 if (import.meta.main) {
   await initConfig();
 
-  await db.connect();
-
   utils.initSentry({ dsn: config.sentry });
+
+  // deno-lint-ignore no-non-null-assertion
+  db.client = await new MongoClient(config.mongoUri!, { retryWrites: true })
+    .connect();
 
   utils.serve({
     '/': handler,

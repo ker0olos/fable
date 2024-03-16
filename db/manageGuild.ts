@@ -5,7 +5,7 @@ import { newGuild } from '~/db/getInventory.ts';
 export async function disableBuiltins(
   guildId: string,
 ): Promise<void> {
-  await db.guilds.updateOne(
+  await db.guilds().updateOne(
     { guildId },
     {
       $setOnInsert: newGuild(guildId),

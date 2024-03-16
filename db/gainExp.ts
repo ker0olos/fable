@@ -105,13 +105,13 @@ export async function gainExp(
   const status: Status[] = [];
 
   const bulk: Parameters<
-    typeof db.characters.bulkWrite
+    ReturnType<typeof db.characters>['bulkWrite']
   >[0] = [];
 
   try {
     session.startTransaction();
 
-    const inventory = await db.inventories.updateOne(
+    const inventory = await db.inventories().updateOne(
       { userId, guildId },
       { $inc: { availableKeys: -keys }, $set: { floorsCleared: floor } },
       { session },
@@ -121,7 +121,7 @@ export async function gainExp(
       throw new Error();
     }
 
-    const characters = await db.characters.find(
+    const characters = await db.characters().find(
       { userId, guildId, _id: { $in: party } },
     ).toArray();
 
@@ -201,7 +201,7 @@ export async function gainExp(
       });
     });
 
-    const update = await db.characters.bulkWrite(bulk, { session });
+    const update = await db.characters().bulkWrite(bulk, { session });
 
     if (update.modifiedCount !== characters.length) {
       throw new Error();

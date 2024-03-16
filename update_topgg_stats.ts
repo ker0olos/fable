@@ -13,7 +13,7 @@ if (import.meta.main) {
     throw new Error('TOPGG_TOKEN is not defined');
   }
 
-  const serverCount = await db.guilds.estimatedDocumentCount();
+  const serverCount = await db.guilds().estimatedDocumentCount();
 
   console.log(`APP ID: ${APP_ID}`);
   console.log(`Server Count: ${serverCount}`);

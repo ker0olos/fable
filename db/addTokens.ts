@@ -12,7 +12,7 @@ export async function addTokens(
   userId: string,
   amount: number,
 ): Promise<void> {
-  await db.users.updateOne(
+  await db.users().updateOne(
     { discordId: userId },
     { $inc: { availableTokens: amount } },
   );
@@ -28,7 +28,7 @@ export async function addPulls(
   try {
     session.startTransaction();
 
-    const { modifiedCount } = await db.users.updateOne({
+    const { modifiedCount } = await db.users().updateOne({
       discordId: userId,
       availableTokens: { $gte: amount },
     }, { $inc: { availableTokens: -amount } });
@@ -37,7 +37,7 @@ export async function addPulls(
       throw new Error();
     }
 
-    await db.inventories.updateOne(
+    await db.inventories().updateOne(
       { userId, guildId },
       { $inc: { availablePulls: amount } },
     );
@@ -61,7 +61,7 @@ export async function addGuarantee(
     ? COSTS.FOUR
     : COSTS.THREE;
 
-  const user = await db.users.findOneAndUpdate({
+  const user = await db.users().findOneAndUpdate({
     discordId: userId,
     availableTokens: { $gte: cost },
   }, {
@@ -82,7 +82,7 @@ export async function addKeys(
   try {
     session.startTransaction();
 
-    const { modifiedCount } = await db.users.updateOne({
+    const { modifiedCount } = await db.users().updateOne({
       discordId: userId,
       availableTokens: { $gte: amount },
     }, { $inc: { availableTokens: -amount } });
@@ -91,7 +91,7 @@ export async function addKeys(
       throw new Error();
     }
 
-    await db.inventories.updateOne(
+    await db.inventories().updateOne(
       { userId, guildId },
       { $inc: { availableKeys: amount } },
     );

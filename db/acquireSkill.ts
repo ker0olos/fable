@@ -18,7 +18,7 @@ export async function acquireSkill(
 
   const skill = skills[skillKey];
 
-  const document = await db.characters.findOneAndUpdate(
+  const document = await db.characters().findOneAndUpdate(
     {
       userId,
       guildId,

@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { type Collection, MongoClient } from 'mongodb';
 
 import {
   getActiveUsersIfLiked,
@@ -76,19 +76,28 @@ import { disableBuiltins } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-// deno-lint-ignore no-non-null-assertion
-const client = new MongoClient(Deno.env.get('MONGO_URI')!, {
-  retryWrites: true,
-});
+const _db = {} as { client: MongoClient };
 
 const db = {
-  connect: client.connect,
-  users: client.db().collection<Schema.User>('users'),
-  guilds: client.db().collection<Schema.Guild>('guilds'),
-  inventories: client.db().collection<Schema.Inventory>('inventories'),
-  characters: client.db().collection<Schema.Character>('characters'),
-  packs: client.db().collection<Schema.Pack>('packs'),
-  battles: client.db().collection<Schema.BattleData>('battles'),
+  ..._db,
+  users: (): Collection<Schema.User> => {
+    return db.client.db().collection('users');
+  },
+  guilds: (): Collection<Schema.Guild> => {
+    return db.client.db().collection('guilds');
+  },
+  inventories: (): Collection<Schema.Inventory> => {
+    return db.client.db().collection('inventories');
+  },
+  characters: (): Collection<Schema.Character> => {
+    return db.client.db().collection('characters');
+  },
+  packs: (): Collection<Schema.Pack> => {
+    return db.client.db().collection('packs');
+  },
+  battles: (): Collection<Schema.BattleData> => {
+    return db.client.db().collection('battles');
+  },
   //
   getInventory,
   getUser,
