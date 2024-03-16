@@ -4,7 +4,7 @@ import { assertEquals } from '$std/assert/mod.ts';
 
 import { returnsNext, stub } from '$std/testing/mock.ts';
 
-import config, { clearConfig, initConfig } from '../src/config.ts';
+import config, { clearConfig, initConfig } from '~/src/config.ts';
 
 Deno.test('init', async (test) => {
   await test.step('1', async () => {
@@ -48,7 +48,6 @@ Deno.test('init', async (test) => {
         'instatus_hook',
         'app_id',
         'public_key',
-        'topgg_secret',
         'notice_message',
       ]),
     );
@@ -62,7 +61,6 @@ Deno.test('init', async (test) => {
         publicKey: 'public_key',
         sentry: 'sentry_dsn',
         instatus: 'instatus_hook',
-        topggSecret: 'topgg_secret',
         notice: 'notice_message',
         global: true,
         gacha: true,
@@ -128,7 +126,6 @@ Deno.test('init', async (test) => {
         'instatus_hook',
         'app_id',
         'public_key',
-        'topgg_secret',
         'notice_message',
         '0',
         '0',
@@ -151,7 +148,6 @@ Deno.test('init', async (test) => {
         publicKey: 'public_key',
         sentry: 'sentry_dsn',
         instatus: 'instatus_hook',
-        topggSecret: 'topgg_secret',
         notice: 'notice_message',
         gacha: false,
         global: false,

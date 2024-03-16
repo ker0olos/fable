@@ -2,7 +2,6 @@ const config: {
   deploy: boolean;
   appId?: string;
   publicKey?: string;
-  topggSecret?: string;
   sentry?: string;
   instatus?: string;
   origin?: string;
@@ -23,7 +22,6 @@ const config: {
   deploy: false,
   appId: undefined,
   publicKey: undefined,
-  topggSecret: undefined,
   sentry: undefined,
   instatus: undefined,
   origin: undefined,
@@ -53,8 +51,6 @@ export async function initConfig(): Promise<void> {
     config.appId = Deno.env.get('APP_ID');
 
     config.publicKey = Deno.env.get('PUBLIC_KEY');
-
-    config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
 
     config.notice = Deno.env.get('NOTICE');
 
