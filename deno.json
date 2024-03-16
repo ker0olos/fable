@@ -22,11 +22,11 @@
   "tasks": {
     "discord": "deno run -A --env update_commands.ts",
     "start": "deno run --watch --env -A src/interactions.ts",
-    "tunnel": "deno task start & ngrok http 127.0.0.1:8000 & deno task tunnel_url",
-    "tunnel_url": "timeout 300 bash -c 'until echo > /dev/tcp/localhost/4040; do sleep 1; done' && curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\"",
-    "udd": "deno run -A https://deno.land/x/udd/main.ts deno.json",
-    "index": "deno run -A --env db/_create_indexes.ts",
-    "reset": "docker rm -f mongo && docker run -d -p 27017:27017 -h $(hostname) --name mongo mongo:latest --replSet=test && sleep 2 && docker exec mongo mongosh --quiet --eval \"rs.initiate();\" && deno task index"
+    "tunnel": "concurrently \"deno task mongodb\" \"sleep 2 && deno task start\" \"ngrok http 127.0.0.1:8000\" \"deno task tunnel_url\"",
+    "tunnel_url": "timeout 400 bash -c 'until echo > /dev/tcp/localhost/4040; do sleep 1; done' && curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\"",
+    "index": "deno run -A --env db/ensureIndexes.ts",
+    "mongodb": "deno run -A start_memory_mongo.ts",
+    "udd": "deno run -A https://deno.land/x/udd/main.ts deno.json"
   },
   "fmt": {
     "useTabs": false,
@@ -43,7 +43,7 @@
   },
   "imports": {
     "~/": "./",
-    "$std/": "https://deno.land/std@0.219.1/",
+    "$std/": "https://deno.land/std@0.220.1/",
     "dax": "https://deno.land/x/dax@0.39.2/mod.ts",
     "ajv": "https://esm.sh/ajv@8.12.0",
     "awesome-ajv": "https://esm.sh/awesome-ajv-errors@5.1.0",
@@ -51,6 +51,7 @@
     "sentry": "https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts",
     "sift": "https://raw.githubusercontent.com/ker0olos/sift/62110006c2d070fa6f00d5007a3a19dea6cd1d4d/mod.ts",
     "tweetnacl": "https://esm.sh/tweetnacl@1.0.3",
-    "mongodb": "npm:mongodb"
+    "mongodb": "npm:mongodb",
+    "mongodb-memory-server": "npm:mongodb-memory-server-core"
   }
 }

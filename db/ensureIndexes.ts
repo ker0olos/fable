@@ -11,7 +11,7 @@ enum Direction {
   descending = -1,
 }
 
-try {
+if (import.meta.main) {
   await createGuildsIndexes();
   await createUsersIndexes();
   await createInventoriesIndexes();
@@ -19,9 +19,7 @@ try {
   await createPacksIndexes();
   await createBattleIndexes();
 
-  console.log(green('Done'));
-} finally {
-  await database.client.close();
+  console.log(green('Ensured Database Indexes'));
 }
 
 async function createGuildsIndexes() {

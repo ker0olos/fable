@@ -80,7 +80,6 @@ export async function getGuild(
       from: 'packs',
       as: 'packs',
     })
-    .unwind('$packs')
     .toArray();
 
   return result as Schema.PopulatedGuild;

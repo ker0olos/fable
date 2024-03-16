@@ -13,7 +13,6 @@ export async function getPopularPacks(
       foreignField: '_id',
       as: 'packs',
     })
-    .unwind('$packs')
     .match({
       $and: [
         { 'packs.hidden': false },

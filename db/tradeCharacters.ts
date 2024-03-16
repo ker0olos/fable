@@ -36,7 +36,6 @@ export async function giveCharacters(
         from: 'inventories',
         as: 'inventory',
       })
-      .unwind('$inventory')
       .toArray() as Schema.PopulatedCharacter[];
 
     if (giveCharacters.length !== giveIds.length) {
@@ -138,7 +137,6 @@ export async function tradeCharacters(
         from: 'inventories',
         as: 'inventory',
       })
-      .unwind('$inventory')
       .toArray() as Schema.PopulatedCharacter[];
 
     const takeCharacters = await database.characters.aggregate()
@@ -153,7 +151,6 @@ export async function tradeCharacters(
         from: 'inventories',
         as: 'inventory',
       })
-      .unwind('$inventory')
       .toArray() as Schema.PopulatedCharacter[];
 
     if (
@@ -240,7 +237,6 @@ export async function stealCharacter(
         from: 'inventories',
         as: 'inventory',
       })
-      .unwind('$inventory')
       .toArray() as Schema.PopulatedCharacter[];
 
     if (!character) {

@@ -27,9 +27,6 @@ async function aggregateCharacters(
       as: 'inventory',
     })
     //
-    .unwind('$user')
-    .unwind('$guild')
-    .unwind('$inventory')
     //
     .toArray();
 

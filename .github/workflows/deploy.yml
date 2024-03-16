@@ -58,7 +58,7 @@ jobs:
           deno-version: v1.x
       - run: deno task index
         env:
-          MONGO_URL: ${{ secrets.MONGO_URL }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
       - uses: denoland/deployctl@v1
         with:
           project: ${{ secrets.DENO_ID }}

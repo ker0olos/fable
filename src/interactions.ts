@@ -1401,6 +1401,4 @@ if (import.meta.main) {
       );
     },
   });
-
-  // await database.client.close();
 }
