@@ -2,40 +2,50 @@ import db from '~/db/mod.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
+type PopularPack = {
+  servers: number;
+  pack: Schema.Pack;
+};
+
 export async function getPopularPacks(
   offset = 0,
   limit = 20,
-): Promise<Schema.Pack[]> {
+): Promise<PopularPack[]> {
   const packs = await db.guilds().aggregate()
+    .unwind('$packIds')
+    .group({
+      _id: '$packIds',
+      servers: { $sum: 1 },
+    })
     .lookup({
       from: 'packs',
-      localField: 'packIds',
-      foreignField: '_id',
-      as: 'packs',
+      localField: '_id',
+      foreignField: 'manifest.id',
+      as: 'pack',
     })
+    .unwind('$pack')
     .match({
       $and: [
-        { 'packs.hidden': false },
+        { 'pack.hidden': false },
         {
-          $or: [{ 'packs.manifest.nsfw': false }, {
-            'packs.manifest.nsfw': null,
-          }],
+          $or: [
+            { 'pack.manifest.nsfw': false },
+            { 'pack.manifest.nsfw': null },
+          ],
         },
         {
-          $or: [{ 'packs.manifest.private': false }, {
-            'packs.manifest.private': null,
-          }],
+          $or: [
+            { 'pack.manifest.private': false },
+            { 'pack.manifest.private': null },
+          ],
         },
       ],
     })
-    .group({
-      _id: '$packs._id',
-      count: { $sum: 1 },
-    })
-    .sort({ count: -1 })
+    .sort({ servers: -1 })
     .skip(offset)
     .limit(limit)
-    .toArray() as Schema.Pack[];
+    .project({ _id: 0 })
+    .toArray() as PopularPack[];
 
   return packs;
 }
@@ -46,7 +56,12 @@ export async function getPacksByMaintainerId(
   limit = 20,
 ): Promise<Schema.Pack[]> {
   const packs = await db.packs()
-    .find({ owner: userId, 'manifest.maintainers': { $in: [userId] } })
+    .find({
+      $or: [
+        { owner: userId },
+        { 'manifest.maintainers': { $in: [userId] } },
+      ],
+    })
     .sort({ updatedAt: -1 })
     .skip(offset)
     .limit(limit)
@@ -57,7 +72,32 @@ export async function getPacksByMaintainerId(
 
 export async function getPack(
   manifestId: string,
+  userId?: string,
 ): Promise<Schema.Pack | null> {
-  return await db.packs()
-    .findOne({ 'manifest.id': manifestId });
+  if (typeof userId === 'string') {
+    return await db.packs()
+      .findOne({
+        'manifest.id': manifestId,
+        $or: [
+          { 'manifest.private': null },
+          { 'manifest.private': false },
+          {
+            'manifest.private': true,
+            $or: [
+              { owner: userId },
+              { 'manifest.maintainers': { $in: [userId] } },
+            ],
+          },
+        ],
+      });
+  } else {
+    return await db.packs()
+      .findOne({
+        'manifest.id': manifestId,
+        $or: [
+          { 'manifest.private': null },
+          { 'manifest.private': false },
+        ],
+      });
+  }
 }

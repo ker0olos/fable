@@ -18,12 +18,11 @@
     "exclude": ["images-proxy", "dyn-images", "search-index"]
   },
   "lock": false,
-  "unstable": ["kv"],
   "tasks": {
     "discord": "deno run -A --env update_commands.ts",
     "start": "deno run --watch --env -A src/interactions.ts",
-    "tunnel": "concurrently \"deno task mongodb\" \"sleep 2 && deno task start\" \"ngrok http 127.0.0.1:8000\" \"deno task tunnel_url\"",
-    "tunnel_url": "timeout 400 bash -c 'until echo > /dev/tcp/localhost/4040; do sleep 1; done' && curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\"",
+    "tunnel": "concurrently \"sleep 2 && deno task start\" \"sleep 3 && ngrok http 127.0.0.1:8000\" \"sleep 4 && deno task tunnel_url\"",
+    "tunnel_url": "curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\"",
     "index": "deno run -A --env db/ensureIndexes.ts",
     "mongodb": "deno run -A start_memory_mongo.ts",
     "udd": "deno run -A https://deno.land/x/udd/main.ts deno.json"
