@@ -62,7 +62,13 @@ export const newInventory = (
   availablePulls: MAX_NEW_PULLS,
   availableKeys: MAX_KEYS,
   floorsCleared: 0,
-  party: {},
+  party: {
+    member1Id: null,
+    member2Id: null,
+    member3Id: null,
+    member4Id: null,
+    member5Id: null,
+  },
 });
 
 export async function getUser(userId: string): Promise<WithId<Schema.User>> {

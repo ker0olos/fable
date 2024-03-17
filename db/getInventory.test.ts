@@ -620,7 +620,7 @@ describe('db.rechargeConsumables()', () => {
     ]);
   });
 
-  it.only('reset steal cooldown (3 day ago)', async () => {
+  it('reset steal cooldown (3 day ago)', async () => {
     await db.inventories().insertOne(
       {
         guildId: 'guild-id',

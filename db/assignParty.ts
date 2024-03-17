@@ -1,5 +1,7 @@
 import db from '~/db/mod.ts';
 
+import type { WithId } from 'mongodb';
+
 import type * as Schema from '~/db/schema.ts';
 
 export async function assignCharacter(
@@ -28,8 +30,8 @@ export async function assignCharacter(
     inventory.party.member4Id,
     inventory.party.member5Id,
   ].forEach((id, i) => {
-    if (character._id === id) {
-      delete inventory.party[`member${(i + 1) as 1 | 2 | 3 | 4 | 5}Id`];
+    if (character._id.equals(id)) {
+      inventory.party[`member${(i + 1) as 1 | 2 | 3 | 4 | 5}Id`] = null;
     }
   });
 
@@ -72,7 +74,7 @@ export async function assignCharacter(
 }
 
 export async function swapSpots(
-  inventory: Schema.PopulatedInventory,
+  inventory: WithId<Schema.Inventory>,
   a: 1 | 2 | 3 | 4 | 5,
   b: 1 | 2 | 3 | 4 | 5,
 ): Promise<void> {
@@ -94,6 +96,6 @@ export async function unassignCharacter(
 ): Promise<void> {
   await db.inventories().updateOne(
     { userId, guildId },
-    { $unset: { [`party.member${spot}Id`]: '' } },
+    { $set: { [`party.member${spot}Id`]: undefined } },
   );
 }

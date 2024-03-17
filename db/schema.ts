@@ -36,17 +36,16 @@ export interface Inventory {
   stealTimestamp?: Date;
 
   party: {
-    member1Id?: ObjectId;
-    member2Id?: ObjectId;
-    member3Id?: ObjectId;
-    member4Id?: ObjectId;
-    member5Id?: ObjectId;
+    member1Id: ObjectId | null;
+    member2Id: ObjectId | null;
+    member3Id: ObjectId | null;
+    member4Id: ObjectId | null;
+    member5Id: ObjectId | null;
   };
 }
 
 export type PopulatedInventory = WithId<Inventory> & {
   user: WithId<User>;
-  // guild?: WithId<Guild>;
   party: {
     member1?: WithId<Character>;
     member2?: WithId<Character>;
@@ -84,9 +83,6 @@ export interface Pack {
   manifest: Manifest;
   approved: boolean;
   hidden: boolean;
-  // version: number;
-  // servers?: number;
-  // guildIds: ObjectId[];
 }
 
 export interface BattleData {
@@ -104,7 +100,6 @@ export interface CharacterCombat {
   skillPoints: number;
   skills: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
 
-  // unclaimedStatsPoints?: number;
   curStats: CharacterStats;
   baseStats: CharacterStats;
 }
@@ -120,12 +115,6 @@ export interface Like {
   mediaId?: string;
   characterId?: string;
 }
-
-// export interface PackInstall {
-//   pack: string;
-//   timestamp: string;
-//   by: string;
-// }
 
 export interface Party {
   member1?: Character;
