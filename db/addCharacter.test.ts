@@ -33,6 +33,7 @@ describe('db.addCharacter()', () => {
   afterEach(async () => {
     await db.client.close();
     await mongod.stop();
+    await mongod.cleanup({ doCleanup: true, force: true });
   });
 
   it('normal pull', async () => {
@@ -84,6 +85,8 @@ describe('db.addCharacter()', () => {
     assertWithinLast5secs(inventory!.rechargeTimestamp!);
 
     assertEquals(inventory!.availablePulls, 9);
+
+    console.log('ending of test');
   });
 
   // it('guaranteed pull', async () => {
