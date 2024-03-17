@@ -56,7 +56,7 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno task index
+      - run: deno run -A db/ensureIndexes.ts
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
       - uses: denoland/deployctl@v1

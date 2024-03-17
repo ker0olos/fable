@@ -1,5 +1,0 @@
-coverage:
-  status:
-    patch: off
-    default_rules:
-      patch: off

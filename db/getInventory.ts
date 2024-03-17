@@ -110,7 +110,6 @@ export async function getGuild(
   // unfortunately cannot be done in the same step as findOrInsert
   const [result] = await db.guilds().aggregate()
     .match({ _id })
-    //
     .lookup({
       localField: 'packIds',
       foreignField: 'manifest.id',

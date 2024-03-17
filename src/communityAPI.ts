@@ -150,8 +150,8 @@ export async function popular(req: Request): Promise<Response> {
   const packs = await db.getPopularPacks(offset, limit);
 
   const data = {
-    packs: packs.map((pack) => ({
-      ...pack,
+    packs: packs.map(({ servers, pack }) => ({
+      servers,
       manifest: {
         id: pack.manifest.id,
         title: pack.manifest.title,
@@ -179,7 +179,7 @@ export async function pack(
     return utils.json({ error: error.message }, { status: error.status });
   }
 
-  let userId = '';
+  let userId: string | undefined;
 
   const packId = params?.packId;
 
@@ -216,26 +216,17 @@ export async function pack(
 
     if (auth.ok) {
       const { id } = await auth.json();
+
       userId = id;
     }
   }
 
-  const pack = await db.getPack(packId);
+  const pack = await db.getPack(packId, userId);
 
   if (!pack) {
     return utils.json(
       { error: 'Not Found' },
       { status: 404, statusText: 'Not Found' },
-    );
-  }
-
-  if (
-    pack.manifest.private && pack.owner !== userId &&
-    !pack.manifest.maintainers?.includes(userId)
-  ) {
-    return utils.json(
-      { error: 'Forbidden' },
-      { status: 403, statusText: 'Forbidden' },
     );
   }
 
