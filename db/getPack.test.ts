@@ -304,7 +304,7 @@ describe('db.getPack()', () => {
   });
 
   it('private (not owned)', async () => {
-    const { insertedId } = await db.packs().insertOne({
+    await db.packs().insertOne({
       owner: 'maintainer-id',
       manifest: {
         private: true,
