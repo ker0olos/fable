@@ -74,8 +74,6 @@ export interface Character {
 }
 
 export type PopulatedCharacter = WithId<Character> & {
-  user: WithId<User>;
-  guild: WithId<Guild>;
   inventory: WithId<Inventory>;
 };
 

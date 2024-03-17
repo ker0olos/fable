@@ -6,9 +6,9 @@ export async function disableBuiltins(
   guildId: string,
 ): Promise<void> {
   await db.guilds().updateOne(
-    { guildId },
+    { discordId: guildId },
     {
-      $setOnInsert: newGuild(guildId),
+      $setOnInsert: newGuild(guildId, ['excluded', 'builtinsDisabled']),
       $set: { excluded: true, builtinsDisabled: true },
     },
     { upsert: true },

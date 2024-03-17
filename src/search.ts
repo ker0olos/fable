@@ -298,7 +298,7 @@ function character(
 
       const message = characterMessage(character, {
         existing: existing ?? undefined,
-        userId: existing?.user.discordId,
+        userId: existing?.userId,
       });
 
       if (existing) {
@@ -636,7 +636,7 @@ async function mediaCharacters(
     externalLinks: true,
     footer: true,
     existing: existing ?? undefined,
-    userId: existing?.user.discordId,
+    userId: existing?.userId,
   }).addComponents([
     new discord.Component()
       .setId('media', `${media.packId}:${media.id}`)
@@ -760,7 +760,7 @@ function mediaFound(
         }
 
         const name =
-          `${existing.rating}${discord.emotes.smolStar} ${`<@${existing?.user.discordId}>`} ${
+          `${existing.rating}${discord.emotes.smolStar} ${`<@${existing?.userId}>`} ${
             utils.wrap(packs.aliasToArray(char.name)[0])
           }`;
 

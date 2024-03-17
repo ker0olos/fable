@@ -1090,16 +1090,16 @@ function likeslist({
         }
       });
 
-      const results = await db.findCharacters(
+      const results = (await db.findCharacters(
         guildId,
         likes.map(({ characterId }) => characterId)
           .filter(utils.nonNullable),
-      );
+      )).filter(utils.nonNullable);
 
       // filter out characters that are owned by the user
       if (filter) {
         likes = likes.filter((like, i) => {
-          return like.characterId && results[i].user.discordId !== userId;
+          return like.characterId && results[i].userId !== userId;
         });
       }
 
@@ -1142,7 +1142,7 @@ function likeslist({
             : undefined;
 
           const name = `${rating}${discord.emotes.smolStar} ${
-            existing ? `<@${existing?.user.discordId}> ` : ''
+            existing ? `<@${existing?.userId}> ` : ''
           }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
           if (

@@ -150,7 +150,7 @@ function pre({ token, userId, guildId, search, id }: {
         throw new Error('404');
       }
 
-      if (existing.user.discordId === userId) {
+      if (existing.userId === userId) {
         throw new NonFetalError(i18n.get('stealing-from-yourself', locale));
       }
 
@@ -173,7 +173,7 @@ function pre({ token, userId, guildId, search, id }: {
               i18n.get(
                 'stealing-party-member',
                 locale,
-                `<@${existing.user.discordId}>`,
+                `<@${existing.userId}>`,
                 characterName,
               ),
             ),
@@ -202,7 +202,7 @@ function pre({ token, userId, guildId, search, id }: {
             mediaId: existing.mediaId,
           },
         })
-          .setDescription(`<@${existing.user.discordId}>`),
+          .setDescription(`<@${existing.userId}>`),
       );
 
       const chance = getChances(existing, inactiveDays);
@@ -394,7 +394,7 @@ function attempt({
         message.patch(token);
 
         return new discord.Message()
-          .setContent(`<@${existing.user.discordId}>`)
+          .setContent(`<@${existing.userId}>`)
           .addEmbed(
             new discord.Embed().setDescription(
               i18n.get('stolen-from-you', locale, characterName),

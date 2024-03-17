@@ -20,7 +20,7 @@ export const newUser = (
   userId: string,
   omit?: (keyof Schema.User)[],
 ): Schema.User => {
-  const newUser = {
+  const user = {
     discordId: userId,
     dailyTimestamp: new Date(),
     availableTokens: 0,
@@ -29,18 +29,29 @@ export const newUser = (
   };
 
   omit?.forEach((key) => {
-    delete newUser[key];
+    delete user[key];
   });
 
-  return newUser;
+  return user;
 };
 
-export const newGuild = (guildId: string): Schema.Guild => ({
-  excluded: false,
-  builtinsDisabled: false,
-  discordId: guildId,
-  packIds: [],
-});
+export const newGuild = (
+  guildId: string,
+  omit?: (keyof Schema.Guild)[],
+): Schema.Guild => {
+  const guild = {
+    excluded: false,
+    builtinsDisabled: false,
+    discordId: guildId,
+    packIds: [],
+  };
+
+  omit?.forEach((key) => {
+    delete guild[key];
+  });
+
+  return guild;
+};
 
 export const newInventory = (
   guildId: string,

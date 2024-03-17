@@ -336,7 +336,7 @@ function preAcquire(
         return await message.patch(token);
       }
 
-      if (existing.user.discordId !== userId) {
+      if (existing.userId !== userId) {
         const message = new discord.Message();
 
         const embed = search.characterEmbed(character, {
@@ -344,7 +344,7 @@ function preAcquire(
           media: { title: false },
           description: false,
           footer: false,
-          userId: existing.user.discordId,
+          userId: existing.userId,
           existing: { rating: existing.rating },
         });
 

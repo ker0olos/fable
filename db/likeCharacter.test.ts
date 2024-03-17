@@ -4,7 +4,7 @@ import { MongoClient } from 'mongodb';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertEquals } from '$std/assert/mod.ts';
+import { assertObjectMatch } from '$std/assert/mod.ts';
 
 import db from '~/db/mod.ts';
 
@@ -23,21 +23,20 @@ describe('db.likeCharacter()', () => {
     await mongod.stop();
   });
 
-  it('like character (insert new user)', async () => {
-    // const { insertedId } = await db.characters().insertOne({
-    //   userId: 'user-id',
-    //   guildId: 'guild-id',
-    //   characterId: 'character-id',
-    // } as any);
-
+  it('insert new user', async () => {
     await db.likeCharacter('user-id', 'character-id');
 
     const user = await db.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(user!.likes, [{ characterId: 'character-id' }]);
+    assertObjectMatch(user!, {
+      discordId: 'user-id',
+      likes: [
+        { characterId: 'character-id' },
+      ],
+    });
   });
 
-  it('like character (existing user)', async () => {
+  it('existing user', async () => {
     const { insertedId } = await db.users().insertOne({
       discordId: 'user-id',
       likes: [{ characterId: 'character-1' }],
@@ -47,11 +46,14 @@ describe('db.likeCharacter()', () => {
 
     const user = await db.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(user!._id, insertedId);
-    assertEquals(user!.likes, [
-      { characterId: 'character-1' },
-      { characterId: 'character-2' },
-    ]);
+    assertObjectMatch(user!, {
+      _id: insertedId,
+      discordId: 'user-id',
+      likes: [
+        { characterId: 'character-1' },
+        { characterId: 'character-2' },
+      ],
+    });
   });
 });
 
@@ -68,15 +70,20 @@ describe('db.likeMedia()', () => {
     await mongod.stop();
   });
 
-  it('like media (insert new user)', async () => {
+  it('insert new user', async () => {
     await db.likeMedia('user-id', 'media-id');
 
     const user = await db.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(user!.likes, [{ mediaId: 'media-id' }]);
+    assertObjectMatch(user!, {
+      discordId: 'user-id',
+      likes: [
+        { mediaId: 'media-id' },
+      ],
+    });
   });
 
-  it('like media (existing user)', async () => {
+  it('existing user', async () => {
     const { insertedId } = await db.users().insertOne({
       discordId: 'user-id',
       likes: [{ mediaId: 'media-1' }],
@@ -86,10 +93,13 @@ describe('db.likeMedia()', () => {
 
     const user = await db.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(user!._id, insertedId);
-    assertEquals(user!.likes, [
-      { mediaId: 'media-1' },
-      { mediaId: 'media-2' },
-    ]);
+    assertObjectMatch(user!, {
+      _id: insertedId,
+      discordId: 'user-id',
+      likes: [
+        { mediaId: 'media-1' },
+        { mediaId: 'media-2' },
+      ],
+    });
   });
 });

@@ -12,8 +12,6 @@ import { skills } from '~/src/skills.ts';
 
 import * as discord from '~/src/discord.ts';
 
-import db from '~/db/mod.ts';
-
 import { experienceToNextLevel } from '~/db/gainExp.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
@@ -22,10 +20,10 @@ import type * as Schema from '~/db/schema.ts';
 
 import type { SkillKey } from '~/src/types.ts';
 
-function view({ token, character, characterSchema, userId, guildId }: {
+function view({ token, character, existing, userId, guildId }: {
   token: string;
   character: string;
-  characterSchema?: Schema.Character;
+  existing?: Schema.Character;
   guildId: string;
   userId: string;
 }): discord.Message {
@@ -43,7 +41,7 @@ function view({ token, character, characterSchema, userId, guildId }: {
       ? { ids: [character.substring(idPrefix.length)], guildId }
       : { search: character, guildId },
   )
-    .then(async (results) => {
+    .then((results) => {
       if (!results.length) {
         throw new Error('404');
       }
@@ -52,18 +50,10 @@ function view({ token, character, characterSchema, userId, guildId }: {
         throw new Error('404');
       }
 
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
-      return Promise.all([
-        results[0],
-        characterSchema
-          ? { character: characterSchema, user: undefined }
-          : db.initStats(instance, `${results[0].packId}:${results[0].id}`),
-      ]);
+      return { character: results[0]!, existing };
     })
-    .then(async ([character, existing]) => {
-      if (!existing?.character) {
+    .then(async ({ character, existing }) => {
+      if (!existing) {
         const message = new discord.Message();
 
         const embed = search.characterEmbed(character, {
@@ -84,26 +74,26 @@ function view({ token, character, characterSchema, userId, guildId }: {
 
       const message = new discord.Message();
 
-      const skillPoints = existing.character.combat!.skillPoints ?? 0;
+      const skillPoints = existing.combat!.skillPoints ?? 0;
 
-      // const unclaimed = existing.character.combat!.unclaimedStatsPoints!;
+      // const unclaimed = existing.combat!.unclaimedStatsPoints!;
 
-      const stats = existing.character.combat!.curStats!;
+      const stats = existing.combat!.curStats!;
 
-      const exp = existing.character.combat!.exp ?? 0;
-      const level = existing.character.combat!.level ?? 1;
+      const exp = existing.combat!.exp ?? 0;
+      const level = existing.combat!.level ?? 1;
       const expToLevel = experienceToNextLevel(level);
 
-      const _skills = Object.entries(existing.character.combat?.skills ?? {});
+      const _skills = Object.entries(existing.combat?.skills ?? {});
 
       const embed = search.characterEmbed(character, {
         footer: false,
         existing: {
-          image: existing.character.image,
-          nickname: existing.character.nickname,
-          rating: existing.character.rating,
+          image: existing.image,
+          nickname: existing.nickname,
+          rating: existing.rating,
         },
-        userId: existing.user?.id,
+        userId: existing.userId,
         suffix: `${i18n.get('level', locale)} ${level}\n${exp}/${expToLevel}`,
         media: { title: false },
         description: false,
@@ -147,14 +137,14 @@ function view({ token, character, characterSchema, userId, guildId }: {
       message.addComponents([
         new discord.Component()
           .setLabel('/character')
-          .setId(`character`, existing.character.id),
+          .setId(`character`, existing.characterId),
         new discord.Component()
           .setLabel('/like')
-          .setId(`like`, existing.character.id),
-        existing.user?.id === userId
+          .setId(`like`, existing.characterId),
+        existing.userId === userId
           ? new discord.Component()
             .setLabel('/p assign')
-            .setId(`passign`, userId, existing.character.id)
+            .setId(`passign`, userId, existing.characterId)
           : undefined,
       ].filter(utils.nonNullable));
 
