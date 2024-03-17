@@ -169,12 +169,25 @@ describe('db.removePack()', () => {
       packIds: [pack1Id, pack2Id],
     } as any);
 
-    await db.removePack('guild-id', 'pack-1');
+    const pack = await db.removePack('guild-id', 'pack-1');
 
     const guild = await db.guilds().findOne({
       _id: guildInsertedId,
     });
 
+    assertEquals(pack!.manifest.id, 'pack-1');
+
     assertEquals(guild!.packIds, [pack2Id] as any);
+  });
+
+  it('not found', async () => {
+    const { insertedId: _guildInsertedId } = await db.guilds().insertOne({
+      discordId: 'guild-id',
+      packIds: [],
+    } as any);
+
+    const pack = await db.removePack('guild-id', 'pack-1');
+
+    assertEquals(pack, null);
   });
 });

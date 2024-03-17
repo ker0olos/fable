@@ -26,9 +26,9 @@ import {
   MediaType,
 } from '../src/types.ts';
 
-import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
-import { NonFetalError } from '../src/errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
 Deno.test('/media', async (test) => {
   await test.step('normal', async () => {
@@ -54,12 +54,6 @@ Deno.test('/media', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => '' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
       () => '' as any,
     );
 
@@ -142,7 +136,6 @@ Deno.test('/media', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -173,12 +166,6 @@ Deno.test('/media', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => '' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
       () => '' as any,
     );
 
@@ -256,7 +243,6 @@ Deno.test('/media', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -287,12 +273,6 @@ Deno.test('/media', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => '' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
       () => '' as any,
     );
 
@@ -370,7 +350,6 @@ Deno.test('/media', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -407,12 +386,6 @@ Deno.test('/media', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => '' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
       () => '' as any,
     );
 
@@ -514,7 +487,6 @@ Deno.test('/media', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -540,12 +512,6 @@ Deno.test('/media', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => '' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
       () => '' as any,
     );
 
@@ -621,7 +587,6 @@ Deno.test('/media', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -656,12 +621,6 @@ Deno.test('/media', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => '' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
       () => '' as any,
     );
 
@@ -750,7 +709,6 @@ Deno.test('/media', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -825,12 +783,6 @@ Deno.test('/media', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => '' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
       () => '' as any,
     );
 
@@ -938,7 +890,6 @@ Deno.test('/media', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -2039,12 +1990,6 @@ Deno.test('/media debug', async (test) => {
       () => '' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => '' as any,
-    );
-
     const listStub = stub(
       packs,
       'searchOneMedia',
@@ -2137,7 +2082,6 @@ Deno.test('/media debug', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -2163,12 +2107,6 @@ Deno.test('/media debug', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => '' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
       () => '' as any,
     );
 
@@ -2263,7 +2201,6 @@ Deno.test('/media debug', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -2274,11 +2211,6 @@ Deno.test('/media debug', async (test) => {
       () => '' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => '' as any,
-    );
     try {
       const media: Media = {
         id: '1',
@@ -2294,7 +2226,6 @@ Deno.test('/media debug', async (test) => {
       );
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 });
@@ -2336,16 +2267,10 @@ Deno.test('/character', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -2432,7 +2357,7 @@ Deno.test('/character', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -2458,26 +2383,16 @@ Deno.test('/character', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
+      'findCharacter',
       () =>
-        [[
-          {
-            id: 'anilist:1',
-            mediaId: 'media_id',
-            rating: 3,
-          },
-          {
-            id: 'user_id',
-          },
-        ]] as any,
+        ({
+          characterId: 'anilist:1',
+          mediaId: 'media_id',
+          rating: 3,
+          userId: 'user_id',
+        }) as any,
     );
 
     const fetchStub = stub(
@@ -2578,7 +2493,7 @@ Deno.test('/character', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -2605,16 +2520,10 @@ Deno.test('/character', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -2713,7 +2622,7 @@ Deno.test('/character', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -2740,16 +2649,10 @@ Deno.test('/character', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -2848,7 +2751,7 @@ Deno.test('/character', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -2889,16 +2792,10 @@ Deno.test('/character', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -3000,7 +2897,7 @@ Deno.test('/character', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -3022,16 +2919,10 @@ Deno.test('/character', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -3127,7 +3018,7 @@ Deno.test('/character', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -3141,16 +3032,10 @@ Deno.test('/character', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -3225,7 +3110,7 @@ Deno.test('/character', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -3500,16 +3385,10 @@ Deno.test('/character debug', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -3631,7 +3510,7 @@ Deno.test('/character debug', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -3659,16 +3538,10 @@ Deno.test('/character debug', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -3790,7 +3663,7 @@ Deno.test('/character debug', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -3833,16 +3706,10 @@ Deno.test('/character debug', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -3959,7 +3826,7 @@ Deno.test('/character debug', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -3981,16 +3848,10 @@ Deno.test('/character debug', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const fetchStub = stub(
@@ -4111,7 +3972,7 @@ Deno.test('/character debug', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -4162,16 +4023,10 @@ Deno.test('media characters', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const listStub = stub(
@@ -4247,7 +4102,7 @@ Deno.test('media characters', async (test) => {
       isDisabledStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -4283,26 +4138,16 @@ Deno.test('media characters', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
+      'findCharacter',
       () =>
-        [[
-          {
-            id: 'pack-id:2',
-            mediaId: 'media_id',
-            rating: 3,
-          },
-          {
-            id: 'user_id',
-          },
-        ]] as any,
+        ({
+          characterId: 'pack-id:2',
+          mediaId: 'media_id',
+          rating: 3,
+          userId: 'user_id',
+        }) as any,
     );
 
     const listStub = stub(
@@ -4378,7 +4223,7 @@ Deno.test('media characters', async (test) => {
       isDisabledStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -4412,16 +4257,10 @@ Deno.test('media characters', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findCharactersStub = stub(
       db,
-      'findCharacters',
-      () => [] as any,
+      'findCharacter',
+      () => undefined as any,
     );
 
     const listStub = stub(
@@ -4450,7 +4289,7 @@ Deno.test('media characters', async (test) => {
       isDisabledStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findCharactersStub.restore();
     }
   });
@@ -4702,35 +4541,24 @@ Deno.test('/found', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findMediaCharactersStub = stub(
       db,
       'findMediaCharacters',
       () =>
-        [[
+        [
           {
-            id: 'anilist:1',
+            characterId: 'anilist:1',
             mediaId: 'anilist:3',
             rating: 2,
+            userId: 'another_user_id',
           },
           {
-            id: 'another_user_id',
-          },
-        ], [
-          {
-            id: 'anilist:2',
+            characterId: 'anilist:2',
             mediaId: 'anilist:3',
             rating: 4,
+            userId: 'another_user_id',
           },
-          {
-            id: 'another_user_id',
-          },
-        ]] as any,
+        ] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -4838,7 +4666,7 @@ Deno.test('/found', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findMediaCharactersStub.restore();
     }
   });
@@ -4948,44 +4776,30 @@ Deno.test('/found', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findMediaCharactersStub = stub(
       db,
       'findMediaCharacters',
       () =>
-        [[
+        [
           {
-            id: 'anilist:1',
+            characterId: 'anilist:1',
             mediaId: 'anilist:4',
             rating: 2,
+            userId: 'another_user_id',
           },
           {
-            id: 'another_user_id',
-          },
-        ], [
-          {
-            id: 'anilist:3',
+            characterId: 'anilist:3',
             mediaId: 'anilist:4',
             rating: 4,
+            userId: 'another_user_id',
           },
           {
-            id: 'another_user_id',
-          },
-        ], [
-          {
-            id: 'anilist:2',
+            characterId: 'anilist:2',
             mediaId: 'anilist:5',
             rating: 4,
+            userId: 'another_user_id',
           },
-          {
-            id: 'another_user_id',
-          },
-        ]] as any,
+        ] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -5099,7 +4913,7 @@ Deno.test('/found', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findMediaCharactersStub.restore();
     }
   });
@@ -5241,32 +5055,23 @@ Deno.test('/found', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const findMediaCharactersStub = stub(
       db,
       'findMediaCharacters',
       () =>
-        [[
-          {
-            id: 'anilist:1',
-            mediaId: 'anilist:2',
-            rating: 2,
-          },
-          {
-            id: 'another_user_id',
-          },
-        ]] as any,
+        [{
+          characterId: 'anilist:1',
+          mediaId: 'anilist:2',
+          rating: 2,
+          userId: 'another_user_id',
+        }] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([
         { manifest: { id: 'anilist' } },
       ] as any));
+
     const isDisabledStub = stub(
       packs,
       'isDisabled',
@@ -5338,7 +5143,7 @@ Deno.test('/found', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findMediaCharactersStub.restore();
     }
   });
@@ -5378,12 +5183,6 @@ Deno.test('/found', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const findMediaCharactersStub = stub(
@@ -5461,7 +5260,7 @@ Deno.test('/found', async (test) => {
       timeStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
+
       findMediaCharactersStub.restore();
     }
   });

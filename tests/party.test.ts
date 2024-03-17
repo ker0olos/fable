@@ -6,18 +6,18 @@ import { FakeTime } from '$std/testing/time.ts';
 
 import { returnsNext, stub } from '$std/testing/mock.ts';
 
-import utils from '../src/utils.ts';
+import utils from '~/src/utils.ts';
 
-import packs from '../src/packs.ts';
-import party from '../src/party.ts';
+import packs from '~/src/packs.ts';
+import party from '~/src/party.ts';
 
-import config from '../src/config.ts';
+import config from '~/src/config.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import { MediaType } from '../src/types.ts';
+import { MediaType } from '~/src/types.ts';
 
-import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
 Deno.test('/party view', async (test) => {
   await test.step('normal', async () => {
@@ -104,67 +104,51 @@ Deno.test('/party view', async (test) => {
       () => 'user' as any,
     );
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInventoryStub = stub(
       db,
       'getInventory',
-      () => ({ inventory: 'inventory' }) as any,
-    );
-
-    const getUserPartyStub = stub(
-      db,
-      'getUserParty',
       () =>
         ({
-          member1: {
-            id: 'anilist:1',
-            mediaId: 'anilist:0',
-            rating: 1,
-            combat: {
-              level: 1,
+          party: {
+            member1: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+              combat: {
+                level: 1,
+              },
             },
-          },
-          member2: {
-            id: 'anilist:2',
-            mediaId: 'anilist:0',
-            rating: 2,
-            combat: {
-              level: 2,
+            member2: {
+              characterId: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 2,
+              combat: {
+                level: 2,
+              },
             },
-          },
-          member3: {
-            id: 'anilist:3',
-            mediaId: 'anilist:0',
-            rating: 3,
-            combat: {
-              level: 3,
+            member3: {
+              characterId: 'anilist:3',
+              mediaId: 'anilist:0',
+              rating: 3,
+              combat: {
+                level: 3,
+              },
             },
-          },
-          member4: {
-            id: 'anilist:4',
-            mediaId: 'anilist:0',
-            rating: 4,
-            combat: {
-              level: 4,
+            member4: {
+              characterId: 'anilist:4',
+              mediaId: 'anilist:0',
+              rating: 4,
+              combat: {
+                level: 4,
+              },
             },
-          },
-          member5: {
-            id: 'anilist:5',
-            mediaId: 'anilist:0',
-            rating: 5,
-            combat: {
-              level: 5,
+            member5: {
+              characterId: 'anilist:5',
+              mediaId: 'anilist:0',
+              rating: 5,
+              combat: {
+                level: 5,
+              },
             },
           },
         }) as any,
@@ -308,10 +292,7 @@ Deno.test('/party view', async (test) => {
       timeStub.restore();
 
       getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
       getInventoryStub.restore();
-      getUserPartyStub.restore();
     }
   });
 
@@ -399,63 +380,47 @@ Deno.test('/party view', async (test) => {
       () => 'user' as any,
     );
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInventoryStub = stub(
       db,
       'getInventory',
-      () => ({ inventory: 'inventory' }) as any,
-    );
-
-    const getUserPartyStub = stub(
-      db,
-      'getUserParty',
       () =>
         ({
-          member1: {
-            id: 'anilist:1',
-            mediaId: 'anilist:0',
-            rating: 1,
-            nickname: 'nickname 1',
-            image: 'image 1',
-          },
-          member2: {
-            id: 'anilist:2',
-            mediaId: 'anilist:0',
-            rating: 2,
-            nickname: 'nickname 2',
-            image: 'image 2',
-          },
-          member3: {
-            id: 'anilist:3',
-            mediaId: 'anilist:0',
-            rating: 3,
-            nickname: 'nickname 3',
-            image: 'image 3',
-          },
-          member4: {
-            id: 'anilist:4',
-            mediaId: 'anilist:0',
-            rating: 4,
-            nickname: 'nickname 4',
-            image: 'image 4',
-          },
-          member5: {
-            id: 'anilist:5',
-            mediaId: 'anilist:0',
-            rating: 5,
-            nickname: 'nickname 5',
-            image: 'image 5',
+          party: {
+            member1: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+              nickname: 'nickname 1',
+              image: 'image 1',
+            },
+            member2: {
+              characterId: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 2,
+              nickname: 'nickname 2',
+              image: 'image 2',
+            },
+            member3: {
+              characterId: 'anilist:3',
+              mediaId: 'anilist:0',
+              rating: 3,
+              nickname: 'nickname 3',
+              image: 'image 3',
+            },
+            member4: {
+              characterId: 'anilist:4',
+              mediaId: 'anilist:0',
+              rating: 4,
+              nickname: 'nickname 4',
+              image: 'image 4',
+            },
+            member5: {
+              characterId: 'anilist:5',
+              mediaId: 'anilist:0',
+              rating: 5,
+              nickname: 'nickname 5',
+              image: 'image 5',
+            },
           },
         }) as any,
     );
@@ -599,10 +564,7 @@ Deno.test('/party view', async (test) => {
       timeStub.restore();
 
       getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
       getInventoryStub.restore();
-      getUserPartyStub.restore();
     }
   });
 
@@ -696,37 +658,27 @@ Deno.test('/party view', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInventoryStub = stub(
       db,
       'getInventory',
-      () => ({ inventory: 'inventory' }) as any,
-    );
-
-    const getUserPartyStub = stub(
-      db,
-      'getUserParty',
       () =>
         ({
-          member1: {
-            id: 'anilist:1',
-            mediaId: 'anilist:0',
-            rating: 1,
-          },
-          member2: {
-            id: 'anilist:2',
-            mediaId: 'anilist:0',
-            rating: 2,
-          },
-          member5: {
-            id: 'anilist:5',
-            mediaId: 'anilist:0',
-            rating: 5,
+          party: {
+            member1: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+            member2: {
+              characterId: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 2,
+            },
+            member5: {
+              characterId: 'anilist:5',
+              mediaId: 'anilist:0',
+              rating: 5,
+            },
           },
         }) as any,
     );
@@ -849,9 +801,7 @@ Deno.test('/party view', async (test) => {
 
       getUserStub.restore();
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInventoryStub.restore();
-      getUserPartyStub.restore();
     }
   });
 
@@ -943,47 +893,37 @@ Deno.test('/party view', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInventoryStub = stub(
       db,
       'getInventory',
-      () => ({ inventory: 'inventory' }) as any,
-    );
-
-    const getUserPartyStub = stub(
-      db,
-      'getUserParty',
       () =>
         ({
-          member1: {
-            id: 'anilist:1',
-            mediaId: 'anilist:0',
-            rating: 1,
-          },
-          member2: {
-            id: 'anilist:2',
-            mediaId: 'anilist:0',
-            rating: 2,
-          },
-          member3: {
-            id: 'anilist:3',
-            mediaId: 'anilist:0',
-            rating: 3,
-          },
-          member4: {
-            id: 'anilist:4',
-            mediaId: 'anilist:0',
-            rating: 4,
-          },
-          member5: {
-            id: 'anilist:5',
-            mediaId: 'anilist:0',
-            rating: 5,
+          party: {
+            member1: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+            member2: {
+              characterId: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 2,
+            },
+            member3: {
+              characterId: 'anilist:3',
+              mediaId: 'anilist:0',
+              rating: 3,
+            },
+            member4: {
+              characterId: 'anilist:4',
+              mediaId: 'anilist:0',
+              rating: 4,
+            },
+            member5: {
+              characterId: 'anilist:5',
+              mediaId: 'anilist:0',
+              rating: 5,
+            },
           },
         }) as any,
     );
@@ -1121,9 +1061,7 @@ Deno.test('/party view', async (test) => {
 
       getUserStub.restore();
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInventoryStub.restore();
-      getUserPartyStub.restore();
     }
   });
 
@@ -1215,47 +1153,37 @@ Deno.test('/party view', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInventoryStub = stub(
       db,
       'getInventory',
-      () => ({ inventory: 'inventory' }) as any,
-    );
-
-    const getUserPartyStub = stub(
-      db,
-      'getUserParty',
       () =>
         ({
-          member1: {
-            id: 'anilist:1',
-            mediaId: 'anilist:0',
-            rating: 1,
-          },
-          member2: {
-            id: 'anilist:2',
-            mediaId: 'anilist:0',
-            rating: 2,
-          },
-          member3: {
-            id: 'anilist:3',
-            mediaId: 'anilist:0',
-            rating: 3,
-          },
-          member4: {
-            id: 'anilist:4',
-            mediaId: 'anilist:0',
-            rating: 4,
-          },
-          member5: {
-            id: 'anilist:5',
-            mediaId: 'anilist:0',
-            rating: 5,
+          party: {
+            member1: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+            member2: {
+              characterId: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 2,
+            },
+            member3: {
+              characterId: 'anilist:3',
+              mediaId: 'anilist:0',
+              rating: 3,
+            },
+            member4: {
+              characterId: 'anilist:4',
+              mediaId: 'anilist:0',
+              rating: 4,
+            },
+            member5: {
+              characterId: 'anilist:5',
+              mediaId: 'anilist:0',
+              rating: 5,
+            },
           },
         }) as any,
     );
@@ -1348,9 +1276,7 @@ Deno.test('/party view', async (test) => {
 
       getUserStub.restore();
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInventoryStub.restore();
-      getUserPartyStub.restore();
     }
   });
 });
@@ -1397,12 +1323,6 @@ Deno.test('/party assign', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const assignCharacterStub = stub(
@@ -1516,7 +1436,6 @@ Deno.test('/party assign', async (test) => {
 
       getUserStub.restore();
       getGuildStub.restore();
-      getInstanceStub.restore();
       assignCharacterStub.restore();
     }
   });
@@ -1562,12 +1481,6 @@ Deno.test('/party assign', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const assignCharacterStub = stub(
@@ -1683,7 +1596,6 @@ Deno.test('/party assign', async (test) => {
 
       getUserStub.restore();
       getGuildStub.restore();
-      getInstanceStub.restore();
       assignCharacterStub.restore();
     }
   });
@@ -1729,12 +1641,6 @@ Deno.test('/party assign', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const assignCharacterStub = stub(
@@ -1825,149 +1731,6 @@ Deno.test('/party assign', async (test) => {
 
       getUserStub.restore();
       getGuildStub.restore();
-      getInstanceStub.restore();
-      assignCharacterStub.restore();
-    }
-  });
-
-  await test.step('character not owned', async () => {
-    const characters: AniListCharacter[] = [
-      {
-        id: '1',
-        name: {
-          full: 'name 1',
-        },
-      },
-    ];
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
-    );
-
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
-    const assignCharacterStub = stub(
-      db,
-      'assignCharacter',
-      () => {
-        throw new Error('CHARACTER_NOT_OWNED');
-      },
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = party.assign({
-        spot: 1,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'anilist:1',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [
-            {
-              type: 'rich',
-              description: 'name 1 is not owned by you',
-            },
-          ],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'character=anilist:1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          attachments: [],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
       assignCharacterStub.restore();
     }
   });
@@ -2058,49 +1821,45 @@ Deno.test('/party swap', async (test) => {
       () => 'user' as any,
     );
 
-    const getGuildStub = stub(
+    const getInventoryStub = stub(
       db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
+      'getInventory',
+      () =>
+        ({
+          party: {
+            member1: {
+              characterId: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 2,
+            },
+            member2: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+            member3: {
+              characterId: 'anilist:3',
+              mediaId: 'anilist:0',
+              rating: 3,
+            },
+            member4: {
+              characterId: 'anilist:4',
+              mediaId: 'anilist:0',
+              rating: 4,
+            },
+            member5: {
+              characterId: 'anilist:5',
+              mediaId: 'anilist:0',
+              rating: 5,
+            },
+          },
+        }) as any,
     );
 
     const swapSpotsStub = stub(
       db,
       'swapSpots',
-      () =>
-        ({
-          member1: {
-            id: 'anilist:1',
-            mediaId: 'anilist:0',
-            rating: 1,
-          },
-          member2: {
-            id: 'anilist:2',
-            mediaId: 'anilist:0',
-            rating: 2,
-          },
-          member3: {
-            id: 'anilist:3',
-            mediaId: 'anilist:0',
-            rating: 3,
-          },
-          member4: {
-            id: 'anilist:4',
-            mediaId: 'anilist:0',
-            rating: 4,
-          },
-          member5: {
-            id: 'anilist:5',
-            mediaId: 'anilist:0',
-            rating: 5,
-          },
-        }) as any,
+      () => ({}) as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -2243,8 +2002,7 @@ Deno.test('/party swap', async (test) => {
       timeStub.restore();
 
       getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
+      getInventoryStub.restore();
       swapSpotsStub.restore();
     }
   });
@@ -2333,59 +2091,55 @@ Deno.test('/party swap', async (test) => {
       () => 'user' as any,
     );
 
-    const getGuildStub = stub(
+    const getInventoryStub = stub(
       db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
+      'getInventory',
+      () =>
+        ({
+          party: {
+            member1: {
+              characterId: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 2,
+              nickname: 'nickname 2',
+              image: 'image 2',
+            },
+            member2: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+              nickname: 'nickname 1',
+              image: 'image 1',
+            },
+            member3: {
+              characterId: 'anilist:3',
+              mediaId: 'anilist:0',
+              rating: 3,
+              nickname: 'nickname 3',
+              image: 'image 3',
+            },
+            member4: {
+              characterId: 'anilist:4',
+              mediaId: 'anilist:0',
+              rating: 4,
+              nickname: 'nickname 4',
+              image: 'image 4',
+            },
+            member5: {
+              characterId: 'anilist:5',
+              mediaId: 'anilist:0',
+              rating: 5,
+              nickname: 'nickname 5',
+              image: 'image 5',
+            },
+          },
+        }) as any,
     );
 
     const swapSpotsStub = stub(
       db,
       'swapSpots',
-      () =>
-        ({
-          member1: {
-            id: 'anilist:1',
-            mediaId: 'anilist:0',
-            rating: 1,
-            nickname: 'nickname 1',
-            image: 'image 1',
-          },
-          member2: {
-            id: 'anilist:2',
-            mediaId: 'anilist:0',
-            rating: 2,
-            nickname: 'nickname 2',
-            image: 'image 2',
-          },
-          member3: {
-            id: 'anilist:3',
-            mediaId: 'anilist:0',
-            rating: 3,
-            nickname: 'nickname 3',
-            image: 'image 3',
-          },
-          member4: {
-            id: 'anilist:4',
-            mediaId: 'anilist:0',
-            rating: 4,
-            nickname: 'nickname 4',
-            image: 'image 4',
-          },
-          member5: {
-            id: 'anilist:5',
-            mediaId: 'anilist:0',
-            rating: 5,
-            nickname: 'nickname 5',
-            image: 'image 5',
-          },
-        }) as any,
+      () => ({}) as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -2528,8 +2282,7 @@ Deno.test('/party swap', async (test) => {
       timeStub.restore();
 
       getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
+      getInventoryStub.restore();
       swapSpotsStub.restore();
     }
   });
@@ -2573,27 +2326,25 @@ Deno.test('/party remove', async (test) => {
       () => 'user' as any,
     );
 
-    const getGuildStub = stub(
+    const getInventoryStub = stub(
       db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
+      'getInventory',
+      () =>
+        ({
+          party: {
+            member1: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 2,
+            },
+          },
+        }) as any,
     );
 
     const unassignCharacterStub = stub(
       db,
       'unassignCharacter',
-      () =>
-        ({
-          id: 'anilist:1',
-          mediaId: 'anilist:0',
-          rating: 2,
-        }) as any,
+      () => ({}) as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -2688,8 +2439,7 @@ Deno.test('/party remove', async (test) => {
       timeStub.restore();
 
       getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
+      getInventoryStub.restore();
       unassignCharacterStub.restore();
     }
   });
@@ -2731,29 +2481,27 @@ Deno.test('/party remove', async (test) => {
       () => 'user' as any,
     );
 
-    const getGuildStub = stub(
+    const getInventoryStub = stub(
       db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
+      'getInventory',
+      () =>
+        ({
+          party: {
+            member1: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 2,
+              nickname: 'nickname',
+              image: 'image',
+            },
+          },
+        }) as any,
     );
 
     const unassignCharacterStub = stub(
       db,
       'unassignCharacter',
-      () =>
-        ({
-          id: 'anilist:1',
-          mediaId: 'anilist:0',
-          rating: 2,
-          nickname: 'nickname',
-          image: 'image',
-        }) as any,
+      () => ({}) as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -2848,8 +2596,7 @@ Deno.test('/party remove', async (test) => {
       timeStub.restore();
 
       getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
+      getInventoryStub.restore();
       unassignCharacterStub.restore();
     }
   });
@@ -2891,27 +2638,25 @@ Deno.test('/party remove', async (test) => {
       () => 'user' as any,
     );
 
-    const getGuildStub = stub(
+    const getInventoryStub = stub(
       db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
+      'getInventory',
+      () =>
+        ({
+          party: {
+            member1: {
+              characterId: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 2,
+            },
+          },
+        }) as any,
     );
 
     const unassignCharacterStub = stub(
       db,
       'unassignCharacter',
-      () =>
-        ({
-          id: 'anilist:1',
-          mediaId: 'anilist:0',
-          rating: 2,
-        }) as any,
+      () => ({}) as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -2930,7 +2675,7 @@ Deno.test('/party remove', async (test) => {
 
     try {
       const message = party.remove({
-        spot: 2,
+        spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
@@ -2969,7 +2714,7 @@ Deno.test('/party remove', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Removed #2',
+              description: 'Removed #1',
             },
             {
               type: 'rich',
@@ -2990,8 +2735,7 @@ Deno.test('/party remove', async (test) => {
       timeStub.restore();
 
       getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
+      getInventoryStub.restore();
       unassignCharacterStub.restore();
     }
   });
@@ -3033,16 +2777,10 @@ Deno.test('/party remove', async (test) => {
       () => 'user' as any,
     );
 
-    const getGuildStub = stub(
+    const getInventoryStub = stub(
       db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
+      'getInventory',
+      () => ({ party: {} }) as any,
     );
 
     const unassignCharacterStub = stub(
@@ -3120,8 +2858,7 @@ Deno.test('/party remove', async (test) => {
       timeStub.restore();
 
       getUserStub.restore();
-      getGuildStub.restore();
-      getInstanceStub.restore();
+      getInventoryStub.restore();
       unassignCharacterStub.restore();
     }
   });

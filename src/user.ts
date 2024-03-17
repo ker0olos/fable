@@ -60,8 +60,7 @@ async function now({
   const keysRecharge = utils.rechargeKeysTimestamp(keysTimestamp);
   const stealRecharge = utils.rechargeStealTimestamp(stealTimestamp);
 
-  const showKeys = typeof lastPVE === 'string' &&
-    utils.isWithin14Days(new Date(lastPVE));
+  const showKeys = utils.isWithin14Days(lastPVE);
 
   const guarantees = Array.from(new Set(user.guarantees ?? []))
     .sort((a, b) => b - a);
@@ -282,6 +281,7 @@ function nick({
               existing: {
                 ...response,
                 rating: undefined,
+                nickname: nick,
               },
             },
           ));
@@ -430,6 +430,7 @@ function image({
               existing: {
                 ...response,
                 rating: undefined,
+                image,
               },
             },
           ));
@@ -840,7 +841,7 @@ function list({
           : undefined;
 
         const name = `${existing.rating}${discord.emotes.smolStar}${
-          members?.some((member) => Boolean(member) && member === existing._id)
+          members.some((member) => Boolean(member) && member === existing._id)
             ? discord.emotes.member
             : user.likes?.some((like) =>
                 like.characterId === existing.characterId
@@ -1090,16 +1091,16 @@ function likeslist({
         }
       });
 
-      const results = (await db.findCharacters(
+      const results = await db.findCharacters(
         guildId,
         likes.map(({ characterId }) => characterId)
           .filter(utils.nonNullable),
-      )).filter(utils.nonNullable);
+      );
 
       // filter out characters that are owned by the user
       if (filter) {
         likes = likes.filter((like, i) => {
-          return like.characterId && results[i].userId !== userId;
+          return like.characterId && results[i]?.userId !== userId;
         });
       }
 
@@ -1121,7 +1122,7 @@ function likeslist({
       await Promise.all(
         characters.map(async (character) => {
           const existing = results.find((r) =>
-            r.characterId === `${character.packId}:${character.id}`
+            r?.characterId === `${character.packId}:${character.id}`
           );
 
           const char = await packs.aggregate<Character>({

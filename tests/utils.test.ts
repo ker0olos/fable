@@ -235,7 +235,7 @@ Deno.test('recharge timestamps', () => {
   const expected = new Date().setMinutes(now.getMinutes() + 30).toString();
 
   assertEquals(
-    utils.rechargeTimestamp(now.toISOString()),
+    utils.rechargeTimestamp(now),
     expected.substring(0, expected.length - 3),
   );
 });
@@ -246,7 +246,7 @@ Deno.test('recharge keys timestamps', () => {
   const expected = new Date().setMinutes(now.getMinutes() + 10).toString();
 
   assertEquals(
-    utils.rechargeKeysTimestamp(now.toISOString()),
+    utils.rechargeKeysTimestamp(now),
     expected.substring(0, expected.length - 3),
   );
 });
@@ -257,7 +257,18 @@ Deno.test('recharge daily tokens timestamps', () => {
   const expected = new Date().setHours(now.getHours() + 12).toString();
 
   assertEquals(
-    utils.rechargeDailyTimestamp(now.toISOString()),
+    utils.rechargeDailyTimestamp(now),
+    expected.substring(0, expected.length - 3),
+  );
+});
+
+Deno.test('reset steal timestamp', () => {
+  const now = new Date();
+
+  const expected = new Date().setDate(now.getDate() + 3).toString();
+
+  assertEquals(
+    utils.rechargeStealTimestamp(now),
     expected.substring(0, expected.length - 3),
   );
 });

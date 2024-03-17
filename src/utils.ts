@@ -452,7 +452,8 @@ function nonNullable<T>(value: T): value is NonNullable<T> {
   return Boolean(value);
 }
 
-function isWithin14Days(date: Date): boolean {
+function isWithin14Days(date?: Date): boolean {
+  if (!date) return false;
   const fourteenDaysAgo = new Date();
   fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
   return date >= fourteenDaysAgo;
