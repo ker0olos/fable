@@ -150,6 +150,8 @@ const db = {
   removePack,
   //
   disableBuiltins,
+  //
+  performOperationWithRetry,
 };
 
 export {
@@ -164,6 +166,32 @@ export {
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
 };
+
+async function performOperationWithRetry(
+  // deno-lint-ignore no-explicit-any
+  operation: () => Promise<any>,
+  retries = 3,
+  // deno-lint-ignore no-explicit-any
+): Promise<any> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (error.message.includes('Write conflict during plan execution')) {
+        console.log(
+          `Retrying operation due to write conflict. Attempt ${
+            i + 1
+          } of ${retries}.`,
+        );
+        continue;
+      } else {
+        throw error; // Rethrow the error if it's not a write conflict
+      }
+    }
+  }
+
+  throw new Error('Operation failed after multiple retries.');
+}
 
 export { ObjectId } from 'mongodb';
 

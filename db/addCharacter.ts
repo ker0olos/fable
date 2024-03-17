@@ -189,7 +189,8 @@ export async function addCharacter(
       throw new Error('WRITE_ERROR');
     }
 
-    await session.commitTransaction();
+    // TODO #325 avoid retrying by lower the chances of a conflict if possible
+    await db.performOperationWithRetry(() => session.commitTransaction());
   } catch (err) {
     await session.abortTransaction();
     throw err;
