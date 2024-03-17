@@ -1,18 +1,18 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
 import { MongoClient } from 'mongodb';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals } from '$std/assert/mod.ts';
 
 import db from '~/db/mod.ts';
 
-let mongod: MongoMemoryReplSet;
+let mongod: MongoMemoryServer;
 
 describe('db.setCharacterNickname()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -62,7 +62,7 @@ describe('db.setCharacterNickname()', () => {
 
 describe('db.setCharacterImage()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();

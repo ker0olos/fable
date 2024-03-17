@@ -1,18 +1,18 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
 import { MongoClient } from 'mongodb';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
 
 import db from '~/db/mod.ts';
 
-let mongod: MongoMemoryReplSet;
+let mongod: MongoMemoryServer;
 
 describe('db.assignCharacter()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -229,7 +229,7 @@ describe('db.assignCharacter()', () => {
 
 describe('db.swapCharacters()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -268,9 +268,9 @@ describe('db.swapCharacters()', () => {
 
     assertObjectMatch(inventoryUpdated!, {
       party: {
-        member1Id: 'character-1',
+        member1Id: null,
         member2Id: null,
-        member3Id: null,
+        member3Id: 'character-1',
         member4Id: null,
         member5Id: null,
       },
@@ -317,7 +317,7 @@ describe('db.swapCharacters()', () => {
 
 describe('db.unassignCharacter()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();

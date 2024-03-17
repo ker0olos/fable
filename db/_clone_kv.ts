@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-unused-vars
 /// <reference lib="deno.unstable" />
 
 import { getFromBlob } from '~/db/blob.ts';

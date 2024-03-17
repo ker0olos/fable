@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
 import { MongoClient } from 'mongodb';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { stub } from '$std/testing/mock.ts';
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
@@ -11,7 +11,7 @@ import db, { MAX_KEYS, MAX_PULLS } from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
-let mongod: MongoMemoryReplSet;
+let mongod: MongoMemoryServer;
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
@@ -25,7 +25,7 @@ const assertWithinLastMins = (ts: Date, mins: number) => {
 
 describe('db.getUser()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -74,7 +74,7 @@ describe('db.getUser()', () => {
 
 describe('db.getGuild()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -143,7 +143,7 @@ describe('db.getGuild()', () => {
 
 describe('db.getInventory()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -252,7 +252,7 @@ describe('db.getInventory()', () => {
 
 describe('db.rechargeConsumables()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -472,43 +472,37 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge 0 tokens (11 hours ago)', async () => {
-    const nowStub = stub(Date, 'now', () => 1710629999665);
+    await db.users().insertOne(
+      {
+        discordId: 'user-id',
+        availableTokens: 0,
+        dailyTimestamp: new Date(Date.now() - 11 * 60 * 60 * 1000), // 11 hours ago,
+      } as any,
+    );
 
-    try {
-      await db.users().insertOne(
-        {
-          discordId: 'user-id',
-          availableTokens: 0,
-          dailyTimestamp: new Date(Date.now() - 11 * 60 * 60 * 1000), // 11 hours ago,
-        } as any,
-      );
+    const { user, ...inventory } = await db.rechargeConsumables(
+      'guild-id',
+      'user-id',
+    );
 
-      const { user, ...inventory } = await db.rechargeConsumables(
-        'guild-id',
-        'user-id',
-      );
+    assertEquals(Object.keys(inventory), [
+      '_id',
+      'guildId',
+      'userId',
+      'availableKeys',
+      'availablePulls',
+      'floorsCleared',
+      'party',
+    ]);
 
-      assertEquals(Object.keys(inventory), [
-        '_id',
-        'guildId',
-        'userId',
-        'availableKeys',
-        'availablePulls',
-        'floorsCleared',
-        'party',
-      ]);
+    assertEquals(Object.keys(user), [
+      '_id',
+      'discordId',
+      'availableTokens',
+      'dailyTimestamp',
+    ]);
 
-      assertEquals(Object.keys(user), [
-        '_id',
-        'discordId',
-        'availableTokens',
-        'dailyTimestamp',
-      ]);
-
-      assertEquals(user.availableTokens, 0);
-    } finally {
-      nowStub.restore();
-    }
+    assertEquals(user.availableTokens, 0);
   });
 
   it('recharge 1 tokens (Monday) (12 hours ago)', async () => {
@@ -647,7 +641,7 @@ describe('db.rechargeConsumables()', () => {
 
 describe('db.getActiveUsersIfLiked()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -810,7 +804,7 @@ describe('db.getActiveUsersIfLiked()', () => {
 
 describe('db.getUserCharacters()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();

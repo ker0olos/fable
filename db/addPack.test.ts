@@ -1,20 +1,20 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
 import { MongoClient } from 'mongodb';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals } from '$std/assert/mod.ts';
 
 import db from '~/db/mod.ts';
 
-let mongod: MongoMemoryReplSet;
+let mongod: MongoMemoryServer;
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 describe('db.addPack()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
@@ -138,7 +138,7 @@ describe('db.addPack()', () => {
 
 describe('db.removePack()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryReplSet.create();
+    mongod = await MongoMemoryServer.create();
 
     db.client = await new MongoClient(mongod.getUri())
       .connect();
