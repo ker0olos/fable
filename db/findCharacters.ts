@@ -1,78 +1,71 @@
-import {
-  charactersByInstancePrefix,
-  charactersByMediaIdPrefix,
-} from '~/db/indices.ts';
-
 import db from '~/db/mod.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
+async function populateCharacters(
+  matchCondition: import('mongodb').Document,
+): Promise<Schema.PopulatedCharacter[]> {
+  const result = await db.characters().aggregate()
+    .match(matchCondition)
+    .lookup({
+      localField: 'inventoryId',
+      foreignField: '_id',
+      from: 'inventories',
+      as: 'inventory',
+    })
+    .toArray() as Schema.PopulatedCharacter[];
+
+  return result.map((char) => {
+    if (Array.isArray(char.inventory) && char.inventory.length) {
+      char.inventory = char.inventory[0];
+    } else {
+      throw new Error("inventory doesn't exist");
+    }
+
+    return char;
+  });
+}
+
 export async function findCharacter(
-  instance: Schema.Instance,
-  id: string,
-): Promise<
-  | {
-    character: Schema.Character;
-    user: Schema.User;
-  }
-  | undefined
-> {
-  const character = await db.getValue<Schema.Character>(
-    [...charactersByInstancePrefix(instance._id), id],
-  );
-
-  if (!character) {
-    return undefined;
-  }
-
-  const user = await db.getValue<Schema.User>(
-    ['users', character.user ?? '_'],
-  );
-
-  if (!user) {
-    return undefined;
-  }
-
-  return { character, user };
+  guildId: string,
+  characterId: string,
+): Promise<Schema.PopulatedCharacter | null> {
+  return (await populateCharacters({
+    characterId,
+    guildId,
+  }))[0];
 }
 
 export async function findCharacters(
-  instance: Schema.Instance,
-  ids: string[],
-): Promise<([Schema.Character | undefined, Schema.User | undefined])[]> {
-  const characters = await db.getManyValues<Schema.Character>(
-    ids.map((id) => [
-      ...charactersByInstancePrefix(instance._id),
-      id,
-    ]),
-  );
+  guildId: string,
+  charactersIds: string[],
+): Promise<(Schema.PopulatedCharacter | undefined)[]> {
+  const result = await populateCharacters({
+    characterId: { $in: charactersIds },
+    guildId,
+  });
 
-  const users = await db.getManyValues<Schema.User>(
-    characters.map((character) => ['users', character?.user ?? '_']),
-  );
+  const map = new Map(result.map((char) => [char.characterId, char]));
 
-  return characters.map((character, i) => [character, users[i]]);
+  return charactersIds.map((id) => map.get(id));
 }
 
 export async function findMediaCharacters(
-  instance: Schema.Instance,
-  ids: string[],
-): Promise<([Schema.Character, Schema.User | undefined])[]> {
-  const entries: Promise<Schema.Character[]>[] = [];
-
-  ids.forEach((id) => {
-    entries.push(
-      db.getValues<Schema.Character>({
-        prefix: charactersByMediaIdPrefix(instance._id, id),
-      }),
-    );
+  guildId: string,
+  mediaIds: string[],
+): Promise<Schema.PopulatedCharacter[]> {
+  return await populateCharacters({
+    mediaId: { $in: mediaIds },
+    guildId,
   });
+}
 
-  const characters = (await Promise.all(entries)).flat();
-
-  const users = await db.getManyValues<Schema.User>(
-    characters.map((character) => ['users', character?.user ?? '_']),
-  );
-
-  return characters.map((character, i) => [character, users[i]]);
+export async function findUserCharacters(
+  guildId: string,
+  userId: string,
+): Promise<Schema.PopulatedCharacter[]> {
+  return await populateCharacters({
+    userId,
+    guildId,
+  });
 }

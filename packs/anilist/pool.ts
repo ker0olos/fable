@@ -221,7 +221,7 @@ for (const range of ranges) {
                 character.name?.full,
                 character.name?.native,
                 ...(character.name?.alternative ?? []),
-              ].filter(Boolean) as string[];
+              ].filter(utils.nonNullable);
 
               const media = character.media?.edges[0];
 
@@ -245,7 +245,7 @@ for (const range of ranges) {
                     media.node.title.romaji,
                     media.node.title.native,
                     ...(media.node.synonyms ?? []),
-                  ].filter(Boolean) as string[];
+                  ].filter(utils.nonNullable);
 
                   characters.ALL.push({ id, mediaId, rating });
                   characters[media.characterRole].push({ id, mediaId, rating });

@@ -39,11 +39,7 @@ async function now({
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
-  const _user = await db.getUser(userId);
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
-
-  const { user, inventory } = await db.rechargeConsumables(instance, _user);
+  const { user, ...inventory } = await db.rechargeConsumables(guildId, userId);
 
   const {
     availablePulls,
@@ -62,9 +58,9 @@ async function now({
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
   const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
   const keysRecharge = utils.rechargeKeysTimestamp(keysTimestamp);
+  const stealRecharge = utils.rechargeStealTimestamp(stealTimestamp);
 
-  const showKeys = typeof lastPVE === 'string' &&
-    utils.isWithin14Days(new Date(lastPVE));
+  const showKeys = utils.isWithin14Days(lastPVE);
 
   const guarantees = Array.from(new Set(user.guarantees ?? []))
     .sort((a, b) => b - a);
@@ -141,14 +137,14 @@ async function now({
     );
   }
 
-  if (new Date(stealTimestamp ?? new Date()).getTime() > Date.now()) {
+  if (stealTimestamp) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(
           i18n.get(
             'steal-cooldown-ends',
             locale,
-            `<t:${utils.stealTimestamp(stealTimestamp)}:R>`,
+            `<t:${stealRecharge}:R>`,
           ),
         ),
     );
@@ -253,17 +249,10 @@ function nick({
 
       const characterId = `${results[0].packId}:${results[0].id}`;
 
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
-      const { inventory } = await db.getInventory(instance, user);
-
       try {
         const response = await db.setCharacterNickname(
-          user,
-          inventory,
-          instance,
+          userId,
+          guildId,
           characterId,
           nick,
         );
@@ -277,8 +266,7 @@ function nick({
                 'nickname-changed',
                 locale,
                 name,
-                // deno-lint-ignore no-non-null-assertion
-                response.nickname!,
+                nick,
               ),
             ),
           )
@@ -293,6 +281,7 @@ function nick({
               existing: {
                 ...response,
                 rating: undefined,
+                nickname: nick,
               },
             },
           ));
@@ -409,17 +398,10 @@ function image({
 
       const characterId = `${results[0].packId}:${results[0].id}`;
 
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
-      const { inventory } = await db.getInventory(instance, user);
-
       try {
         const response = await db.setCharacterImage(
-          user,
-          inventory,
-          instance,
+          userId,
+          guildId,
           characterId,
           image,
         );
@@ -448,6 +430,7 @@ function image({
               existing: {
                 ...response,
                 rating: undefined,
+                image,
               },
             },
           ));
@@ -566,16 +549,14 @@ function like({
 
       const characterId = `${character.packId}:${character.id}`;
 
-      const user = await db.getUser(userId);
-
       try {
         const _ = !undo
           ? await db.likeCharacter(
-            user,
+            userId,
             characterId,
           )
           : await db.unlikeCharacter(
-            user,
+            userId,
             characterId,
           );
 
@@ -676,16 +657,14 @@ function likeall({
 
       const mediaId = `${results[0].packId}:${results[0].id}`;
 
-      const user = await db.getUser(userId);
-
       try {
         const _ = !undo
           ? await db.likeMedia(
-            user,
+            userId,
             mediaId,
           )
           : await db.unlikeMedia(
-            user,
+            userId,
             mediaId,
           );
 
@@ -771,25 +750,20 @@ function list({
 
   Promise.resolve()
     .then(async () => {
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+      const { user, ...inventory } = await db.getInventory(guildId, userId);
 
-      const { inventory } = await db.getInventory(instance, user);
-
-      let characters = (await db.getUserCharacters(inventory))
-        .map(({ value }) => value);
+      let characters = await db.getUserCharacters(userId, guildId);
 
       const embed = new discord.Embed();
 
       const message = new discord.Message();
 
       const members = [
-        inventory.party?.member1,
-        inventory.party?.member2,
-        inventory.party?.member3,
-        inventory.party?.member4,
-        inventory.party?.member5,
+        inventory.party.member1Id,
+        inventory.party.member2Id,
+        inventory.party.member3Id,
+        inventory.party.member4Id,
+        inventory.party.member5Id,
       ];
 
       let media: Media[] = [];
@@ -845,14 +819,14 @@ function list({
       const chunks = utils.chunks(characters, 5);
 
       const _characters = await packs.characters({
-        ids: chunks[index]?.map(({ id }) => id),
+        ids: chunks[index]?.map(({ characterId }) => characterId),
         guildId,
       });
 
       await Promise.all(_characters.map(async (char) => {
         // deno-lint-ignore no-non-null-assertion
-        const existing = chunks[index].find(({ id }) =>
-          id === `${char.packId}:${char.id}`
+        const existing = chunks[index].find(({ characterId }) =>
+          characterId === `${char.packId}:${char.id}`
         )!;
 
         const media = (await packs.aggregate<Character>({
@@ -867,9 +841,11 @@ function list({
           : undefined;
 
         const name = `${existing.rating}${discord.emotes.smolStar}${
-          members?.some((member) => Boolean(member) && member === existing._id)
+          members.some((member) => Boolean(member) && member === existing._id)
             ? discord.emotes.member
-            : user.likes?.some((like) => like.characterId === existing.id)
+            : user.likes?.some((like) =>
+                like.characterId === existing.characterId
+              )
             ? `${discord.emotes.liked}`
             : ''
         } ${existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])}`;
@@ -990,17 +966,12 @@ function sum({
 
   Promise.resolve()
     .then(async () => {
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
-      const { inventory } = await db.getInventory(instance, user);
+      const { user, ...inventory } = await db.getInventory(guildId, userId);
 
       const likes = (user.likes ?? [])
         .map(({ characterId }) => characterId);
 
-      const characters = (await db.getUserCharacters(inventory))
-        .map(({ value }) => value);
+      const characters = await db.getUserCharacters(userId, guildId);
 
       const embed = new discord.Embed();
 
@@ -1008,11 +979,11 @@ function sum({
         .addEmbed(embed);
 
       const party = [
-        inventory.party?.member1,
-        inventory.party?.member2,
-        inventory.party?.member3,
-        inventory.party?.member4,
-        inventory.party?.member5,
+        inventory.party.member1Id,
+        inventory.party.member2Id,
+        inventory.party.member3Id,
+        inventory.party.member4Id,
+        inventory.party.member5Id,
       ];
 
       const sum: Record<number, number> = {
@@ -1034,7 +1005,7 @@ function sum({
       characters.forEach((char) => {
         sum[char.rating as keyof typeof sum] += 1;
 
-        if (likes.includes(char.id) || party.includes(char._id)) {
+        if (likes.includes(char.characterId) || party.includes(char._id)) {
           sumProtected[char.rating as keyof typeof sum] += 1;
         }
       });
@@ -1099,8 +1070,6 @@ function likeslist({
   Promise.resolve()
     .then(async () => {
       const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
 
       const embed = new discord.Embed();
 
@@ -1123,15 +1092,15 @@ function likeslist({
       });
 
       const results = await db.findCharacters(
-        instance,
+        guildId,
         likes.map(({ characterId }) => characterId)
-          .filter(Boolean) as string[],
+          .filter(utils.nonNullable),
       );
 
       // filter out characters that are owned by the user
       if (filter) {
         likes = likes.filter((like, i) => {
-          return like.characterId && results[i]?.[1]?.id !== userId;
+          return like.characterId && results[i]?.userId !== userId;
         });
       }
 
@@ -1141,19 +1110,19 @@ function likeslist({
         await packs.characters({
           guildId,
           ids: chunks[index]?.map(({ characterId }) => characterId)
-            .filter(Boolean) as string[],
+            .filter(utils.nonNullable),
         }),
         await packs.media({
           guildId,
           ids: chunks[index]?.map(({ mediaId }) => mediaId)
-            .filter(Boolean) as string[],
+            .filter(utils.nonNullable),
         }),
       ]);
 
       await Promise.all(
         characters.map(async (character) => {
           const existing = results.find((r) =>
-            r?.[0]?.id === `${character.packId}:${character.id}`
+            r?.characterId === `${character.packId}:${character.id}`
           );
 
           const char = await packs.aggregate<Character>({
@@ -1162,7 +1131,7 @@ function likeslist({
             end: 1,
           });
 
-          const rating = existing?.[0]?.rating ??
+          const rating = existing?.rating ??
             Rating.fromCharacter(char).stars;
 
           const media = char.media?.edges?.[0]?.node;
@@ -1174,7 +1143,7 @@ function likeslist({
             : undefined;
 
           const name = `${rating}${discord.emotes.smolStar} ${
-            existing ? `<@${existing?.[1]?.id}> ` : ''
+            existing ? `<@${existing?.userId}> ` : ''
           }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
           if (
@@ -1269,26 +1238,19 @@ function logs({
     .then(async () => {
       const message = new discord.Message();
 
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
-      const { inventory } = await db.getInventory(instance, user);
-
-      const characters = (await db.getUserCharacters(inventory))
-        .slice(-10)
-        .map(({ value }) => value);
+      const characters = (await db.getUserCharacters(userId, guildId))
+        .slice(-10);
 
       const names: string[] = [];
 
       const results = await packs.characters({
         guildId,
-        ids: characters.map(({ id }) => id),
+        ids: characters.map(({ characterId }) => characterId),
       });
 
       characters.toReversed().forEach((existing) => {
         const char = results.find(({ packId, id }) =>
-          `${packId}:${id}` === existing.id
+          `${packId}:${id}` === existing.characterId
         );
 
         if (

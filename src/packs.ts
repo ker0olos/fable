@@ -1,25 +1,25 @@
-import _anilistManifest from '../packs/anilist/manifest.json' with {
+import _anilistManifest from '~/packs/anilist/manifest.json' with {
   type: 'json',
 };
 
-import _vtubersManifest from '../packs/vtubers/manifest.json' with {
+import _vtubersManifest from '~/packs/vtubers/manifest.json' with {
   type: 'json',
 };
 
-import * as _anilist from '../packs/anilist/index.ts';
+import * as _anilist from '~/packs/anilist/index.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import user from './user.ts';
-import utils from './utils.ts';
+import user from '~/src/user.ts';
+import utils from '~/src/utils.ts';
 
-import i18n from './i18n.ts';
+import i18n from '~/src/i18n.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import Rating from './rating.ts';
+import Rating from '~/src/rating.ts';
 
 let _loadedAnilistCharactersDirectory: CharactersDirectory | undefined =
   undefined;
@@ -106,9 +106,8 @@ async function all(
   ];
 
   const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
 
-  if (instance.builtinsDisabled) {
+  if (guild.builtinsDisabled) {
     builtins = [];
   }
 
@@ -128,7 +127,7 @@ async function all(
     return [...builtins, ...packs.cachedGuilds[guildId].packs];
   }
 
-  const _packs = await db.getInstancePacks(instance);
+  const _packs = guild.packs;
 
   packs.cachedGuilds[guildId] = {
     packs: _packs,
@@ -233,12 +232,11 @@ async function disableBuiltins(
   const locale = user.cachedUsers[userId]?.locale ??
     user.cachedGuilds[guildId]?.locale;
 
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
-
   const embed = new discord.Embed();
 
-  if (instance.builtinsDisabled) {
+  const guild = await db.getGuild(guildId);
+
+  if (guild.builtinsDisabled) {
     embed
       .setDescription(i18n.get('disable-builtins-confirmed', locale));
     return new discord.Message().addEmbed(embed);
@@ -262,12 +260,9 @@ async function confirmDisableBuiltins(
   const locale = user.cachedUsers[userId]?.locale ??
     user.cachedGuilds[guildId]?.locale;
 
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
-
   const embed = new discord.Embed();
 
-  await db.disableBuiltins(instance);
+  await db.disableBuiltins(guildId);
 
   embed
     .setDescription(i18n.get('disable-builtins-confirmed', locale));
@@ -286,34 +281,22 @@ async function install(
     );
   }
 
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
+  const pack = await db.addPack(userId, guildId, id);
 
-  try {
-    const pack = await db.addPack(instance, userId, id);
-
-    // clear guild cache after uninstall
-    delete cachedGuilds[guildId];
-
-    const message = new discord.Message()
-      .addEmbed(new discord.Embed().setDescription(
-        i18n.get('installed', locale),
-      ))
-      .addEmbed(packEmbed(pack));
-
-    return message;
-  } catch (err) {
-    switch (err.message) {
-      case 'PACK_PRIVATE':
-        throw new NonFetalError(
-          i18n.get('pack-is-private', locale),
-        );
-      case 'PACK_NOT_FOUND':
-        throw new Error('404');
-      default:
-        throw err;
-    }
+  if (!pack) {
+    throw new Error('404');
   }
+
+  // clear guild cache after uninstall
+  delete cachedGuilds[guildId];
+
+  const message = new discord.Message()
+    .addEmbed(new discord.Embed().setDescription(
+      i18n.get('installed', locale),
+    ))
+    .addEmbed(packEmbed(pack));
+
+  return message;
 }
 
 async function uninstall(
@@ -327,58 +310,27 @@ async function uninstall(
     );
   }
 
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
+  const pack = await db.removePack(guildId, id);
 
-  try {
-    const pack = await db.removePack(instance, id);
-
-    // clear guild cache after uninstall
-    delete cachedGuilds[guildId];
-
-    const message = new discord.Message()
-      .addEmbed(new discord.Embed().setDescription(
-        i18n.get('uninstalled', locale),
-      ))
-      .addEmbed(
-        new discord.Embed().setDescription(
-          i18n.get('pack-characters-disabled', locale),
-        ),
-      )
-      .addEmbed(packEmbed(pack));
-
-    return message;
-  } catch (err) {
-    switch (err.message) {
-      case 'PACK_NOT_FOUND':
-      case 'PACK_NOT_INSTALLED':
-        throw new Error('404');
-      default:
-        throw err;
-    }
+  if (!pack) {
+    throw new Error('404');
   }
 
-  // if (response.ok) {
-  //   // clear guild cache after uninstall
-  //   delete cachedGuilds[guildId];
+  // clear guild cache after uninstall
+  delete cachedGuilds[guildId];
 
-  //   return new discord.Message()
-  //     .addEmbed(new discord.Embed().setDescription('Uninstalled'))
-  //     .addEmbed(
-  //       new discord.Embed().setDescription(
-  //         '**All characters from this pack are now disabled**',
-  //       ),
-  //     )
-  //     .addEmbed(packEmbed({ ref: response.uninstall }));
-  // } else {
-  //   switch (response.error) {
-  //     case 'PACK_NOT_FOUND':
-  //     case 'PACK_NOT_INSTALLED':
-  //       throw new Error('404');
-  //     default:
-  //       throw new Error(response.error);
-  //   }
-  // }
+  const message = new discord.Message()
+    .addEmbed(new discord.Embed().setDescription(
+      i18n.get('uninstalled', locale),
+    ))
+    .addEmbed(
+      new discord.Embed().setDescription(
+        i18n.get('pack-characters-disabled', locale),
+      ),
+    )
+    .addEmbed(packEmbed(pack));
+
+  return message;
 }
 
 function parseId(
@@ -967,7 +919,7 @@ async function pool({ guildId, seed, range, role, stars }: {
         }),
       );
 
-      pool = pool.concat(characters.filter(Boolean) as {
+      pool = pool.concat(characters.filter(utils.nonNullable) as {
         id: string;
         mediaId: string;
         rating: number;
@@ -1004,7 +956,7 @@ function aliasToArray(
       alias.native,
     ]
       .concat(alias.alternative ?? [])
-      .filter(Boolean)
+      .filter(utils.nonNullable)
       .map((str) => max ? utils.truncate(str, max) : str),
   );
 

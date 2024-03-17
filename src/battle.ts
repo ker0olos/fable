@@ -3,7 +3,7 @@ import packs from '~/src/packs.ts';
 import utils from '~/src/utils.ts';
 import i18n from '~/src/i18n.ts';
 
-import db, { kv } from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 import * as dynImages from '~/dyn-images/mod.ts';
 
@@ -23,22 +23,22 @@ import {
 
 import { MAX_FLOORS } from '~/src/tower.ts';
 
-import * as Schema from '~/db/schema.ts';
-
 import { NonFetalError } from '~/src/errors.ts';
-
-import type { Character } from './types.ts';
 
 import type { SkillKey } from '~/src/types.ts';
 
-type BattleData = { playing: boolean };
+import type * as Schema from '~/db/schema.ts';
+import { ObjectId } from '~/db/mod.ts';
+
 type UsedSkills = Partial<Record<SkillKey, boolean>>;
 
 const MESSAGE_DELAY = 2; // 2 seconds
-const MAX_TIME = 3 * 60 * 1000; // 3 minutes
 
-function skipBattle(battleId: string): Promise<void> {
-  return kv.delete(['active_battle', battleId]);
+export const MAX_BATTLE_TIME = 3 * 60; // 3 minutes
+
+async function skipBattle(hexId: string): Promise<void> {
+  const battleId = ObjectId.createFromHexString(hexId);
+  await db.battles().deleteOne({ _id: battleId });
 }
 
 function challengeTower({ token, guildId, user }: {
@@ -56,15 +56,10 @@ function challengeTower({ token, guildId, user }: {
 
   Promise.resolve()
     .then(async () => {
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+      const { user: _user, ...inventory } = await db
+        .rechargeConsumables(guildId, user.id);
 
-      const __user = await db.getUser(user.id);
-
-      const { user: _user, inventory, inventoryCheck } = await db
-        .rechargeConsumables(instance, __user, false);
-
-      const floor = (inventory.floorsCleared || 0) + 1;
+      const floor = inventory.floorsCleared + 1;
 
       if (MAX_FLOORS <= floor) {
         throw new NonFetalError(i18n.get('max-floor-cleared', locale));
@@ -94,27 +89,32 @@ function challengeTower({ token, guildId, user }: {
 
       const seed = `${guildId}${floor}`;
 
-      const _party = await db.getUserParty(inventory);
-
-      const party = Object.values(_party)
-        .filter(Boolean) as Schema.Character[];
+      const party = [
+        inventory.party.member1,
+        inventory.party.member2,
+        inventory.party.member3,
+        inventory.party.member4,
+        inventory.party.member5,
+      ].filter(utils.nonNullable);
 
       if (party.length <= 0) {
         throw new NonFetalError(i18n.get('your-party-empty', locale));
       } else if (
-        party.some((char) => !char.combat?.baseStats || !char.combat?.curStats)
+        party.some((char) => !char.combat.baseStats || !char.combat.curStats)
       ) {
         throw new Error('non-stats initialized characters are in the party');
       }
 
       const _characters = await packs.characters({
         guildId,
-        ids: party.map(({ id }) => id),
+        ids: party.map(({ characterId }) => characterId),
       });
 
       const characters = party.map((member) =>
-        _characters.find(({ packId, id }) => member.id === `${packId}:${id}`)
-      ).filter(Boolean) as Character[];
+        _characters.find(({ packId, id }) =>
+          member.characterId === `${packId}:${id}`
+        )
+      ).filter(utils.nonNullable);
 
       if (!characters.length) {
         throw new NonFetalError(i18n.get('character-disabled', locale));
@@ -129,6 +129,7 @@ function challengeTower({ token, guildId, user }: {
       );
 
       const { winnerId, lastMessage } = await startCombat({
+        guildId,
         user,
         floor,
         token,
@@ -157,16 +158,13 @@ function challengeTower({ token, guildId, user }: {
           userId: user.id,
           message: lastMessage,
           party,
-          inventory,
-          inventoryCheck,
+
           locale,
         });
       } else {
         await tower.onFail({
           token,
           userId: user.id,
-          inventory,
-          inventoryCheck,
           message: lastMessage,
           locale,
         });
@@ -202,6 +200,7 @@ async function startCombat(
   {
     token,
     user,
+    guildId,
     target,
     party1,
     party2,
@@ -210,6 +209,7 @@ async function startCombat(
   }: {
     token: string;
     user: discord.User;
+    guildId: string;
     target?: discord.User;
     party1: PartyMember[];
     party2: PartyMember[];
@@ -217,40 +217,31 @@ async function startCombat(
     floor?: number;
   },
 ): Promise<{ winnerId?: string; lastMessage: discord.Message }> {
-  const battleId = utils.nanoid(5);
+  let battleData: Schema.BattleData | null = { createdAt: new Date() };
 
-  const battleKey = ['active_battle', battleId];
+  // deno-lint-ignore no-non-null-assertion
+  const { insertedId: battleId } = await db.battles().insertOne(battleData!);
 
-  let battleData: BattleData | null = { playing: true };
+  const watchStream = db.battles().watch([{
+    $match: { _id: battleId },
+  }]);
 
-  await db.setValue(battleKey, battleData, { expireIn: MAX_TIME });
+  await db.consumeKey(user.id, guildId);
 
-  const battleDataReader = kv
-    .watch<[BattleData]>([battleKey])
-    .getReader();
-
-  // written this way instead of the recommend for of loop
-  // to allow the stream reader to be disposed at the end of the battle
-  type Stream = ReadableStreamReadResult<[Deno.KvEntryMaybe<BattleData>]>;
-
-  const read = (result: Stream): Promise<Stream | void> => {
-    if (result.done || !battleData?.playing) {
-      return Promise.resolve();
+  watchStream.on('change', (change) => {
+    switch (change.operationType) {
+      case 'delete':
+        battleData = null;
+        break;
+      default:
+        break;
     }
-
-    battleData = result.value?.[0]?.value;
-
-    return battleDataReader.read().then(read);
-  };
-
-  battleDataReader.read()
-    .then(read)
-    .catch(console.error);
+  });
 
   const message = new discord.Message()
     .addComponents([
       new discord.Component()
-        .setId(discord.join('sbattle', battleId, user.id))
+        .setId(discord.join('sbattle', battleId.toString('hex'), user.id))
         .setLabel(i18n.get('skip', locale)),
     ]);
 
@@ -324,8 +315,8 @@ async function startCombat(
         locale,
       });
 
-      battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-      battleData?.playing && await message.patch(token);
+      battleData && await utils.sleep(MESSAGE_DELAY);
+      battleData && await message.patch(token);
 
       // sneak attack the backline if the attacking character has the skill
       if (attacking.canSneakAttack) {
@@ -345,8 +336,8 @@ async function startCombat(
           locale,
         });
 
-        battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-        battleData?.playing && await message.patch(token);
+        battleData && await utils.sleep(MESSAGE_DELAY);
+        battleData && await message.patch(token);
 
         delete attacking.effects.sneaky;
         delete receiving.effects.sneaky;
@@ -362,18 +353,16 @@ async function startCombat(
           locale,
         })
       ) {
-        battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-        battleData?.playing && await message.patch(token);
+        battleData && await utils.sleep(MESSAGE_DELAY);
+        battleData && await message.patch(token);
       }
     }
   }
 
   const party1Win = party1.some((m) => m.alive);
 
-  battleData?.playing && await utils.sleep(MESSAGE_DELAY);
-
   // dispose of the database watch stream
-  battleDataReader.cancel();
+  await watchStream.close();
 
   return {
     lastMessage: message.clearComponents(),
@@ -666,7 +655,7 @@ const addEmbed = ({
         }${statusEmotes}`,
         state,
         subtitle?.length ? `*${subtitle?.join(' ')}*` : undefined,
-      ].filter(Boolean).join('\n'),
+      ].filter(utils.nonNullable).join('\n'),
     )
     .setImage({ url: `attachment://${uuid}.png` })
     .setFooter({

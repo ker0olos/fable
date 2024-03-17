@@ -19,6 +19,7 @@ import {
   RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
+  STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
 
 const TEN_MIB = 1024 * 1024 * 10;
@@ -31,6 +32,15 @@ export enum ImageSize {
   Medium = 'medium',
   Large = 'large',
 }
+
+type DayOfWeek =
+  | 'Sunday'
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday';
 
 class LehmerRNG {
   private seed: number;
@@ -313,8 +323,8 @@ async function readJson<T>(filePath: string): Promise<T> {
   }
 }
 
-function rechargeTimestamp(v?: string): string {
-  const parsed = new Date(v ?? new Date());
+function rechargeTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
 
   parsed.setMinutes(parsed.getMinutes() + RECHARGE_MINS);
 
@@ -324,8 +334,8 @@ function rechargeTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeDailyTimestamp(v?: string): string {
-  const parsed = new Date(v ?? new Date());
+function rechargeDailyTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
 
   parsed.setHours(parsed.getHours() + RECHARGE_DAILY_TOKENS_HOURS);
 
@@ -335,8 +345,8 @@ function rechargeDailyTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeKeysTimestamp(v?: string): string {
-  const parsed = new Date(v ?? new Date());
+function rechargeKeysTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
 
   parsed.setMinutes(parsed.getMinutes() + RECHARGE_KEYS_MINS);
 
@@ -346,8 +356,10 @@ function rechargeKeysTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function stealTimestamp(v?: string): string {
-  const parsed = new Date(v ?? new Date());
+function rechargeStealTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
+
+  parsed.setHours(parsed.getHours() + STEAL_COOLDOWN_HOURS);
 
   const ts = parsed.getTime();
 
@@ -357,6 +369,10 @@ function stealTimestamp(v?: string): string {
 
 function diffInDays(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 3600000 / 24);
+}
+
+function diffInHours(a: Date, b: Date): number {
+  return Math.floor(Math.abs(a.getTime() - b.getTime()) / 3600000);
 }
 
 function diffInMinutes(a: Date, b: Date): number {
@@ -432,7 +448,12 @@ function captureOutage(id: string): Promise<Response> {
   );
 }
 
-function isWithin14Days(date: Date): boolean {
+function nonNullable<T>(value: T): value is NonNullable<T> {
+  return Boolean(value);
+}
+
+function isWithin14Days(date?: Date): boolean {
+  if (!date) return false;
   const fourteenDaysAgo = new Date();
   fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
   return date >= fourteenDaysAgo;
@@ -456,6 +477,20 @@ function pagination<T, X extends string>(
   } as { [K in X]: T[] } & { length: number; offset: number; limit: number };
 }
 
+function getDayOfWeek(): DayOfWeek {
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+
+  return days[new Date().getUTCDay()] as DayOfWeek;
+}
+
 const utils = {
   LehmerRNG,
   isWithin14Days,
@@ -465,9 +500,12 @@ const utils = {
   chunks: chunk,
   comma,
   compact,
+  nonNullable,
   decodeDescription,
   diffInDays,
   diffInMinutes,
+  diffInHours,
+  getDayOfWeek,
   distance,
   fetchWithRetry,
   getRandomFloat,
@@ -481,12 +519,12 @@ const utils = {
   rechargeTimestamp,
   rechargeDailyTimestamp,
   rechargeKeysTimestamp,
+  rechargeStealTimestamp,
   rng,
   serve,
   serveStatic,
   shuffle,
   sleep,
-  stealTimestamp,
   truncate,
   validateRequest,
   verifySignature,

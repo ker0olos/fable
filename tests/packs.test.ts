@@ -37,19 +37,7 @@ Deno.test('list', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => ({}) as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => ({}) as any,
-    );
-
-    const getInstancePacksStub = stub(
-      db,
-      'getInstancePacks',
-      () => Promise.resolve([]),
+      () => ({ packs: [] }) as any,
     );
 
     try {
@@ -64,8 +52,6 @@ Deno.test('list', async (test) => {
       await assertMonochromeSnapshot(test, pack);
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
-      getInstancePacksStub.restore();
     }
   });
 
@@ -73,19 +59,7 @@ Deno.test('list', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => ({}) as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => ({}) as any,
-    );
-
-    const getInstancePacksStub = stub(
-      db,
-      'getInstancePacks',
-      () => Promise.resolve([]),
+      () => ({ packs: [] }) as any,
     );
 
     try {
@@ -100,8 +74,6 @@ Deno.test('list', async (test) => {
       await assertMonochromeSnapshot(test, pack);
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
-      getInstancePacksStub.restore();
     }
   });
 
@@ -109,19 +81,7 @@ Deno.test('list', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => ({}) as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => ({}) as any,
-    );
-
-    const getInstancePacksStub = stub(
-      db,
-      'getInstancePacks',
-      () => Promise.resolve([]),
+      () => ({ packs: [] }) as any,
     );
 
     try {
@@ -130,8 +90,6 @@ Deno.test('list', async (test) => {
       assertEquals(list.length, 0);
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
-      getInstancePacksStub.restore();
     }
   });
 
@@ -139,22 +97,7 @@ Deno.test('list', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => ({}) as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () =>
-        ({
-          builtinsDisabled: true,
-        }) as any,
-    );
-
-    const getInstancePacksStub = stub(
-      db,
-      'getInstancePacks',
-      () => Promise.resolve([]),
+      () => ({ packs: [], builtinsDisabled: true }) as any,
     );
 
     try {
@@ -163,8 +106,6 @@ Deno.test('list', async (test) => {
       assertEquals(list.length, 0);
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
-      getInstancePacksStub.restore();
     }
   });
 });
@@ -173,22 +114,7 @@ Deno.test('reserved ids', async () => {
   const getGuildStub = stub(
     db,
     'getGuild',
-    () => ({}) as any,
-  );
-
-  const getInstanceStub = stub(
-    db,
-    'getInstance',
-    () =>
-      ({
-        builtinsDisabled: true,
-      }) as any,
-  );
-
-  const getInstancePacksStub = stub(
-    db,
-    'getInstancePacks',
-    () => Promise.resolve([]),
+    () => ({ packs: [] }) as any,
   );
 
   try {
@@ -201,8 +127,6 @@ Deno.test('reserved ids', async () => {
     });
   } finally {
     getGuildStub.restore();
-    getInstanceStub.restore();
-    getInstancePacksStub.restore();
   }
 });
 
@@ -2449,12 +2373,6 @@ Deno.test('/packs install', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const addPackStub = stub(
       db,
       'addPack',
@@ -2512,7 +2430,6 @@ Deno.test('/packs install', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       addPackStub.restore();
     }
   });
@@ -2522,12 +2439,6 @@ Deno.test('/packs install', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const addPackStub = stub(
@@ -2550,8 +2461,8 @@ Deno.test('/packs install', async (test) => {
             guildId: 'guild_id',
             userId: 'user_id',
           }),
-        NonFetalError,
-        'This pack is private and cannot be installed by you',
+        Error,
+        'PACK_PRIVATE',
       );
     } finally {
       delete config.communityPacks;
@@ -2559,7 +2470,6 @@ Deno.test('/packs install', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       addPackStub.restore();
     }
   });
@@ -2569,12 +2479,6 @@ Deno.test('/packs install', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const addPackStub = stub(
@@ -2598,7 +2502,7 @@ Deno.test('/packs install', async (test) => {
             userId: 'user_id',
           }),
         Error,
-        '404',
+        'PACK_NOT_FOUND',
       );
     } finally {
       delete config.communityPacks;
@@ -2606,7 +2510,6 @@ Deno.test('/packs install', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       addPackStub.restore();
     }
   });
@@ -2631,12 +2534,6 @@ Deno.test('/packs uninstall', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const removePackStub = stub(
@@ -2700,7 +2597,6 @@ Deno.test('/packs uninstall', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       removePackStub.restore();
     }
   });
@@ -2731,12 +2627,6 @@ Deno.test('/packs uninstall', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const removePackStub = stub(
       db,
       'removePack',
@@ -2758,7 +2648,7 @@ Deno.test('/packs uninstall', async (test) => {
             userId: 'user_id',
           }),
         Error,
-        '404',
+        'PACK_NOT_FOUND',
       );
     } finally {
       delete config.communityPacks;
@@ -2766,7 +2656,6 @@ Deno.test('/packs uninstall', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       removePackStub.restore();
     }
   });
@@ -2776,12 +2665,6 @@ Deno.test('/packs uninstall', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const removePackStub = stub(
@@ -2805,7 +2688,7 @@ Deno.test('/packs uninstall', async (test) => {
             userId: 'user_id',
           }),
         Error,
-        '404',
+        'PACK_NOT_INSTALLED',
       );
     } finally {
       delete config.communityPacks;
@@ -2813,7 +2696,6 @@ Deno.test('/packs uninstall', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       removePackStub.restore();
     }
   });
@@ -2825,12 +2707,6 @@ Deno.test('/packs disable builtins', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     config.appId = 'app_id';
@@ -2882,7 +2758,6 @@ Deno.test('/packs disable builtins', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -2890,16 +2765,7 @@ Deno.test('/packs disable builtins', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () =>
-        ({
-          builtinsDisabled: true,
-        }) as any,
+      () => ({ builtinsDisabled: true }) as any,
     );
 
     config.appId = 'app_id';
@@ -2931,7 +2797,6 @@ Deno.test('/packs disable builtins', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
     }
   });
 
@@ -2940,12 +2805,6 @@ Deno.test('/packs disable builtins', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
     );
 
     const disableBuiltinsStub = stub(
@@ -2983,7 +2842,6 @@ Deno.test('/packs disable builtins', async (test) => {
       delete config.origin;
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       disableBuiltinsStub.restore();
     }
   });

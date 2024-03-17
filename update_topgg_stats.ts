@@ -1,7 +1,4 @@
-import db from './db/mod.ts';
-
-const url =
-  'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect';
+import db from '~/db/mod.ts';
 
 if (import.meta.main) {
   const APP_ID = Deno.env.get('APP_ID');
@@ -16,10 +13,7 @@ if (import.meta.main) {
     throw new Error('TOPGG_TOKEN is not defined');
   }
 
-  const serverCount = (await db.getValues(
-    { prefix: ['guilds'] },
-    await Deno.openKv(url),
-  )).length;
+  const serverCount = await db.guilds().estimatedDocumentCount();
 
   console.log(`APP ID: ${APP_ID}`);
   console.log(`Server Count: ${serverCount}`);

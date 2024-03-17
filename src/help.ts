@@ -4,11 +4,11 @@ import user from '~/src/user.ts';
 import * as discord from '~/src/discord.ts';
 
 import {
-  COOLDOWN_DAYS,
   COSTS,
   MAX_PULLS,
   RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_MINS,
+  STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
 
 import { PARTY_PROTECTION_PERIOD } from '~/src/steal.ts';
@@ -144,7 +144,7 @@ function pages(
             i18n.get(
               'help-page4-cooldown',
               locale,
-              COOLDOWN_DAYS,
+              STEAL_COOLDOWN_HOURS / 24,
             ),
             '',
             i18n.get('help-page4-footer', locale),

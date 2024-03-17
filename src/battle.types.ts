@@ -1,8 +1,11 @@
 import { skills } from '~/src/skills.ts';
 
+import utils from '~/src/utils.ts';
+
 import type * as Schema from '~/db/schema.ts';
 
 import type { Character, CharacterBattleStats } from './types.ts';
+import { DisaggregatedCharacter } from '~/src/types.ts';
 
 export interface StatusEffect {
   active: boolean;
@@ -16,7 +19,7 @@ export interface StatusEffects {
 }
 
 export class PartyMember {
-  character: Character;
+  character: Character | DisaggregatedCharacter;
   #stats: CharacterBattleStats;
   #boost: Schema.CharacterStats;
   #debuff: Schema.CharacterStats;
@@ -25,7 +28,7 @@ export class PartyMember {
   effects: StatusEffects;
 
   constructor({ character, stats, existing, owner }: {
-    character: Character;
+    character: Character | DisaggregatedCharacter;
     stats: CharacterBattleStats;
     existing?: Schema.Character;
     owner: 'party1' | 'party2';
@@ -105,7 +108,7 @@ export class PartyMember {
   public activateDefenseBoost(party: PartyMember[]): PartyMember {
     const boosts = party
       .map(({ skills }) => skills.defense)
-      .filter(Boolean) as Schema.AcquiredCharacterSkill[];
+      .filter(utils.nonNullable);
 
     const sorted = boosts.sort((a, b) => b.level - a.level);
 
@@ -119,7 +122,7 @@ export class PartyMember {
   public activateSpeedBoost(party: PartyMember[]): PartyMember {
     const boosts = party
       .map(({ skills }) => skills.speed)
-      .filter(Boolean) as Schema.AcquiredCharacterSkill[];
+      .filter(utils.nonNullable);
 
     const sorted = boosts.sort((a, b) => b.level - a.level);
 
@@ -133,7 +136,7 @@ export class PartyMember {
   public activateSlowDebuff(enemyParty: PartyMember[]): PartyMember {
     const boosts = enemyParty
       .map(({ skills }) => skills.slow)
-      .filter(Boolean) as Schema.AcquiredCharacterSkill[];
+      .filter(utils.nonNullable);
 
     const sorted = boosts.sort((a, b) => b.level - a.level);
 

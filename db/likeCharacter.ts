@@ -1,75 +1,51 @@
-import { usersLikesByDiscordId } from './indices.ts';
+import db from '~/db/mod.ts';
 
-import db from './mod.ts';
-
-import { KvError } from '../src/errors.ts';
-
-import type * as Schema from './schema.ts';
+import { newUser } from '~/db/getInventory.ts';
 
 export async function likeCharacter(
-  user: Schema.User,
+  userId: string,
   characterId: string,
-): Promise<Schema.User> {
-  user.likes ??= [];
-
-  user.likes.push({ characterId });
-
-  if (await db.setBlobValue(usersLikesByDiscordId(user.id), user.likes)) {
-    return user;
-  }
-
-  throw new KvError('failed to update user');
+): Promise<void> {
+  await db.users().updateOne(
+    { discordId: userId },
+    {
+      $setOnInsert: newUser(userId, ['likes']),
+      $addToSet: { likes: { characterId } },
+    },
+    { upsert: true },
+  );
 }
 
 export async function unlikeCharacter(
-  user: Schema.User,
+  userId: string,
   characterId: string,
-): Promise<Schema.User> {
-  user.likes ??= [];
-
-  const i = user.likes.findIndex((i) => i.characterId === characterId);
-
-  if (i > -1) {
-    user.likes.splice(i, 1);
-  }
-
-  if (await db.setBlobValue(usersLikesByDiscordId(user.id), user.likes)) {
-    return user;
-  }
-
-  throw new KvError('failed to update user');
+): Promise<void> {
+  await db.users().updateOne(
+    { discordId: userId },
+    { $pull: { likes: { characterId } } },
+  );
 }
 
 export async function likeMedia(
-  user: Schema.User,
+  userId: string,
   mediaId: string,
-): Promise<Schema.User> {
-  user.likes ??= [];
-
-  user.likes.push({ mediaId });
-
-  if (await db.setBlobValue(usersLikesByDiscordId(user.id), user.likes)) {
-    return user;
-  }
-
-  throw new KvError('failed to update user');
+): Promise<void> {
+  await db.users().updateOne(
+    { discordId: userId },
+    {
+      $setOnInsert: newUser(userId, ['likes']),
+      $addToSet: { likes: { mediaId } },
+    },
+    { upsert: true },
+  );
 }
 
 export async function unlikeMedia(
-  user: Schema.User,
+  userId: string,
   mediaId: string,
-): Promise<Schema.User> {
-  user.likes ??= [];
-
-  const i = user.likes.findIndex((i) => i.mediaId === mediaId);
-
-  if (i > -1) {
-    user.likes.splice(i, 1);
-  }
-
-  if (await db.setBlobValue(usersLikesByDiscordId(user.id), user.likes)) {
-    return user;
-  }
-
-  throw new KvError('failed to update user');
+): Promise<void> {
+  await db.users().updateOne(
+    { discordId: userId },
+    { $pull: { likes: { mediaId } } },
+  );
 }

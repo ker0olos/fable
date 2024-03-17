@@ -1,12 +1,4 @@
-import utils from './utils.ts';
-
-export class KvError extends Error {
-  constructor(message: string) {
-    super(message);
-
-    this.name = 'KvError';
-  }
-}
+import utils from '~/src/utils.ts';
 
 export class NoPermissionError extends Error {
   constructor() {
@@ -27,7 +19,7 @@ export class NonFetalError extends Error {
 export class NoPullsError extends Error {
   rechargeTimestamp: string;
 
-  constructor(rechargeTimestamp?: string) {
+  constructor(rechargeTimestamp?: Date) {
     super('NO_PULLS_AVAILABLE');
 
     this.name = 'NoPullsError';

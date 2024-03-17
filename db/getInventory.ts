@@ -1,388 +1,391 @@
-import { ulid } from '$std/ulid/mod.ts';
-
-import {
-  charactersByInventoryPrefix,
-  guildsByDiscordId,
-  inventoriesByInstance,
-  inventoriesByUser,
-  usersByDiscordId,
-  usersLikesByDiscordId,
-} from '~/db/indices.ts';
-
-import db, { kv } from '~/db/mod.ts';
+import db, { STEAL_COOLDOWN_HOURS } from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
-import { KvError } from '~/src/errors.ts';
+import type * as Schema from './schema.ts';
 
-import type * as Schema from '~/db/schema.ts';
+import type { WithId } from 'mongodb';
 
 export const MAX_PULLS = 5;
 export const MAX_NEW_PULLS = 10;
 
 export const MAX_KEYS = 5;
-export const MAX_NEW_KEYS = 5;
 
 export const RECHARGE_MINS = 30;
 export const RECHARGE_KEYS_MINS = 10;
 
 export const RECHARGE_DAILY_TOKENS_HOURS = 12;
 
-export async function getUser(userId: string): Promise<Schema.User> {
-  const response = await Promise.all([
-    db.getValue<Schema.User>(usersByDiscordId(userId)),
-    db.getBlobValue<Schema.Like[]>(
-      usersLikesByDiscordId(userId),
-    ),
-  ]);
-
-  if (response[0]) {
-    return (response[0].likes = response[1] ?? [], response[0]);
-  }
-
-  const newUser: Schema.User = {
-    _id: ulid(),
-    id: userId,
-    inventories: [],
-    dailyTimestamp: new Date().toISOString(),
+export const newUser = (
+  userId: string,
+  omit?: (keyof Schema.User)[],
+): Schema.User => {
+  const user: Schema.User = {
+    discordId: userId,
+    dailyTimestamp: new Date(),
+    availableTokens: 0,
+    guarantees: [],
+    likes: [],
   };
 
-  const insert = await kv.atomic()
-    .check({ key: usersByDiscordId(userId), versionstamp: null })
-    //
-    .set(['users', newUser._id], newUser)
-    .set(usersByDiscordId(userId), newUser)
-    //
-    .commit();
+  omit?.forEach((key) => {
+    delete user[key];
+  });
 
-  if (insert.ok) {
-    return newUser;
-  }
+  return user;
+};
 
-  throw new KvError('failed to insert user');
-}
-
-export async function getGuild(guildId: string): Promise<Schema.Guild> {
-  const response = await db.getValue<Schema.Guild>(guildsByDiscordId(guildId));
-
-  if (response) {
-    return response;
-  }
-
-  const newGuild: Schema.Guild = {
-    _id: ulid(),
-    id: guildId,
-    instances: [],
+export const newGuild = (
+  guildId: string,
+  omit?: (keyof Schema.Guild)[],
+): Schema.Guild => {
+  const guild: Schema.Guild = {
+    excluded: false,
+    builtinsDisabled: false,
+    discordId: guildId,
+    packIds: [],
   };
 
-  const insert = await kv.atomic()
-    .check({ key: guildsByDiscordId(guildId), versionstamp: null })
-    //
-    .set(['guilds', newGuild._id], newGuild)
-    .set(guildsByDiscordId(guildId), newGuild)
-    //
-    .commit();
+  omit?.forEach((key) => {
+    delete guild[key];
+  });
 
-  if (insert.ok) {
-    return newGuild;
-  }
+  return guild;
+};
 
-  throw new KvError('failed to insert guild');
-}
-
-export async function getInstance(
-  guild: Schema.Guild,
-): Promise<Schema.Instance> {
-  if (guild.instances.length) {
-    const response = await db.getValue<Schema.Instance>([
-      'instances',
-      guild.instances[0],
-    ]);
-
-    if (response) {
-      return response;
-    }
-  }
-
-  const newInstance: Schema.Instance = {
-    _id: ulid(),
-    main: true,
-    guild: guild._id,
-    inventories: [],
-    packs: [],
+export const newInventory = (
+  guildId: string,
+  userId: string,
+  omit?: (keyof Schema.Inventory)[],
+): Schema.Inventory => {
+  const inventory: Schema.Inventory = {
+    guildId,
+    userId,
+    availablePulls: MAX_NEW_PULLS,
+    availableKeys: MAX_KEYS,
+    floorsCleared: 0,
+    party: {
+      member1Id: null,
+      member2Id: null,
+      member3Id: null,
+      member4Id: null,
+      member5Id: null,
+    },
   };
 
-  guild.instances = [newInstance._id];
+  omit?.forEach((key) => {
+    delete inventory[key];
+  });
 
-  const insert = await kv.atomic()
-    //
-    .set(['instances', newInstance._id], newInstance)
-    //
-    .set(['guilds', guild._id], guild)
-    .set(guildsByDiscordId(guild.id), guild)
-    //
-    .commit();
+  return inventory;
+};
 
-  if (insert.ok) {
-    return newInstance;
-  }
+export async function getUser(userId: string): Promise<WithId<Schema.User>> {
+  // deno-lint-ignore no-non-null-assertion
+  const result = (await db.users().findOneAndUpdate(
+    { discordId: userId },
+    { $setOnInsert: newUser(userId) }, // only invoked if document isn't found
+    { upsert: true, returnDocument: 'after' },
+  ))!;
 
-  throw new KvError('failed to insert instance');
+  return result;
 }
 
-export async function getInstancePacks(
-  instance: Schema.Instance,
-): Promise<Schema.Pack[]> {
-  const ids = instance.packs.map(({ pack }) => ['packs', pack]);
+export async function forceNewUser(userId: string): Promise<Schema.User> {
+  const user = newUser(userId);
+  return (await db.users().insertOne(user), user);
+}
 
-  const packs = (await db.getManyValues<Schema.Pack>(ids))
-    .filter(Boolean) as Schema.Pack[];
+export async function getGuild(
+  guildId: string,
+): Promise<Schema.PopulatedGuild> {
+  // deno-lint-ignore no-non-null-assertion
+  const { _id } = (await db.guilds().findOneAndUpdate(
+    { discordId: guildId },
+    { $setOnInsert: newGuild(guildId) }, // only invoked if document isn't found
+    { upsert: true, returnDocument: 'after' },
+  ))!;
 
-  return packs;
+  // populate the guild with the relevant relations
+  // unfortunately cannot be done in the same step as findOrInsert
+  const [result] = await db.guilds().aggregate()
+    .match({ _id })
+    //
+    .lookup({
+      localField: 'packIds',
+      foreignField: 'manifest.id',
+      from: 'packs',
+      as: 'packs',
+    })
+    .toArray();
+
+  return result as Schema.PopulatedGuild;
 }
 
 export async function getInventory(
-  instance: Schema.Instance,
-  user: Schema.User,
-): Promise<{
-  inventory: Schema.Inventory;
-  inventoryCheck: Deno.AtomicCheck;
-}> {
-  const key = inventoriesByUser(instance._id, user._id);
+  guildId: string,
+  userId: string,
+): Promise<Schema.PopulatedInventory> {
+  // deno-lint-ignore no-non-null-assertion
+  const { _id } = (await db.inventories().findOneAndUpdate(
+    { guildId, userId },
+    { $setOnInsert: newInventory(guildId, userId) }, // only invoked if document isn't found
+    { upsert: true, returnDocument: 'after' },
+  ))!;
 
-  const response = await db.getValueAndTimestamp<Schema.Inventory>(key);
+  // populate the inventory with the relevant relations
+  // unfortunately cannot be done in the same step as findOrInsert
+  const [result] = await db.inventories().aggregate()
+    .match({ _id })
+    //
+    .lookup({
+      localField: 'userId',
+      foreignField: 'discordId',
+      from: 'users',
+      as: 'user',
+    })
+    .lookup({
+      localField: 'party.member1Id',
+      foreignField: '_id',
+      from: 'characters',
+      as: 'party.member1',
+    })
+    .lookup({
+      localField: 'party.member2Id',
+      foreignField: '_id',
+      from: 'characters',
+      as: 'party.member2',
+    })
+    .lookup({
+      localField: 'party.member3Id',
+      foreignField: '_id',
+      from: 'characters',
+      as: 'party.member3',
+    })
+    .lookup({
+      localField: 'party.member4Id',
+      foreignField: '_id',
+      from: 'characters',
+      as: 'party.member4',
+    })
+    .lookup({
+      localField: 'party.member5Id',
+      foreignField: '_id',
+      from: 'characters',
+      as: 'party.member5',
+    })
+    .toArray() as Schema.PopulatedInventory[];
 
-  if (response?.value) {
-    return {
-      inventory: response.value,
-      inventoryCheck: response,
-    };
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.user)) {
+    result.user = result.user.length
+      ? result.user[0]
+      : await forceNewUser(userId);
   }
 
-  const newInventory: Schema.Inventory = {
-    _id: ulid(),
-    availablePulls: MAX_NEW_PULLS,
-    instance: instance._id,
-    user: user._id,
-  };
+  // manually unwind relation arrays
 
-  instance.inventories.push(newInventory._id);
-  user.inventories.push(newInventory._id);
-
-  const insert = await kv.atomic()
-    .check({ key, versionstamp: null })
-    //
-    .set(['inventories', newInventory._id], newInventory)
-    .set(inventoriesByUser(instance._id, user._id), newInventory)
-    //
-    .set(['instances', instance._id], instance)
-    //
-    .set(['users', user._id], user)
-    .set(usersByDiscordId(user.id), user)
-    //
-    .commit();
-
-  if (insert.ok) {
-    return {
-      inventory: newInventory,
-      inventoryCheck: {
-        key,
-        versionstamp: (insert as Deno.KvCommitResult).versionstamp,
-      },
-    };
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member1)) {
+    result.party.member1 = result.party.member1.length
+      ? result.party.member1[0]
+      : undefined;
+  }
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member2)) {
+    result.party.member2 = result.party.member2.length
+      ? result.party.member2[0]
+      : undefined;
+  }
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member3)) {
+    result.party.member3 = result.party.member3.length
+      ? result.party.member3[0]
+      : undefined;
+  }
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member4)) {
+    result.party.member4 = result.party.member4.length
+      ? result.party.member4[0]
+      : undefined;
+  }
+  // deno-lint-ignore ban-ts-comment
+  // @ts-ignore
+  if (Array.isArray(result.party.member5)) {
+    result.party.member5 = result.party.member5.length
+      ? result.party.member5[0]
+      : undefined;
   }
 
-  throw new KvError('failed to insert inventory');
+  return result as Schema.PopulatedInventory;
 }
 
 export async function rechargeConsumables(
-  instance: Schema.Instance,
-  user: Schema.User,
-  commit = true,
-): Promise<{
-  user: Schema.User;
-  inventory: Schema.Inventory;
-  inventoryCheck: Deno.AtomicCheck;
-}> {
-  let res = { ok: false }, retries = 0;
+  guildId: string,
+  userId: string,
+): Promise<Schema.PopulatedInventory> {
+  const inventory = await db.getInventory(guildId, userId);
 
-  while (!res.ok && retries < 5) {
-    const { inventory, inventoryCheck } = await db.getInventory(instance, user);
+  const { user } = inventory;
 
-    const keysTimestamp = new Date(inventory.keysTimestamp ?? Date.now());
-    const pullsTimestamp = new Date(inventory.rechargeTimestamp ?? Date.now());
+  const keysTimestamp = inventory.keysTimestamp ?? new Date();
+  const pullsTimestamp = inventory.rechargeTimestamp ?? new Date();
 
-    const currentPulls = inventory.availablePulls;
-    const currentKeys = inventory.availableKeys ?? MAX_NEW_KEYS;
+  const currentPulls = inventory.availablePulls;
+  const currentKeys = inventory.availableKeys;
 
-    const newPulls = Math.max(
-      0,
-      Math.min(
-        MAX_PULLS - currentPulls,
-        Math.trunc(
-          utils.diffInMinutes(pullsTimestamp, new Date()) / RECHARGE_MINS,
-        ),
+  const newPulls = Math.max(
+    0,
+    Math.min(
+      MAX_PULLS - currentPulls,
+      Math.trunc(
+        utils.diffInMinutes(pullsTimestamp, new Date()) / RECHARGE_MINS,
       ),
-    );
-
-    const newKeys = Math.max(
-      0,
-      Math.min(
-        MAX_KEYS - currentKeys,
-        Math.trunc(
-          utils.diffInMinutes(keysTimestamp, new Date()) / RECHARGE_KEYS_MINS,
-        ),
-      ),
-    );
-
-    const dailyTimestamp = user.dailyTimestamp
-      ? new Date(user.dailyTimestamp)
-      : undefined;
-
-    const dailyTimestampThreshold = new Date(
-      Date.now() - RECHARGE_DAILY_TOKENS_HOURS * 60 * 60 * 1000,
-    );
-
-    const newDailyTokens = dailyTimestamp &&
-      dailyTimestamp <= dailyTimestampThreshold;
-
-    if (
-      newPulls === currentPulls &&
-      newKeys === currentKeys &&
-      !newDailyTokens
-    ) {
-      return { user, inventory, inventoryCheck };
-    }
-
-    const rechargedPulls = currentPulls + newPulls;
-    const rechargedKeys = currentKeys + newKeys;
-
-    inventory.availablePulls = Math.min(99, rechargedPulls);
-    inventory.availableKeys = Math.min(99, rechargedKeys);
-
-    inventory.rechargeTimestamp = rechargedPulls >= MAX_PULLS
-      ? undefined
-      : new Date(pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS * 60000))
-        .toISOString();
-
-    inventory.keysTimestamp = rechargedKeys >= MAX_KEYS ? undefined : new Date(
-      keysTimestamp.getTime() + (newKeys * RECHARGE_KEYS_MINS * 60000),
-    )
-      .toISOString();
-
-    if (newDailyTokens) {
-      user.availableTokens ??= 0;
-
-      const dayOfWeek = new Date().getUTCDay();
-
-      if (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5) {
-        // Today is a Weekend (Saturday, Sunday, or Friday) in GMT timezone
-        user.availableTokens += 2;
-      } else {
-        // Today is a normal weekday in GMT timezone
-        user.availableTokens += 1;
-      }
-
-      user.dailyTimestamp = new Date().toISOString();
-    }
-
-    if (!commit) {
-      return { user, inventory, inventoryCheck };
-    }
-
-    // don't save likes on the user object
-    user.likes = undefined;
-
-    res = await kv.atomic()
-      .check(inventoryCheck)
-      //
-      .set(['inventories', inventory._id], inventory)
-      .set(inventoriesByUser(inventory.instance, inventory._id), inventory)
-      //
-      .set(['users', user._id], user)
-      .set(usersByDiscordId(user.id), user)
-      //
-      .commit();
-
-    if (res.ok) {
-      return {
-        user,
-        inventory,
-        inventoryCheck: {
-          key: inventoryCheck.key,
-          versionstamp: (res as Deno.KvCommitResult).versionstamp,
-        },
-      };
-    }
-
-    retries += 1;
-  }
-
-  throw new KvError('failed to update inventory');
-}
-
-export async function getInstanceInventories(
-  instance: Schema.Instance,
-): Promise<[Schema.Inventory, Schema.User][]> {
-  let inventories = await db.getValues<Schema.Inventory>(
-    { prefix: inventoriesByInstance(instance._id) },
+    ),
   );
 
-  inventories = inventories.filter((inv) => {
-    if (!inv.lastPull) {
-      return false;
+  const newKeys = Math.max(
+    0,
+    Math.min(
+      MAX_KEYS - currentKeys,
+      Math.trunc(
+        utils.diffInMinutes(keysTimestamp, new Date()) / RECHARGE_KEYS_MINS,
+      ),
+    ),
+  );
+
+  const { dailyTimestamp } = user;
+
+  const newDailyTokens = utils.diffInHours(dailyTimestamp, new Date()) >=
+    RECHARGE_DAILY_TOKENS_HOURS;
+
+  const stealTimestamp = inventory.stealTimestamp;
+
+  const resetSteal = stealTimestamp &&
+    utils.diffInHours(stealTimestamp, new Date()) >=
+      STEAL_COOLDOWN_HOURS;
+
+  if (
+    !newPulls &&
+    !newKeys &&
+    !newDailyTokens &&
+    !resetSteal
+  ) {
+    return inventory;
+  }
+
+  const rechargedPulls = currentPulls + newPulls;
+  const rechargedKeys = currentKeys + newKeys;
+
+  const $userSet: Partial<Schema.User> = {};
+
+  const $set: Partial<Schema.Inventory> = {};
+  const $unset: Partial<{ [K in keyof Schema.Inventory]: '' }> = {};
+
+  $set.availablePulls = Math.min(99, rechargedPulls);
+  $set.availableKeys = Math.min(99, rechargedKeys);
+
+  if (rechargedPulls < MAX_PULLS) {
+    $set.rechargeTimestamp = new Date(
+      pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS * 60000),
+    );
+  } else {
+    $unset.rechargeTimestamp = '';
+  }
+
+  if (rechargedKeys < MAX_KEYS) {
+    $set.keysTimestamp = new Date(
+      keysTimestamp.getTime() + (newKeys * RECHARGE_KEYS_MINS * 60000),
+    );
+  } else {
+    $unset.keysTimestamp = '';
+  }
+
+  if (newDailyTokens) {
+    let newTokens = 1;
+
+    // reward extra token on weekends
+    switch (utils.getDayOfWeek()) {
+      case 'Friday':
+      case 'Saturday':
+      case 'Sunday':
+        newTokens += 1;
+        break;
+      default:
+        break;
     }
 
-    if (!utils.isWithin14Days(new Date(inv.lastPull))) {
-      return false;
-    }
+    $userSet.dailyTimestamp = new Date();
+    $userSet.availableTokens = user.availableTokens + newTokens;
 
-    return true;
+    await db.users().updateOne({ discordId: user.discordId }, {
+      $set: $userSet,
+    });
+  }
+
+  if (resetSteal) {
+    $unset.stealTimestamp = '';
+  }
+
+  await db.inventories().updateOne(
+    { _id: inventory._id },
+    { $set, $unset },
+  );
+
+  const t = { ...inventory, ...$set };
+
+  t.user = { ...t.user, ...$userSet };
+
+  Object.keys($unset).forEach((key) => {
+    delete t[key as keyof Schema.PopulatedInventory];
   });
 
-  const users = (await db.getManyValues<Schema.User>(
-    inventories.map(({ user }) => ['users', user]),
-  )).filter(Boolean) as Schema.User[];
+  return t;
+}
 
-  const likes = await db.getManyBlobValues<Schema.Like[]>(
-    users.map(({ id }) => usersLikesByDiscordId(id)),
-  );
+export async function getActiveUsersIfLiked(
+  guildId: string,
+  characterId: string,
+  mediaIds: string[],
+): Promise<string[]> {
+  const twoWeeks = new Date();
 
-  for (let i = 0; i < users.length; i++) {
-    const user = users[i];
-    user.likes = likes[i];
-  }
+  twoWeeks.setDate(twoWeeks.getDate() - (7 * 2));
 
-  // deno-lint-ignore no-non-null-assertion
-  return inventories.map((inventory, i) => [inventory, users[i]!]);
+  const results = await db.inventories().aggregate()
+    .match({
+      guildId,
+      $or: [
+        { lastPull: { $gte: twoWeeks } },
+        { lastPVE: { $gte: twoWeeks } },
+      ],
+    })
+    .lookup({
+      localField: 'userId',
+      foreignField: 'discordId',
+      from: 'users',
+      as: 'user',
+    })
+    .match({
+      $or: [
+        { 'user.likes': { $in: mediaIds.map((mediaId) => ({ mediaId })) } },
+        { 'user.likes': { $in: [{ characterId }] } },
+      ],
+    })
+    .toArray();
+
+  return (results as Schema.PopulatedInventory[])
+    .map(({ userId }) => userId);
 }
 
 export async function getUserCharacters(
-  inventory: Schema.Inventory,
-): Promise<Deno.KvEntry<Schema.Character>[]> {
-  const characters = await db.getValuesAndTimestamps<Schema.Character>(
-    { prefix: charactersByInventoryPrefix(inventory._id) },
-  );
-
-  return characters;
-}
-
-export async function getUserParty(
-  inventory: Schema.Inventory,
-): Promise<Schema.Party> {
-  const response = await db.getManyValues<Schema.Character>([
-    ['characters', inventory.party?.member1 ?? ''],
-    ['characters', inventory.party?.member2 ?? ''],
-    ['characters', inventory.party?.member3 ?? ''],
-    ['characters', inventory.party?.member4 ?? ''],
-    ['characters', inventory.party?.member5 ?? ''],
-  ]);
-
-  return {
-    member1: response[0],
-    member2: response[1],
-    member3: response[2],
-    member4: response[3],
-    member5: response[4],
-  };
+  userId: string,
+  guildId: string,
+): Promise<WithId<Schema.Character>[]> {
+  return await db.characters().find({ userId, guildId }).toArray();
 }

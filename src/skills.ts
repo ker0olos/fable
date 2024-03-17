@@ -300,7 +300,7 @@ function preAcquire(
       ? { ids: [character.substring(idPrefix.length)], guildId }
       : { search: character, guildId },
   )
-    .then(async (results) => {
+    .then((results) => {
       if (
         !results.length ||
         packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
@@ -308,19 +308,16 @@ function preAcquire(
         throw new Error('404');
       }
 
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
       return Promise.all([
         results[0],
-        db.findCharacters(instance, [`${results[0].packId}:${results[0].id}`]),
+        db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
       ]);
     })
-    .then(async ([character, [existing]]) => {
+    .then(async ([character, existing]) => {
       const locale = _user.cachedUsers[userId]?.locale ??
         _user.cachedGuilds[guildId]?.locale;
 
-      if (!existing?.[0]) {
+      if (!existing) {
         const message = new discord.Message();
 
         const embed = search.characterEmbed(character, {
@@ -339,7 +336,7 @@ function preAcquire(
         return await message.patch(token);
       }
 
-      if (existing[1]?.id !== userId) {
+      if (existing.userId !== userId) {
         const message = new discord.Message();
 
         const embed = search.characterEmbed(character, {
@@ -347,8 +344,8 @@ function preAcquire(
           media: { title: false },
           description: false,
           footer: false,
-          userId: existing[1]?.id,
-          existing: { rating: existing[0].rating },
+          userId: existing.userId,
+          existing: { rating: existing.rating },
         });
 
         message.addEmbed(
@@ -375,14 +372,14 @@ function preAcquire(
         description: false,
         userId: undefined,
         footer: false,
-        existing: existing[0],
+        existing,
       });
 
       message.addEmbed(embed);
 
       const skill: CharacterSkill = skills[skillKey];
 
-      const existingSkill = existing[0].combat?.skills?.[skillKey];
+      const existingSkill = existing.combat.skills[skillKey];
 
       const maxed = skill.max <= (existingSkill?.level ?? 1);
 
@@ -486,66 +483,33 @@ async function acquire(
     throw new Error('404');
   }
 
-  try {
-    const guild = await db.getGuild(guildId);
-    const instance = await db.getInstance(guild);
+  const skill = skills[skillKey];
 
-    const __user = await db.getUser(userId);
+  const existingSkill = await db.acquireSkill(
+    userId,
+    guildId,
+    characterId,
+    skillKey,
+  );
 
-    const { inventory } = await db.getInventory(instance, __user);
+  const formatted = format(skill, locale, {
+    lvl: existingSkill.level,
+  });
 
-    const skill = skills[skillKey];
-
-    const existingSkill = await db.acquireSkill(
-      inventory,
-      characterId,
-      skillKey,
-    );
-
-    const formatted = format(skill, locale, {
-      lvl: existingSkill.level,
-    });
-
-    return new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setTitle(
-            i18n.get(
-              existingSkill.level > 1 ? 'skill-upgraded' : 'skill-acquired',
-              locale,
-            ),
+  return new discord.Message()
+    .addEmbed(
+      new discord.Embed()
+        .setTitle(
+          i18n.get(
+            existingSkill.level > 1 ? 'skill-upgraded' : 'skill-acquired',
+            locale,
           ),
-      )
-      .addEmbed(
-        new discord.Embed()
-          .setDescription(formatted),
-      );
-  } catch (err) {
-    switch (err.message) {
-      case 'SKILL_MAXED':
-        throw new NonFetalError(
-          i18n.get('skill-is-maxed', locale),
-        );
-      case 'CHARACTER_HAS_MAX_SKILLS_SLOTS':
-        throw new NonFetalError(
-          i18n.get('maxed-skill-slots', locale),
-        );
-      case 'NOT_ENOUGH_SKILL_POINTS':
-        throw new NonFetalError(
-          i18n.get('character-not-enough-skill-points', locale),
-        );
-      case 'CHARACTER_NOT_FOUND':
-        throw new NonFetalError(
-          i18n.get('character-hasnt-been-found', locale, 'Character'),
-        );
-      case 'CHARACTER_NOT_OWNED':
-        throw new NonFetalError(
-          i18n.get('invalid-permission', locale),
-        );
-      default:
-        throw err;
-    }
-  }
+        ),
+    )
+    .addEmbed(
+      new discord.Embed()
+        .setDescription(formatted),
+    );
 }
 
 function all(

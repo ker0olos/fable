@@ -2,14 +2,24 @@ import user from '~/src/user.ts';
 
 import i18n from '~/src/i18n.ts';
 
+import config from '~/src/config.ts';
+
 import * as discord from '~/src/discord.ts';
 
 import db, { COSTS } from '~/db/mod.ts';
+
+import { NonFetalError } from '~/src/errors.ts';
 
 function normal(
   { userId, amount }: { userId: string; amount: number },
 ): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
+
+  if (!config.shop) {
+    throw new NonFetalError(
+      i18n.get('maintenance-shop', locale),
+    );
+  }
 
   const message = new discord.Message();
 
@@ -44,12 +54,8 @@ async function confirmNormal({ userId, guildId, amount }: {
 }): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
 
-  const _user = await db.getUser(userId);
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
-
   try {
-    await db.addPulls(instance, _user, amount);
+    await db.addPulls(userId, guildId, amount);
 
     const message = new discord.Message();
 
@@ -74,29 +80,21 @@ async function confirmNormal({ userId, guildId, amount }: {
     ]);
 
     return message;
-  } catch (err) {
-    switch (err.message) {
-      case 'INSUFFICIENT_TOKENS': {
-        const tokens = _user.availableTokens ?? 0;
+  } catch {
+    const { availableTokens } = await db.getUser(userId);
 
-        const diff = amount - tokens;
+    const diff = amount - availableTokens;
 
-        return new discord.Message()
-          .addEmbed(new discord.Embed()
-            .setDescription(
-              i18n.get(
-                'you-need-more-tokens',
-                locale,
-                diff,
-                diff > 1
-                  ? i18n.get('tokens', locale)
-                  : i18n.get('token', locale),
-              ),
-            ));
-      }
-      default:
-        throw err;
-    }
+    return new discord.Message()
+      .addEmbed(new discord.Embed()
+        .setDescription(
+          i18n.get(
+            'you-need-more-tokens',
+            locale,
+            diff,
+            diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
+          ),
+        ));
   }
 }
 
@@ -108,6 +106,12 @@ function guaranteed({
   stars: number;
 }): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
+
+  if (!config.shop) {
+    throw new NonFetalError(
+      i18n.get('maintenance-shop', locale),
+    );
+  }
 
   const message = new discord.Message();
 
@@ -151,10 +155,8 @@ async function confirmGuaranteed({
 }): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
 
-  const _user = await db.getUser(userId);
-
   try {
-    const _ = await db.addGuarantee(_user, stars);
+    await db.addGuarantee(userId, stars);
 
     const message = new discord.Message();
 
@@ -176,35 +178,27 @@ async function confirmGuaranteed({
     ]);
 
     return message;
-  } catch (err) {
-    switch (err.message) {
-      case 'INSUFFICIENT_TOKENS': {
-        const cost = stars === 5
-          ? COSTS.FIVE
-          : stars === 4
-          ? COSTS.FOUR
-          : COSTS.THREE;
+  } catch {
+    const cost = stars === 5
+      ? COSTS.FIVE
+      : stars === 4
+      ? COSTS.FOUR
+      : COSTS.THREE;
 
-        const tokens = _user.availableTokens ?? 0;
+    const { availableTokens } = await db.getUser(userId);
 
-        const diff = cost - tokens;
+    const diff = cost - availableTokens;
 
-        return new discord.Message()
-          .addEmbed(new discord.Embed()
-            .setDescription(
-              i18n.get(
-                'you-need-more-tokens',
-                locale,
-                diff,
-                diff > 1
-                  ? i18n.get('tokens', locale)
-                  : i18n.get('token', locale),
-              ),
-            ));
-      }
-      default:
-        throw err;
-    }
+    return new discord.Message()
+      .addEmbed(new discord.Embed()
+        .setDescription(
+          i18n.get(
+            'you-need-more-tokens',
+            locale,
+            diff,
+            diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
+          ),
+        ));
   }
 }
 
@@ -212,6 +206,12 @@ function keys(
   { userId, amount }: { userId: string; amount: number },
 ): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
+
+  if (!config.shop) {
+    throw new NonFetalError(
+      i18n.get('maintenance-shop', locale),
+    );
+  }
 
   const message = new discord.Message();
 
@@ -246,12 +246,8 @@ async function confirmKeys({ userId, guildId, amount }: {
 }): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
 
-  const _user = await db.getUser(userId);
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
-
   try {
-    await db.addKeys(instance, _user, amount);
+    await db.addKeys(userId, guildId, amount);
 
     const message = new discord.Message();
 
@@ -277,29 +273,21 @@ async function confirmKeys({ userId, guildId, amount }: {
     ]);
 
     return message;
-  } catch (err) {
-    switch (err.message) {
-      case 'INSUFFICIENT_TOKENS': {
-        const tokens = _user.availableTokens ?? 0;
+  } catch {
+    const { availableTokens } = await db.getUser(userId);
 
-        const diff = amount - tokens;
+    const diff = amount - availableTokens;
 
-        return new discord.Message()
-          .addEmbed(new discord.Embed()
-            .setDescription(
-              i18n.get(
-                'you-need-more-tokens',
-                locale,
-                diff,
-                diff > 1
-                  ? i18n.get('tokens', locale)
-                  : i18n.get('token', locale),
-              ),
-            ));
-      }
-      default:
-        throw err;
-    }
+    return new discord.Message()
+      .addEmbed(new discord.Embed()
+        .setDescription(
+          i18n.get(
+            'you-need-more-tokens',
+            locale,
+            diff,
+            diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
+          ),
+        ));
   }
 }
 

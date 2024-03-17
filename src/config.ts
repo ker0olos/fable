@@ -2,9 +2,8 @@ const config: {
   deploy: boolean;
   appId?: string;
   publicKey?: string;
-  topggSecret?: string;
+  mongoUri?: string;
   sentry?: string;
-  instatus?: string;
   origin?: string;
   notice?: string;
   global?: boolean;
@@ -12,6 +11,7 @@ const config: {
   trading?: boolean;
   stealing?: boolean;
   synthesis?: boolean;
+  shop?: boolean;
   communityPacks?: boolean;
   communityPacksMaintainerAPI?: boolean;
   communityPacksBrowseAPI?: boolean;
@@ -23,9 +23,8 @@ const config: {
   deploy: false,
   appId: undefined,
   publicKey: undefined,
-  topggSecret: undefined,
+  mongoUri: undefined,
   sentry: undefined,
-  instatus: undefined,
   origin: undefined,
   notice: undefined,
   global: undefined,
@@ -33,6 +32,7 @@ const config: {
   trading: undefined,
   stealing: undefined,
   synthesis: undefined,
+  shop: undefined,
   communityPacks: undefined,
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
@@ -48,13 +48,12 @@ export async function initConfig(): Promise<void> {
     config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
 
     config.sentry = Deno.env.get('SENTRY_DSN');
-    config.instatus = Deno.env.get('INSTATUS_WEBHOOK');
 
     config.appId = Deno.env.get('APP_ID');
 
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
-    config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
+    config.mongoUri = Deno.env.get('MONGO_URI');
 
     config.notice = Deno.env.get('NOTICE');
 
@@ -73,6 +72,9 @@ export async function initConfig(): Promise<void> {
 
     config.synthesis = !Deno.env.has('SYNTHESIS') ||
       Deno.env.get('SYNTHESIS') === '1';
+
+    config.shop = !Deno.env.has('SHOP') ||
+      Deno.env.get('SHOP') === '1';
 
     config.communityPacks = !Deno.env.has('COMMUNITY_PACKS') ||
       Deno.env.get('COMMUNITY_PACKS') === '1';

@@ -4,7 +4,7 @@ import { assertEquals } from '$std/assert/mod.ts';
 
 import { returnsNext, stub } from '$std/testing/mock.ts';
 
-import config, { clearConfig, initConfig } from '../src/config.ts';
+import config, { clearConfig, initConfig } from '~/src/config.ts';
 
 Deno.test('init', async (test) => {
   await test.step('1', async () => {
@@ -33,6 +33,7 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
         //
         false,
         false,
@@ -45,10 +46,9 @@ Deno.test('init', async (test) => {
       returnsNext([
         '',
         'sentry_dsn',
-        'instatus_hook',
         'app_id',
         'public_key',
-        'topgg_secret',
+        'mongo_uri',
         'notice_message',
       ]),
     );
@@ -61,14 +61,14 @@ Deno.test('init', async (test) => {
         appId: 'app_id',
         publicKey: 'public_key',
         sentry: 'sentry_dsn',
-        instatus: 'instatus_hook',
-        topggSecret: 'topgg_secret',
+        mongoUri: 'mongo_uri',
         notice: 'notice_message',
         global: true,
         gacha: true,
         trading: true,
         stealing: true,
         synthesis: true,
+        shop: true,
         communityPacks: true,
         communityPacksMaintainerAPI: true,
         communityPacksBrowseAPI: true,
@@ -113,6 +113,7 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
         //
         true,
         true,
@@ -125,11 +126,12 @@ Deno.test('init', async (test) => {
       returnsNext([
         '1',
         'sentry_dsn',
-        'instatus_hook',
         'app_id',
         'public_key',
-        'topgg_secret',
+        'mongo_uri',
         'notice_message',
+        '0',
+        '0',
         '0',
         '0',
         '0',
@@ -150,14 +152,14 @@ Deno.test('init', async (test) => {
         appId: 'app_id',
         publicKey: 'public_key',
         sentry: 'sentry_dsn',
-        instatus: 'instatus_hook',
-        topggSecret: 'topgg_secret',
+        mongoUri: 'mongo_uri',
         notice: 'notice_message',
         gacha: false,
         global: false,
         trading: false,
         stealing: false,
         synthesis: false,
+        shop: false,
         communityPacks: false,
         communityPacksMaintainerAPI: false,
         communityPacksBrowseAPI: false,

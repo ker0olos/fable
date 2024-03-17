@@ -1,117 +1,35 @@
-import {
-  charactersByInstancePrefix,
-  charactersByInventoryPrefix,
-  charactersByMediaIdPrefix,
-} from './indices.ts';
+import db from '~/db/mod.ts';
 
-import db, { kv } from './mod.ts';
+import type { WithId } from 'mongodb';
 
-import { KvError } from '../src/errors.ts';
-
-import type * as Schema from './schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
 export async function setCharacterNickname(
-  user: Schema.User,
-  inventory: Schema.Inventory,
-  instance: Schema.Instance,
+  userId: string,
+  guildId: string,
   characterId: string,
   nickname?: string,
-): Promise<Schema.Character> {
-  const character = await db.getValue<Schema.Character>(
-    [...charactersByInstancePrefix(instance._id), characterId],
+): Promise<WithId<Schema.Character> | null> {
+  const character = await db.characters().findOneAndUpdate(
+    { userId, guildId, characterId },
+    nickname ? { $set: { nickname } } : { $unset: { nickname: '' } },
+    { returnDocument: 'after' },
   );
 
-  if (!character) {
-    throw new Error('CHARACTER_NOT_FOUND');
-  }
-
-  if (character.user !== user._id) {
-    throw new Error('CHARACTER_NOT_OWNED');
-  }
-
-  character.nickname = nickname;
-
-  const update = await kv.atomic()
-    .set(['characters', character._id], character)
-    .set(
-      [
-        ...charactersByInstancePrefix(instance._id),
-        character.id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByInventoryPrefix(inventory._id),
-        character._id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByMediaIdPrefix(instance._id, character.mediaId),
-        character._id,
-      ],
-      character,
-    )
-    .commit();
-
-  if (update.ok) {
-    return character;
-  }
-
-  throw new KvError('failed to update character');
+  return character;
 }
 
 export async function setCharacterImage(
-  user: Schema.User,
-  inventory: Schema.Inventory,
-  instance: Schema.Instance,
+  userId: string,
+  guildId: string,
   characterId: string,
   image?: string,
-): Promise<Schema.Character> {
-  const character = await db.getValue<Schema.Character>(
-    [...charactersByInstancePrefix(instance._id), characterId],
+): Promise<WithId<Schema.Character> | null> {
+  const character = await db.characters().findOneAndUpdate(
+    { userId, guildId, characterId },
+    image ? { $set: { image } } : { $unset: { image: '' } },
+    { returnDocument: 'after' },
   );
 
-  if (!character) {
-    throw new Error('CHARACTER_NOT_FOUND');
-  }
-
-  if (character.user !== user._id) {
-    throw new Error('CHARACTER_NOT_OWNED');
-  }
-
-  character.image = image;
-
-  const update = await kv.atomic()
-    .set(['characters', character._id], character)
-    .set(
-      [
-        ...charactersByInstancePrefix(instance._id),
-        character.id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByInventoryPrefix(inventory._id),
-        character._id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByMediaIdPrefix(instance._id, character.mediaId),
-        character._id,
-      ],
-      character,
-    )
-    .commit();
-
-  if (update.ok) {
-    return character;
-  }
-
-  throw new KvError('failed to update character');
+  return character;
 }

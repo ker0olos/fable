@@ -1,29 +1,63 @@
-import db from './mod.ts';
+import db from '~/db/mod.ts';
 
-import { packsByMaintainerId } from './indices.ts';
+import type * as Schema from '~/db/schema.ts';
 
-import type * as Schema from './schema.ts';
+export async function getPopularPacks(
+  offset = 0,
+  limit = 20,
+): Promise<Schema.Pack[]> {
+  const packs = await db.guilds().aggregate()
+    .lookup({
+      from: 'packs',
+      localField: 'packIds',
+      foreignField: '_id',
+      as: 'packs',
+    })
+    .match({
+      $and: [
+        { 'packs.hidden': false },
+        {
+          $or: [{ 'packs.manifest.nsfw': false }, {
+            'packs.manifest.nsfw': null,
+          }],
+        },
+        {
+          $or: [{ 'packs.manifest.private': false }, {
+            'packs.manifest.private': null,
+          }],
+        },
+      ],
+    })
+    .group({
+      _id: '$packs._id',
+      count: { $sum: 1 },
+    })
+    .sort({ count: -1 })
+    .skip(offset)
+    .limit(limit)
+    .toArray() as Schema.Pack[];
 
-export async function getAllPublicPacks(): Promise<Schema.Pack[]> {
-  const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
-
-  return packs
-    .filter(({ hidden, manifest }) =>
-      !(hidden || manifest.private || manifest.nsfw)
-    );
+  return packs;
 }
 
 export async function getPacksByMaintainerId(
-  userDiscordId: string,
+  userId: string,
+  offset = 0,
+  limit = 20,
 ): Promise<Schema.Pack[]> {
-  let keys = await db.getKeys({
-    prefix: packsByMaintainerId(userDiscordId),
-  });
+  const packs = await db.packs()
+    .find({ owner: userId, 'manifest.maintainers': { $in: [userId] } })
+    .sort({ updatedAt: -1 })
+    .skip(offset)
+    .limit(limit)
+    .toArray();
 
-  // the object value is useless
-  // the 3 part of the object key is the pack id which is what's needed
-  keys = keys.map(([, , pack_id]) => ['packs', pack_id]);
+  return packs;
+}
 
-  return (await db.getManyValues(keys))
-    .filter(Boolean) as Schema.Pack[];
+export async function getPack(
+  manifestId: string,
+): Promise<Schema.Pack | null> {
+  return await db.packs()
+    .findOne({ 'manifest.id': manifestId });
 }

@@ -26,32 +26,32 @@ async function embed({ guildId, party, locale }: {
   const message = new discord.Message();
 
   const ids = [
-    party?.member1?.id,
-    party?.member2?.id,
-    party?.member3?.id,
-    party?.member4?.id,
-    party?.member5?.id,
+    party.member1?.characterId,
+    party.member2?.characterId,
+    party.member3?.characterId,
+    party.member4?.characterId,
+    party.member5?.characterId,
   ];
 
   const mediaIds = [
-    party?.member1?.mediaId,
-    party?.member2?.mediaId,
-    party?.member3?.mediaId,
-    party?.member4?.mediaId,
-    party?.member5?.mediaId,
+    party.member1?.mediaId,
+    party.member2?.mediaId,
+    party.member3?.mediaId,
+    party.member4?.mediaId,
+    party.member5?.mediaId,
   ];
 
   const members = [
-    party?.member1,
-    party?.member2,
-    party?.member3,
-    party?.member4,
-    party?.member5,
+    party.member1,
+    party.member2,
+    party.member3,
+    party.member4,
+    party.member5,
   ];
 
   const [media, characters] = await Promise.all([
-    packs.media({ ids: mediaIds.filter(Boolean) as string[], guildId }),
-    packs.characters({ ids: ids.filter(Boolean) as string[], guildId }),
+    packs.media({ ids: mediaIds.filter(utils.nonNullable), guildId }),
+    packs.characters({ ids: ids.filter(utils.nonNullable), guildId }),
   ]);
 
   ids.forEach((characterId, i) => {
@@ -117,13 +117,11 @@ function view({ token, userId, guildId }: {
 
   Promise.resolve()
     .then(async () => {
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+      // const user = await db.getUser(userId);
+      // const guild = await db.getGuild(guildId);
+      // const instance = await db.getInstance(guild);
 
-      const { inventory } = await db.getInventory(instance, user);
-
-      const party = await db.getUserParty(inventory);
+      const { party } = await db.getInventory(guildId, userId);
 
       const message = await embed({ guildId, party, locale });
 
@@ -160,7 +158,7 @@ function assign({
   token: string;
   userId: string;
   guildId: string;
-  spot?: number;
+  spot?: 1 | 2 | 3 | 4 | 5;
   search?: string;
   id?: string;
 }): discord.Message {
@@ -190,14 +188,10 @@ function assign({
 
       const characterId = `${character.packId}:${character.id}`;
 
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
       try {
         const response = await db.assignCharacter(
-          user,
-          instance,
+          userId,
+          guildId,
           characterId,
           spot,
         );
@@ -223,38 +217,18 @@ function assign({
               .setLabel('/stats')
               .setId(`stats`, characterId),
           ]).patch(token);
-      } catch (err) {
+      } catch {
         const names = packs.aliasToArray(results[0].name);
 
-        switch (err.message) {
-          case 'CHARACTER_NOT_FOUND': {
-            return message.addEmbed(
-              new discord.Embed().setDescription(
-                i18n.get('character-hasnt-been-found', locale, names[0]),
-              ),
-            ).addComponents([
-              new discord.Component()
-                .setLabel('/character')
-                .setId(`character`, characterId),
-            ]).patch(token);
-          }
-          case 'CHARACTER_NOT_OWNED':
-            return message.addEmbed(
-              new discord.Embed().setDescription(
-                i18n.get(
-                  'character-not-owned-by-you',
-                  locale,
-                  names[0],
-                ),
-              ),
-            ).addComponents([
-              new discord.Component()
-                .setLabel('/character')
-                .setId(`character`, characterId),
-            ]).patch(token);
-          default:
-            throw err;
-        }
+        return message.addEmbed(
+          new discord.Embed().setDescription(
+            i18n.get('character-hasnt-been-found', locale, names[0]),
+          ),
+        ).addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(`character`, characterId),
+        ]).patch(token);
       }
     })
     .catch(async (err) => {
@@ -288,8 +262,8 @@ function assign({
 
 function swap({ token, a, b, userId, guildId }: {
   token: string;
-  a: number;
-  b: number;
+  a: 1 | 2 | 3 | 4 | 5;
+  b: 1 | 2 | 3 | 4 | 5;
   userId: string;
   guildId: string;
 }): discord.Message {
@@ -298,13 +272,16 @@ function swap({ token, a, b, userId, guildId }: {
 
   Promise.resolve()
     .then(async () => {
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+      const inventory = await db.getInventory(guildId, userId);
 
-      const party = await db.swapSpots(user, instance, a, b);
+      await db.swapSpots(inventory, a, b);
 
-      return (await embed({ guildId, party, locale }))
+      const t = inventory.party[`member${a}`];
+
+      inventory.party[`member${a}`] = inventory.party[`member${b}`];
+      inventory.party[`member${b}`] = t;
+
+      return (await embed({ guildId, party: inventory.party, locale }))
         .patch(token);
     })
     .catch(async (err) => {
@@ -329,7 +306,7 @@ function swap({ token, a, b, userId, guildId }: {
 
 function remove({ token, spot, userId, guildId }: {
   token: string;
-  spot: number;
+  spot: 1 | 2 | 3 | 4 | 5;
   userId: string;
   guildId: string;
 }): discord.Message {
@@ -338,17 +315,11 @@ function remove({ token, spot, userId, guildId }: {
 
   Promise.resolve()
     .then(async () => {
-      const user = await db.getUser(userId);
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
-      const character = await db.unassignCharacter(
-        user,
-        instance,
-        spot,
-      );
+      const inventory = await db.getInventory(guildId, userId);
 
       const message = new discord.Message();
+
+      const character = inventory.party[`member${spot}`];
 
       if (!character) {
         return message.addEmbed(
@@ -358,14 +329,16 @@ function remove({ token, spot, userId, guildId }: {
         ).patch(token);
       }
 
+      await db.unassignCharacter(userId, guildId, spot);
+
       const characters = await packs.characters({
-        ids: [character.id],
+        ids: [character.characterId],
         guildId,
       });
 
       if (
         !characters.length ||
-        packs.isDisabled(character.id, guildId) ||
+        packs.isDisabled(character.characterId, guildId) ||
         packs.isDisabled(character.mediaId, guildId)
       ) {
         return message
@@ -392,7 +365,7 @@ function remove({ token, spot, userId, guildId }: {
         .addComponents([
           new discord.Component()
             .setLabel('/character')
-            .setId(`character`, character.id),
+            .setId(`character`, character.characterId),
         ]).patch(token);
     })
     .catch(async (err) => {

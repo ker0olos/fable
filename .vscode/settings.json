@@ -32,6 +32,8 @@
     "./upload_emote.ts",
     "./update_commands.test.ts",
     "./update_topgg_stats.ts",
+    "./update_indexes.ts",
+    "./start_memory_mongo.ts",
     "./setup.ts"
   ],
   //

@@ -1,23 +1,21 @@
 // deno-lint-ignore-file
 
-import {
-  charactersByInstancePrefix,
-  charactersByInventoryPrefix,
-  charactersByMediaIdPrefix,
-} from '~/db/indices.ts';
+import db, { type ObjectId } from '~/db/mod.ts';
 
-import db from '~/db/mod.ts';
+import { getFloorExp } from '~/src/tower.ts';
 
-import type * as Schema from '~/db/schema.ts';
+import type * as Schema from './schema.ts';
 
 export const MAX_LEVEL = 10;
 
 type Status = {
+  id: string;
   levelUp: number;
   skillPoints: number;
   statPoints: number;
   exp: number;
   expToLevel: number;
+  expGained: number;
 };
 
 export const experienceToNextLevel = (level?: number): number => {
@@ -25,19 +23,11 @@ export const experienceToNextLevel = (level?: number): number => {
 };
 
 export function distributeNewStats(
-  character: Schema.Character,
+  combat: Schema.CharacterCombat,
   newStatPoints: number,
   levelUp: number,
-): Schema.Character {
-  if (
-    !character.combat ||
-    !character.combat?.baseStats ||
-    !character.combat?.curStats
-  ) {
-    throw new Error('CHARACTER_NOT_INITIATED');
-  }
-
-  const { baseStats } = character.combat;
+): Schema.CharacterCombat {
+  const { baseStats } = combat;
 
   const baseStatsSum = baseStats.attack + baseStats.defense + baseStats.speed;
 
@@ -94,115 +84,136 @@ export function distributeNewStats(
       distributedSpeed;
   }
 
-  character.combat.curStats.attack += distributedAttack;
-  character.combat.curStats.defense += distributedDefense;
-  character.combat.curStats.speed += distributedSpeed;
+  combat.curStats.attack += distributedAttack;
+  combat.curStats.defense += distributedDefense;
+  combat.curStats.speed += distributedSpeed;
 
-  character.combat.curStats.hp += 5 * levelUp;
+  combat.curStats.hp += 5 * levelUp;
 
-  return character;
+  return combat;
 }
 
-export function gainExp(
-  op: Deno.AtomicOperation,
-  inventory: Schema.Inventory,
-  character: Schema.Character,
-  gainExp: number,
-): Status {
-  const status: Status = {
-    levelUp: 0,
-    skillPoints: 0,
-    statPoints: 0,
-    exp: 0,
-    expToLevel: 0,
-  };
+export async function gainExp(
+  userId: string,
+  guildId: string,
+  floor: number,
+  party: ObjectId[],
+  keys: number,
+): Promise<Status[]> {
+  const session = db.client.startSession();
 
-  character.combat ??= {};
+  const status: Status[] = [];
 
-  character.combat.exp ??= 0;
-  character.combat.level ??= 1;
-  character.combat.skillPoints ??= 0;
+  const bulk: Parameters<
+    ReturnType<typeof db.characters>['bulkWrite']
+  >[0] = [];
 
-  character.combat.exp += gainExp;
+  try {
+    session.startTransaction();
 
-  // character.combat.unclaimedStatsPoints ??= 0;
-
-  if (character.combat.level >= MAX_LEVEL) {
-    return status;
-  } else {
-    while (
-      character.combat.exp >= experienceToNextLevel(character.combat.level)
-    ) {
-      character.combat.exp -= experienceToNextLevel(character.combat.level);
-
-      character.combat.level += 1;
-      character.combat.skillPoints += 1;
-      // character.combat.unclaimedStatsPoints! += 3;
-
-      status.levelUp += 1;
-      status.skillPoints += 1;
-      status.statPoints += 3;
-
-      // extra skill points based on level
-      if (character.combat.level >= 10) {
-        character.combat.skillPoints += 1;
-        status.skillPoints += 1;
-
-        // character.combat.unclaimedStatsPoints! += 3 * 2;
-        status.statPoints += 3 * 2;
-      } else if (character.combat.level >= 20) {
-        character.combat.skillPoints += 2;
-        status.skillPoints += 2;
-
-        // character.combat.unclaimedStatsPoints! += 3 * 3;
-        status.statPoints += 3 * 3;
-      } else if (character.combat.level >= 40) {
-        character.combat.skillPoints += 3;
-        status.skillPoints += 3;
-
-        // character.combat.unclaimedStatsPoints! += 3 * 5;
-        status.statPoints += 3 * 5;
-      }
-    }
-
-    if (status.statPoints > 0) {
-      character = db.distributeNewStats(
-        character,
-        status.statPoints,
-        status.levelUp,
-      );
-    }
-  }
-
-  status.exp = character.combat?.exp || 0;
-  status.expToLevel = experienceToNextLevel(character.combat?.level);
-
-  op
-    .set(['characters', character._id], character)
-    .set(
-      [
-        ...charactersByInstancePrefix(inventory.instance),
-        character.id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByInventoryPrefix(inventory._id),
-        character._id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByMediaIdPrefix(
-          inventory.instance,
-          character.mediaId,
-        ),
-        character._id,
-      ],
-      character,
+    const inventory = await db.inventories().updateOne(
+      { userId, guildId },
+      { $inc: { availableKeys: -keys }, $set: { floorsCleared: floor } },
+      { session },
     );
+
+    if (inventory.modifiedCount <= 0) {
+      throw new Error();
+    }
+
+    const characters = await db.characters().find(
+      { userId, guildId, _id: { $in: party } },
+    ).toArray();
+
+    if (characters.length !== characters.length) {
+      throw new Error();
+    }
+
+    const expGained = getFloorExp(Math.max(floor, 1)) * keys;
+
+    characters.forEach(async (character) => {
+      const status: Status = {
+        exp: 0,
+        expToLevel: 0,
+        levelUp: 0,
+        skillPoints: 0,
+        statPoints: 0,
+        id: character.characterId,
+        expGained,
+      };
+
+      character.combat.exp += expGained;
+
+      if (character.combat.level < MAX_LEVEL) {
+        while (
+          character.combat.exp >= experienceToNextLevel(character.combat.level)
+        ) {
+          character.combat.exp -= experienceToNextLevel(character.combat.level);
+
+          character.combat.level += 1;
+          character.combat.skillPoints += 1;
+          // character.combat.unclaimedStatsPoints! += 3;
+
+          status.levelUp += 1;
+          status.skillPoints += 1;
+          status.statPoints += 3;
+
+          // extra skill points based on level
+          if (character.combat.level >= 10) {
+            character.combat.skillPoints += 1;
+            status.skillPoints += 1;
+
+            // character.combat.unclaimedStatsPoints! += 3 * 2;
+            status.statPoints += 3 * 2;
+          } else if (character.combat.level >= 20) {
+            character.combat.skillPoints += 2;
+            status.skillPoints += 2;
+
+            // character.combat.unclaimedStatsPoints! += 3 * 3;
+            status.statPoints += 3 * 3;
+          } else if (character.combat.level >= 40) {
+            character.combat.skillPoints += 3;
+            status.skillPoints += 3;
+
+            // character.combat.unclaimedStatsPoints! += 3 * 5;
+            status.statPoints += 3 * 5;
+          }
+        }
+      }
+
+      status.exp = character.combat.exp;
+      status.expToLevel = experienceToNextLevel(character.combat.level);
+
+      // character leveled
+      if (status.statPoints > 0) {
+        character.combat = distributeNewStats(
+          character.combat,
+          status.statPoints,
+          status.levelUp,
+        );
+      }
+
+      bulk.push({
+        updateOne: {
+          filter: { _id: character._id },
+          update: { $set: { combat: character.combat } },
+        },
+      });
+    });
+
+    const update = await db.characters().bulkWrite(bulk, { session });
+
+    if (update.modifiedCount !== characters.length) {
+      throw new Error();
+    }
+
+    await session.commitTransaction();
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    await session.endSession();
+  }
 
   return status;
 }

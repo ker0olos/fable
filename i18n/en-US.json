@@ -123,13 +123,14 @@
   "steal-try-again": "You can try again {0}",
   "steal-unexpected": "Something happened and affected your chances of stealing **{0}**, Please try again!",
 
-  "global-maintenance": "Fable is under maintenance, try again later!",
+  "global-maintenance": "Fable is under maintenance, check back in a few hours!",
   "maintenance-gacha": "Gacha is under maintenance, try again later!",
   "maintenance-merge": "Merging is under maintenance, try again later!",
   "maintenance-trade": "Trading is under maintenance, try again later!",
   "maintenance-steal": "Stealing is under maintenance, try again later!",
   "maintenance-combat": "Combat is under maintenance, try again later!",
   "maintenance-packs": "Community Packs are under maintenance, try again later!",
+  "maintenance-shop": "Shop is under maintenance, try again later!",
 
   "gacha-no-more-pulls": "You don't have any more pulls!",
   "gacha-no-guarantees": "You don`t have any {0}pulls",
@@ -191,6 +192,7 @@
   "tower-fail": "`/reclear` the last floor to level up your party and try again!",
   "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
+  "exp": "EXP",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
