@@ -16,13 +16,24 @@ export const RECHARGE_KEYS_MINS = 10;
 
 export const RECHARGE_DAILY_TOKENS_HOURS = 12;
 
-export const newUser = (userId: string): Schema.User => ({
-  discordId: userId,
-  dailyTimestamp: new Date(),
-  availableTokens: 0,
-  guarantees: [],
-  likes: [],
-});
+export const newUser = (
+  userId: string,
+  omit?: (keyof Schema.User)[],
+): Schema.User => {
+  const newUser = {
+    discordId: userId,
+    dailyTimestamp: new Date(),
+    availableTokens: 0,
+    guarantees: [],
+    likes: [],
+  };
+
+  omit?.forEach((key) => {
+    delete newUser[key];
+  });
+
+  return newUser;
+};
 
 export const newGuild = (guildId: string): Schema.Guild => ({
   excluded: false,

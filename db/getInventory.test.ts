@@ -5,11 +5,10 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 import { stub } from '$std/testing/mock.ts';
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-
-import db, { MAX_KEYS } from '~/db/mod.ts';
-
 import { assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
-import { MAX_PULLS } from '~/db/mod.ts';
+
+import db, { MAX_KEYS, MAX_PULLS } from '~/db/mod.ts';
+
 import utils from '~/src/utils.ts';
 
 let mongod: MongoMemoryReplSet;

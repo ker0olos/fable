@@ -22,4 +22,4 @@ jobs:
         env:
           APP_ID: ${{ secrets.APP_ID }}
           TOPGG_TOKEN: ${{ secrets.TOPGG_TOKEN }}
-          DENO_KV_ACCESS_TOKEN: ${{ secrets.DENO_KV_ACCESS_TOKEN }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
