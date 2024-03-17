@@ -268,9 +268,9 @@ describe('db.swapCharacters()', () => {
 
     assertObjectMatch(inventoryUpdated!, {
       party: {
-        member1Id: 'character-1',
+        member1Id: null,
         member2Id: null,
-        member3Id: null,
+        member3Id: 'character-1',
         member4Id: null,
         member5Id: null,
       },

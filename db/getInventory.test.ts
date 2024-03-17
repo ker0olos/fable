@@ -472,43 +472,37 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge 0 tokens (11 hours ago)', async () => {
-    const nowStub = stub(Date, 'now', () => 1710629999665);
+    await db.users().insertOne(
+      {
+        discordId: 'user-id',
+        availableTokens: 0,
+        dailyTimestamp: new Date(Date.now() - 11 * 60 * 60 * 1000), // 11 hours ago,
+      } as any,
+    );
 
-    try {
-      await db.users().insertOne(
-        {
-          discordId: 'user-id',
-          availableTokens: 0,
-          dailyTimestamp: new Date(Date.now() - 11 * 60 * 60 * 1000), // 11 hours ago,
-        } as any,
-      );
+    const { user, ...inventory } = await db.rechargeConsumables(
+      'guild-id',
+      'user-id',
+    );
 
-      const { user, ...inventory } = await db.rechargeConsumables(
-        'guild-id',
-        'user-id',
-      );
+    assertEquals(Object.keys(inventory), [
+      '_id',
+      'guildId',
+      'userId',
+      'availableKeys',
+      'availablePulls',
+      'floorsCleared',
+      'party',
+    ]);
 
-      assertEquals(Object.keys(inventory), [
-        '_id',
-        'guildId',
-        'userId',
-        'availableKeys',
-        'availablePulls',
-        'floorsCleared',
-        'party',
-      ]);
+    assertEquals(Object.keys(user), [
+      '_id',
+      'discordId',
+      'availableTokens',
+      'dailyTimestamp',
+    ]);
 
-      assertEquals(Object.keys(user), [
-        '_id',
-        'discordId',
-        'availableTokens',
-        'dailyTimestamp',
-      ]);
-
-      assertEquals(user.availableTokens, 0);
-    } finally {
-      nowStub.restore();
-    }
+    assertEquals(user.availableTokens, 0);
   });
 
   it('recharge 1 tokens (Monday) (12 hours ago)', async () => {
