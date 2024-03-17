@@ -83,7 +83,7 @@ async function createPacksIndexes() {
 }
 
 async function createBattleIndexes() {
-  await db.packs() // TTL Index
+  await db.battles() // TTL Index
     .createIndex({
       'createdAt': Direction.ascending,
     }, { expireAfterSeconds: MAX_BATTLE_TIME });
