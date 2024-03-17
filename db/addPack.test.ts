@@ -26,7 +26,7 @@ describe('db.addPack()', () => {
   });
 
   it('install public on new guild', async () => {
-    const { insertedId: packInsertedId } = await db.packs().insertOne({
+    await db.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-id',
@@ -43,7 +43,7 @@ describe('db.addPack()', () => {
 
     assertEquals(pack!.manifest.id, 'pack-id');
 
-    assertEquals(guild!.packIds, [packInsertedId]);
+    assertEquals(guild!.packIds, ['pack-id']);
   });
 
   it('install public on existing guild', async () => {
@@ -52,7 +52,7 @@ describe('db.addPack()', () => {
       packIds: ['old-pack-id'],
     } as any);
 
-    const { insertedId: packInsertedId } = await db.packs().insertOne({
+    await db.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-id',
@@ -67,11 +67,11 @@ describe('db.addPack()', () => {
 
     assertEquals(pack!.manifest.id, 'pack-id');
 
-    assertEquals(guild!.packIds, ['old-pack-id', packInsertedId] as any);
+    assertEquals(guild!.packIds, ['old-pack-id', 'pack-id'] as any);
   });
 
   it('install private (owned)', async () => {
-    const { insertedId: packInsertedId } = await db.packs().insertOne({
+    await db.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-id',
@@ -89,11 +89,11 @@ describe('db.addPack()', () => {
 
     assertEquals(pack!.manifest.id, 'pack-id');
 
-    assertEquals(guild!.packIds, [packInsertedId]);
+    assertEquals(guild!.packIds, ['pack-id']);
   });
 
   it('install private (maintained)', async () => {
-    const { insertedId: packInsertedId } = await db.packs().insertOne({
+    await db.packs().insertOne({
       owner: 'another-user-id',
       manifest: {
         id: 'pack-id',
@@ -112,11 +112,11 @@ describe('db.addPack()', () => {
 
     assertEquals(pack!.manifest.id, 'pack-id');
 
-    assertEquals(guild!.packIds, [packInsertedId]);
+    assertEquals(guild!.packIds, ['pack-id']);
   });
 
   it('install private (not allowed)', async () => {
-    const { insertedId: _packInsertedId } = await db.packs().insertOne({
+    await db.packs().insertOne({
       owner: 'another-user-id',
       manifest: {
         id: 'pack-id',
@@ -150,14 +150,14 @@ describe('db.removePack()', () => {
   });
 
   it('normal', async () => {
-    const { insertedId: pack1Id } = await db.packs().insertOne({
+    await db.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-1',
       },
     } as any);
 
-    const { insertedId: pack2Id } = await db.packs().insertOne({
+    await db.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-2',
@@ -166,7 +166,7 @@ describe('db.removePack()', () => {
 
     const { insertedId: guildInsertedId } = await db.guilds().insertOne({
       discordId: 'guild-id',
-      packIds: [pack1Id, pack2Id],
+      packIds: ['pack-1', 'pack-2'],
     } as any);
 
     const pack = await db.removePack('guild-id', 'pack-1');
@@ -177,7 +177,7 @@ describe('db.removePack()', () => {
 
     assertEquals(pack!.manifest.id, 'pack-1');
 
-    assertEquals(guild!.packIds, [pack2Id] as any);
+    assertEquals(guild!.packIds, ['pack-2'] as any);
   });
 
   it('not found', async () => {
