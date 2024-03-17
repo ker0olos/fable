@@ -59,7 +59,7 @@ export const randomStats = (
   };
 };
 
-const ensureCombat = (
+export const ensureCombat = (
   character: Partial<Schema.Character>,
 ): Schema.Character => {
   if (character.combat !== undefined) {

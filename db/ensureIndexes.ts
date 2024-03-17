@@ -28,6 +28,8 @@ if (import.meta.main) {
   await createBattleIndexes();
 
   console.log(green('Ensured Database Indexes'));
+
+  await db.client.close();
 }
 
 async function createGuildsIndexes() {
