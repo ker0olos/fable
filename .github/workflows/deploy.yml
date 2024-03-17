@@ -37,9 +37,7 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno test -A --coverage=cov_profile db/addCharacter.test.ts
-        env:
-          DENO_JOBS: 1
+      - run: deno test -A --coverage=cov_profile tests db update_commands.test.ts
       - run: deno coverage cov_profile --lcov --output=lcov.info
       - uses: codecov/codecov-action@v3
 
