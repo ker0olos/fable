@@ -297,7 +297,7 @@ export async function failSteal(
   await db.inventories().updateOne(
     { guildId, userId },
     {
-      $setOnInsert: newInventory(guildId, userId),
+      $setOnInsert: newInventory(guildId, userId, ['stealTimestamp']),
       $set: { stealTimestamp: new Date() },
     },
     { upsert: true },

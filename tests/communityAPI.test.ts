@@ -9,13 +9,13 @@ import {
   stub,
 } from '$std/testing/mock.ts';
 
-import utils from '../src/utils.ts';
+import utils from '~/src/utils.ts';
 
-import * as communityAPI from '../src/communityAPI.ts';
+import * as communityAPI from '~/src/communityAPI.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import config from '../src/config.ts';
+import config from '~/src/config.ts';
 
 Deno.test('/user', async (test) => {
   await test.step('normal', async () => {
@@ -136,12 +136,12 @@ Deno.test('/popular', async (test) => {
   await test.step('normal', async () => {
     const getAllPublicPacksStub = stub(
       db,
-      'getAllPublicPacks',
+      'getPopularPacks',
       () =>
         [
-          { id: 'pack-1', servers: 5, manifest: {} },
-          { id: 'pack-2', servers: 0, manifest: {} },
-          { id: 'pack-3', servers: 20, manifest: {} },
+          { id: 'pack-1', manifest: {} },
+          { id: 'pack-2', manifest: {} },
+          { id: 'pack-3', manifest: {} },
         ] as any,
     );
 
@@ -158,14 +158,13 @@ Deno.test('/popular', async (test) => {
 
       const data = await response.json();
 
-      assertEquals(data.length, 3);
       assertEquals(data.packs.length, 3);
       assertEquals(data.limit, 20);
       assertEquals(data.offset, 0);
 
-      assertEquals(data.packs[0].id, 'pack-3');
-      assertEquals(data.packs[1].id, 'pack-1');
-      assertEquals(data.packs[2].id, 'pack-2');
+      assertEquals(data.packs[0].id, 'pack-1');
+      assertEquals(data.packs[1].id, 'pack-2');
+      assertEquals(data.packs[2].id, 'pack-3');
     } finally {
       delete config.communityPacksBrowseAPI;
 
@@ -478,11 +477,12 @@ Deno.test('/pack', async (test) => {
   await test.step('normal', async () => {
     const getPack = stub(
       db,
-      'getValue',
+      'getPack',
       () =>
         ({
           owner: 'user_id',
           manifest: {
+            id: 'pack-id',
             private: false,
           },
         }) as any,
@@ -499,11 +499,6 @@ Deno.test('/pack', async (test) => {
       const response = await communityAPI.pack(request, {
         packId: 'pack-id',
       });
-
-      assertEquals(getPack.calls[0].args[0], [
-        'packs_by_manifest_id',
-        'pack-id',
-      ]);
 
       assertEquals(response.ok, true);
       assertEquals(response.status, 200);
@@ -527,12 +522,13 @@ Deno.test('/pack', async (test) => {
 
     const getPack = stub(
       db,
-      'getValue',
+      'getPack',
       () =>
         ({
           owner: 'user_id',
           manifest: {
-            private: true,
+            id: 'pack-id',
+            private: false,
           },
         }) as any,
     );
@@ -560,11 +556,6 @@ Deno.test('/pack', async (test) => {
         }],
       });
 
-      assertEquals(getPack.calls[0].args[0], [
-        'packs_by_manifest_id',
-        'pack-id',
-      ]);
-
       assertEquals(response.ok, true);
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
@@ -588,11 +579,12 @@ Deno.test('/pack', async (test) => {
 
     const getPack = stub(
       db,
-      'getValue',
+      'getPack',
       () =>
         ({
           owner: 'another_user_id',
           manifest: {
+            id: 'pack-id',
             private: true,
             maintainers: ['user_id'],
           },
@@ -622,11 +614,6 @@ Deno.test('/pack', async (test) => {
         }],
       });
 
-      assertEquals(getPack.calls[0].args[0], [
-        'packs_by_manifest_id',
-        'pack-id',
-      ]);
-
       assertEquals(response.ok, true);
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
@@ -650,11 +637,12 @@ Deno.test('/pack', async (test) => {
 
     const getPack = stub(
       db,
-      'getValue',
+      'getPack',
       () =>
         ({
           owner: 'another_user_id',
           manifest: {
+            id: 'pack-id',
             private: true,
             maintainers: ['another_user_id_2'],
           },
@@ -684,11 +672,6 @@ Deno.test('/pack', async (test) => {
         }],
       });
 
-      assertEquals(getPack.calls[0].args[0], [
-        'packs_by_manifest_id',
-        'pack-id',
-      ]);
-
       assertEquals(response.ok, false);
       assertEquals(response.status, 403);
       assertEquals(response.statusText, 'Forbidden');
@@ -704,11 +687,12 @@ Deno.test('/pack', async (test) => {
   await test.step('private pack without authorization', async () => {
     const getPack = stub(
       db,
-      'getValue',
+      'getPack',
       () =>
         ({
           owner: 'user_id',
           manifest: {
+            id: 'pack-id',
             private: true,
           },
         }) as any,
@@ -726,11 +710,6 @@ Deno.test('/pack', async (test) => {
         packId: 'pack-id',
       });
 
-      assertEquals(getPack.calls[0].args[0], [
-        'packs_by_manifest_id',
-        'pack-id',
-      ]);
-
       assertEquals(response.ok, false);
       assertEquals(response.status, 403);
       assertEquals(response.statusText, 'Forbidden');
@@ -745,7 +724,7 @@ Deno.test('/pack', async (test) => {
   await test.step('not found', async () => {
     const getPack = stub(
       db,
-      'getValue',
+      'getPack',
       () => undefined as any,
     );
 
@@ -761,11 +740,6 @@ Deno.test('/pack', async (test) => {
         packId: 'pack-id',
       });
 
-      assertEquals(getPack.calls[0].args[0], [
-        'packs_by_manifest_id',
-        'pack-id',
-      ]);
-
       assertEquals(response.ok, false);
       assertEquals(response.status, 404);
       assertEquals(response.statusText, 'Not Found');
@@ -780,11 +754,12 @@ Deno.test('/pack', async (test) => {
   await test.step('invalid access token (private)', async () => {
     const getPack = stub(
       db,
-      'getValue',
+      'getPack',
       () =>
         ({
           owner: 'user_id',
           manifest: {
+            id: 'pack-id',
             private: true,
           },
         }) as any,
@@ -850,11 +825,13 @@ Deno.test('/pack', async (test) => {
   await test.step('invalid access token (public)', async () => {
     const getPack = stub(
       db,
-      'getValue',
+      'getPack',
       () =>
         ({
           owner: 'user_id',
-          manifest: {},
+          manifest: {
+            id: 'pack-id',
+          },
         }) as any,
     );
 

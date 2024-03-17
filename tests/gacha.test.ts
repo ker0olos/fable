@@ -10,16 +10,16 @@ import { FakeTime } from '$std/testing/time.ts';
 
 import { assertSpyCalls, returnsNext, Stub, stub } from '$std/testing/mock.ts';
 
-import Rating from '../src/rating.ts';
+import Rating from '~/src/rating.ts';
 
-import gacha, { Pull } from '../src/gacha.ts';
+import gacha, { Pull } from '~/src/gacha.ts';
 
-import utils from '../src/utils.ts';
-import packs from '../src/packs.ts';
+import utils from '~/src/utils.ts';
+import packs from '~/src/packs.ts';
 
-import config from '../src/config.ts';
+import config from '~/src/config.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
 import {
   Character,
@@ -30,11 +30,11 @@ import {
   MediaFormat,
   MediaRelation,
   MediaType,
-} from '../src/types.ts';
+} from '~/src/types.ts';
 
-import { AniListCharacter } from '../packs/anilist/types.ts';
+import { AniListCharacter } from '~/packs/anilist/types.ts';
 
-import { KvError, NoPullsError, PoolError } from '../src/errors.ts';
+import { NoPullsError, PoolError } from '~/src/errors.ts';
 
 function fakePool(
   { fill, variables, length = 1, rating }: {
@@ -2225,15 +2225,9 @@ Deno.test('adding character to inventory', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
+      'getActiveUsersIfLiked',
       () => [] as any,
     );
 
@@ -2291,7 +2285,6 @@ Deno.test('adding character to inventory', async (test) => {
       listStub.restore();
       //
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
     }
@@ -2365,15 +2358,9 @@ Deno.test('adding character to inventory', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
+      'getActiveUsersIfLiked',
       () => [] as any,
     );
 
@@ -2381,7 +2368,7 @@ Deno.test('adding character to inventory', async (test) => {
       db,
       'addCharacter',
       () => {
-        throw new KvError('');
+        throw new Error('');
       },
     );
 
@@ -2397,8 +2384,8 @@ Deno.test('adding character to inventory', async (test) => {
             userId: 'user_id',
             guildId: 'guild_id',
           }),
-        PoolError,
-        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+        Error,
+        '',
       );
 
       assertSpyCalls(poolStub, 1);
@@ -2410,7 +2397,6 @@ Deno.test('adding character to inventory', async (test) => {
       listStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
     }
@@ -2484,15 +2470,9 @@ Deno.test('adding character to inventory', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
+      'getActiveUsersIfLiked',
       () => [] as any,
     );
 
@@ -2500,7 +2480,7 @@ Deno.test('adding character to inventory', async (test) => {
       db,
       'addCharacter',
       () => {
-        throw new NoPullsError('2023-02-07T01:00:55.222Z');
+        throw new NoPullsError(new Date('2023-02-07T01:00:55.222Z'));
       },
     );
 
@@ -2529,7 +2509,6 @@ Deno.test('adding character to inventory', async (test) => {
       listStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
     }
@@ -2603,15 +2582,9 @@ Deno.test('adding character to inventory', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
+      'getActiveUsersIfLiked',
       () => [] as any,
     );
 
@@ -2649,7 +2622,6 @@ Deno.test('adding character to inventory', async (test) => {
       listStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
     }
@@ -2883,15 +2855,9 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
+      'getActiveUsersIfLiked',
       () => [] as any,
     );
 
@@ -3058,7 +3024,6 @@ Deno.test('/gacha', async (test) => {
       fetchStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
     }
   });
@@ -3115,15 +3080,9 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
+      'getActiveUsersIfLiked',
       () => [] as any,
     );
 
@@ -3299,7 +3258,6 @@ Deno.test('/gacha', async (test) => {
       fetchStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
     }
   });
@@ -3356,15 +3314,9 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
+      'getActiveUsersIfLiked',
       () => [] as any,
     );
 
@@ -3473,7 +3425,6 @@ Deno.test('/gacha', async (test) => {
       fetchStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
     }
   });
@@ -3530,20 +3481,10 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
-      () =>
-        [[{}, {
-          id: 'another_user_id',
-          likes: [{ characterId: 'pack-id-2:2' }],
-        }]] as any,
+      'getActiveUsersIfLiked',
+      () => Promise.resolve(['another_user_id']),
     );
 
     const pullStub = stub(
@@ -3748,7 +3689,6 @@ Deno.test('/gacha', async (test) => {
       fetchStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
     }
   });
@@ -3805,20 +3745,10 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
-      () =>
-        [[{}, {
-          id: 'another_user_id',
-          likes: [{ mediaId: 'pack-id:1' }],
-        }]] as any,
+      'getActiveUsersIfLiked',
+      () => Promise.resolve(['another_user_id']),
     );
 
     const pullStub = stub(
@@ -4023,7 +3953,6 @@ Deno.test('/gacha', async (test) => {
       fetchStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
     }
   });
@@ -4093,20 +4022,10 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => 'instance' as any,
-    );
-
     const getInstanceInventoriesStub = stub(
       db,
-      'getInstanceInventories',
-      () =>
-        [[{}, {
-          id: 'another_user_id',
-          likes: [{ mediaId: 'pack-id:5' }],
-        }]] as any,
+      'getActiveUsersIfLiked',
+      () => Promise.resolve(['another_user_id']),
     );
 
     const pullStub = stub(
@@ -4311,7 +4230,6 @@ Deno.test('/gacha', async (test) => {
       fetchStub.restore();
 
       getGuildStub.restore();
-      getInstanceStub.restore();
       getInstanceInventoriesStub.restore();
     }
   });
@@ -4330,7 +4248,7 @@ Deno.test('/gacha', async (test) => {
       'rngPull',
       // deno-lint-ignore require-await
       async () => {
-        throw new NoPullsError('2023-02-07T00:53:09.199Z');
+        throw new NoPullsError(new Date('2023-02-07T00:53:09.199Z'));
       },
     );
 

@@ -416,13 +416,13 @@ async function pullAnimation(
   if (guildId && userId && !background) {
     const pings = new Set<string>();
 
-    const inventories = await db.getActiveUsersIfLiked(
+    const users = await db.getActiveUsersIfLiked(
       guildId,
       characterId,
       mediaIds,
     );
 
-    inventories.forEach((userId) => {
+    users.forEach((userId) => {
       pings.add(`<@${userId}>`);
     });
 

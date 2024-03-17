@@ -10,13 +10,11 @@ export async function publishPack(
   userId: string,
   manifest: Manifest,
 ): Promise<void> {
-  const newPack: Schema.Pack = {
+  const newPack: Omit<Omit<Schema.Pack, 'updatedAt'>, 'manifest'> = {
     owner: userId,
     createdAt: new Date(),
-    updatedAt: new Date(),
     approved: false,
     hidden: false,
-    manifest,
   };
 
   await db.packs().updateOne(
@@ -58,7 +56,7 @@ export async function addPack(
   const guild = await db.guilds().findOneAndUpdate(
     { discordId: guildId },
     {
-      $setOnInsert: newGuild(guildId),
+      $setOnInsert: newGuild(guildId, ['packIds']),
       $addToSet: { packIds: pack._id },
     },
     { upsert: true, returnDocument: 'after' },

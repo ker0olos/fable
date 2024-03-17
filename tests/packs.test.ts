@@ -37,19 +37,7 @@ Deno.test('list', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => ({}) as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => ({}) as any,
-    );
-
-    const getInstancePacksStub = stub(
-      db,
-      'getInstancePacks',
-      () => Promise.resolve([]),
+      () => ({ packs: [] }) as any,
     );
 
     try {
@@ -64,8 +52,6 @@ Deno.test('list', async (test) => {
       await assertMonochromeSnapshot(test, pack);
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
-      getInstancePacksStub.restore();
     }
   });
 
@@ -73,19 +59,7 @@ Deno.test('list', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => ({}) as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => ({}) as any,
-    );
-
-    const getInstancePacksStub = stub(
-      db,
-      'getInstancePacks',
-      () => Promise.resolve([]),
+      () => ({ packs: [] }) as any,
     );
 
     try {
@@ -100,8 +74,6 @@ Deno.test('list', async (test) => {
       await assertMonochromeSnapshot(test, pack);
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
-      getInstancePacksStub.restore();
     }
   });
 
@@ -109,19 +81,7 @@ Deno.test('list', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => ({}) as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () => ({}) as any,
-    );
-
-    const getInstancePacksStub = stub(
-      db,
-      'getInstancePacks',
-      () => Promise.resolve([]),
+      () => ({ packs: [] }) as any,
     );
 
     try {
@@ -130,8 +90,6 @@ Deno.test('list', async (test) => {
       assertEquals(list.length, 0);
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
-      getInstancePacksStub.restore();
     }
   });
 
@@ -139,22 +97,7 @@ Deno.test('list', async (test) => {
     const getGuildStub = stub(
       db,
       'getGuild',
-      () => ({}) as any,
-    );
-
-    const getInstanceStub = stub(
-      db,
-      'getInstance',
-      () =>
-        ({
-          builtinsDisabled: true,
-        }) as any,
-    );
-
-    const getInstancePacksStub = stub(
-      db,
-      'getInstancePacks',
-      () => Promise.resolve([]),
+      () => ({ packs: [], builtinsDisabled: true }) as any,
     );
 
     try {
@@ -163,8 +106,6 @@ Deno.test('list', async (test) => {
       assertEquals(list.length, 0);
     } finally {
       getGuildStub.restore();
-      getInstanceStub.restore();
-      getInstancePacksStub.restore();
     }
   });
 });
@@ -173,22 +114,7 @@ Deno.test('reserved ids', async () => {
   const getGuildStub = stub(
     db,
     'getGuild',
-    () => ({}) as any,
-  );
-
-  const getInstanceStub = stub(
-    db,
-    'getInstance',
-    () =>
-      ({
-        builtinsDisabled: true,
-      }) as any,
-  );
-
-  const getInstancePacksStub = stub(
-    db,
-    'getInstancePacks',
-    () => Promise.resolve([]),
+    () => ({ packs: [] }) as any,
   );
 
   try {
@@ -201,8 +127,6 @@ Deno.test('reserved ids', async () => {
     });
   } finally {
     getGuildStub.restore();
-    getInstanceStub.restore();
-    getInstancePacksStub.restore();
   }
 });
 

@@ -20,7 +20,7 @@ export const newUser = (
   userId: string,
   omit?: (keyof Schema.User)[],
 ): Schema.User => {
-  const user = {
+  const user: Schema.User = {
     discordId: userId,
     dailyTimestamp: new Date(),
     availableTokens: 0,
@@ -39,7 +39,7 @@ export const newGuild = (
   guildId: string,
   omit?: (keyof Schema.Guild)[],
 ): Schema.Guild => {
-  const guild = {
+  const guild: Schema.Guild = {
     excluded: false,
     builtinsDisabled: false,
     discordId: guildId,
@@ -56,20 +56,29 @@ export const newGuild = (
 export const newInventory = (
   guildId: string,
   userId: string,
-): Schema.Inventory => ({
-  guildId,
-  userId,
-  availablePulls: MAX_NEW_PULLS,
-  availableKeys: MAX_KEYS,
-  floorsCleared: 0,
-  party: {
-    member1Id: null,
-    member2Id: null,
-    member3Id: null,
-    member4Id: null,
-    member5Id: null,
-  },
-});
+  omit?: (keyof Schema.Inventory)[],
+): Schema.Inventory => {
+  const inventory: Schema.Inventory = {
+    guildId,
+    userId,
+    availablePulls: MAX_NEW_PULLS,
+    availableKeys: MAX_KEYS,
+    floorsCleared: 0,
+    party: {
+      member1Id: null,
+      member2Id: null,
+      member3Id: null,
+      member4Id: null,
+      member5Id: null,
+    },
+  };
+
+  omit?.forEach((key) => {
+    delete inventory[key];
+  });
+
+  return inventory;
+};
 
 export async function getUser(userId: string): Promise<WithId<Schema.User>> {
   // deno-lint-ignore no-non-null-assertion
