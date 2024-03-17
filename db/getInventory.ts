@@ -113,7 +113,7 @@ export async function getGuild(
     //
     .lookup({
       localField: 'packIds',
-      foreignField: '_id',
+      foreignField: 'manifest.id',
       from: 'packs',
       as: 'packs',
     })

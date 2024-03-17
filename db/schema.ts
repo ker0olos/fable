@@ -6,7 +6,7 @@ export interface Guild {
   discordId: string;
   excluded: boolean;
   builtinsDisabled: boolean;
-  packIds: ObjectId[];
+  packIds: string[];
 }
 export type PopulatedGuild = WithId<Guild> & {
   packs: Pack[];

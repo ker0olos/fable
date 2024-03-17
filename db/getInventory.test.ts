@@ -122,12 +122,12 @@ describe('db.getGuild()', () => {
 
   it('packs population', async () => {
     const { insertedId: insertedPackId } = await db.packs().insertOne(
-      { id: 'pack-id' } as any,
+      { manifest: { id: 'pack-id' } } as any,
     );
 
     const { insertedId: insertedGuildId } = await db.guilds().insertOne({
       discordId: 'guild-id',
-      packIds: [insertedPackId],
+      packIds: ['pack-id'],
     } as any);
 
     const guild = await db.getGuild('guild-id');
@@ -135,8 +135,8 @@ describe('db.getGuild()', () => {
     assertObjectMatch(guild, {
       _id: insertedGuildId,
       discordId: 'guild-id',
-      packIds: [insertedPackId],
-      packs: [{ id: 'pack-id' }],
+      packIds: ['pack-id'],
+      packs: [{ _id: insertedPackId, manifest: { id: 'pack-id' } }],
     });
   });
 });

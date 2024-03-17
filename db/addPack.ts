@@ -57,7 +57,7 @@ export async function addPack(
     { discordId: guildId },
     {
       $setOnInsert: newGuild(guildId, ['packIds']),
-      $addToSet: { packIds: pack._id },
+      $addToSet: { packIds: manifestId },
     },
     { upsert: true, returnDocument: 'after' },
   );
@@ -83,7 +83,7 @@ export async function removePack(
 
   const guild = await db.guilds().findOneAndUpdate(
     { discordId: guildId },
-    { $pull: { packIds: pack._id } },
+    { $pull: { packIds: manifestId } },
     { returnDocument: 'after' },
   );
 
