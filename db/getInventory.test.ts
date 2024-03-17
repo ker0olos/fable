@@ -644,3 +644,246 @@ describe('db.rechargeConsumables()', () => {
     ]);
   });
 });
+
+describe('db.getActiveUsersIfLiked()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryReplSet.create();
+
+    db.client = await new MongoClient(mongod.getUri())
+      .connect();
+  });
+
+  afterEach(async () => {
+    await db.client.close();
+    await mongod.stop();
+  });
+
+  it('2 users like character', async () => {
+    await db.users().insertOne({
+      discordId: 'user-id',
+      likes: [
+        { characterId: 'character-id' },
+        { characterId: 'character-2' },
+      ],
+    } as any);
+
+    await db.inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        lastPull: new Date(),
+      } as any);
+
+    await db.users().insertOne({
+      discordId: 'user-2',
+      likes: [
+        { characterId: 'character-id' },
+        { characterId: 'character-2' },
+      ],
+    } as any);
+
+    await db.inventories()
+      .insertOne({
+        userId: 'user-2',
+        guildId: 'guild-id',
+        lastPull: new Date(),
+      } as any);
+
+    const users = await db.getActiveUsersIfLiked(
+      'guild-id',
+      'character-id',
+      ['media-id'],
+    );
+
+    assertEquals(users, ['user-id', 'user-2']);
+  });
+
+  it('2 users like media', async () => {
+    await db.users().insertOne({
+      discordId: 'user-id',
+      likes: [
+        { mediaId: 'media-id' },
+        { mediaId: 'media-2' },
+      ],
+    } as any);
+
+    await db.inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        lastPull: new Date(),
+      } as any);
+
+    await db.users().insertOne({
+      discordId: 'user-2',
+      likes: [
+        { mediaId: 'media-id' },
+        { mediaId: 'media-2' },
+      ],
+    } as any);
+
+    await db.inventories()
+      .insertOne({
+        userId: 'user-2',
+        guildId: 'guild-id',
+        lastPull: new Date(),
+      } as any);
+
+    const users = await db.getActiveUsersIfLiked(
+      'guild-id',
+      'character-id',
+      ['media-id'],
+    );
+
+    assertEquals(users, ['user-id', 'user-2']);
+  });
+
+  it('1 active user likes character', async () => {
+    await db.users().insertOne({
+      discordId: 'user-id',
+      likes: [
+        { characterId: 'character-id' },
+      ],
+    } as any);
+
+    await db.inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        lastPull: new Date('1999-1-1'),
+      } as any);
+
+    await db.users().insertOne({
+      discordId: 'user-2',
+      likes: [
+        { characterId: 'character-id' },
+      ],
+    } as any);
+
+    await db.inventories()
+      .insertOne({
+        userId: 'user-2',
+        guildId: 'guild-id',
+        lastPull: new Date(),
+      } as any);
+
+    const users = await db.getActiveUsersIfLiked(
+      'guild-id',
+      'character-id',
+      ['media-id'],
+    );
+
+    assertEquals(users, ['user-2']);
+  });
+
+  it('no users like character', async () => {
+    await db.users().insertOne({
+      discordId: 'user-id',
+      likes: [
+        { characterId: 'character-2' },
+      ],
+    } as any);
+
+    await db.users().insertOne({
+      discordId: 'user-2',
+      likes: [
+        { mediaId: 'media-2' },
+      ],
+    } as any);
+
+    await db.inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        lastPull: new Date(),
+      } as any);
+
+    const users = await db.getActiveUsersIfLiked(
+      'guild-id',
+      'character-id',
+      ['media-id'],
+    );
+
+    assertEquals(users, []);
+  });
+});
+
+describe('db.getUserCharacters()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryReplSet.create();
+
+    db.client = await new MongoClient(mongod.getUri())
+      .connect();
+  });
+
+  afterEach(async () => {
+    await db.client.close();
+    await mongod.stop();
+  });
+
+  it('normal', async () => {
+    await db.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-1',
+    } as any);
+
+    await db.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+    } as any);
+
+    await db.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'another-guild-id',
+      characterId: 'character-1',
+    } as any);
+
+    await db.characters().insertOne({
+      userId: 'another-user-id',
+      guildId: 'guild-id',
+      characterId: 'character-3',
+    } as any);
+
+    const characters = await db.getUserCharacters(
+      'user-id',
+      'guild-id',
+    );
+
+    assertEquals(characters.length, 2);
+
+    assertObjectMatch(characters[0], {
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-1',
+    });
+
+    assertObjectMatch(characters[1], {
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+    });
+  });
+
+  it('none', async () => {
+    await db.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'another-guild-id',
+      characterId: 'character-1',
+    } as any);
+
+    await db.characters().insertOne({
+      userId: 'another-user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+    } as any);
+
+    const characters = await db.getUserCharacters(
+      'user-id',
+      'guild-id',
+    );
+
+    assertEquals(characters.length, 0);
+  });
+});
