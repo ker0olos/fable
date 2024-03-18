@@ -1,7 +1,11 @@
+import { MongoClient } from 'mongodb';
+
 import db from '~/db/mod.ts';
 
 if (import.meta.main) {
   const APP_ID = Deno.env.get('APP_ID');
+
+  const MONGO_URI = Deno.env.get('MONGO_URI');
 
   const TOPGG_TOKEN = Deno.env.get('TOPGG_TOKEN');
 
@@ -9,9 +13,16 @@ if (import.meta.main) {
     throw new Error('APP_ID is not defined');
   }
 
+  if (!MONGO_URI) {
+    throw new Error('MONGO_URI is not defined');
+  }
+
   if (!TOPGG_TOKEN) {
     throw new Error('TOPGG_TOKEN is not defined');
   }
+
+  db.client = await new MongoClient(MONGO_URI, { retryWrites: true })
+    .connect();
 
   const serverCount = await db.guilds().estimatedDocumentCount();
 

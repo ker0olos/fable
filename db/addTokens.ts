@@ -1,5 +1,7 @@
 import db from '~/db/mod.ts';
 
+import type { WithId } from 'mongodb';
+
 import type * as Schema from '~/db/schema.ts';
 
 export const COSTS = {
@@ -34,7 +36,7 @@ export async function addPulls(
     }, { $inc: { availableTokens: -amount } });
 
     if (!modifiedCount) {
-      throw new Error();
+      throw new Error('INSUFFICIENT_TOKENS');
     }
 
     await db.inventories().updateOne(
@@ -54,7 +56,7 @@ export async function addPulls(
 export async function addGuarantee(
   userId: string,
   guarantee: number,
-): Promise<Schema.User | null> {
+): Promise<WithId<Schema.User> | null> {
   const cost = guarantee === 5
     ? COSTS.FIVE
     : guarantee === 4
@@ -88,7 +90,7 @@ export async function addKeys(
     }, { $inc: { availableTokens: -amount } });
 
     if (!modifiedCount) {
-      throw new Error();
+      throw new Error('INSUFFICIENT_TOKENS');
     }
 
     await db.inventories().updateOne(
