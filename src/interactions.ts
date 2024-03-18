@@ -1,4 +1,4 @@
-import { MongoClient, MongoNetworkError } from 'mongodb';
+import { MongoClient } from 'mongodb';
 
 import * as discord from '~/src/discord.ts';
 
