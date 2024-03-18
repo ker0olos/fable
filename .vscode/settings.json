@@ -33,7 +33,7 @@
     "./update_commands.test.ts",
     "./update_topgg_stats.ts",
     "./update_indexes.ts",
-    "./start_memory_mongo.ts",
+    "./start_dev.ts",
     "./setup.ts"
   ],
   //

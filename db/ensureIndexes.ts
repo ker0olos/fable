@@ -13,12 +13,11 @@ enum Direction {
   descending = -1,
 }
 
-if (import.meta.main) {
+export async function ensureIndexes(): Promise<void> {
   // deno-lint-ignore no-non-null-assertion
   db.client = await new MongoClient(Deno.env.get('MONGO_URI')!, {
     retryWrites: true,
-  })
-    .connect();
+  }).connect();
 
   await createGuildsIndexes();
   await createUsersIndexes();
@@ -27,9 +26,13 @@ if (import.meta.main) {
   await createPacksIndexes();
   await createBattleIndexes();
 
-  console.log(green('Ensured Database Indexes'));
-
   await db.client.close();
+}
+
+if (import.meta.main) {
+  await ensureIndexes();
+
+  console.log(green('Ensured Database Indexes'));
 }
 
 async function createGuildsIndexes() {

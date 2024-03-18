@@ -20,11 +20,7 @@
   "lock": false,
   "tasks": {
     "discord": "deno run -A --env update_commands.ts",
-    "start": "deno run --watch --env -A src/interactions.ts",
-    "tunnel": "concurrently \"sleep 2 && deno task start\" \"sleep 3 && ngrok http 127.0.0.1:8000\" \"sleep 4 && deno task tunnel_url\"",
-    "tunnel_url": "curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\"",
-    "index": "deno run -A --env db/ensureIndexes.ts",
-    "mongodb": "deno run -A start_memory_mongo.ts",
+    "dev": "deno run --watch --env -A start_dev.ts",
     "udd": "deno run -A https://deno.land/x/udd/main.ts deno.json"
   },
   "fmt": {
@@ -48,7 +44,7 @@
     "awesome-ajv": "https://esm.sh/awesome-ajv-errors@5.1.0",
     "lru": "https://deno.land/x/lru@1.0.2/mod.ts",
     "sentry": "https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts",
-    "sift": "https://raw.githubusercontent.com/ker0olos/sift/62110006c2d070fa6f00d5007a3a19dea6cd1d4d/mod.ts",
+    "sift": "https://raw.githubusercontent.com/ker0olos/sift/89e31b5a08af007d51073af31050fc2205245dd3/mod.ts",
     "tweetnacl": "https://esm.sh/tweetnacl@1.0.3",
     "mongodb": "npm:mongodb",
     "mongodb-memory-server": "npm:mongodb-memory-server-core"

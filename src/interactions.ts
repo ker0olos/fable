@@ -1375,7 +1375,7 @@ export const handler = async (r: Request) => {
     .send();
 };
 
-if (import.meta.main) {
+export async function start(): Promise<Deno.HttpServer> {
   await initConfig();
 
   utils.initSentry({ dsn: config.sentry });
@@ -1384,7 +1384,7 @@ if (import.meta.main) {
   db.client = await new MongoClient(config.mongoUri!, { retryWrites: true })
     .connect();
 
-  utils.serve({
+  return utils.serve({
     '/': handler,
     '/api/user': communityAPI.user,
     '/api/publish': communityAPI.publish,
@@ -1405,4 +1405,8 @@ if (import.meta.main) {
       );
     },
   });
+}
+
+if (import.meta.main) {
+  await start();
 }
