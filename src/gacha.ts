@@ -271,7 +271,14 @@ async function rngPull(
           sacrifices,
         });
       } catch (err) {
-        if (err.message === 'WRITE_ERROR') {
+        // E11000 duplicate key error collection
+        // character already exists in guild
+        if (err.code === 11000) {
+          continue;
+        }
+
+        // TODO #325 avoid retrying by lower the chances of a conflict if possible
+        if (err.message.includes('Write conflict during plan execution')) {
           continue;
         }
 

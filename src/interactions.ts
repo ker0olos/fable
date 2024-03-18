@@ -1384,17 +1384,6 @@ if (import.meta.main) {
   db.client = await new MongoClient(config.mongoUri!, { retryWrites: true })
     .connect();
 
-  db.client.on('error', (err) => {
-    // reconnect on network errors
-    if (err instanceof MongoNetworkError) {
-      // deno-lint-ignore no-non-null-assertion
-      db.client = new MongoClient(config.mongoUri!, { retryWrites: true });
-      db.client.connect();
-    } else {
-      throw err;
-    }
-  });
-
   utils.serve({
     '/': handler,
     '/api/user': communityAPI.user,

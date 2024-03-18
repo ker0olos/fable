@@ -180,17 +180,12 @@ export async function addCharacter(
       { session },
     );
 
-    const t = await db.characters().bulkWrite([
+    await db.characters().bulkWrite([
       ...deleteSacrifices,
       { insertOne: { document: newCharacter } },
     ], { session });
 
-    if (t.hasWriteErrors()) {
-      throw new Error('WRITE_ERROR');
-    }
-
-    // TODO #325 avoid retrying by lower the chances of a conflict if possible
-    await db.performOperationWithRetry(() => session.commitTransaction());
+    await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
     throw err;
