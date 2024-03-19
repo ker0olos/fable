@@ -25,16 +25,16 @@
   "deno.unstable": true,
   "deno.config": "deno.json",
   "deno.enablePaths": [
-    "./src",
-    "./db",
-    "./tests",
-    "./update_commands.ts",
-    "./upload_emote.ts",
-    "./update_commands.test.ts",
-    "./update_topgg_stats.ts",
-    "./update_indexes.ts",
-    "./start_dev.ts",
-    "./setup.ts"
+    "src",
+    "db",
+    "tests",
+    "update_commands.ts",
+    "upload_emote.ts",
+    "update_commands.test.ts",
+    "update_topgg_stats.ts",
+    "update_indexes.ts",
+    "start_dev.ts",
+    "setup.ts"
   ],
   //
   "[typescript]": {

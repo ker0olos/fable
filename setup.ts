@@ -34,7 +34,20 @@ await $.confirm({
 Did you invite the bot to your server using the url above?`,
 });
 
-const pb = $.progress('Updating Discord Slash Commands');
+let pb = $.progress('Install Developer Tools (Ngrok & Concurrently)');
+
+try {
+  await $`npm i -g ngrok concurrently`.quiet();
+} catch {
+  console.error(
+    red('Error running: npm i -g ngrok concurrently'),
+  );
+  Deno.exit(1);
+} finally {
+  pb.finish();
+}
+
+pb = $.progress('Updating Discord Slash Commands');
 
 try {
   await $`deno task discord`.quiet();
@@ -57,7 +70,7 @@ console.log(
 console.log(`\nRun ${green('"deno task dev"')} to run the bot`);
 console.log(
   `It will output something like ${
-    green('"https://seven-facts-fold.loca.lt"')
+    green('"https://aaa-111-222-333-444.eu.ngrok.io"')
   }`,
 );
 console.log(

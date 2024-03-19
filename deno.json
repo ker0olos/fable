@@ -20,7 +20,8 @@
   "lock": false,
   "tasks": {
     "discord": "deno run -A --env update_commands.ts",
-    "dev": "deno run --watch --env -A start_dev.ts",
+    "dev": "concurrently \"deno run --watch --env -A start_dev.ts\" \"ngrok http 127.0.0.1:8000\"",
+    "dev-remote": "concurrently \"deno run --watch --env -A start_dev.ts --remote\" \"ngrok http 127.0.0.1:8000\"",
     "udd": "deno run -A https://deno.land/x/udd/main.ts deno.json"
   },
   "fmt": {
