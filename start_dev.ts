@@ -31,7 +31,9 @@ if (import.meta.main) {
 }
 
 async function startMongod() {
-  mongod = await MongoMemoryReplSet.create();
+  mongod = await MongoMemoryReplSet.create({
+    replSet: { storageEngine: 'wiredTiger' },
+  });
 
   const uri = mongod.getUri();
 
