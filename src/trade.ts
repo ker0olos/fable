@@ -133,9 +133,10 @@ function pre({ token, userId, guildId, targetId, give, take }: {
         takeCharacters.map(({ name }) => packs.aliasToArray(name)[0]),
       ];
 
-      const userInventory = await db.getInventory(guildId, userId);
-
-      const targetInventory = await db.getInventory(guildId, targetId);
+      const [userInventory, targetInventory] = await Promise.all([
+        db.getInventory(guildId, userId),
+        db.getInventory(guildId, targetId),
+      ]);
 
       const giveCollection = await db.getUserCharacters(userId, guildId);
 
@@ -462,7 +463,14 @@ function give({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed()
-              .setDescription(err.message),
+              .setDescription(
+                i18n.get(
+                  err.message.includes('IN_PARTY')
+                    ? 'give-you-party-members'
+                    : 'character-no-longer-owned',
+                  locale,
+                ),
+              ),
           )
           .setType(discord.MessageType.Update)
           .patch(token);
@@ -606,7 +614,14 @@ function accepted({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed()
-              .setDescription(err.message),
+              .setDescription(
+                i18n.get(
+                  err.message.includes('IN_PARTY')
+                    ? 'trade-party-members'
+                    : 'character-no-longer-owned',
+                  locale,
+                ),
+              ),
           )
           .setType(discord.MessageType.Update)
           .patch(token);

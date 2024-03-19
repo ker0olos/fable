@@ -4,6 +4,8 @@ import utils from '~/src/utils.ts';
 
 import { newInventory } from '~/db/getInventory.ts';
 
+import { NonFetalError } from '~/src/errors.ts';
+
 import type * as Schema from '~/db/schema.ts';
 
 export const STEAL_COOLDOWN_HOURS = 3 * 24;
@@ -42,7 +44,7 @@ export async function giveCharacters(
       .toArray() as Schema.PopulatedCharacter[];
 
     if (giveCharacters.length !== giveIds.length) {
-      throw new Error('NOT_OWNED');
+      throw new NonFetalError('NOT_OWNED');
     }
 
     const aInventory = giveCharacters[0].inventory;
@@ -59,7 +61,7 @@ export async function giveCharacters(
       giveCharacters
         .some(({ _id }) => aParty.some((member) => member.equals(_id)))
     ) {
-      throw new Error('CHARACTER_IN_PARTY');
+      throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
     // deno-lint-ignore no-non-null-assertion
@@ -162,7 +164,7 @@ export async function tradeCharacters(
       giveCharacters.length !== giveIds.length ||
       takeCharacters.length !== takeIds.length
     ) {
-      throw new Error('NOT_OWNED');
+      throw new NonFetalError('NOT_OWNED');
     }
 
     const aInventory = giveCharacters[0].inventory;
@@ -190,7 +192,7 @@ export async function tradeCharacters(
       takeCharacters
         .some(({ _id }) => bParty.some((member) => member.equals(_id)))
     ) {
-      throw new Error('CHARACTER_IN_PARTY');
+      throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
     const bulk: Parameters<ReturnType<typeof db.characters>['bulkWrite']>[0] =
@@ -250,7 +252,7 @@ export async function stealCharacter(
       .toArray() as Schema.PopulatedCharacter[];
 
     if (!character) {
-      throw new Error('NOT_FOUND');
+      throw new NonFetalError('NOT_FOUND');
     }
 
     const partyMembers: (keyof typeof character.inventory.party)[] = [
