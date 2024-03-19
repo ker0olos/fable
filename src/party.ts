@@ -117,10 +117,6 @@ function view({ token, userId, guildId }: {
 
   Promise.resolve()
     .then(async () => {
-      // const user = await db.getUser(userId);
-      // const guild = await db.getGuild(guildId);
-      // const instance = await db.getInstance(guild);
-
       const { party } = await db.getInventory(guildId, userId);
 
       const message = await embed({ guildId, party, locale });

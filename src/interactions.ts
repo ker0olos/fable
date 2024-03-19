@@ -1375,16 +1375,26 @@ export const handler = async (r: Request) => {
     .send();
 };
 
-export async function start(): Promise<Deno.HttpServer> {
+export async function start(): Promise<void> {
   await initConfig();
 
   utils.initSentry({ dsn: config.sentry });
 
-  // deno-lint-ignore no-non-null-assertion
-  db.client = await new MongoClient(config.mongoUri!, { retryWrites: true })
-    .connect();
+  try {
+    // deno-lint-ignore no-non-null-assertion
+    db.client = await new MongoClient(config.mongoUri!, {
+      connectTimeoutMS: 10 * 60 * 1000,
+      retryWrites: true,
+    }).connect();
 
-  return utils.serve({
+    db.client.on('error', (err) => {
+      throw err;
+    });
+  } catch (err) {
+    utils.captureException(err);
+  }
+
+  utils.serve({
     '/': handler,
     '/api/user': communityAPI.user,
     '/api/publish': communityAPI.publish,

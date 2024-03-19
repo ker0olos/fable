@@ -1,6 +1,10 @@
 import db from '~/db/mod.ts';
 
+import utils from '~/src/utils.ts';
+
 import { newInventory } from '~/db/getInventory.ts';
+
+import { NonFetalError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -26,7 +30,7 @@ export async function giveCharacters(
 
     const giveCharacters = await db.characters().aggregate()
       .match({
-        id: { $in: giveIds },
+        characterId: { $in: giveIds },
         userId: aUserId,
         guildId,
       })
@@ -36,10 +40,11 @@ export async function giveCharacters(
         from: 'inventories',
         as: 'inventory',
       })
+      .unwind('$inventory')
       .toArray() as Schema.PopulatedCharacter[];
 
     if (giveCharacters.length !== giveIds.length) {
-      throw new Error();
+      throw new NonFetalError('NOT_OWNED');
     }
 
     const aInventory = giveCharacters[0].inventory;
@@ -50,13 +55,13 @@ export async function giveCharacters(
       aInventory.party.member3Id,
       aInventory.party.member4Id,
       aInventory.party.member5Id,
-    ];
+    ].filter(utils.nonNullable);
 
     if (
       giveCharacters
-        .some((character) => aParty.includes(character._id))
+        .some(({ _id }) => aParty.some((member) => member.equals(_id)))
     ) {
-      throw new Error();
+      throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
     // deno-lint-ignore no-non-null-assertion
@@ -127,7 +132,7 @@ export async function tradeCharacters(
 
     const giveCharacters = await db.characters().aggregate()
       .match({
-        id: { $in: giveIds },
+        characterId: { $in: giveIds },
         userId: aUserId,
         guildId,
       })
@@ -137,11 +142,12 @@ export async function tradeCharacters(
         from: 'inventories',
         as: 'inventory',
       })
+      .unwind('$inventory')
       .toArray() as Schema.PopulatedCharacter[];
 
     const takeCharacters = await db.characters().aggregate()
       .match({
-        id: { $in: takeIds },
+        characterId: { $in: takeIds },
         userId: bUserId,
         guildId,
       })
@@ -151,13 +157,14 @@ export async function tradeCharacters(
         from: 'inventories',
         as: 'inventory',
       })
+      .unwind('$inventory')
       .toArray() as Schema.PopulatedCharacter[];
 
     if (
       giveCharacters.length !== giveIds.length ||
       takeCharacters.length !== takeIds.length
     ) {
-      throw new Error();
+      throw new NonFetalError('NOT_OWNED');
     }
 
     const aInventory = giveCharacters[0].inventory;
@@ -169,7 +176,7 @@ export async function tradeCharacters(
       aInventory.party.member3Id,
       aInventory.party.member4Id,
       aInventory.party.member5Id,
-    ];
+    ].filter(utils.nonNullable);
 
     const bParty = [
       bInventory.party.member1Id,
@@ -177,15 +184,15 @@ export async function tradeCharacters(
       bInventory.party.member3Id,
       bInventory.party.member4Id,
       bInventory.party.member5Id,
-    ];
+    ].filter(utils.nonNullable);
 
     if (
       giveCharacters
-        .some((character) => aParty.includes(character._id)) ||
+        .some(({ _id }) => aParty.some((member) => member.equals(_id))) ||
       takeCharacters
-        .some((character) => bParty.includes(character._id))
+        .some(({ _id }) => bParty.some((member) => member.equals(_id)))
     ) {
-      throw new Error();
+      throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
     const bulk: Parameters<ReturnType<typeof db.characters>['bulkWrite']>[0] =
@@ -231,17 +238,21 @@ export async function stealCharacter(
     session.startTransaction();
 
     const [character] = await db.characters().aggregate()
-      .match({ characterId, guildId })
+      .match({
+        characterId,
+        guildId,
+      })
       .lookup({
         localField: 'inventoryId',
         foreignField: '_id',
         from: 'inventories',
         as: 'inventory',
       })
+      .unwind('$inventory')
       .toArray() as Schema.PopulatedCharacter[];
 
     if (!character) {
-      throw new Error('');
+      throw new NonFetalError('NOT_FOUND');
     }
 
     const partyMembers: (keyof typeof character.inventory.party)[] = [
@@ -258,7 +269,7 @@ export async function stealCharacter(
     partyMembers.forEach(async (memberId) => {
       const target = character.inventory;
 
-      if (character._id === target.party[memberId]) {
+      if (character._id.equals(target.party[memberId])) {
         await db.inventories().updateOne(
           { _id: target._id },
           { $unset: { [`party.${memberId}`]: '' } },
