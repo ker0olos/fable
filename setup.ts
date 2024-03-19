@@ -16,7 +16,7 @@ const BOT_TOKEN = await $.prompt(
 );
 
 const GUILD_ID = await $.prompt(
-  'Enter a discord server id (https://github.com/ker0olos/fable/wiki/Get-Server-ID): ',
+  'Enter a discord server id (Optional but recommended): ',
 );
 
 await Deno.writeTextFile(
@@ -34,13 +34,13 @@ await $.confirm({
 Did you invite the bot to your server using the url above?`,
 });
 
-let pb = $.progress('Install Developer Tools');
+let pb = $.progress('Install Developer Tools (Ngrok & Concurrently)');
 
 try {
-  await $`npm i -g ngrok concurrently node-jq`.quiet();
+  await $`npm i -g ngrok concurrently`.quiet();
 } catch {
   console.error(
-    red('Error running: npm i -g ngrok concurrently node-jq'),
+    red('Error running: npm i -g ngrok concurrently'),
   );
   Deno.exit(1);
 } finally {
@@ -67,7 +67,7 @@ console.log(
   'which contains all the slash commands discord users will see when they type "/" in the chat box',
 );
 
-console.log(`\nRun ${green('"deno task tunnel"')} to run the bot`);
+console.log(`\nRun ${green('"deno task dev"')} to run the bot`);
 console.log(
   `It will output something like ${
     green('"https://aaa-111-222-333-444.eu.ngrok.io"')

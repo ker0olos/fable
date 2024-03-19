@@ -81,22 +81,22 @@ const _db = {} as { client: MongoClient };
 const db = {
   ..._db,
   users: (): Collection<Schema.User> => {
-    return db.client.db().collection('users');
+    return db.client.db('default').collection('users');
   },
   guilds: (): Collection<Schema.Guild> => {
-    return db.client.db().collection('guilds');
+    return db.client.db('default').collection('guilds');
   },
   inventories: (): Collection<Schema.Inventory> => {
-    return db.client.db().collection('inventories');
+    return db.client.db('default').collection('inventories');
   },
   characters: (): Collection<Schema.Character> => {
-    return db.client.db().collection('characters');
+    return db.client.db('default').collection('characters');
   },
   packs: (): Collection<Schema.Pack> => {
-    return db.client.db().collection('packs');
+    return db.client.db('default').collection('packs');
   },
   battles: (): Collection<Schema.BattleData> => {
-    return db.client.db().collection('battles');
+    return db.client.db('default').collection('battles');
   },
   //
   getInventory,

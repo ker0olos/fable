@@ -26,7 +26,7 @@ async function getFilteredCharacters(
 ): Promise<WithId<CharacterWithId>[]> {
   const { user, party } = await db.getInventory(guildId, userId);
 
-  const characters = await db.getUserCharacters(guildId, userId);
+  const characters = await db.getUserCharacters(userId, guildId);
 
   const partyIds = [
     party.member1?.characterId,
