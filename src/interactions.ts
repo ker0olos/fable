@@ -1380,19 +1380,11 @@ export async function start(): Promise<void> {
 
   utils.initSentry({ dsn: config.sentry });
 
-  try {
-    // deno-lint-ignore no-non-null-assertion
-    db.client = await new MongoClient(config.mongoUri!, {
-      connectTimeoutMS: 10 * 60 * 1000,
-      retryWrites: true,
-    }).connect();
-
-    db.client.on('error', (err) => {
-      throw err;
-    });
-  } catch (err) {
-    utils.captureException(err);
-  }
+  // deno-lint-ignore no-non-null-assertion
+  db.client = await new MongoClient(config.mongoUri!, {
+    retryWrites: true,
+    minPoolSize: 5,
+  }).connect();
 
   utils.serve({
     '/': handler,

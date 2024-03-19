@@ -14,7 +14,7 @@ export async function acquireSkill(
   characterId: string,
   skillKey: SkillKey,
 ): Promise<Schema.AcquiredCharacterSkill> {
-  const lvl = `combat.skills.${skillKey}.level`;
+  const level = `combat.skills.${skillKey}.level`;
 
   const skill = skills[skillKey];
 
@@ -25,11 +25,11 @@ export async function acquireSkill(
       characterId,
       'combat.skillPoints': { $gte: skill.cost }, // has enough skill points
       $or: [
-        { [lvl]: null }, // not acquired
-        { [lvl]: { $lt: skill.max } }, // less than max level
+        { [level]: null }, // not acquired
+        { [level]: { $lt: skill.max } }, // less than max level
       ],
     },
-    { $inc: { 'combat.skillPoints': -skill.cost, [lvl]: 1 } },
+    { $inc: { 'combat.skillPoints': -skill.cost, [level]: 1 } },
     { returnDocument: 'after' },
   );
 

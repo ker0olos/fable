@@ -268,8 +268,9 @@
   "/search": "search for a specific series",
   "/character": "search for a specific character",
 
-  "/merge": "merge characters together to pull a new character",
+  "/merge": "sacrifice characters to pull a new more shiny character",
 
+  "/automerge": "create the lowest or hightest possible merge automatically",
   "/automerge max": "merge your characters together to pull the highest rating possible",
   "/automerge min": "merge your characters together to pull the lowest rating possible",
 
