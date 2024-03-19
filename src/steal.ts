@@ -123,6 +123,7 @@ function pre({ token, userId, guildId, search, id }: {
       const characterName = packs.aliasToArray(character.name)[0];
 
       const media = character.media?.edges?.[0]?.node;
+
       if (!existing) {
         message.addEmbed(
           new discord.Embed().setDescription(
@@ -199,6 +200,7 @@ function pre({ token, userId, guildId, search, id }: {
           description: false,
           media: { title: true },
           existing: {
+            rating: existing.rating,
             mediaId: existing.mediaId,
           },
         })
@@ -333,7 +335,7 @@ function attempt({
       const success = utils.getRandomFloat() <= (chance / 100);
 
       // delay to build up anticipation
-      await utils.sleep(6);
+      await utils.sleep(5);
 
       // failed
       if (!success) {
