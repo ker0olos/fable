@@ -49,6 +49,8 @@ if (import.meta.main) {
     await response.text(),
   );
 
+  db.client.close();
+
   if (!response.ok) {
     Deno.exit(1);
   }
