@@ -10,7 +10,7 @@ import {
   assertRejects,
 } from '$std/assert/mod.ts';
 
-import db, { COSTS } from '~/db/mod.ts';
+import db from '~/db/mod.ts';
 
 let mongod: MongoMemoryServer;
 
