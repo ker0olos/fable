@@ -16,14 +16,12 @@ import { experienceToNextLevel } from '~/db/gainExp.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
 
-import type * as Schema from '~/db/schema.ts';
-
 import type { SkillKey } from '~/src/types.ts';
+import db from '~/db/mod.ts';
 
-function view({ token, character, existing, userId, guildId }: {
+function view({ token, character, userId, guildId }: {
   token: string;
   character: string;
-  existing?: Schema.Character;
   guildId: string;
   userId: string;
 }): discord.Message {
@@ -50,9 +48,12 @@ function view({ token, character, existing, userId, guildId }: {
         throw new Error('404');
       }
 
-      return { character: results[0]!, existing };
+      return Promise.all([
+        Promise.resolve(results[0]!),
+        db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
+      ]);
     })
-    .then(async ({ character, existing }) => {
+    .then(async ([character, existing]) => {
       if (!existing) {
         const message = new discord.Message();
 

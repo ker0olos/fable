@@ -14,6 +14,7 @@
   "cancel": "Cancel",
   "accept": "Accept",
   "decline": "Decline",
+  "failed": "Failed",
 
   "homepage": "Homepage",
 
@@ -191,7 +192,7 @@
   "max-floor-cleared": "You already cleared the hightest floor in the tower",
   "tower-fail": "`/reclear` the last floor to level up your party and try again!",
   "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
-  "exp-gained": "**{0}** {1}/{2} EXP",
+  "exp-gained": "**{0}** {1}(+{2})/{3} EXP",
   "exp": "EXP",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
@@ -268,8 +269,9 @@
   "/search": "search for a specific series",
   "/character": "search for a specific character",
 
-  "/merge": "merge characters together to pull a new character",
+  "/merge": "sacrifice characters to pull a new more shiny character",
 
+  "/automerge": "create the lowest or hightest possible merge automatically",
   "/automerge max": "merge your characters together to pull the highest rating possible",
   "/automerge min": "merge your characters together to pull the lowest rating possible",
 

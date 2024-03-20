@@ -1354,7 +1354,7 @@ snapshot[`commands 1`] = `
   },
   {
     "name": "merge",
-    "description": "merge characters together to pull a new character",
+    "description": "sacrifice characters to pull a new more shiny character",
     "dm_permission": false,
     "description_localizations": {
       "es-ES": "combina personajes para obtener uno nuevo"
@@ -1391,7 +1391,7 @@ snapshot[`commands 1`] = `
   },
   {
     "name": "synthesize",
-    "description": "merge characters together to pull a new character",
+    "description": "sacrifice characters to pull a new more shiny character",
     "dm_permission": false,
     "description_localizations": {
       "es-ES": "combina personajes para obtener uno nuevo"
@@ -1428,7 +1428,7 @@ snapshot[`commands 1`] = `
   },
   {
     "name": "automerge",
-    "description": "/automerge",
+    "description": "create the lowest or hightest possible merge automatically",
     "dm_permission": false,
     "description_localizations": {},
     "options": [

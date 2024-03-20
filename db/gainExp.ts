@@ -102,8 +102,6 @@ export async function gainExp(
 ): Promise<Status[]> {
   const session = db.client.startSession();
 
-  const status: Status[] = [];
-
   const bulk: Parameters<
     ReturnType<typeof db.characters>['bulkWrite']
   >[0] = [];
@@ -112,7 +110,7 @@ export async function gainExp(
     session.startTransaction();
 
     const inventory = await db.inventories().updateOne(
-      { userId, guildId },
+      { userId, guildId, availableKeys: { $gte: keys } },
       { $inc: { availableKeys: -keys }, $set: { floorsCleared: floor } },
       { session },
     );
@@ -125,13 +123,13 @@ export async function gainExp(
       { userId, guildId, _id: { $in: party } },
     ).toArray();
 
-    if (characters.length !== characters.length) {
+    if (party.length !== characters.length) {
       throw new Error();
     }
 
     const expGained = getFloorExp(Math.max(floor, 1)) * keys;
 
-    characters.forEach(async (character) => {
+    const status = await Promise.all(characters.map(async (character) => {
       const status: Status = {
         exp: 0,
         expToLevel: 0,
@@ -199,7 +197,9 @@ export async function gainExp(
           update: { $set: { combat: character.combat } },
         },
       });
-    });
+
+      return status;
+    }));
 
     const update = await db.characters().bulkWrite(bulk, { session });
 
@@ -208,12 +208,12 @@ export async function gainExp(
     }
 
     await session.commitTransaction();
+    await session.endSession();
+
+    return status;
   } catch (err) {
     await session.abortTransaction();
-    throw err;
-  } finally {
     await session.endSession();
+    throw err;
   }
-
-  return status;
 }
