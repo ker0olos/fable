@@ -158,7 +158,6 @@ function challengeTower({ token, guildId, user }: {
           userId: user.id,
           message: lastMessage,
           party,
-
           locale,
         });
       } else {
@@ -219,24 +218,21 @@ async function startCombat(
 ): Promise<{ winnerId?: string; lastMessage: discord.Message }> {
   let battleData: Schema.BattleData | null = { createdAt: new Date() };
 
+  await db.consumeKey(user.id, guildId);
+
   // deno-lint-ignore no-non-null-assertion
   const { insertedId: battleId } = await db.battles().insertOne(battleData!);
 
-  const watchStream = db.battles().watch([{
-    $match: { _id: battleId },
-  }]);
+  // NOTE watch streams aren't supported in atlas serverless
+  // https://www.mongodb.com/docs/atlas/app-services/reference/service-limitations/#serverless-instances
+  // const watchStream = db.battles().watch([{
+  //   $match: { _id: battleId, operationType: 'delete' },
+  // }]);
 
-  await db.consumeKey(user.id, guildId);
-
-  watchStream.on('change', (change) => {
-    switch (change.operationType) {
-      case 'delete':
-        battleData = null;
-        break;
-      default:
-        break;
-    }
-  });
+  const checkBattleData = async () => {
+    battleData = await db.battles().findOne({ _id: battleId });
+    return !!battleData;
+  };
 
   const message = new discord.Message()
     .addComponents([
@@ -315,8 +311,8 @@ async function startCombat(
         locale,
       });
 
-      battleData && await utils.sleep(MESSAGE_DELAY);
-      battleData && await message.patch(token);
+      await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
+      await checkBattleData() && await message.patch(token);
 
       // sneak attack the backline if the attacking character has the skill
       if (attacking.canSneakAttack) {
@@ -336,8 +332,8 @@ async function startCombat(
           locale,
         });
 
-        battleData && await utils.sleep(MESSAGE_DELAY);
-        battleData && await message.patch(token);
+        await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
+        await checkBattleData() && await message.patch(token);
 
         delete attacking.effects.sneaky;
         delete receiving.effects.sneaky;
@@ -353,16 +349,13 @@ async function startCombat(
           locale,
         })
       ) {
-        battleData && await utils.sleep(MESSAGE_DELAY);
-        battleData && await message.patch(token);
+        await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
+        await checkBattleData() && await message.patch(token);
       }
     }
   }
 
   const party1Win = party1.some((m) => m.alive);
-
-  // dispose of the database watch stream
-  await watchStream.close();
 
   return {
     lastMessage: message.clearComponents(),
