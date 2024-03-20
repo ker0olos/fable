@@ -1111,7 +1111,7 @@ Deno.test('page messages', async (test) => {
   });
 });
 
-Deno.test.ignore('emotes', async (test) => {
+Deno.test('emotes', async (test) => {
   for (const [name, tag] of Object.entries(discord.emotes)) {
     await test.step(name, async () => {
       const id = /<.*:.*:(.*)>/.exec(tag);
