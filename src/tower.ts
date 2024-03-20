@@ -424,6 +424,7 @@ function reclear({ token, guildId, userId }: {
               existing.nickname ??
                 packs.aliasToArray(char.name)[0],
               status.exp,
+              status.expGained,
               status.expToLevel,
             );
           }
@@ -435,9 +436,7 @@ function reclear({ token, guildId, userId }: {
           .setTitle(
             // deno-lint-ignore no-non-null-assertion
             `${i18n.get('floor', locale)} ${inventory
-              .floorsCleared!} x${inventory.availableKeys} (${
-              status[0].expGained
-            } ${i18n.get('exp', locale)})`,
+              .floorsCleared!} x${inventory.availableKeys}`,
           )
           .setDescription(statusText),
       );

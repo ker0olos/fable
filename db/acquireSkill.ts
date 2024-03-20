@@ -6,6 +6,8 @@ import type { SkillKey } from '~/src/types.ts';
 
 import { skills } from '~/src/skills.ts';
 
+import { NonFetalError } from '~/src/errors.ts';
+
 // export const MAX_SKILL_SLOTS = 8;
 
 export async function acquireSkill(
@@ -34,7 +36,7 @@ export async function acquireSkill(
   );
 
   if (!document || !document.combat.skills[skillKey]?.level) {
-    throw new Error();
+    throw new NonFetalError('failed');
   }
 
   // deno-lint-ignore no-non-null-assertion

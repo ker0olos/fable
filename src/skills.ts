@@ -485,31 +485,44 @@ async function acquire(
 
   const skill = skills[skillKey];
 
-  const existingSkill = await db.acquireSkill(
-    userId,
-    guildId,
-    characterId,
-    skillKey,
-  );
-
-  const formatted = format(skill, locale, {
-    lvl: existingSkill.level,
-  });
-
-  return new discord.Message()
-    .addEmbed(
-      new discord.Embed()
-        .setTitle(
-          i18n.get(
-            existingSkill.level > 1 ? 'skill-upgraded' : 'skill-acquired',
-            locale,
-          ),
-        ),
-    )
-    .addEmbed(
-      new discord.Embed()
-        .setDescription(formatted),
+  try {
+    const existingSkill = await db.acquireSkill(
+      userId,
+      guildId,
+      characterId,
+      skillKey,
     );
+
+    const formatted = format(skill, locale, {
+      lvl: existingSkill.level,
+    });
+
+    return new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setTitle(
+            i18n.get(
+              existingSkill.level > 1 ? 'skill-upgraded' : 'skill-acquired',
+              locale,
+            ),
+          ),
+      )
+      .addEmbed(
+        new discord.Embed()
+          .setDescription(formatted),
+      );
+  } catch (err) {
+    if (err instanceof NonFetalError) {
+      const message = err.message === 'failed'
+        ? i18n.get('failed', locale)
+        : err.message;
+
+      return new discord.Message()
+        .addEmbed(new discord.Embed().setDescription(message));
+    }
+
+    throw err;
+  }
 }
 
 function all(
