@@ -1,6 +1,15 @@
+import { join } from '$std/path/mod.ts';
+
+import { restoreFromFile } from 'orama-persist';
+
 import type { Orama } from 'orama';
 
 import type { CharacterRole } from '~/src/types.ts';
+
+const dirname = new URL('.', import.meta.url).pathname;
+
+export const mediaIndexCachePath = join(dirname, './media.msp');
+export const charactersIndexCachePath = join(dirname, './characters.msp');
 
 export type IndexedCharacter = Orama<{
   id: string;
@@ -34,8 +43,16 @@ export const mediaSchema = {
 //   term: 'luka',
 // };
 
-// const characterDB: Orama<typeof characterSchema> = await create({
-//   schema: characterSchema,
-// });
-
 // const result: Results<TypedDocument<IndexedCharacter>> = await search(characterDB, searchParams);
+
+export const loadMediaIndex = () =>
+  restoreFromFile<Orama<typeof mediaSchema>>(
+    'binary',
+    mediaIndexCachePath,
+  );
+
+export const loadCharactersIndex = () =>
+  restoreFromFile<Orama<typeof characterSchema>>(
+    'binary',
+    charactersIndexCachePath,
+  );

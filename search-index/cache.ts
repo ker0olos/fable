@@ -1,6 +1,6 @@
 import { create, insert, Orama } from 'orama';
 
-import { join } from '$std/path/mod.ts';
+import { persistToFile } from 'orama-persist';
 
 import utils from '~/src/utils.ts';
 
@@ -8,21 +8,21 @@ import { gql, request } from '~/packs/anilist/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
-import { characterSchema, mediaSchema } from '~/search-index/mod.ts';
+import {
+  characterSchema,
+  charactersIndexCachePath,
+  mediaIndexCachePath,
+  mediaSchema,
+} from '~/search-index/mod.ts';
 
 const anilistAPI = 'https://graphql.anilist.co';
 
-const dirname = new URL('.', import.meta.url).pathname;
-
-const charactersIndexCachePath = join(dirname, './characters.json');
-const mediaIndexCachePath = join(dirname, './media.json');
+const mediaIndex: Orama<typeof mediaSchema> = await create({
+  schema: mediaSchema,
+});
 
 const charactersIndex: Orama<typeof characterSchema> = await create({
   schema: characterSchema,
-});
-
-const mediaIndex: Orama<typeof mediaSchema> = await create({
-  schema: mediaSchema,
 });
 
 type PageInfo = {
@@ -208,8 +208,6 @@ while (true) {
                     title: mediaTitle,
                     popularity: media?.node.popularity,
                   });
-
-                  console.log(`indexed 1 media with id:${mediaId}`);
                 }
 
                 if (
@@ -225,8 +223,6 @@ while (true) {
                     popularity: media?.node.popularity,
                     role: media.characterRole,
                   });
-
-                  console.log(`indexed 1 character with id:${id}`);
                 }
               }
             }
@@ -242,7 +238,7 @@ while (true) {
           // handle the rate limit
           // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
           if (e.message?.includes('Too Many Requests')) {
-            console.log('sleeping for a minute...');
+            // console.log('sleeping for a minute...');
             await utils.sleep(60);
             continue;
           }
@@ -272,20 +268,8 @@ while (true) {
 }
 
 await Promise.all([
-  Deno.writeTextFile(
-    join(dirname, charactersIndexCachePath),
-    JSON.stringify({
-      data: charactersIndex.data,
-      internalDocumentIDStore: charactersIndex.internalDocumentIDStore,
-    }),
-  ),
-  Deno.writeTextFile(
-    join(dirname, mediaIndexCachePath),
-    JSON.stringify({
-      data: mediaIndex.data,
-      internalDocumentIDStore: mediaIndex.internalDocumentIDStore,
-    }),
-  ),
+  persistToFile(charactersIndex, 'binary', charactersIndexCachePath),
+  persistToFile(mediaIndex, 'binary', mediaIndexCachePath),
 ]);
 
 console.log('\n\nwritten caches to disk');
