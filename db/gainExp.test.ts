@@ -16,6 +16,10 @@ import { experienceToNextLevel } from '~/db/gainExp.ts';
 
 let mongod: MongoMemoryReplSet;
 
+const assertWithinLast5secs = (ts: Date) => {
+  assertEquals(Math.abs(Date.now() - ts.getTime()) <= 5000, true);
+};
+
 it('experience to next level', () => {
   assertEquals(experienceToNextLevel(1), 10);
   assertEquals(experienceToNextLevel(2), 20);
@@ -354,6 +358,8 @@ describe('db.gainExp()', () => {
     const inventory = await db.inventories().findOne({ _id: inventoryId });
     const character = await db.characters().findOne({ _id: insertedId });
 
+    assertWithinLast5secs(inventory!.keysTimestamp!);
+
     assertEquals(status, [{
       exp: 1,
       expGained: 1,
@@ -413,6 +419,8 @@ describe('db.gainExp()', () => {
 
     const inventory = await db.inventories().findOne({ _id: inventoryId });
     const character = await db.characters().findOne({ _id: insertedId });
+
+    assertWithinLast5secs(inventory!.keysTimestamp!);
 
     assertEquals(status, [{
       exp: 0,
@@ -474,6 +482,8 @@ describe('db.gainExp()', () => {
     const inventory = await db.inventories().findOne({ _id: inventoryId });
     const character = await db.characters().findOne({ _id: insertedId });
 
+    assertWithinLast5secs(inventory!.keysTimestamp!);
+
     assertEquals(status, [{
       exp: 10,
       expGained: 20,
@@ -533,6 +543,8 @@ describe('db.gainExp()', () => {
 
     const inventory = await db.inventories().findOne({ _id: inventoryId });
     const character = await db.characters().findOne({ _id: insertedId });
+
+    assertWithinLast5secs(inventory!.keysTimestamp!);
 
     assertEquals(status, [{
       exp: 0,
