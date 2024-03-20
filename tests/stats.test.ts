@@ -15,8 +15,6 @@ import config from '~/src/config.ts';
 
 import db from '~/db/mod.ts';
 
-import type * as Schema from '~/db/schema.ts';
-
 Deno.test('/stats', async (test) => {
   await test.step('normal', async () => {
     const characterStub = stub(
