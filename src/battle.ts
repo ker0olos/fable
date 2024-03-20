@@ -218,7 +218,11 @@ async function startCombat(
 ): Promise<{ winnerId?: string; lastMessage: discord.Message }> {
   let battleData: Schema.BattleData | null = { createdAt: new Date() };
 
-  await db.consumeKey(user.id, guildId);
+  const consumed = await db.consumeKey(user.id, guildId);
+
+  if (!consumed) {
+    throw new NonFetalError(i18n.get('combat-no-more-keys', locale));
+  }
 
   // deno-lint-ignore no-non-null-assertion
   const { insertedId: battleId } = await db.battles().insertOne(battleData!);

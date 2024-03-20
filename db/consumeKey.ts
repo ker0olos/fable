@@ -18,9 +18,14 @@ export async function clearFloor(
 export async function consumeKey(
   userId: string,
   guildId: string,
-): Promise<void> {
-  await db.inventories().updateOne(
+): Promise<boolean> {
+  const { modifiedCount } = await db.inventories().updateOne(
     { userId, guildId, availableKeys: { $gte: 1 } },
-    { $inc: { availableKeys: -1 } },
+    {
+      $inc: { availableKeys: -1 },
+      $set: { keysTimestamp: new Date() },
+    },
   );
+
+  return modifiedCount === 1;
 }

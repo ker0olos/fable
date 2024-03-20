@@ -111,7 +111,13 @@ export async function gainExp(
 
     const inventory = await db.inventories().updateOne(
       { userId, guildId, availableKeys: { $gte: keys } },
-      { $inc: { availableKeys: -keys }, $set: { floorsCleared: floor } },
+      {
+        $inc: { availableKeys: -keys },
+        $set: {
+          floorsCleared: floor,
+          keysTimestamp: new Date(),
+        },
+      },
       { session },
     );
 
