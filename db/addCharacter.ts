@@ -2,7 +2,7 @@ import db from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
-import skills from '~/src/skills.ts';
+import { skills } from '~/src/skills.ts';
 
 import { NoPullsError } from '~/src/errors.ts';
 
