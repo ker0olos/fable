@@ -4,8 +4,6 @@ import { join } from '$std/path/mod.ts';
 
 import utils from '~/src/utils.ts';
 
-import { CharacterRole } from '~/src/types.ts';
-
 import { gql, request } from '~/packs/anilist/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
@@ -210,6 +208,8 @@ while (true) {
                     title: mediaTitle,
                     popularity: media?.node.popularity,
                   });
+
+                  console.log(`indexed 1 media with id:${mediaId}`);
                 }
 
                 if (
@@ -225,6 +225,8 @@ while (true) {
                     popularity: media?.node.popularity,
                     role: media.characterRole,
                   });
+
+                  console.log(`indexed 1 character with id:${id}`);
                 }
               }
             }
