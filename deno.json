@@ -48,6 +48,7 @@
     "mongodb": "npm:mongodb",
     "mongodb-memory-server": "npm:mongodb-memory-server-core",
     "orama": "npm:@orama/orama@2.0.11",
+    "orama-persist": "npm:@orama/plugin-data-persistence/server",
     "levenshtein": "https://deno.land/x/fastest_levenshtein@1.0.10/mod.ts"
   }
 }
