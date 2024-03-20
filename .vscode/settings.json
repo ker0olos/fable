@@ -27,6 +27,7 @@
     "src",
     "db",
     "tests",
+    "search-index-2",
     "update_commands.ts",
     "upload_emote.ts",
     "update_commands.test.ts",
