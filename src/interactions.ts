@@ -257,7 +257,7 @@ export const handler = async (r: Request) => {
             if (manifest.title) {
               const d2 = utils.distance(manifest.title, id);
 
-              if (d > d2) {
+              if (d < d2) {
                 distance[manifest.id] = d2;
                 return;
               }
@@ -311,7 +311,7 @@ export const handler = async (r: Request) => {
             }
           });
 
-          _skills = _skills.sort((a, b) => distance[a[0]] - distance[b[0]]);
+          _skills = _skills.sort((a, b) => distance[b[0]] - distance[a[0]]);
 
           _skills?.forEach(([skillKey, skill]) => {
             const skillName = i18n.get(skill.key, locale);
