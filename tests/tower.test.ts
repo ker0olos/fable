@@ -1114,19 +1114,7 @@ Deno.test('/reclear', async (test) => {
                 '**name 5** 1(+1)/10 EXP',
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'treclear',
-                  label: '/reclear',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [],
         },
       );
     } finally {
@@ -1341,19 +1329,7 @@ Deno.test('/reclear', async (test) => {
                 '**name 5** 1(+1)/10 EXP',
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'treclear',
-                  label: '/reclear',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [],
         },
       );
     } finally {
@@ -1569,19 +1545,7 @@ Deno.test('/reclear', async (test) => {
                 '**name 5** leveled up and gained 3 stat points and 1 skill point.',
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'treclear',
-                  label: '/reclear',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [],
         },
       );
     } finally {
@@ -1797,19 +1761,7 @@ Deno.test('/reclear', async (test) => {
                 '**name 5** leveled up 2x and gained 6 stat points and 2 skill points.',
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'treclear',
-                  label: '/reclear',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [],
         },
       );
     } finally {
