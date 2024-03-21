@@ -14,6 +14,8 @@ import { randomStats } from '~/db/addCharacter.ts';
 
 import * as discord from '~/src/discord.ts';
 
+import { search as _search } from '~/search-index/mod.ts';
+
 import config from '~/src/config.ts';
 
 import { NonFetalError, PoolError } from '~/src/errors.ts';
@@ -162,46 +164,58 @@ export async function getEnemyCharacter(
   const random = new utils.LehmerRNG(seed);
 
   const { pool, validate } = await gacha.guaranteedPool({
-    seed,
     guildId,
     guarantee: getEnemyRating(floor),
   });
 
   let character: Character | undefined = undefined;
 
-  while (pool.length > 0) {
-    const i = Math.floor(random.nextFloat() * pool.length);
+  const filteredPool = await _search(pool, {
+    where: { rating: { eq: getEnemyRating(floor) } },
+  });
 
-    const characterId = pool.splice(i, 1)[0].id;
+  const controller = new AbortController();
+  const { signal } = controller;
 
-    if (packs.isDisabled(characterId, guildId)) {
-      continue;
+  const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
+
+  try {
+    while (!signal.aborted) {
+      const i = Math.floor(random.nextFloat() * filteredPool.count);
+
+      const characterId = filteredPool.hits[i].document.id;
+
+      if (packs.isDisabled(characterId, guildId)) {
+        continue;
+      }
+
+      const results = await packs.aggregatedCharacters({
+        guildId,
+        ids: [characterId],
+      });
+
+      if (!results.length || !validate(results[0])) {
+        continue;
+      }
+
+      const media = results[0].media?.edges?.[0];
+
+      if (!media || !validate(results[0]) || !results[0]?.images?.length) {
+        continue;
+      }
+
+      if (
+        packs.isDisabled(`${media.node.packId}:${media.node.id}`, guildId)
+      ) {
+        continue;
+      }
+
+      character = results[0];
+
+      break;
     }
-
-    const results = await packs.aggregatedCharacters({
-      guildId,
-      ids: [characterId],
-    });
-
-    if (!results.length || !validate(results[0])) {
-      continue;
-    }
-
-    const media = results[0].media?.edges?.[0];
-
-    if (!media || !validate(results[0]) || !results[0]?.images?.length) {
-      continue;
-    }
-
-    if (
-      packs.isDisabled(`${media.node.packId}:${media.node.id}`, guildId)
-    ) {
-      continue;
-    }
-
-    character = results[0];
-
-    break;
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   if (!character) {

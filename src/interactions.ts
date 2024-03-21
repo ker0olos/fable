@@ -166,11 +166,12 @@ export const handler = async (r: Request) => {
             });
 
             results
+              .hits
               .slice(0, 25)
-              .forEach(({ id, title }) => {
+              .forEach(({ document }) => {
                 message.addSuggestions({
-                  name: title[0],
-                  value: `${idPrefix}${id}`,
+                  name: document.title[0],
+                  value: `${idPrefix}${document.id}`,
                 });
               });
           }
@@ -217,13 +218,14 @@ export const handler = async (r: Request) => {
             });
 
             results
+              .hits
               .slice(0, 25)
-              .forEach(({ id, name, mediaTitle }) => {
+              .forEach(({ document }) => {
                 message.addSuggestions({
-                  name: mediaTitle?.length
-                    ? `${name[0]} (${mediaTitle[0]})`
-                    : name[0],
-                  value: `${idPrefix}${id}`,
+                  name: document.mediaTitle?.length
+                    ? `${document.name[0]} (${document.mediaTitle[0]})`
+                    : document.name[0],
+                  value: `${idPrefix}${document.id}`,
                 });
               });
           }

@@ -2,7 +2,14 @@ import { join } from '$std/path/mod.ts';
 
 import { restore } from '~/search-index/persist.ts';
 
-import type { Orama } from 'orama';
+import {
+  create,
+  insert,
+  type Orama,
+  type Results,
+  search,
+  type TypedDocument,
+} from 'orama';
 
 import type { CharacterRole } from '~/src/types.ts';
 
@@ -28,8 +35,10 @@ export type IndexedMedia = Orama<{
 export const charactersSchema = {
   id: 'string',
   name: 'string[]',
+  mediaId: 'string',
   mediaTitle: 'string[]',
   popularity: 'number',
+  rating: 'number',
   role: 'enum',
 } as const;
 
@@ -39,14 +48,25 @@ export const mediaSchema = {
   popularity: 'number',
 } as const;
 
-// const searchParams: SearchParams<Orama<typeof characterSchema>> = {
-//   term: 'luka',
-// };
+type CharacterDocument = TypedDocument<Orama<typeof charactersSchema>>;
+type MediaDocument = TypedDocument<Orama<typeof mediaSchema>>;
 
-// const result: Results<TypedDocument<IndexedCharacter>> = await search(characterDB, searchParams);
+export type CharacterIndex = Orama<typeof charactersSchema>;
+export type CharacterSearch = Results<CharacterDocument>;
+export type MediaSearch = Results<MediaDocument>;
 
-export const loadMediaIndex = () =>
-  restore<Orama<typeof mediaSchema>>(mediaIndexCachePath);
+export const loadMediaIndex = async (
+  builtinEnabled: boolean,
+): Promise<Orama<typeof mediaSchema>> =>
+  builtinEnabled ? await restore(mediaIndexCachePath) : await create({
+    schema: mediaSchema,
+  });
 
-export const loadCharactersIndex = () =>
-  restore<Orama<typeof charactersSchema>>(charactersIndexCachePath);
+export const loadCharactersIndex = async (
+  builtinEnabled: boolean,
+): Promise<Orama<typeof charactersSchema>> =>
+  builtinEnabled ? await restore(charactersIndexCachePath) : await create({
+    schema: charactersSchema,
+  });
+
+export { insert, search };
