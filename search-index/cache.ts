@@ -2,7 +2,7 @@
 
 import { create, insert, Orama } from 'orama';
 
-import { persistToFile } from 'orama-persist';
+import { persist } from '~/search-index/persist.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -21,7 +21,7 @@ import {
 
 const anilistAPI = 'https://graphql.anilist.co';
 
-const kv = await Deno.openKv();
+const kv = await Deno.openKv('search-index.sqlite');
 
 type PageInfo = {
   hasNextPage: boolean;
@@ -157,6 +157,8 @@ console.log('starting requests from anilist');
 
 while (true) {
   try {
+    console.log(`requesting page ${mediaPage} from anilist`);
+
     const { pageInfo, media } = await queryMedia(mediaPage);
 
     for (const { id, characters: firstPage } of media) {
@@ -264,27 +266,27 @@ console.log('finished requests from anilist');
 
 console.log('starting the creation of the media index requests');
 
-let mediaIndex: Orama<typeof mediaSchema> | undefined = await create({
+const mediaIndex: Orama<typeof mediaSchema> = await create({
   schema: mediaSchema,
 });
 
 for await (
-  const { value: media } of kv.list<IndexedMedia>({ prefix: ['media'] })
+  const { value: media } of kv.list<IndexedMedia>({
+    prefix: ['media'],
+  })
 ) {
   await insert(mediaIndex, media);
 }
 
-await persistToFile(mediaIndex, 'binary', mediaIndexCachePath);
+await persist(mediaIndex, mediaIndexCachePath);
 
 console.log('wrote the media index cache to disk');
 
-mediaIndex = undefined;
-
 //
 
-console.log('starting the creation of the media index requests');
+console.log('starting the creation of the characters index requests');
 
-let charactersIndex: Orama<typeof charactersSchema> | undefined = await create({
+const charactersIndex: Orama<typeof charactersSchema> = await create({
   schema: charactersSchema,
 });
 
@@ -296,9 +298,7 @@ for await (
   await insert(charactersIndex, character);
 }
 
-await persistToFile(charactersIndex, 'binary', charactersIndexCachePath);
-
-charactersIndex = undefined;
+await persist(charactersIndex, charactersIndexCachePath);
 
 console.log('wrote the characters index cache to disk');
 

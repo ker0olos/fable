@@ -1,6 +1,6 @@
 import { join } from '$std/path/mod.ts';
 
-import { restoreFromFile } from 'orama-persist';
+import { restore } from '~/search-index/persist.ts';
 
 import type { Orama } from 'orama';
 
@@ -46,13 +46,7 @@ export const mediaSchema = {
 // const result: Results<TypedDocument<IndexedCharacter>> = await search(characterDB, searchParams);
 
 export const loadMediaIndex = () =>
-  restoreFromFile<Orama<typeof mediaSchema>>(
-    'binary',
-    mediaIndexCachePath,
-  );
+  restore<Orama<typeof mediaSchema>>(mediaIndexCachePath);
 
 export const loadCharactersIndex = () =>
-  restoreFromFile<Orama<typeof charactersSchema>>(
-    'binary',
-    charactersIndexCachePath,
-  );
+  restore<Orama<typeof charactersSchema>>(charactersIndexCachePath);

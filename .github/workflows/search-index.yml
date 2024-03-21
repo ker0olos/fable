@@ -1,7 +1,6 @@
 name: search-index
 
 on:
-  push:
   workflow_dispatch:
   # schedule:
   #   # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
