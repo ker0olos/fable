@@ -1,9 +1,3 @@
-// deno-lint-ignore no-external-import
-import { decode, encode } from 'npm:@msgpack/msgpack';
-
-// NOTE borked
-// import { encode } from '$std/msgpack/mod.ts';
-
 import { type AnyOrama, create, load, save } from 'orama';
 
 export async function persist<T extends AnyOrama>(
@@ -12,8 +6,9 @@ export async function persist<T extends AnyOrama>(
 ): Promise<void> {
   const index = await save(db);
 
-  // deno-lint-ignore no-explicit-any
-  await Deno.writeFile(filepath, encode(index as any));
+  const encoded = JSON.stringify(index);
+
+  await Deno.writeTextFile(`${filepath}.json`, encoded);
 }
 
 export async function restore<T extends AnyOrama>(
@@ -23,10 +18,13 @@ export async function restore<T extends AnyOrama>(
     schema: { __placeholder: 'string' },
   });
 
-  const data = await Deno.readFile(filepath);
+  const data = await Deno.readTextFile(`${filepath}.json`);
 
-  // deno-lint-ignore no-explicit-any
-  load(index, decode(data) as any);
+  console.time('decode');
+  const decoded = JSON.parse(data);
+  console.timeEnd('decode');
+
+  load(index, decoded);
 
   return index as unknown as T;
 }

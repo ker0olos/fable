@@ -8,8 +8,8 @@ import type { CharacterRole } from '~/src/types.ts';
 
 const dirname = new URL('.', import.meta.url).pathname;
 
-export const mediaIndexCachePath = join(dirname, './media.msp');
-export const charactersIndexCachePath = join(dirname, './characters.msp');
+export const mediaIndexCachePath = join(dirname, './media');
+export const charactersIndexCachePath = join(dirname, './characters');
 
 export type IndexedCharacter = Orama<{
   id: string;
