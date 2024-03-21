@@ -4,6 +4,8 @@ import { green } from '$std/fmt/colors.ts';
 
 import { create, insert, Orama } from 'orama';
 
+import Rating from '~/src/rating.ts';
+
 import { persist } from '~/search-index/persist.ts';
 
 import utils from '~/src/utils.ts';
@@ -22,8 +24,6 @@ import {
 } from '~/search-index/mod.ts';
 
 const anilistAPI = 'https://graphql.anilist.co';
-
-const kv = await Deno.openKv('search-index.sqlite');
 
 type PageInfo = {
   hasNextPage: boolean;
@@ -153,157 +153,170 @@ async function queryCharacters(
   };
 }
 
-let mediaPage = 1;
+async function queryAniList(kv: Deno.Kv): Promise<void> {
+  let mediaPage = 1;
 
-console.log('starting requests from anilist...');
+  console.log('starting requests from anilist...');
 
-// while (true) {
-//   try {
-//     console.log(`requesting page ${mediaPage} from anilist`);
+  while (true) {
+    try {
+      console.log(`requesting page ${mediaPage} from anilist`);
 
-//     const { pageInfo, media } = await queryMedia(mediaPage);
+      const { pageInfo, media } = await queryMedia(mediaPage);
 
-//     for (const { id, characters: firstPage } of media) {
-//       let charactersPage = 1;
+      for (const { id, characters: firstPage } of media) {
+        let charactersPage = 1;
 
-//       while (true) {
-//         try {
-//           const { nodes, pageInfo } = charactersPage === 1
-//             // deno-lint-ignore no-non-null-assertion
-//             ? { nodes: firstPage!.nodes!, pageInfo: firstPage!.pageInfo }
-//             : await queryCharacters({
-//               id,
-//               page: charactersPage,
-//             });
+        while (true) {
+          try {
+            const { nodes, pageInfo } = charactersPage === 1
+              // deno-lint-ignore no-non-null-assertion
+              ? { nodes: firstPage!.nodes!, pageInfo: firstPage!.pageInfo }
+              : await queryCharacters({
+                id,
+                page: charactersPage,
+              });
 
-//           await Promise.all(nodes.map(async (character) => {
-//             const name = [
-//               character.name?.full,
-//               character.name?.native,
-//               ...(character.name?.alternative ?? []),
-//             ].filter(utils.nonNullable);
+            await Promise.all(nodes.map(async (character) => {
+              const name = [
+                character.name?.full,
+                character.name?.native,
+                ...(character.name?.alternative ?? []),
+              ].filter(utils.nonNullable);
 
-//             const media = character.media?.edges[0];
+              const media = character.media?.edges[0];
 
-//             const id = `anilist:${character.id}`;
+              const id = `anilist:${character.id}`;
 
-//             if (media && !media.node.isAdult) {
-//               const mediaId = `anilist:${media.node.id}`;
+              if (media && !media.node.isAdult) {
+                const mediaId = `anilist:${media.node.id}`;
 
-//               if (typeof media.node.popularity === 'number') {
-//                 const mediaTitle = [
-//                   media.node.title.english,
-//                   media.node.title.romaji,
-//                   media.node.title.native,
-//                   ...(media.node.synonyms ?? []),
-//                 ].filter(utils.nonNullable);
+                if (typeof media.node.popularity === 'number') {
+                  const mediaTitle = [
+                    media.node.title.english,
+                    media.node.title.romaji,
+                    media.node.title.native,
+                    ...(media.node.synonyms ?? []),
+                  ].filter(utils.nonNullable);
 
-//                 if (
-//                   media?.node?.id && mediaTitle?.length
-//                 ) {
-//                   await kv.set(['media', mediaId], {
-//                     id: mediaId,
-//                     title: mediaTitle,
-//                     popularity: media?.node.popularity,
-//                   });
-//                 }
+                  if (
+                    media?.node?.id && mediaTitle?.length
+                  ) {
+                    await kv.set(['media', mediaId], {
+                      id: mediaId,
+                      title: mediaTitle,
+                      popularity: media?.node.popularity,
+                    });
+                  }
 
-//                 if (
-//                   name.length
-//                 ) {
-//                   await kv.set(['characters', id], {
-//                     id,
-//                     name,
-//                     mediaTitle,
-//                     popularity: media?.node.popularity,
-//                     role: media.characterRole,
-//                   });
-//                 }
-//               }
-//             }
-//           }));
+                  if (
+                    name.length
+                  ) {
+                    await kv.set(['characters', id], {
+                      id,
+                      name,
+                      mediaId,
+                      mediaTitle,
+                      popularity: media?.node.popularity,
+                      role: media.characterRole,
+                      rating: new Rating({
+                        role: media.characterRole,
+                        popularity: media?.node.popularity,
+                      }),
+                    });
+                  }
+                }
+              }
+            }));
 
-//           if (pageInfo.hasNextPage) {
-//             charactersPage += 1;
-//             continue;
-//           }
+            if (pageInfo.hasNextPage) {
+              charactersPage += 1;
+              continue;
+            }
 
-//           break;
-//         } catch (e) {
-//           // handle the rate limit
-//           // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
-//           if (e.message?.includes('Too Many Requests')) {
-//             // console.log('sleeping for a minute...');
-//             await utils.sleep(60);
-//             continue;
-//           }
+            break;
+          } catch (e) {
+            // handle the rate limit
+            // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
+            if (e.message?.includes('Too Many Requests')) {
+              // console.log('sleeping for a minute...');
+              await utils.sleep(60);
+              continue;
+            }
 
-//           throw e;
-//         }
-//       }
-//     }
+            throw e;
+          }
+        }
+      }
 
-//     if (pageInfo.hasNextPage) {
-//       mediaPage += 1;
-//       continue;
-//     }
+      if (pageInfo.hasNextPage) {
+        mediaPage += 1;
+        continue;
+      }
 
-//     break;
-//   } catch (e) {
-//     // handle the rate limit
-//     // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
-//     if (e.message?.includes('Too Many Requests')) {
-//       console.log('sleeping for a minute...');
-//       await utils.sleep(60);
-//       continue;
-//     }
+      break;
+    } catch (e) {
+      // handle the rate limit
+      // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
+      if (e.message?.includes('Too Many Requests')) {
+        console.log('sleeping for a minute...');
+        await utils.sleep(60);
+        continue;
+      }
 
-//     throw e;
-//   }
-// }
+      throw e;
+    }
+  }
 
-console.log(green('finished requests from anilist\n'));
-
-//
-
-console.log('starting the creation of the media index requests...');
-
-const mediaIndex: Orama<typeof mediaSchema> = await create({
-  schema: mediaSchema,
-});
-
-for await (
-  const { value: media } of kv.list<IndexedMedia>({
-    prefix: ['media'],
-  })
-) {
-  await insert(mediaIndex, media);
+  console.log(green('finished requests from anilist\n'));
 }
 
-await persist(mediaIndex, mediaIndexCachePath);
+async function storeMediaIndex(kv: Deno.Kv): Promise<void> {
+  console.log('starting the creation of the media index requests...');
 
-console.log(green('wrote the media index cache to disk\n'));
+  const mediaIndex: Orama<typeof mediaSchema> = await create({
+    schema: mediaSchema,
+  });
 
-//
+  for await (
+    const { value: media } of kv.list<IndexedMedia>({
+      prefix: ['media'],
+    })
+  ) {
+    await insert(mediaIndex, media);
+  }
 
-console.log('starting the creation of the characters index requests...');
+  await persist(mediaIndex, mediaIndexCachePath);
 
-const charactersIndex: Orama<typeof charactersSchema> = await create({
-  schema: charactersSchema,
-});
-
-for await (
-  const { value: character } of kv.list<IndexedCharacter>({
-    prefix: ['characters'],
-  })
-) {
-  await insert(charactersIndex, character);
+  console.log(green('wrote the media index cache to disk\n'));
 }
 
-await persist(charactersIndex, charactersIndexCachePath);
+async function storeCharacterIndex(kv: Deno.Kv): Promise<void> {
+  console.log('starting the creation of the characters index requests...');
 
-console.log(green('wrote the characters index cache to disk\n'));
+  const charactersIndex: Orama<typeof charactersSchema> = await create({
+    schema: charactersSchema,
+  });
 
-//
+  for await (
+    const { value: character } of kv.list<IndexedCharacter>({
+      prefix: ['characters'],
+    })
+  ) {
+    await insert(charactersIndex, character);
+  }
 
-kv.close();
+  await persist(charactersIndex, charactersIndexCachePath);
+
+  console.log(green('wrote the characters index cache to disk\n'));
+}
+
+if (import.meta.main) {
+  const kv = await Deno.openKv('search-index.sqlite');
+
+  await queryAniList(kv);
+  await storeMediaIndex(kv);
+  await storeCharacterIndex(kv);
+
+  kv.close();
+}
