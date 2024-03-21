@@ -276,7 +276,16 @@ async function restoreCharacters(kv: Deno.Kv): Promise<void> {
     let _new: Schema.Character = {
       createdAt: decodeTime(key.slice(-1)[0].toString()) || new Date(),
       characterId: old.id,
-      combat: undefined as any,
+      combat: old.combat?.baseStats
+        ? {
+          baseStats: old.combat.baseStats,
+          curStats: old.combat.curStats,
+          skillPoints: old.combat.skillPoints,
+          exp: old.combat.exp,
+          level: old.combat.level,
+          skills: old.combat.skills,
+        } as any
+        : undefined as any,
       inventoryId: KVIDMap.get(old.inventory) as any,
       guildId: KVIDMap.get(old.instance)!,
       userId: KVIDMap.get(old.user)!,

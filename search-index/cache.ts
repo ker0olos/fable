@@ -1,3 +1,5 @@
+/// <reference lib="deno.unstable" />
+
 import { create, insert, Orama } from 'orama';
 
 import { persistToFile } from 'orama-persist';
@@ -9,28 +11,21 @@ import { gql, request } from '~/packs/anilist/graphql.ts';
 import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
 import {
-  characterSchema,
   charactersIndexCachePath,
+  charactersSchema,
+  type IndexedCharacter,
+  type IndexedMedia,
   mediaIndexCachePath,
   mediaSchema,
 } from '~/search-index/mod.ts';
 
 const anilistAPI = 'https://graphql.anilist.co';
 
-const mediaIndex: Orama<typeof mediaSchema> = await create({
-  schema: mediaSchema,
-});
-
-const charactersIndex: Orama<typeof characterSchema> = await create({
-  schema: characterSchema,
-});
+const kv = await Deno.openKv();
 
 type PageInfo = {
   hasNextPage: boolean;
 };
-
-const mediaUniqueMap = new Map<string, boolean>();
-const charactersUniqueMap = new Map<string, boolean>();
 
 async function queryMedia(
   page: number,
@@ -158,6 +153,8 @@ async function queryCharacters(
 
 let mediaPage = 1;
 
+console.log('starting requests from anilist');
+
 while (true) {
   try {
     const { pageInfo, media } = await queryMedia(mediaPage);
@@ -198,12 +195,9 @@ while (true) {
                 ].filter(utils.nonNullable);
 
                 if (
-                  media?.node?.id && mediaTitle?.length &&
-                  !mediaUniqueMap.has(mediaId)
+                  media?.node?.id && mediaTitle?.length
                 ) {
-                  mediaUniqueMap.set(mediaId, true);
-
-                  await insert(mediaIndex, {
+                  await kv.set(['media', mediaId], {
                     id: mediaId,
                     title: mediaTitle,
                     popularity: media?.node.popularity,
@@ -211,12 +205,9 @@ while (true) {
                 }
 
                 if (
-                  name.length &&
-                  !charactersUniqueMap.has(id)
+                  name.length
                 ) {
-                  charactersUniqueMap.set(id, true);
-
-                  await insert(charactersIndex, {
+                  await kv.set(['characters', id], {
                     id,
                     name,
                     mediaTitle,
@@ -267,9 +258,50 @@ while (true) {
   }
 }
 
-await Promise.all([
-  persistToFile(charactersIndex, 'binary', charactersIndexCachePath),
-  persistToFile(mediaIndex, 'binary', mediaIndexCachePath),
-]);
+console.log('finished requests from anilist');
 
-console.log('\n\nwritten caches to disk');
+//
+
+console.log('starting the creation of the media index requests');
+
+let mediaIndex: Orama<typeof mediaSchema> | undefined = await create({
+  schema: mediaSchema,
+});
+
+for await (
+  const { value: media } of kv.list<IndexedMedia>({ prefix: ['media'] })
+) {
+  await insert(mediaIndex, media);
+}
+
+await persistToFile(mediaIndex, 'binary', mediaIndexCachePath);
+
+console.log('wrote the media index cache to disk');
+
+mediaIndex = undefined;
+
+//
+
+console.log('starting the creation of the media index requests');
+
+let charactersIndex: Orama<typeof charactersSchema> | undefined = await create({
+  schema: charactersSchema,
+});
+
+for await (
+  const { value: character } of kv.list<IndexedCharacter>({
+    prefix: ['characters'],
+  })
+) {
+  await insert(charactersIndex, character);
+}
+
+await persistToFile(charactersIndex, 'binary', charactersIndexCachePath);
+
+charactersIndex = undefined;
+
+console.log('wrote the characters index cache to disk');
+
+//
+
+kv.close();

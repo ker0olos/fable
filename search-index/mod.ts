@@ -25,7 +25,7 @@ export type IndexedMedia = Orama<{
   popularity: number;
 }>;
 
-export const characterSchema = {
+export const charactersSchema = {
   id: 'string',
   name: 'string[]',
   mediaTitle: 'string[]',
@@ -52,7 +52,7 @@ export const loadMediaIndex = () =>
   );
 
 export const loadCharactersIndex = () =>
-  restoreFromFile<Orama<typeof characterSchema>>(
+  restoreFromFile<Orama<typeof charactersSchema>>(
     'binary',
     charactersIndexCachePath,
   );

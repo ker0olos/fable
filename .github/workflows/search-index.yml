@@ -22,7 +22,7 @@ jobs:
         with:
           deno-version: v1.x
 
-      - run: deno run -A search-index/cache.ts
+      - run: deno run -A --unstable-kv search-index/cache.ts
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
