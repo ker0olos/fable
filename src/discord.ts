@@ -960,10 +960,10 @@ export class Message {
     // but discord never fixes things after they release them
 
     // delaying patches means our users are the ones to suffer
-    // and it won't work if the initial message doesn't apply in those 35ms
+    // and it won't work if the initial message doesn't apply in those "100ms"
     // but it's the only workaround I can think of
     if (config.deploy) {
-      await utils.sleep(35 / 1000);
+      await utils.sleep(100 / 1000);
     }
 
     return this.#http(

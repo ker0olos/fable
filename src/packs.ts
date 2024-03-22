@@ -38,9 +38,9 @@ import {
   MediaFormat,
   MediaRelation,
   Pool,
-} from './types.ts';
+} from '~/src/types.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
 import type { Pack } from '../db/schema.ts';
 
