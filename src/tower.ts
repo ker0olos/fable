@@ -441,13 +441,6 @@ function reclear({ token, guildId, userId }: {
           .setDescription(statusText),
       );
 
-      // reclear button
-      message.addComponents([
-        new discord.Component()
-          .setId('treclear')
-          .setLabel(`/reclear`),
-      ]);
-
       return await message.patch(token);
     })
     .catch(async (err) => {

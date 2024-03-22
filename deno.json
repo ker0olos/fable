@@ -14,8 +14,7 @@
         "explicit-function-return-type",
         "no-external-import"
       ]
-    },
-    "exclude": ["images-proxy", "dyn-images", "search-index"]
+    }
   },
   "lock": false,
   "tasks": {
@@ -29,9 +28,6 @@
     "singleQuote": true,
     "indentWidth": 2,
     "exclude": [
-      "images-proxy",
-      "dyn-images",
-      "search-index",
       "packs/anilist/pool.json",
       "packs/anilist/characters_directory.json",
       "packs/anilist/media_directory.json"
@@ -48,6 +44,9 @@
     "sift": "https://raw.githubusercontent.com/ker0olos/sift/89e31b5a08af007d51073af31050fc2205245dd3/mod.ts",
     "tweetnacl": "https://esm.sh/tweetnacl@1.0.3",
     "mongodb": "npm:mongodb",
-    "mongodb-memory-server": "npm:mongodb-memory-server-core"
+    "mongodb-memory-server": "npm:mongodb-memory-server-core",
+    "levenshtein": "https://raw.githubusercontent.com/fable-community/search-index/main/mod.ts",
+    "images-proxy": "https://raw.githubusercontent.com/fable-community/images-proxy/main/mod.ts",
+    "dyn-images": "https://raw.githubusercontent.com/fable-community/dyn-images/main/mod.ts"
   }
 }

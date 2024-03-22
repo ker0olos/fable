@@ -11,9 +11,9 @@ import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import { levenshtein } from '~/search-index/mod.ts';
+import { levenshtein } from 'levenshtein';
 
-import { proxy } from '~/images-proxy/mod.ts';
+import { proxy } from 'images-proxy';
 
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
