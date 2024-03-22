@@ -5,7 +5,7 @@ import i18n from '~/src/i18n.ts';
 
 import db from '~/db/mod.ts';
 
-import * as dynImages from '~/dyn-images/mod.ts';
+import * as dynImages from 'dyn-images';
 
 import * as discord from '~/src/discord.ts';
 
