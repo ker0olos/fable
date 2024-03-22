@@ -816,12 +816,10 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'reclear': {
-            return tower.reclear({
-              token,
+            return (await tower.reclear({
               guildId,
               userId: member.user.id,
-            })
-              .send();
+            })).send();
           }
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
@@ -1225,11 +1223,10 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'treclear': {
-            return tower.reclear({
-              token,
+            return (await tower.reclear({
               guildId,
               userId: member.user.id,
-            })
+            }))
               .setType(discord.MessageType.New)
               .send();
           }
