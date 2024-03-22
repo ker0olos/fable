@@ -13,6 +13,15 @@ import * as discord from '~/src/discord.ts';
 import user from '~/src/user.ts';
 import utils from '~/src/utils.ts';
 
+import {
+  type CharacterSearch,
+  insert,
+  loadCharactersIndex,
+  loadMediaIndex,
+  type MediaSearch,
+  search as _search,
+} from '~/search-index/mod.ts';
+
 import i18n from '~/src/i18n.ts';
 
 import config from '~/src/config.ts';
@@ -20,12 +29,6 @@ import config from '~/src/config.ts';
 import db from '~/db/mod.ts';
 
 import Rating from '~/src/rating.ts';
-
-let _loadedAnilistCharactersDirectory: CharactersDirectory | undefined =
-  undefined;
-
-let _loadedAnilistMediaDirectory: MediaDirectory | undefined = undefined;
-undefined;
 
 import {
   Alias,
@@ -37,30 +40,16 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
-  Pool,
-} from './types.ts';
+} from '~/src/types.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
-import type { Pack } from '../db/schema.ts';
+import type { Pack } from '~/db/schema.ts';
+
+import { CharacterIndex } from '~/search-index/mod.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
-
-export type CharactersDirectory = {
-  id: string;
-  name: string[];
-  mediaTitle?: string[];
-  popularity?: number;
-  score?: number;
-}[];
-
-export type MediaDirectory = {
-  id: string;
-  title: string[];
-  popularity?: number;
-  score?: number;
-}[];
 
 const cachedGuilds: Record<string, {
   packs: Pack[];
@@ -416,81 +405,51 @@ async function _searchManyCharacters(
     search: string;
     guildId: string;
   },
-): Promise<CharactersDirectory> {
+): Promise<CharacterSearch> {
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
 
-  // if anilist pack is enabled
-  if (list.length && list[0].manifest.id === 'anilist') {
-    _loadedAnilistCharactersDirectory ??= await utils.readJson<
-      CharactersDirectory
-    >('./packs/anilist/characters_directory.json');
-  }
+  const builtinEnabled = list[0].manifest.id === 'anilist';
 
-  const searchDirectory: CharactersDirectory = [
-    ...(_loadedAnilistCharactersDirectory ?? []),
-  ];
-
-  const outputDirectory: CharactersDirectory = [];
+  const characterIndex = await loadCharactersIndex(builtinEnabled);
 
   // add community packs content
-  for (
-    const pack of list.map(({ manifest }) => manifest)
-  ) {
-    const characters = await Promise.all(
-      (pack.characters?.new ?? [])
-        .map((character) => (character.packId = pack.id, character))
-        .map(
-          (character) => packs.aggregate<Character>({ character, guildId }),
-        ),
-    );
+  await Promise.all(
+    list.map(async ({ manifest }) => {
+      const characters = await Promise.all(
+        (manifest.characters?.new ?? [])
+          .map((character) => (character.packId = manifest.id, character))
+          .map(
+            (character) => packs.aggregate<Character>({ character, guildId }),
+          ),
+      );
 
-    for (const char of characters) {
-      const name = packs.aliasToArray(char.name);
+      await Promise.all(
+        characters.map(async (char) => {
+          const name = packs.aliasToArray(char.name);
 
-      const mediaTitle = char.media?.edges?.length
-        ? packs.aliasToArray(char.media.edges[0].node.title)
-        : [];
+          const mediaTitle = char.media?.edges?.length
+            ? packs.aliasToArray(char.media.edges[0].node.title)
+            : undefined;
 
-      searchDirectory.push({
-        name,
-        mediaTitle,
-        popularity: char.popularity ?? char.media?.edges?.[0]?.node.popularity,
-        id: `${char.packId}:${char.id}`,
-      });
-    }
-  }
+          await insert(characterIndex, {
+            name,
+            mediaTitle,
+            popularity: char.popularity ??
+              char.media?.edges?.[0]?.node.popularity,
+            id: `${char.packId}:${char.id}`,
+          });
+        }),
+      );
+    }),
+  );
 
-  // fuzzy search
-  for (const entry of searchDirectory) {
-    const mismatch = entry.name.every((n) => {
-      const str1 = n.toLowerCase();
-
-      // const str2 =
-      //   (entry.mediaTitle?.length ? `${n} (${entry.mediaTitle[0]})` : n)
-      //     .toLowerCase();
-
-      entry.score = utils.distance(str1, search);
-
-      if (entry.score < 65 && str1.includes(search)) {
-        entry.score = 90;
-        return false;
-      }
-
-      return false;
-    });
-
-    if (!mismatch) {
-      outputDirectory.push(entry);
-    }
-  }
-
-  return outputDirectory
-    .toSorted((a, b) => {
-      const diff = (b.score || 0) - (a.score || 0);
-      return diff !== 0 ? diff : (b.popularity || 0) - (a.popularity || 0);
-    });
+  return await _search(characterIndex, {
+    limit: 25,
+    term: search,
+    sortBy: { property: 'popularity', order: 'DESC' },
+  });
 }
 
 async function searchManyCharacters(
@@ -506,7 +465,7 @@ async function searchManyCharacters(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: results.map((r) => r.id),
+      ids: results.hits.map((r) => r.id),
       key: 'characters',
       guildId,
     }),
@@ -526,7 +485,7 @@ async function searchOneCharacter(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: [results[0]?.id],
+      ids: [results.hits[0].id],
       key: 'characters',
       guildId,
     }),
@@ -538,69 +497,42 @@ async function _searchManyMedia(
     search: string;
     guildId: string;
   },
-): Promise<MediaDirectory> {
+): Promise<MediaSearch> {
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
 
-  // if anilist pack is enabled
-  if (list.length && list[0].manifest.id === 'anilist') {
-    _loadedAnilistMediaDirectory ??= await utils.readJson<MediaDirectory>(
-      './packs/anilist/media_directory.json',
-    );
-  }
+  const builtinEnabled = list[0].manifest.id === 'anilist';
 
-  const searchDirectory: MediaDirectory = [
-    ...(_loadedAnilistMediaDirectory ?? []),
-  ];
-
-  const outputDirectory: MediaDirectory = [];
+  const mediaIndex = await loadMediaIndex(builtinEnabled);
 
   // add community packs content
-  for (
-    const pack of list.map(({ manifest }) => manifest)
-  ) {
-    const media = await Promise.all(
-      (pack.media?.new ?? [])
-        .map((media) => (media.packId = pack.id, media)),
-    );
+  await Promise.all(
+    list.map(async ({ manifest }) => {
+      const media = await Promise.all(
+        (manifest.media?.new ?? [])
+          .map((media) => (media.packId = manifest.id, media)),
+      );
 
-    for (const _media of media) {
-      const title = packs.aliasToArray(_media.title);
+      await Promise.all(
+        media.map(async (_media) => {
+          const title = packs.aliasToArray(_media.title);
 
-      searchDirectory.push({
-        title,
-        popularity: _media.popularity,
-        id: `${_media.packId}:${_media.id}`,
-      });
-    }
-  }
+          await insert(mediaIndex, {
+            title,
+            popularity: _media.popularity,
+            id: `${_media.packId}:${_media.id}`,
+          });
+        }),
+      );
+    }),
+  );
 
-  // fuzzy search
-  for (const entry of searchDirectory) {
-    const mismatch = entry.title.every((t) => {
-      const str = t.toLowerCase();
-
-      entry.score = utils.distance(str, search);
-
-      if (entry.score < 65 && str.includes(search)) {
-        entry.score = 90;
-        return false;
-      }
-
-      return false;
-    });
-
-    if (!mismatch) {
-      outputDirectory.push(entry);
-    }
-  }
-
-  return outputDirectory
-    .toSorted((a, b) => {
-      const diff = (b.score || 0) - (a.score || 0);
-      return diff !== 0 ? diff : (b.popularity || 0) - (a.popularity || 0);
-    });
+  return await _search(mediaIndex, {
+    limit: 25,
+    term: search,
+    sortBy: { property: 'popularity', order: 'DESC' },
+  });
 }
 
 async function searchManyMedia(
@@ -616,7 +548,7 @@ async function searchManyMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: results.map((r) => r.id),
+      ids: results.hits.map((r) => r.id),
       key: 'media',
       guildId,
     }),
@@ -636,7 +568,7 @@ async function searchOneMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: [results[0]?.id],
+      ids: [results.hits[0].id],
       key: 'media',
       guildId,
     }),
@@ -870,33 +802,18 @@ async function aggregate<T>({ media, character, start, end, guildId }: {
   throw new Error();
 }
 
-async function pool({ guildId, seed, range, role, stars }: {
+async function pool({ guildId }: {
   guildId: string;
-  seed?: string;
-  range?: number[];
-  role?: CharacterRole;
-  stars?: number;
-}): Promise<Pool['']['ALL']> {
-  let pool: Pool[0]['ALL'] = [];
-
+}): Promise<CharacterIndex> {
   const list = await packs.all({ guildId });
 
-  // if anilist pack is enabled
-  if (list.length && list[0].manifest.id === 'anilist') {
-    const anilist = await utils.readJson<Pool>('packs/anilist/pool.json');
+  const builtinEnabled = list[0].manifest.id === 'anilist';
 
-    if (typeof stars === 'number') {
-      Object.values(anilist).forEach((range) => {
-        pool = pool.concat(range.ALL);
-      });
-    } else {
-      pool = anilist[JSON.stringify(range)][role ?? 'ALL'];
-    }
-  }
+  const characterIndex = await loadCharactersIndex(builtinEnabled);
 
   await Promise.all(list.map(async ({ manifest }) => {
     if (manifest.characters && Array.isArray(manifest.characters.new)) {
-      const characters = await Promise.all(
+      await Promise.all(
         manifest.characters.new.map(async (char) => {
           char.packId = manifest.id;
 
@@ -905,44 +822,27 @@ async function pool({ guildId, seed, range, role, stars }: {
             character: char,
           });
 
-          const media = character.media?.edges?.[0]?.node;
+          const edge = character.media?.edges?.[0];
+          const role = edge?.role;
 
-          if (media) {
+          if (edge && role) {
+            const media = edge.node;
             const rating = Rating.fromCharacter(character).stars;
 
-            return {
+            await insert(characterIndex, {
               id: `${manifest.id}:${character.id}`,
               mediaId: `${media.packId}:${media.id}`,
               rating,
-            };
+              popularity: character.popularity ?? media.popularity,
+              role,
+            });
           }
         }),
       );
-
-      pool = pool.concat(characters.filter(utils.nonNullable) as {
-        id: string;
-        mediaId: string;
-        rating: number;
-      }[]);
     }
   }));
 
-  const occurrences: Record<string, boolean> = {};
-
-  // shuffle here is to ensure that occurrences are randomly ordered
-  utils.shuffle(pool, seed);
-
-  return pool.filter(({ mediaId, rating }) => {
-    if (typeof stars === 'number' && rating !== stars) {
-      return false;
-    }
-
-    if (occurrences[mediaId]) {
-      return false;
-    }
-
-    return (occurrences[mediaId] = true);
-  });
+  return characterIndex;
 }
 
 function aliasToArray(

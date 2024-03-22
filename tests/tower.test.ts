@@ -1065,7 +1065,6 @@ Deno.test('/reclear', async (test) => {
 
     try {
       const message = await tower.reclear({
-        token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1073,35 +1072,6 @@ Deno.test('/reclear', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
           attachments: [],
           embeds: [
             {
@@ -1114,21 +1084,9 @@ Deno.test('/reclear', async (test) => {
                 '**name 5** 1(+1)/10 EXP',
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'treclear',
-                  label: '/reclear',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [],
         },
-      );
+      });
     } finally {
       delete config.appId;
       delete config.origin;
@@ -1292,7 +1250,6 @@ Deno.test('/reclear', async (test) => {
 
     try {
       const message = await tower.reclear({
-        token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1300,35 +1257,6 @@ Deno.test('/reclear', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
           attachments: [],
           embeds: [
             {
@@ -1341,21 +1269,9 @@ Deno.test('/reclear', async (test) => {
                 '**name 5** 1(+1)/10 EXP',
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'treclear',
-                  label: '/reclear',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [],
         },
-      );
+      });
     } finally {
       delete config.appId;
       delete config.origin;
@@ -1519,7 +1435,6 @@ Deno.test('/reclear', async (test) => {
 
     try {
       const message = await tower.reclear({
-        token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1527,35 +1442,6 @@ Deno.test('/reclear', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
           attachments: [],
           embeds: [
             {
@@ -1569,21 +1455,9 @@ Deno.test('/reclear', async (test) => {
                 '**name 5** leveled up and gained 3 stat points and 1 skill point.',
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'treclear',
-                  label: '/reclear',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [],
         },
-      );
+      });
     } finally {
       delete config.appId;
       delete config.origin;
@@ -1747,7 +1621,6 @@ Deno.test('/reclear', async (test) => {
 
     try {
       const message = await tower.reclear({
-        token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1755,35 +1628,6 @@ Deno.test('/reclear', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
           attachments: [],
           embeds: [
             {
@@ -1797,21 +1641,9 @@ Deno.test('/reclear', async (test) => {
                 '**name 5** leveled up 2x and gained 6 stat points and 2 skill points.',
             },
           ],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'treclear',
-                  label: '/reclear',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [],
         },
-      );
+      });
     } finally {
       delete config.appId;
       delete config.origin;
@@ -1975,7 +1807,6 @@ Deno.test('/reclear', async (test) => {
 
     try {
       const message = await tower.reclear({
-        token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
       });
@@ -1983,35 +1814,6 @@ Deno.test('/reclear', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
           attachments: [],
           embeds: [
             {
@@ -2025,7 +1827,7 @@ Deno.test('/reclear', async (test) => {
           ],
           components: [],
         },
-      );
+      });
     } finally {
       delete config.appId;
       delete config.origin;

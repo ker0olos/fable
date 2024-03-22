@@ -166,11 +166,12 @@ export const handler = async (r: Request) => {
             });
 
             results
+              .hits
               .slice(0, 25)
-              .forEach(({ id, title }) => {
+              .forEach(({ document }) => {
                 message.addSuggestions({
-                  name: title[0],
-                  value: `${idPrefix}${id}`,
+                  name: document.title[0],
+                  value: `${idPrefix}${document.id}`,
                 });
               });
           }
@@ -217,13 +218,14 @@ export const handler = async (r: Request) => {
             });
 
             results
+              .hits
               .slice(0, 25)
-              .forEach(({ id, name, mediaTitle }) => {
+              .forEach(({ document }) => {
                 message.addSuggestions({
-                  name: mediaTitle?.length
-                    ? `${name[0]} (${mediaTitle[0]})`
-                    : name[0],
-                  value: `${idPrefix}${id}`,
+                  name: document.mediaTitle?.length
+                    ? `${document.name[0]} (${document.mediaTitle[0]})`
+                    : document.name[0],
+                  value: `${idPrefix}${document.id}`,
                 });
               });
           }
@@ -257,7 +259,7 @@ export const handler = async (r: Request) => {
             if (manifest.title) {
               const d2 = utils.distance(manifest.title, id);
 
-              if (d > d2) {
+              if (d < d2) {
                 distance[manifest.id] = d2;
                 return;
               }
@@ -311,7 +313,7 @@ export const handler = async (r: Request) => {
             }
           });
 
-          _skills = _skills.sort((a, b) => distance[a[0]] - distance[b[0]]);
+          _skills = _skills.sort((a, b) => distance[b[0]] - distance[a[0]]);
 
           _skills?.forEach(([skillKey, skill]) => {
             const skillName = i18n.get(skill.key, locale);
@@ -814,12 +816,10 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'reclear': {
-            return tower.reclear({
-              token,
+            return (await tower.reclear({
               guildId,
               userId: member.user.id,
-            })
-              .send();
+            })).send();
           }
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
@@ -1223,11 +1223,10 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'treclear': {
-            return tower.reclear({
-              token,
+            return (await tower.reclear({
               guildId,
               userId: member.user.id,
-            })
+            }))
               .setType(discord.MessageType.New)
               .send();
           }

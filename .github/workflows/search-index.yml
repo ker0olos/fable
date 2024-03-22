@@ -1,0 +1,39 @@
+name: search-index
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+    - cron: "0 0 * * 0"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240 # 4 hours
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.PAT }}
+          repository: ker0olos/fable
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - run: deno run -A --unstable-kv search-index/cache.ts
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.PAT }}
+          title: "[bot] Updated Search Index"
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          commit-message: "[bot] Updated `search-index/*.json`"
+          branch: update-search-index
+          delete-branch: true
+          body: |
+            This PR is auto-generated.
+
+            1. Updated the pool cache for each possible gacha query
+            2. Updated the searching cache for every character and media

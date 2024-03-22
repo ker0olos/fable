@@ -8615,7 +8615,6 @@ Deno.test('reclear', async (test) => {
 
       assertSpyCall(skillsStub, 0, {
         args: [{
-          token: 'token',
           guildId: 'guild_id',
           userId: 'user_id',
         }],

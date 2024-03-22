@@ -26,6 +26,7 @@ import skills from '~/src/skills.ts';
 import battle from '~/src/battle.ts';
 import stats from '~/src/stats.ts';
 import party from '~/src/party.ts';
+import tower from '~/src/tower.ts';
 
 config.global = true;
 
@@ -4049,6 +4050,86 @@ Deno.test('cacquire components', async (test) => {
     } finally {
       delete config.publicKey;
 
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('treclear components', async (test) => {
+  await test.step('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'treclear',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const skillsStub = stub(tower, 'reclear', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(skillsStub, 0, {
+        args: [{
+          guildId: 'guild_id',
+          userId: 'user_id',
+        }],
+      });
+    } finally {
+      delete config.publicKey;
+
+      skillsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
