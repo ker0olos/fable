@@ -5,7 +5,7 @@
   },
   "waitFor": "onCreateCommand",
   "postCreateCommand": {
-    "dev_deps": "npm i -g ngrok concurrently",
+    "dev_deps": "npm i -g ngrok concurrently node-jq",
     "app_deps": "deno cache --reload src/interactions.ts"
   },
   "customizations": {

@@ -20,8 +20,6 @@ import merge from '~/src/merge.ts';
 
 import db from '~/db/mod.ts';
 
-import { insert, loadCharactersIndex } from '~/search-index/mod.ts';
-
 import { CharacterRole, MediaFormat, MediaType } from '~/src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
@@ -614,14 +612,11 @@ Deno.test('synthesis confirmed', async (test) => {
       () => ({ ok: true }) as any,
     );
 
-    const pool = await loadCharactersIndex(false);
-
-    await insert(pool, {
-      id: 'anilist:1',
-      rating: 2,
-    });
-
-    const gachaStub = stub(packs, 'pool', () => Promise.resolve(pool));
+    const gachaStub = stub(gacha, 'guaranteedPool', () =>
+      Promise.resolve({
+        pool: [{ id: 'anilist:1', mediaId: 'anilist:2', rating: 1 }],
+        validate: () => true,
+      }));
 
     const synthesisStub = stub(
       merge,
@@ -659,6 +654,7 @@ Deno.test('synthesis confirmed', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+
         target: 2,
       });
 
@@ -876,14 +872,11 @@ Deno.test('synthesis confirmed', async (test) => {
       () => ({ ok: true }) as any,
     );
 
-    const pool = await loadCharactersIndex(false);
-
-    await insert(pool, {
-      id: 'anilist:1',
-      rating: 2,
-    });
-
-    const gachaStub = stub(packs, 'pool', () => Promise.resolve(pool));
+    const gachaStub = stub(gacha, 'guaranteedPool', () =>
+      Promise.resolve({
+        pool: [{ id: 'anilist:1', mediaId: 'anilist:2', rating: 1 }],
+        validate: () => true,
+      }));
 
     const synthesisStub = stub(
       merge,
