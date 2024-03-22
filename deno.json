@@ -15,7 +15,7 @@
         "no-external-import"
       ]
     },
-    "exclude": ["images-proxy", "dyn-images", "search-index"]
+    "exclude": ["images-proxy", "dyn-images"]
   },
   "lock": false,
   "tasks": {
@@ -31,7 +31,6 @@
     "exclude": [
       "images-proxy",
       "dyn-images",
-      "search-index",
       "packs/anilist/pool.json",
       "packs/anilist/characters_directory.json",
       "packs/anilist/media_directory.json"
