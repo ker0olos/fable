@@ -18,32 +18,28 @@ const dirname = new URL('.', import.meta.url).pathname;
 export const mediaIndexCachePath = join(dirname, './media');
 export const charactersIndexCachePath = join(dirname, './characters');
 
-export type IndexedCharacter = Orama<{
-  id: string;
+export type IndexedCharacter = {
   name: string[];
   mediaTitle: string[];
   popularity: number;
   role: CharacterRole;
-}>;
+  rating: number;
+};
 
-export type IndexedMedia = Orama<{
-  id: string;
+export type IndexedMedia = {
   title: string[];
   popularity: number;
-}>;
+};
 
 export const charactersSchema = {
-  id: 'string',
   name: 'string[]',
-  mediaId: 'string',
   mediaTitle: 'string[]',
   popularity: 'number',
-  rating: 'number',
   role: 'enum',
+  rating: 'number',
 } as const;
 
 export const mediaSchema = {
-  id: 'string',
   title: 'string[]',
   popularity: 'number',
 } as const;

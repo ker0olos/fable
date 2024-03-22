@@ -222,7 +222,7 @@ async function queryAniList(kv: Deno.Kv): Promise<void> {
                       rating: new Rating({
                         role: media.characterRole,
                         popularity: media?.node.popularity,
-                      }),
+                      }).stars,
                     });
                   }
                 }
@@ -272,7 +272,7 @@ async function queryAniList(kv: Deno.Kv): Promise<void> {
 }
 
 async function storeMediaIndex(kv: Deno.Kv): Promise<void> {
-  console.log('starting the creation of the media index requests...');
+  console.log('starting the creation of the media index...');
 
   const mediaIndex: Orama<typeof mediaSchema> = await create({
     schema: mediaSchema,
@@ -292,7 +292,7 @@ async function storeMediaIndex(kv: Deno.Kv): Promise<void> {
 }
 
 async function storeCharacterIndex(kv: Deno.Kv): Promise<void> {
-  console.log('starting the creation of the characters index requests...');
+  console.log('starting the creation of the characters index...');
 
   const charactersIndex: Orama<typeof charactersSchema> = await create({
     schema: charactersSchema,

@@ -171,19 +171,21 @@ export async function getEnemyCharacter(
   let character: Character | undefined = undefined;
 
   const filteredPool = await _search(pool, {
+    limit: 100000,
     where: { rating: { eq: getEnemyRating(floor) } },
   });
 
   const controller = new AbortController();
+
   const { signal } = controller;
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
   try {
     while (!signal.aborted) {
-      const i = Math.floor(random.nextFloat() * filteredPool.count);
+      const i = Math.floor(random.nextFloat() * filteredPool.hits.length);
 
-      const characterId = filteredPool.hits[i].document.id;
+      const characterId = filteredPool.hits[i].id;
 
       if (packs.isDisabled(characterId, guildId)) {
         continue;

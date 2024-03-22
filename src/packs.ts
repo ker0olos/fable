@@ -431,7 +431,7 @@ async function _searchManyCharacters(
 
           const mediaTitle = char.media?.edges?.length
             ? packs.aliasToArray(char.media.edges[0].node.title)
-            : [];
+            : undefined;
 
           await insert(characterIndex, {
             name,
@@ -445,7 +445,11 @@ async function _searchManyCharacters(
     }),
   );
 
-  return await _search(characterIndex, { term: search });
+  return await _search(characterIndex, {
+    limit: 25,
+    term: search,
+    sortBy: { property: 'popularity', order: 'DESC' },
+  });
 }
 
 async function searchManyCharacters(
@@ -461,7 +465,7 @@ async function searchManyCharacters(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: results.hits.map((r) => r.document.id),
+      ids: results.hits.map((r) => r.id),
       key: 'characters',
       guildId,
     }),
@@ -481,7 +485,7 @@ async function searchOneCharacter(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: [results.hits[0].document.id],
+      ids: [results.hits[0].id],
       key: 'characters',
       guildId,
     }),
@@ -524,7 +528,11 @@ async function _searchManyMedia(
     }),
   );
 
-  return await _search(mediaIndex, { term: search });
+  return await _search(mediaIndex, {
+    limit: 25,
+    term: search,
+    sortBy: { property: 'popularity', order: 'DESC' },
+  });
 }
 
 async function searchManyMedia(
@@ -540,7 +548,7 @@ async function searchManyMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: results.hits.map((r) => r.document.id),
+      ids: results.hits.map((r) => r.id),
       key: 'media',
       guildId,
     }),
@@ -560,7 +568,7 @@ async function searchOneMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: [results.hits[0].document.id],
+      ids: [results.hits[0].id],
       key: 'media',
       guildId,
     }),

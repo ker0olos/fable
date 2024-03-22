@@ -215,23 +215,25 @@ async function rngPull(
   let media: Media | undefined = undefined;
 
   const filteredPool = await _search(pool, {
-    where: {
-      role: role ? { eq: role } : undefined,
-      rating: guarantee ? { eq: guarantee } : undefined,
-      popularity: range ? { gte: range[0], lte: range[1] } : undefined,
-    },
+    limit: 100000,
+    where: guarantee
+      ? { rating: { eq: guarantee } }
+      : role
+      ? { role: { eq: role }, popularity: { between: range } }
+      : { popularity: { between: range } },
   });
 
   const controller = new AbortController();
+
   const { signal } = controller;
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
   try {
     while (!signal.aborted) {
-      const i = Math.floor(Math.random() * filteredPool.count);
+      const i = Math.floor(Math.random() * filteredPool.hits.length);
 
-      const characterId = filteredPool.hits[i].document.id;
+      const characterId = filteredPool.hits[i].id;
 
       if (packs.isDisabled(characterId, guildId)) {
         continue;
