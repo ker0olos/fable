@@ -6,24 +6,16 @@ snapshot[`skills > acquire 1`] = `
   "data": {
     "choices": [
       {
-        "name": "Critical Hit",
-        "value": "crit"
+        "name": "Slow Debuff",
+        "value": "slow"
       },
       {
-        "name": "Enraged",
-        "value": "enrage"
+        "name": "Defense Boost",
+        "value": "defense"
       },
       {
-        "name": "Stun",
-        "value": "stun"
-      },
-      {
-        "name": "Chain Attack",
-        "value": "chain"
-      },
-      {
-        "name": "Lifesteal",
-        "value": "lifesteal"
+        "name": "Emergency Healing",
+        "value": "heal"
       },
       {
         "name": "Speed Boost",
@@ -34,16 +26,24 @@ snapshot[`skills > acquire 1`] = `
         "value": "grab"
       },
       {
-        "name": "Emergency Healing",
-        "value": "heal"
+        "name": "Lifesteal",
+        "value": "lifesteal"
       },
       {
-        "name": "Defense Boost",
-        "value": "defense"
+        "name": "Chain Attack",
+        "value": "chain"
       },
       {
-        "name": "Slow Debuff",
-        "value": "slow"
+        "name": "Stun",
+        "value": "stun"
+      },
+      {
+        "name": "Enraged",
+        "value": "enrage"
+      },
+      {
+        "name": "Critical Hit",
+        "value": "crit"
       }
     ]
   }
@@ -56,24 +56,16 @@ snapshot[`skills > upgrade 1`] = `
   "data": {
     "choices": [
       {
-        "name": "Critical Hit",
-        "value": "crit"
+        "name": "Slow Debuff",
+        "value": "slow"
       },
       {
-        "name": "Enraged",
-        "value": "enrage"
+        "name": "Defense Boost",
+        "value": "defense"
       },
       {
-        "name": "Stun",
-        "value": "stun"
-      },
-      {
-        "name": "Chain Attack",
-        "value": "chain"
-      },
-      {
-        "name": "Lifesteal",
-        "value": "lifesteal"
+        "name": "Emergency Healing",
+        "value": "heal"
       },
       {
         "name": "Speed Boost",
@@ -84,16 +76,24 @@ snapshot[`skills > upgrade 1`] = `
         "value": "grab"
       },
       {
-        "name": "Emergency Healing",
-        "value": "heal"
+        "name": "Lifesteal",
+        "value": "lifesteal"
       },
       {
-        "name": "Defense Boost",
-        "value": "defense"
+        "name": "Chain Attack",
+        "value": "chain"
       },
       {
-        "name": "Slow Debuff",
-        "value": "slow"
+        "name": "Stun",
+        "value": "stun"
+      },
+      {
+        "name": "Enraged",
+        "value": "enrage"
+      },
+      {
+        "name": "Critical Hit",
+        "value": "crit"
       }
     ]
   }
