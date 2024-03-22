@@ -1,11 +1,10 @@
 name: search-index
 
 on:
-  # push:
   workflow_dispatch:
-  # schedule:
-  #   # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
-  #   - cron: "0 0 * * 0"
+  schedule:
+    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+    - cron: "0 0 * * 0"
 
 jobs:
   update:

@@ -229,6 +229,10 @@ async function rngPull(
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
+  if (!filteredPool.hits.length) {
+    throw new PoolError();
+  }
+
   try {
     while (!signal.aborted) {
       const i = Math.floor(Math.random() * filteredPool.hits.length);
