@@ -8,7 +8,7 @@ import {
 
 import { FakeTime } from '$std/testing/time.ts';
 
-import { assertSpyCalls, returnsNext, Stub, stub } from '$std/testing/mock.ts';
+import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 
 import Rating from '~/src/rating.ts';
 
@@ -26,15 +26,11 @@ import { insert, loadCharactersIndex } from '~/search-index/mod.ts';
 import {
   Character,
   CharacterRole,
-  DisaggregatedCharacter,
-  Manifest,
   Media,
   MediaFormat,
   MediaRelation,
   MediaType,
 } from '~/src/types.ts';
-
-import { AniListCharacter } from '~/packs/anilist/types.ts';
 
 import { NoPullsError, PoolError } from '~/src/errors.ts';
 
