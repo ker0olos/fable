@@ -202,7 +202,8 @@ function capitalize(s: string | undefined): string | undefined {
 
   return s
     .split(/_|\s/)
-    .map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase())
+    .filter(nonNullable)
+    .map((s) => s[0]?.toUpperCase() + s.slice(1).toLowerCase())
     .join(' ')
     .trim();
 }
