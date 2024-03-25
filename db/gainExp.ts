@@ -126,16 +126,17 @@ export async function gainExp(
     }
 
     const characters = await db.characters().find(
-      { userId, guildId, _id: { $in: party } },
+      { _id: { $in: party } },
     ).toArray();
 
     if (party.length !== characters.length) {
       throw new Error();
     }
 
-    const expGained = getFloorExp(Math.max(floor, 1)) * keys;
+    const expGained = getFloorExp(Math.max(floor, 1)) *
+      Math.max(keys, 1);
 
-    const status = await Promise.all(characters.map(async (character) => {
+    const status = characters.map((character) => {
       const status: Status = {
         exp: 0,
         expToLevel: 0,
@@ -205,12 +206,12 @@ export async function gainExp(
       });
 
       return status;
-    }));
+    });
 
     const update = await db.characters().bulkWrite(bulk, { session });
 
-    if (update.modifiedCount !== characters.length) {
-      throw new Error();
+    if (update.modifiedCount !== bulk.length) {
+      throw new Error(update.getWriteErrors().join(', '));
     }
 
     await session.commitTransaction();
