@@ -91,8 +91,10 @@ export class PartyMember {
     this.#stats.hp = Math.min(this.#stats.hp + heal, this.maxHP);
   }
 
-  public damage(damage: number): void {
+  public damage(damage: number): number {
+    damage = Math.round(Math.max(damage - this.defense, 1));
     this.#stats.hp = Math.max(this.#stats.hp - damage, 0);
+    return damage;
   }
 
   public get canSneakAttack(): boolean {
