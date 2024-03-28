@@ -5,7 +5,7 @@ import i18n from '~/src/i18n.ts';
 
 import db from '~/db/mod.ts';
 
-import * as dynImages from '~/dyn-images/mod.ts';
+import * as dynImages from 'dyn-images';
 
 import * as discord from '~/src/discord.ts';
 
@@ -266,6 +266,9 @@ async function startCombat(
     const party1Character: PartyMember = party1Alive[0];
     const party2Character: PartyMember = party2Alive[0];
 
+    party1Character.ensureBoosts(party1Alive, party2Alive);
+    party2Character.ensureBoosts(party2Alive, party1Alive);
+
     const fastestCharacter = determineFastest(party1Character, party2Character);
 
     const speedDiffPercent = calculateSpeedDiffPercent(
@@ -501,7 +504,7 @@ function actionRound(
 ): void {
   const subtitle: string[] = [];
 
-  let damage = Math.max(attacking.attack - receiving.defense, 1);
+  let damage = Math.max(attacking.attack, 1);
 
   if (attacking.skills.chain?.level) {
     const lvl = attacking.skills.chain.level;
@@ -540,7 +543,7 @@ function actionRound(
     }
   }
 
-  receiving.damage(damage);
+  damage = receiving.damage(damage);
 
   let heal = 0;
 

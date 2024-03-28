@@ -124,12 +124,28 @@ Deno.test('capitalize', async (test) => {
     assertEquals(wrap, 'Sit Aute Ad Sunt Mollit');
   });
 
+  await test.step('normal 2', () => {
+    const text = 'i am a fox';
+
+    const wrap = utils.capitalize(text);
+
+    assertEquals(wrap, 'I Am A Fox');
+  });
+
   await test.step('3 letters', () => {
     const text = 'ona';
 
     const wrap = utils.capitalize(text);
 
     assertEquals(wrap, 'ONA');
+  });
+
+  await test.step('white space', () => {
+    const text = '     ';
+
+    const wrap = utils.capitalize(text);
+
+    assertEquals(wrap, '');
   });
 });
 

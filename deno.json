@@ -14,8 +14,7 @@
         "explicit-function-return-type",
         "no-external-import"
       ]
-    },
-    "exclude": ["images-proxy", "dyn-images"]
+    }
   },
   "lock": false,
   "tasks": {
@@ -29,10 +28,9 @@
     "singleQuote": true,
     "indentWidth": 2,
     "exclude": [
-      "images-proxy",
-      "dyn-images",
-      "search-index/characters.json",
-      "search-index/media.json"
+      "packs/anilist/pool.json",
+      "packs/anilist/characters_directory.json",
+      "packs/anilist/media_directory.json"
     ]
   },
   "imports": {
@@ -47,7 +45,9 @@
     "tweetnacl": "https://esm.sh/tweetnacl@1.0.3",
     "mongodb": "npm:mongodb",
     "mongodb-memory-server": "npm:mongodb-memory-server-core",
-    "levenshtein": "https://deno.land/x/fastest_levenshtein@1.0.10/mod.ts",
-    "orama": "jsr:@orama/orama@2.0.6"
+    "orama": "jsr:@orama/orama@2.0.6",
+    "levenshtein": "https://raw.githubusercontent.com/fable-community/search-index/main/mod.ts",
+    "images-proxy": "https://raw.githubusercontent.com/fable-community/images-proxy/main/mod.ts",
+    "dyn-images": "https://raw.githubusercontent.com/fable-community/dyn-images/main/mod.ts"
   }
 }

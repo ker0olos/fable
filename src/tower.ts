@@ -335,10 +335,11 @@ function view({ token, guildId, userId }: {
   return loading;
 }
 
-async function reclear({ guildId, userId }: {
+function reclear({ token, guildId, userId }: {
+  token: string;
   guildId: string;
   userId: string;
-}): Promise<discord.Message> {
+}): discord.Message {
   const locale = _user.cachedUsers[userId]?.locale;
 
   if (!config.combat) {
@@ -347,111 +348,141 @@ async function reclear({ guildId, userId }: {
     );
   }
 
-  const inventory = await db
-    .rechargeConsumables(guildId, userId);
+  Promise.resolve()
+    .then(async () => {
+      const inventory = await db
+        .rechargeConsumables(guildId, userId);
 
-  if (inventory.floorsCleared <= 0) {
-    throw new NonFetalError(
-      i18n.get('no-cleared-floors', locale),
-    );
-  }
-
-  // deno-lint-ignore no-non-null-assertion
-  if (inventory.availableKeys! <= 0) {
-    return new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setDescription(i18n.get('combat-no-more-keys', locale)),
-      )
-      .addEmbed(
-        new discord.Embed()
-          .setDescription(
-            i18n.get(
-              '+1-key',
-              locale,
-              `<t:${utils.rechargeKeysTimestamp(inventory.keysTimestamp)}:R>`,
-            ),
-          ),
-      );
-  }
-
-  const party = [
-    inventory.party.member1,
-    inventory.party.member2,
-    inventory.party.member3,
-    inventory.party.member4,
-    inventory.party.member5,
-  ].filter(utils.nonNullable);
-
-  const status = await db.gainExp(
-    userId,
-    guildId,
-    inventory.floorsCleared,
-    party.map(({ _id }) => _id),
-    inventory.availableKeys,
-  );
-
-  const message = new discord.Message();
-
-  const _characters = await packs.characters({
-    guildId,
-    ids: party.map(({ characterId }) => characterId),
-  });
-
-  const characters = party.map((existing) => {
-    return {
-      existing,
-      // deno-lint-ignore no-non-null-assertion
-      char: _characters.find((c) =>
-        existing.characterId === `${c.packId}:${c.id}`
-      )!,
-      // deno-lint-ignore no-non-null-assertion
-      status: status.find((c) => existing.characterId === c.id)!,
-    };
-  });
-
-  const statusText = characters.map(
-    ({ char, existing, status }) => {
-      if (status.levelUp >= 1) {
-        return i18n.get(
-          'leveled-up',
-          locale,
-          existing?.nickname ??
-            packs.aliasToArray(char.name)[0],
-          status.levelUp === 1 ? ' ' : ` ${status.levelUp}x `,
-          status.statPoints,
-          i18n.get('stat-points').toLowerCase(),
-          status.skillPoints,
-          i18n.get(
-            status.skillPoints === 1 ? 'skill-point' : 'skill-points',
-          )
-            .toLowerCase(),
-        );
-      } else {
-        return i18n.get(
-          'exp-gained',
-          locale,
-          existing.nickname ??
-            packs.aliasToArray(char.name)[0],
-          status.exp,
-          status.expGained,
-          status.expToLevel,
+      if (inventory.floorsCleared <= 0) {
+        throw new NonFetalError(
+          i18n.get('no-cleared-floors', locale),
         );
       }
-    },
-  ).join('\n');
 
-  message.addEmbed(
-    new discord.Embed()
-      .setTitle(
-        // deno-lint-ignore no-non-null-assertion
-        `${i18n.get('floor', locale)} ${inventory
-          .floorsCleared!} x${inventory.availableKeys}`,
-      )
-      .setDescription(statusText),
-  );
+      // deno-lint-ignore no-non-null-assertion
+      if (inventory.availableKeys! <= 0) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(i18n.get('combat-no-more-keys', locale)),
+          )
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(
+                i18n.get(
+                  '+1-key',
+                  locale,
+                  `<t:${
+                    utils.rechargeKeysTimestamp(inventory.keysTimestamp)
+                  }:R>`,
+                ),
+              ),
+          )
+          .patch(token);
+      }
 
-  return message;
+      const party = [
+        inventory.party.member1,
+        inventory.party.member2,
+        inventory.party.member3,
+        inventory.party.member4,
+        inventory.party.member5,
+      ].filter(utils.nonNullable);
+
+      const status = await db.gainExp(
+        userId,
+        guildId,
+        inventory.floorsCleared,
+        party.map(({ _id }) => _id),
+        inventory.availableKeys,
+      );
+
+      const message = new discord.Message();
+
+      const _characters = await packs.characters({
+        guildId,
+        ids: party.map(({ characterId }) => characterId),
+      });
+
+      const characters = party.map((existing) => {
+        return {
+          existing,
+          // deno-lint-ignore no-non-null-assertion
+          char: _characters.find((c) =>
+            existing.characterId === `${c.packId}:${c.id}`
+          )!,
+          // deno-lint-ignore no-non-null-assertion
+          status: status.find((c) => existing.characterId === c.id)!,
+        };
+      });
+
+      const statusText = characters.map(
+        ({ char, existing, status }) => {
+          if (status.levelUp >= 1) {
+            return i18n.get(
+              'leveled-up',
+              locale,
+              existing?.nickname ??
+                packs.aliasToArray(char.name)[0],
+              status.levelUp === 1 ? ' ' : ` ${status.levelUp}x `,
+              status.statPoints,
+              i18n.get('stat-points').toLowerCase(),
+              status.skillPoints,
+              i18n.get(
+                status.skillPoints === 1 ? 'skill-point' : 'skill-points',
+              )
+                .toLowerCase(),
+            );
+          } else {
+            return i18n.get(
+              'exp-gained',
+              locale,
+              existing.nickname ??
+                packs.aliasToArray(char.name)[0],
+              status.exp,
+              status.expGained,
+              status.expToLevel,
+            );
+          }
+        },
+      ).join('\n');
+
+      message.addEmbed(
+        new discord.Embed()
+          .setTitle(
+            // deno-lint-ignore no-non-null-assertion
+            `${i18n.get('floor', locale)} ${inventory
+              .floorsCleared!} x${inventory.availableKeys}`,
+          )
+          .setDescription(statusText),
+      );
+
+      return await message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(new discord.Embed().setDescription(err.message))
+          .patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
 }
 
 async function onFail(

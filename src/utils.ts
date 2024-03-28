@@ -11,9 +11,9 @@ import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import * as levenshtein from 'levenshtein';
+import { levenshtein } from 'levenshtein';
 
-import { proxy } from '~/images-proxy/mod.ts';
+import { proxy } from 'images-proxy';
 
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
@@ -202,7 +202,8 @@ function capitalize(s: string | undefined): string | undefined {
 
   return s
     .split(/_|\s/)
-    .map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase())
+    .filter(nonNullable)
+    .map((s) => s[0]?.toUpperCase() + s.slice(1).toLowerCase())
     .join(' ')
     .trim();
 }
@@ -235,7 +236,7 @@ function comma(n: number): string {
 
 function distance(a: string, b: string): number {
   return 100 -
-    (100 * levenshtein.distance(a.toLowerCase(), b.toLowerCase())) /
+    (100 * levenshtein(a.toLowerCase(), b.toLowerCase())) /
       (a.length + b.length);
 }
 
