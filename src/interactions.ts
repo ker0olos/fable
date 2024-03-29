@@ -97,14 +97,22 @@ export const handler = async (r: Request) => {
   }
 
   if (!config.global) {
-    return new discord.Message()
+    const message = new discord.Message()
       .setFlags(discord.MessageFlags.Ephemeral)
       .addEmbed(
         new discord.Embed().setDescription(
           i18n.get('global-maintenance', locale),
         ),
-      )
-      .send();
+      );
+
+    if (config.notice) {
+      message.addEmbed(
+        new discord.Embed()
+          .setDescription(config.notice.replaceAll('\\n', '\n')),
+      );
+    }
+
+    return message.send();
   }
 
   config.origin = origin;
