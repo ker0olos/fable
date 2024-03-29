@@ -1,11 +1,10 @@
 name: search-index
 
 on:
-  push:
   workflow_dispatch:
-  # schedule:
-  #   # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
-  #   - cron: "0 0 * * 0"
+  schedule:
+    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+    - cron: "0 0 * * 0"
 
 jobs:
   update:
@@ -24,7 +23,8 @@ jobs:
 
       - run: deno run -A --unstable-kv search-index/cache.ts
 
-      - uses: actions/upload-artifact@v4
+      - if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: backup-anilist-cache
           path: search-index.sqlite
@@ -32,19 +32,21 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: search-indexes
-          path: search_index/*_index.bin
+          path: search-index/*_index.bin
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.PAT }}
-          title: "[bot] Updated Search Index"
+          title: "[bot] Updated Search Indexes"
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          commit-message: "[bot] Updated `search-index/*.json`"
+          commit-message: "[bot] Updated `search-index/*.bin`"
           branch: update-search-index
           delete-branch: true
           body: |
-            This PR is auto-generated.
 
-            1. Updated the pool cache for each possible gacha query
-            2. Updated the searching cache for every character and media
+            *Updated the search indexes for all AniList entries above 1000 popularity.*
+
+            > [!NOTE]
+            > This PR is auto-generated every Sunday!
+            > This is due to AniList full-text search and pagination being too limited/unreliable.
