@@ -1,4 +1,4 @@
-name: search-index
+name: search
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
     - cron: "0 0 * * 0"
 
 jobs:
-  update:
+  index:
     runs-on: ubuntu-latest
     timeout-minutes: 240 # 4 hours
     steps:
@@ -21,7 +21,7 @@ jobs:
         with:
           deno-version: v1.x
 
-      - run: deno run -A --unstable-kv search-index/cache.ts
+      - run: deno run -A --unstable-kv search-index/index.ts
 
       - if: always()
         uses: actions/upload-artifact@v4

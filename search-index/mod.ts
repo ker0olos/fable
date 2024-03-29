@@ -1,16 +1,20 @@
 import { join } from '$std/path/mod.ts';
 
 import {
-  type Character,
+  Character as IndexedCharacter,
   filter_characters,
-  type Media,
+  Media as IndexedMedia,
   search_characters,
   search_media,
 } from 'search-index';
 
 import packs from '~/src/packs.ts';
 
-import { CharacterRole } from '~/src/types.ts';
+import utils from '~/src/utils.ts';
+
+import Rating from '~/src/rating.ts';
+
+import type { Character, CharacterRole } from '~/src/types.ts';
 
 const dirname = new URL('.', import.meta.url).pathname;
 
@@ -20,80 +24,80 @@ export const charactersIndexPath = join(dirname, 'characters_index.bin');
 export const searchMedia = async (
   query: string,
   guildId: string,
-): Promise<Media[]> => {
+): Promise<IndexedMedia[]> => {
   const list = await packs.all({ guildId });
 
-  const _builtinEnabled = list[0].manifest.id === 'anilist';
+  const builtin = list[0].manifest.id === 'anilist';
 
-  // add community packs content
-  // await Promise.all(
-  //   list.map(async ({ manifest }) => {
-  //     const media = await Promise.all(
-  //       (manifest.media?.new ?? [])
-  //         .map((media) => (media.packId = manifest.id, media)),
-  //     );
+  const extra = (await Promise.all(
+    list.map(async ({ manifest }) => {
+      const media = await Promise.all(
+        (manifest.media?.new ?? [])
+          .map((media) => (media.packId = manifest.id, media)),
+      );
 
-  //     await Promise.all(
-  //       media.map(async (_media) => {
-  //         const title = packs.aliasToArray(_media.title);
+      return media.map((_media) => {
+        const title = packs.aliasToArray(_media.title);
 
-  //         await insert(mediaIndex, {
-  //           title,
-  //           popularity: _media.popularity,
-  //           id: `${_media.packId}:${_media.id}`,
-  //         });
-  //       }),
-  //     );
-  //   }),
-  // );
+        return new IndexedMedia(
+          `${_media.packId}:${_media.id}`,
+          title,
+          _media.popularity ?? 0,
+        );
+      });
+    }),
+  )).flat();
 
-  const mediaIndex = await Deno.readFile(mediaIndexPath);
-
-  return search_media(query, mediaIndex);
+  return search_media(
+    query,
+    builtin ? await Deno.readFile(mediaIndexPath) : undefined,
+    extra,
+  );
 };
 
 export const searchCharacters = async (
   query: string,
   guildId: string,
-): Promise<Character[]> => {
+): Promise<IndexedCharacter[]> => {
   const list = await packs.all({ guildId });
 
-  const _builtinEnabled = list[0].manifest.id === 'anilist';
+  const builtin = list[0].manifest.id === 'anilist';
 
-  // add community packs content
-  // await Promise.all(
-  //   list.map(async ({ manifest }) => {
-  //     const characters = await Promise.all(
-  //       (manifest.characters?.new ?? [])
-  //         .map((character) => (character.packId = manifest.id, character))
-  //         .map(
-  //           (character) => packs.aggregate<Character>({ character, guildId }),
-  //         ),
-  //     );
+  const extra = (await Promise.all(
+    list.map(async ({ manifest }) => {
+      const characters = await Promise.all(
+        (manifest.characters?.new ?? [])
+          .map((character) => (character.packId = manifest.id, character))
+          .map(
+            (character) => packs.aggregate<Character>({ character, guildId }),
+          ),
+      );
 
-  //     await Promise.all(
-  //       characters.map(async (char) => {
-  //         const name = packs.aliasToArray(char.name);
+      return characters.map((char) => {
+        const name = packs.aliasToArray(char.name);
 
-  //         const mediaTitle = char.media?.edges?.length
-  //           ? packs.aliasToArray(char.media.edges[0].node.title)
-  //           : undefined;
+        const mediaTitle = char.media?.edges?.length
+          ? packs.aliasToArray(char.media.edges[0].node.title)
+          : [];
 
-  //         await insert(characterIndex, {
-  //           name,
-  //           mediaTitle,
-  //           popularity: char.popularity ??
-  //             char.media?.edges?.[0]?.node.popularity,
-  //           id: `${char.packId}:${char.id}`,
-  //         });
-  //       }),
-  //     );
-  //   }),
-  // );
+        return new IndexedCharacter(
+          `${char.packId}:${char.id}`,
+          name,
+          mediaTitle,
+          char.popularity ??
+            char.media?.edges?.[0]?.node.popularity ?? 0,
+          0,
+          '',
+        );
+      });
+    }),
+  )).flat();
 
-  const charactersIndex = await Deno.readFile(charactersIndexPath);
-
-  return search_characters(query, charactersIndex);
+  return search_characters(
+    query,
+    builtin ? await Deno.readFile(charactersIndexPath) : undefined,
+    extra,
+  );
 };
 
 export const filterCharacters = async (
@@ -103,49 +107,58 @@ export const filterCharacters = async (
     role?: CharacterRole;
   },
   guildId: string,
-): Promise<Character[]> => {
+): Promise<IndexedCharacter[]> => {
   const list = await packs.all({ guildId });
 
-  const _builtinEnabled = list[0].manifest.id === 'anilist';
+  const builtin = list[0].manifest.id === 'anilist';
 
-  // add community packs content
-  // await Promise.all(
-  //   list.map(async ({ manifest }) => {
-  //     const characters = await Promise.all(
-  //       (manifest.characters?.new ?? [])
-  //         .map((character) => (character.packId = manifest.id, character))
-  //         .map(
-  //           (character) => packs.aggregate<Character>({ character, guildId }),
-  //         ),
-  //     );
+  const extra = (await Promise.all(
+    list.map(async ({ manifest }) => {
+      const characters = await Promise.all(
+        (manifest.characters?.new ?? [])
+          .map((character) => (character.packId = manifest.id, character))
+          .map(
+            (character) => packs.aggregate<Character>({ character, guildId }),
+          ),
+      );
 
-  //     await Promise.all(
-  //       characters.map(async (char) => {
-  //         const name = packs.aliasToArray(char.name);
+      return characters.map((char) => {
+        const name = packs.aliasToArray(char.name);
 
-  //         const mediaTitle = char.media?.edges?.length
-  //           ? packs.aliasToArray(char.media.edges[0].node.title)
-  //           : undefined;
+        const media = char.media?.edges[0];
 
-  //         await insert(characterIndex, {
-  //           name,
-  //           mediaTitle,
-  //           popularity: char.popularity ??
-  //             char.media?.edges?.[0]?.node.popularity,
-  //           id: `${char.packId}:${char.id}`,
-  //         });
-  //       }),
-  //     );
-  //   }),
-  // );
+        if (!media) return undefined;
 
-  const charactersIndex = await Deno.readFile(charactersIndexPath);
+        const popularity = char.popularity ?? media.node.popularity;
+
+        if (!popularity) return undefined;
+
+        const role = media.role;
+
+        if (!role) return undefined;
+
+        const rating = new Rating({ role, popularity }).stars;
+
+        return new IndexedCharacter(
+          `${char.packId}:${char.id}`,
+          name,
+          packs.aliasToArray(media.node.title),
+          popularity,
+          rating,
+          role,
+        );
+      }).filter(utils.nonNullable);
+    }),
+  )).flat();
 
   return filter_characters(
+    builtin ? await Deno.readFile(charactersIndexPath) : undefined,
+    extra,
     filter.role,
     filter?.popularity?.between?.[0],
     filter.popularity?.between?.[1],
     filter.rating,
-    charactersIndex,
   );
 };
+
+export { IndexedCharacter, IndexedMedia };
