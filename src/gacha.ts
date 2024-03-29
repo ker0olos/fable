@@ -11,7 +11,7 @@ import search from '~/src/search.ts';
 
 import db, { ObjectId } from '~/db/mod.ts';
 
-import { filterCharacters } from '~/search-index/mod.ts';
+import searchIndex from '~/search-index/mod.ts';
 
 import packs from '~/src/packs.ts';
 
@@ -101,7 +101,7 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
     // one specific role for the whole pool
     : utils.rng(variables.roles);
 
-  const pool = await filterCharacters(
+  const pool = await searchIndex.filterCharacters(
     { role, popularity: { between: range } },
     guildId,
   );
@@ -161,7 +161,7 @@ export async function guaranteedPool(
   role?: CharacterRole;
   range?: [number, number];
 }> {
-  const pool = await filterCharacters(
+  const pool = await searchIndex.filterCharacters(
     { rating: guarantee },
     guildId,
   );

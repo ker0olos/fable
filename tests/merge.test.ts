@@ -20,7 +20,7 @@ import merge from '~/src/merge.ts';
 
 import db from '~/db/mod.ts';
 
-import { insert, loadCharactersIndex } from '~/search-index/mod.ts';
+import searchIndex, { IndexedCharacter } from '~/search-index/mod.ts';
 
 import { CharacterRole, MediaFormat, MediaType } from '~/src/types.ts';
 
@@ -614,14 +614,22 @@ Deno.test('synthesis confirmed', async (test) => {
       () => ({ ok: true }) as any,
     );
 
-    const pool = await loadCharactersIndex(false);
-
-    await insert(pool, {
-      id: 'anilist:1',
-      rating: 2,
-    });
-
-    const gachaStub = stub(packs, 'pool', () => Promise.resolve(pool));
+    const poolStub = stub(
+      searchIndex,
+      'filterCharacters',
+      () =>
+        Promise.resolve([
+          new IndexedCharacter(
+            'anilist:1',
+            '',
+            [],
+            [],
+            0,
+            2,
+            CharacterRole.Main,
+          ),
+        ]),
+    );
 
     const synthesisStub = stub(
       merge,
@@ -792,7 +800,7 @@ Deno.test('synthesis confirmed', async (test) => {
 
       fetchStub.restore();
       synthesisStub.restore();
-      gachaStub.restore();
+      poolStub.restore();
       timeStub.restore();
 
       getGuildStub.restore();
@@ -876,14 +884,22 @@ Deno.test('synthesis confirmed', async (test) => {
       () => ({ ok: true }) as any,
     );
 
-    const pool = await loadCharactersIndex(false);
-
-    await insert(pool, {
-      id: 'anilist:1',
-      rating: 2,
-    });
-
-    const gachaStub = stub(packs, 'pool', () => Promise.resolve(pool));
+    const poolStub = stub(
+      searchIndex,
+      'filterCharacters',
+      () =>
+        Promise.resolve([
+          new IndexedCharacter(
+            'anilist:1',
+            '',
+            [],
+            [],
+            0,
+            2,
+            CharacterRole.Main,
+          ),
+        ]),
+    );
 
     const synthesisStub = stub(
       merge,
@@ -1091,7 +1107,7 @@ Deno.test('synthesis confirmed', async (test) => {
 
       fetchStub.restore();
       synthesisStub.restore();
-      gachaStub.restore();
+      poolStub.restore();
       timeStub.restore();
 
       getGuildStub.restore();

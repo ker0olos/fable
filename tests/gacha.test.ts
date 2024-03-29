@@ -21,7 +21,7 @@ import config from '~/src/config.ts';
 
 import db from '~/db/mod.ts';
 
-import { insert, loadCharactersIndex } from '~/search-index/mod.ts';
+import searchIndex, { IndexedCharacter } from '~/search-index/mod.ts';
 
 import {
   Character,
@@ -41,16 +41,22 @@ Deno.test('adding character to inventory', async (test) => {
       role: CharacterRole.Main,
     };
 
-    const pool = await loadCharactersIndex(false);
-
-    await insert(pool, {
-      id: 'anilist:1',
-      rating: 1,
-      popularity: 2000,
-      role: CharacterRole.Main,
-    });
-
-    const poolStub = stub(packs, 'pool', () => Promise.resolve(pool));
+    const poolStub = stub(
+      searchIndex,
+      'filterCharacters',
+      () =>
+        Promise.resolve([
+          new IndexedCharacter(
+            'anilist:1',
+            '',
+            [],
+            [],
+            2000,
+            1,
+            CharacterRole.Main,
+          ),
+        ]),
+    );
 
     const rngStub = stub(
       utils,
@@ -196,16 +202,22 @@ Deno.test('adding character to inventory', async (test) => {
       role: CharacterRole.Main,
     };
 
-    const pool = await loadCharactersIndex(false);
-
-    await insert(pool, {
-      id: 'anilist:1',
-      rating: 1,
-      popularity: 2000,
-      role: CharacterRole.Main,
-    });
-
-    const poolStub = stub(packs, 'pool', () => Promise.resolve(pool));
+    const poolStub = stub(
+      searchIndex,
+      'filterCharacters',
+      () =>
+        Promise.resolve([
+          new IndexedCharacter(
+            'anilist:1',
+            '',
+            [],
+            [],
+            2000,
+            1,
+            CharacterRole.Main,
+          ),
+        ]),
+    );
 
     const rngStub = stub(
       utils,
@@ -310,16 +322,22 @@ Deno.test('adding character to inventory', async (test) => {
       role: CharacterRole.Main,
     };
 
-    const pool = await loadCharactersIndex(false);
-
-    await insert(pool, {
-      id: 'anilist:1',
-      rating: 1,
-      popularity: 2000,
-      role: CharacterRole.Main,
-    });
-
-    const poolStub = stub(packs, 'pool', () => Promise.resolve(pool));
+    const poolStub = stub(
+      searchIndex,
+      'filterCharacters',
+      () =>
+        Promise.resolve([
+          new IndexedCharacter(
+            'anilist:1',
+            '',
+            [],
+            [],
+            2000,
+            1,
+            CharacterRole.Main,
+          ),
+        ]),
+    );
 
     const rngStub = stub(
       utils,
@@ -424,16 +442,22 @@ Deno.test('adding character to inventory', async (test) => {
       role: CharacterRole.Main,
     };
 
-    const pool = await loadCharactersIndex(false);
-
-    await insert(pool, {
-      id: 'anilist:1',
-      rating: 1,
-      popularity: 2000,
-      role: CharacterRole.Main,
-    });
-
-    const poolStub = stub(packs, 'pool', () => Promise.resolve(pool));
+    const poolStub = stub(
+      searchIndex,
+      'filterCharacters',
+      () =>
+        Promise.resolve([
+          new IndexedCharacter(
+            'anilist:1',
+            '',
+            [],
+            [],
+            2000,
+            1,
+            CharacterRole.Main,
+          ),
+        ]),
+    );
 
     const rngStub = stub(
       utils,

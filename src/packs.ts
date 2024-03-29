@@ -13,7 +13,7 @@ import * as discord from '~/src/discord.ts';
 import user from '~/src/user.ts';
 import utils from '~/src/utils.ts';
 
-import { searchCharacters, searchMedia } from '~/search-index/mod.ts';
+import searchIndex from '~/search-index/mod.ts';
 
 import i18n from '~/src/i18n.ts';
 
@@ -394,7 +394,7 @@ async function _searchManyCharacters(
     guildId: string;
   },
 ): Promise<import('search-index').Character[]> {
-  return await searchCharacters(search, guildId);
+  return await searchIndex.searchCharacters(search, guildId);
 }
 
 async function searchManyCharacters(
@@ -443,7 +443,7 @@ async function _searchManyMedia(
     guildId: string;
   },
 ): Promise<import('search-index').Media[]> {
-  return await searchMedia(search, guildId);
+  return await searchIndex.searchMedia(search, guildId);
 }
 
 async function searchManyMedia(

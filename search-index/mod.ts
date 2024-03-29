@@ -21,7 +21,7 @@ const dirname = new URL('.', import.meta.url).pathname;
 export const mediaIndexPath = join(dirname, 'media_index.bin');
 export const charactersIndexPath = join(dirname, 'characters_index.bin');
 
-export const searchMedia = async (
+const searchMedia = async (
   query: string,
   guildId: string,
 ): Promise<IndexedMedia[]> => {
@@ -62,7 +62,7 @@ export const searchMedia = async (
     });
 };
 
-export const searchCharacters = async (
+const searchCharacters = async (
   query: string,
   guildId: string,
 ): Promise<IndexedCharacter[]> => {
@@ -118,7 +118,7 @@ export const searchCharacters = async (
     });
 };
 
-export const filterCharacters = async (
+const filterCharacters = async (
   filter: {
     rating?: number;
     popularity?: { between: [number, number] };
@@ -179,5 +179,13 @@ export const filterCharacters = async (
     filter.rating,
   );
 };
+
+const searchIndex = {
+  searchMedia,
+  searchCharacters,
+  filterCharacters,
+};
+
+export default searchIndex;
 
 export { IndexedCharacter, IndexedMedia };
