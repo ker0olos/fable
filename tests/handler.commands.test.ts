@@ -8574,7 +8574,7 @@ Deno.test('reclear', async (test) => {
       body,
     } as any));
 
-    const skillsStub = stub(tower, 'reclear', () =>
+    const reclearStub = stub(tower, 'reclear', () =>
       ({
         send: () => true,
       }) as any);
@@ -8613,8 +8613,9 @@ Deno.test('reclear', async (test) => {
         }],
       });
 
-      assertSpyCall(skillsStub, 0, {
+      assertSpyCall(reclearStub, 0, {
         args: [{
+          token: 'token',
           guildId: 'guild_id',
           userId: 'user_id',
         }],
@@ -8624,7 +8625,7 @@ Deno.test('reclear', async (test) => {
     } finally {
       delete config.publicKey;
 
-      skillsStub.restore();
+      reclearStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
