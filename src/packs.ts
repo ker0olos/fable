@@ -13,22 +13,13 @@ import * as discord from '~/src/discord.ts';
 import user from '~/src/user.ts';
 import utils from '~/src/utils.ts';
 
-import {
-  type CharacterSearch,
-  insert,
-  loadCharactersIndex,
-  loadMediaIndex,
-  type MediaSearch,
-  search as _search,
-} from '~/search-index/mod.ts';
+import { searchCharacters, searchMedia } from '~/search-index/mod.ts';
 
 import i18n from '~/src/i18n.ts';
 
 import config from '~/src/config.ts';
 
 import db from '~/db/mod.ts';
-
-import Rating from '~/src/rating.ts';
 
 import {
   Alias,
@@ -45,8 +36,6 @@ import {
 import { NonFetalError } from '~/src/errors.ts';
 
 import type { Pack } from '~/db/schema.ts';
-
-import { CharacterIndex } from '~/search-index/mod.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
@@ -73,7 +62,6 @@ const packs = {
   mediaToString,
   packEmbed,
   pages,
-  pool,
   _searchManyCharacters,
   _searchManyMedia,
   searchManyCharacters,
@@ -405,51 +393,8 @@ async function _searchManyCharacters(
     search: string;
     guildId: string;
   },
-): Promise<CharacterSearch> {
-  search = search.toLowerCase();
-
-  const list = await packs.all({ guildId });
-
-  const builtinEnabled = list[0].manifest.id === 'anilist';
-
-  const characterIndex = await loadCharactersIndex(builtinEnabled);
-
-  // add community packs content
-  await Promise.all(
-    list.map(async ({ manifest }) => {
-      const characters = await Promise.all(
-        (manifest.characters?.new ?? [])
-          .map((character) => (character.packId = manifest.id, character))
-          .map(
-            (character) => packs.aggregate<Character>({ character, guildId }),
-          ),
-      );
-
-      await Promise.all(
-        characters.map(async (char) => {
-          const name = packs.aliasToArray(char.name);
-
-          const mediaTitle = char.media?.edges?.length
-            ? packs.aliasToArray(char.media.edges[0].node.title)
-            : undefined;
-
-          await insert(characterIndex, {
-            name,
-            mediaTitle,
-            popularity: char.popularity ??
-              char.media?.edges?.[0]?.node.popularity,
-            id: `${char.packId}:${char.id}`,
-          });
-        }),
-      );
-    }),
-  );
-
-  return await _search(characterIndex, {
-    limit: 25,
-    term: search,
-    sortBy: { property: 'popularity', order: 'DESC' },
-  });
+): Promise<import('search-index').Character[]> {
+  return await searchCharacters(search, guildId);
 }
 
 async function searchManyCharacters(
@@ -465,7 +410,7 @@ async function searchManyCharacters(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: results.hits.map((r) => r.id),
+      ids: results.map((r) => r.id),
       key: 'characters',
       guildId,
     }),
@@ -485,7 +430,7 @@ async function searchOneCharacter(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: [results.hits[0].id],
+      ids: [results[0].id],
       key: 'characters',
       guildId,
     }),
@@ -497,42 +442,8 @@ async function _searchManyMedia(
     search: string;
     guildId: string;
   },
-): Promise<MediaSearch> {
-  search = search.toLowerCase();
-
-  const list = await packs.all({ guildId });
-
-  const builtinEnabled = list[0].manifest.id === 'anilist';
-
-  const mediaIndex = await loadMediaIndex(builtinEnabled);
-
-  // add community packs content
-  await Promise.all(
-    list.map(async ({ manifest }) => {
-      const media = await Promise.all(
-        (manifest.media?.new ?? [])
-          .map((media) => (media.packId = manifest.id, media)),
-      );
-
-      await Promise.all(
-        media.map(async (_media) => {
-          const title = packs.aliasToArray(_media.title);
-
-          await insert(mediaIndex, {
-            title,
-            popularity: _media.popularity,
-            id: `${_media.packId}:${_media.id}`,
-          });
-        }),
-      );
-    }),
-  );
-
-  return await _search(mediaIndex, {
-    limit: 25,
-    term: search,
-    sortBy: { property: 'popularity', order: 'DESC' },
-  });
+): Promise<import('search-index').Media[]> {
+  return await searchMedia(search, guildId);
 }
 
 async function searchManyMedia(
@@ -548,7 +459,7 @@ async function searchManyMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: results.hits.map((r) => r.id),
+      ids: results.map((r) => r.id),
       key: 'media',
       guildId,
     }),
@@ -568,7 +479,7 @@ async function searchOneMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: [results.hits[0].id],
+      ids: [results[0].id],
       key: 'media',
       guildId,
     }),
@@ -800,49 +711,6 @@ async function aggregate<T>({ media, character, start, end, guildId }: {
   }
 
   throw new Error();
-}
-
-async function pool({ guildId }: {
-  guildId: string;
-}): Promise<CharacterIndex> {
-  const list = await packs.all({ guildId });
-
-  const builtinEnabled = list[0].manifest.id === 'anilist';
-
-  const characterIndex = await loadCharactersIndex(builtinEnabled);
-
-  await Promise.all(list.map(async ({ manifest }) => {
-    if (manifest.characters && Array.isArray(manifest.characters.new)) {
-      await Promise.all(
-        manifest.characters.new.map(async (char) => {
-          char.packId = manifest.id;
-
-          const character = await packs.aggregate<Character>({
-            guildId,
-            character: char,
-          });
-
-          const edge = character.media?.edges?.[0];
-          const role = edge?.role;
-
-          if (edge && role) {
-            const media = edge.node;
-            const rating = Rating.fromCharacter(character).stars;
-
-            await insert(characterIndex, {
-              id: `${manifest.id}:${character.id}`,
-              mediaId: `${media.packId}:${media.id}`,
-              rating,
-              popularity: character.popularity ?? media.popularity,
-              role,
-            });
-          }
-        }),
-      );
-    }
-  }));
-
-  return characterIndex;
 }
 
 function aliasToArray(

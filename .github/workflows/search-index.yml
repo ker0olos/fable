@@ -1,10 +1,11 @@
 name: search-index
 
 on:
+  push:
   workflow_dispatch:
-  schedule:
-    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
-    - cron: "0 0 * * 0"
+  # schedule:
+  #   # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+  #   - cron: "0 0 * * 0"
 
 jobs:
   update:
@@ -22,6 +23,16 @@ jobs:
           deno-version: v1.x
 
       - run: deno run -A --unstable-kv search-index/cache.ts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backup-anilist-cache
+          path: search-index.sqlite
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: search-indexes
+          path: search_index/*_index.bin
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5

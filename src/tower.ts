@@ -14,8 +14,6 @@ import { randomStats } from '~/db/addCharacter.ts';
 
 import * as discord from '~/src/discord.ts';
 
-import { search as _search } from '~/search-index/mod.ts';
-
 import config from '~/src/config.ts';
 
 import { NonFetalError, PoolError } from '~/src/errors.ts';
@@ -23,7 +21,8 @@ import { NonFetalError, PoolError } from '~/src/errors.ts';
 import type * as Schema from '~/db/schema.ts';
 
 import type { Character, CharacterBattleStats, SkillKey } from '~/src/types.ts';
-import { WithId } from 'mongodb';
+
+import { type WithId } from 'mongodb';
 
 export const MAX_FLOORS = 20;
 
@@ -170,11 +169,6 @@ export async function getEnemyCharacter(
 
   let character: Character | undefined = undefined;
 
-  const filteredPool = await _search(pool, {
-    limit: 100000,
-    where: { rating: { eq: getEnemyRating(floor) } },
-  });
-
   const controller = new AbortController();
 
   const { signal } = controller;
@@ -183,9 +177,9 @@ export async function getEnemyCharacter(
 
   try {
     while (!signal.aborted) {
-      const i = Math.floor(random.nextFloat() * filteredPool.hits.length);
+      const i = Math.floor(random.nextFloat() * pool.length);
 
-      const characterId = filteredPool.hits[i].id;
+      const characterId = pool[i].id;
 
       if (packs.isDisabled(characterId, guildId)) {
         continue;

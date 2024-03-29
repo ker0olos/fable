@@ -11,7 +11,7 @@ import search from '~/src/search.ts';
 
 import db, { ObjectId } from '~/db/mod.ts';
 
-import { search as _search } from '~/search-index/mod.ts';
+import { filterCharacters } from '~/search-index/mod.ts';
 
 import packs from '~/src/packs.ts';
 
@@ -84,10 +84,8 @@ const boostedVariables: Variables = {
 };
 
 async function rangePool({ guildId }: { guildId: string }): Promise<{
-  pool: Awaited<ReturnType<typeof packs.pool>>;
+  pool: import('search-index').Character[];
   validate: (character: Character | DisaggregatedCharacter) => boolean;
-  role?: CharacterRole;
-  range?: [number, number];
 }> {
   let variables: Variables = gacha.variables;
 
@@ -103,7 +101,10 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
     // one specific role for the whole pool
     : utils.rng(variables.roles);
 
-  const pool = await packs.pool({ guildId });
+  const pool = await filterCharacters(
+    { role, popularity: { between: range } },
+    guildId,
+  );
 
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
     if (
@@ -146,8 +147,6 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
   return {
     pool,
     validate,
-    role,
-    range,
   };
 }
 
@@ -157,12 +156,15 @@ export async function guaranteedPool(
     guarantee: number;
   },
 ): Promise<{
-  pool: Awaited<ReturnType<typeof packs.pool>>;
+  pool: import('search-index').Character[];
   validate: (character: Character | DisaggregatedCharacter) => boolean;
   role?: CharacterRole;
   range?: [number, number];
 }> {
-  const pool = await packs.pool({ guildId });
+  const pool = await filterCharacters(
+    { rating: guarantee },
+    guildId,
+  );
 
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
     if (
@@ -206,7 +208,7 @@ async function rngPull(
     sacrifices?: ObjectId[];
   },
 ): Promise<Pull> {
-  const { pool, validate, role, range } = typeof guarantee === 'number'
+  const { pool, validate } = typeof guarantee === 'number'
     ? await gacha.guaranteedPool({ guildId, guarantee })
     : await gacha.rangePool({ guildId });
 
@@ -214,30 +216,21 @@ async function rngPull(
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
-  const filteredPool = await _search(pool, {
-    limit: 100000,
-    where: guarantee
-      ? { rating: { eq: guarantee } }
-      : role
-      ? { role: { eq: role }, popularity: { between: range } }
-      : { popularity: { between: range } },
-  });
-
   const controller = new AbortController();
 
   const { signal } = controller;
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
-  if (!filteredPool.hits.length) {
+  if (!pool.length) {
     throw new PoolError();
   }
 
   try {
     while (!signal.aborted) {
-      const i = Math.floor(Math.random() * filteredPool.hits.length);
+      const i = Math.floor(Math.random() * pool.length);
 
-      const characterId = filteredPool.hits[i].id;
+      const characterId = pool[i].id;
 
       if (packs.isDisabled(characterId, guildId)) {
         continue;

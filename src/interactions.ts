@@ -166,12 +166,10 @@ export const handler = async (r: Request) => {
             });
 
             results
-              .hits
-              .slice(0, 25)
-              .forEach(({ document }) => {
+              .forEach((media) => {
                 message.addSuggestions({
-                  name: document.title[0],
-                  value: `${idPrefix}${document.id}`,
+                  name: media.title[0],
+                  value: `${idPrefix}${media.id}`,
                 });
               });
           }
@@ -218,14 +216,12 @@ export const handler = async (r: Request) => {
             });
 
             results
-              .hits
-              .slice(0, 25)
-              .forEach(({ document }) => {
+              .forEach((character) => {
                 message.addSuggestions({
-                  name: document.mediaTitle?.length
-                    ? `${document.name[0]} (${document.mediaTitle[0]})`
-                    : document.name[0],
-                  value: `${idPrefix}${document.id}`,
+                  name: character.mediaTitle?.length
+                    ? `${character.name[0]} (${character.mediaTitle[0]})`
+                    : character.name[0],
+                  value: `${idPrefix}${character.id}`,
                 });
               });
           }
@@ -817,6 +813,7 @@ export const handler = async (r: Request) => {
           }
           case 'reclear': {
             return (await tower.reclear({
+              token,
               guildId,
               userId: member.user.id,
             })).send();
@@ -1224,6 +1221,7 @@ export const handler = async (r: Request) => {
           }
           case 'treclear': {
             return (await tower.reclear({
+              token,
               guildId,
               userId: member.user.id,
             }))

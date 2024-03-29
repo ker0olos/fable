@@ -2,11 +2,7 @@
 
 import { green } from '$std/fmt/colors.ts';
 
-import { create, insert, Orama } from 'orama';
-
 import Rating from '~/src/rating.ts';
-
-import { persist } from '~/search-index/persist.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -14,14 +10,14 @@ import { gql, request } from '~/packs/anilist/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
 
+import { charactersIndexPath, mediaIndexPath } from '~/search-index/mod.ts';
+
 import {
-  charactersIndexCachePath,
-  charactersSchema,
-  type IndexedCharacter,
-  type IndexedMedia,
-  mediaIndexCachePath,
-  mediaSchema,
-} from '~/search-index/mod.ts';
+  type Character,
+  create_characters_index,
+  create_media_index,
+  type Media,
+} from 'search-index';
 
 const anilistAPI = 'https://graphql.anilist.co';
 
@@ -202,28 +198,34 @@ async function queryAniList(kv: Deno.Kv): Promise<void> {
                   if (
                     media?.node?.id && mediaTitle?.length
                   ) {
-                    await kv.set(['media', mediaId], {
-                      id: mediaId,
-                      title: mediaTitle,
-                      popularity: media?.node.popularity,
-                    });
+                    await kv.set(
+                      ['media', mediaId],
+                      {
+                        id: mediaId,
+                        title: mediaTitle,
+                        popularity: media?.node.popularity,
+                      },
+                    );
                   }
 
                   if (
                     name.length
                   ) {
-                    await kv.set(['characters', id], {
-                      id,
-                      name,
-                      mediaId,
-                      mediaTitle,
-                      popularity: media?.node.popularity,
-                      role: media.characterRole,
-                      rating: new Rating({
-                        role: media.characterRole,
+                    await kv.set(
+                      ['characters', id],
+                      {
+                        id,
+                        name,
+                        mediaId,
+                        mediaTitle,
                         popularity: media?.node.popularity,
-                      }).stars,
-                    });
+                        role: media.characterRole,
+                        rating: new Rating({
+                          role: media.characterRole,
+                          popularity: media?.node.popularity,
+                        }).stars,
+                      },
+                    );
                   }
                 }
               }
@@ -274,19 +276,15 @@ async function queryAniList(kv: Deno.Kv): Promise<void> {
 async function storeMediaIndex(kv: Deno.Kv): Promise<void> {
   console.log('starting the creation of the media index...');
 
-  const mediaIndex: Orama<typeof mediaSchema> = await create({
-    schema: mediaSchema,
-  });
+  const media = await Array.fromAsync(kv.list<Media>({
+    prefix: ['media'],
+  }));
 
-  for await (
-    const { value: media } of kv.list<IndexedMedia>({
-      prefix: ['media'],
-    })
-  ) {
-    await insert(mediaIndex, media);
-  }
+  const mediaIndex = create_media_index(
+    JSON.stringify(media.map(({ value }) => value)),
+  );
 
-  await persist(mediaIndex, mediaIndexCachePath);
+  await Deno.writeFile(mediaIndexPath, mediaIndex);
 
   console.log(green('wrote the media index cache to disk\n'));
 }
@@ -294,19 +292,15 @@ async function storeMediaIndex(kv: Deno.Kv): Promise<void> {
 async function storeCharacterIndex(kv: Deno.Kv): Promise<void> {
   console.log('starting the creation of the characters index...');
 
-  const charactersIndex: Orama<typeof charactersSchema> = await create({
-    schema: charactersSchema,
-  });
+  const media = await Array.fromAsync(kv.list<Character>({
+    prefix: ['characters'],
+  }));
 
-  for await (
-    const { value: character } of kv.list<IndexedCharacter>({
-      prefix: ['characters'],
-    })
-  ) {
-    await insert(charactersIndex, character);
-  }
+  const charactersIndex = create_characters_index(
+    JSON.stringify(media.map(({ value }) => value)),
+  );
 
-  await persist(charactersIndex, charactersIndexCachePath);
+  await Deno.writeFile(charactersIndexPath, charactersIndex);
 
   console.log(green('wrote the characters index cache to disk\n'));
 }
