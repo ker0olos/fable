@@ -52,7 +52,14 @@ export const searchMedia = async (
     query,
     builtin ? await Deno.readFile(mediaIndexPath) : undefined,
     extra,
-  );
+  )
+    .filter(({ id }) => {
+      if (packs.isDisabled(id, guildId)) {
+        return false;
+      }
+
+      return true;
+    });
 };
 
 export const searchCharacters = async (
@@ -76,16 +83,16 @@ export const searchCharacters = async (
       return characters.map((char) => {
         const name = packs.aliasToArray(char.name);
 
-        const mediaTitle = char.media?.edges?.length
-          ? packs.aliasToArray(char.media.edges[0].node.title)
-          : [];
+        const media = char.media?.edges[0];
+
+        const mediaTitle = media ? packs.aliasToArray(media.node.title) : [];
 
         return new IndexedCharacter(
           `${char.packId}:${char.id}`,
+          `${media?.node.packId}:${media?.node.id}`,
           name,
           mediaTitle,
-          char.popularity ??
-            char.media?.edges?.[0]?.node.popularity ?? 0,
+          char.popularity ?? media?.node.popularity ?? 0,
           0,
           '',
         );
@@ -97,7 +104,18 @@ export const searchCharacters = async (
     query,
     builtin ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
-  );
+  )
+    .filter(({ id, mediaId }) => {
+      if (packs.isDisabled(mediaId, guildId)) {
+        return false;
+      }
+
+      if (packs.isDisabled(id, guildId)) {
+        return false;
+      }
+
+      return true;
+    });
 };
 
 export const filterCharacters = async (
@@ -141,6 +159,7 @@ export const filterCharacters = async (
 
         return new IndexedCharacter(
           `${char.packId}:${char.id}`,
+          `${media.node.packId}:${media.node.id}`,
           name,
           packs.aliasToArray(media.node.title),
           popularity,
