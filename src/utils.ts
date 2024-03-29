@@ -11,7 +11,7 @@ import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import { levenshtein } from 'levenshtein';
+import { distance as levenshtein } from 'levenshtein';
 
 import { proxy } from 'images-proxy';
 

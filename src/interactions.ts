@@ -166,11 +166,10 @@ export const handler = async (r: Request) => {
             });
 
             results
-              .slice(0, 25)
-              .forEach(({ id, title }) => {
+              .forEach((media) => {
                 message.addSuggestions({
-                  name: title[0],
-                  value: `${idPrefix}${id}`,
+                  name: media.title[0],
+                  value: `${idPrefix}${media.id}`,
                 });
               });
           }
@@ -217,13 +216,12 @@ export const handler = async (r: Request) => {
             });
 
             results
-              .slice(0, 25)
-              .forEach(({ id, name, mediaTitle }) => {
+              .forEach((character) => {
                 message.addSuggestions({
-                  name: mediaTitle?.length
-                    ? `${name[0]} (${mediaTitle[0]})`
-                    : name[0],
-                  value: `${idPrefix}${id}`,
+                  name: character.mediaTitle?.length
+                    ? `${character.name[0]} (${character.mediaTitle[0]})`
+                    : character.name[0],
+                  value: `${idPrefix}${character.id}`,
                 });
               });
           }
@@ -814,12 +812,11 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'reclear': {
-            return tower.reclear({
+            return (await tower.reclear({
               token,
               guildId,
               userId: member.user.id,
-            })
-              .send();
+            })).send();
           }
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
@@ -1223,11 +1220,11 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'treclear': {
-            return tower.reclear({
+            return (await tower.reclear({
               token,
               guildId,
               userId: member.user.id,
-            })
+            }))
               .setType(discord.MessageType.New)
               .send();
           }

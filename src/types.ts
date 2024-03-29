@@ -1,10 +1,10 @@
-import type { Keys } from './i18n.ts';
+import type { Keys } from '~/src/i18n.ts';
 
-import type { AcquiredCharacterSkill, CharacterStats } from '../db/schema.ts';
+import type { AcquiredCharacterSkill, CharacterStats } from '~/db/schema.ts';
 
-import { skills } from './skills.ts';
+import { skills } from '~/src/skills.ts';
 
-import type { PartyMember } from './battle.types.ts';
+import type { PartyMember } from '~/src/battle.types.ts';
 
 export type Modify<T, R> = Omit<T, keyof R> & R;
 

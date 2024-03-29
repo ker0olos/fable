@@ -20,6 +20,8 @@ import merge from '~/src/merge.ts';
 
 import db from '~/db/mod.ts';
 
+import searchIndex, { IndexedCharacter } from '~/search-index/mod.ts';
+
 import { CharacterRole, MediaFormat, MediaType } from '~/src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
@@ -612,11 +614,22 @@ Deno.test('synthesis confirmed', async (test) => {
       () => ({ ok: true }) as any,
     );
 
-    const gachaStub = stub(gacha, 'guaranteedPool', () =>
-      Promise.resolve({
-        pool: [{ id: 'anilist:1', mediaId: 'anilist:2', rating: 1 }],
-        validate: () => true,
-      }));
+    const poolStub = stub(
+      searchIndex,
+      'filterCharacters',
+      () =>
+        Promise.resolve([
+          new IndexedCharacter(
+            'anilist:1',
+            '',
+            [],
+            [],
+            0,
+            2,
+            CharacterRole.Main,
+          ),
+        ]),
+    );
 
     const synthesisStub = stub(
       merge,
@@ -654,7 +667,6 @@ Deno.test('synthesis confirmed', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-
         target: 2,
       });
 
@@ -788,7 +800,7 @@ Deno.test('synthesis confirmed', async (test) => {
 
       fetchStub.restore();
       synthesisStub.restore();
-      gachaStub.restore();
+      poolStub.restore();
       timeStub.restore();
 
       getGuildStub.restore();
@@ -872,11 +884,22 @@ Deno.test('synthesis confirmed', async (test) => {
       () => ({ ok: true }) as any,
     );
 
-    const gachaStub = stub(gacha, 'guaranteedPool', () =>
-      Promise.resolve({
-        pool: [{ id: 'anilist:1', mediaId: 'anilist:2', rating: 1 }],
-        validate: () => true,
-      }));
+    const poolStub = stub(
+      searchIndex,
+      'filterCharacters',
+      () =>
+        Promise.resolve([
+          new IndexedCharacter(
+            'anilist:1',
+            '',
+            [],
+            [],
+            0,
+            2,
+            CharacterRole.Main,
+          ),
+        ]),
+    );
 
     const synthesisStub = stub(
       merge,
@@ -1084,7 +1107,7 @@ Deno.test('synthesis confirmed', async (test) => {
 
       fetchStub.restore();
       synthesisStub.restore();
-      gachaStub.restore();
+      poolStub.restore();
       timeStub.restore();
 
       getGuildStub.restore();

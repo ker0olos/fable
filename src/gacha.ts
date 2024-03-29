@@ -11,6 +11,8 @@ import search from '~/src/search.ts';
 
 import db, { ObjectId } from '~/db/mod.ts';
 
+import searchIndex from '~/search-index/mod.ts';
+
 import packs from '~/src/packs.ts';
 
 import * as discord from '~/src/discord.ts';
@@ -61,7 +63,7 @@ const variables: Variables = {
     22: [50_000, 100_000], // 22% for 50K -> 100K
     9: [100_000, 200_000], // 9% for 100K -> 200K
     3: [200_000, 400_000], // 3% for 200K -> 400K
-    1: [400_000, NaN], // 1% for 400K -> inf
+    1: [400_000, Infinity], // 1% for 400K -> inf
   },
 };
 
@@ -82,7 +84,7 @@ const boostedVariables: Variables = {
 };
 
 async function rangePool({ guildId }: { guildId: string }): Promise<{
-  pool: Awaited<ReturnType<typeof packs.pool>>;
+  pool: import('search-index').Character[];
   validate: (character: Character | DisaggregatedCharacter) => boolean;
 }> {
   let variables: Variables = gacha.variables;
@@ -99,11 +101,10 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
     // one specific role for the whole pool
     : utils.rng(variables.roles);
 
-  const pool = await packs.pool({
-    role,
-    range,
+  const pool = await searchIndex.filterCharacters(
+    { role, popularity: { between: range } },
     guildId,
-  });
+  );
 
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
     if (
@@ -150,20 +151,20 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
 }
 
 export async function guaranteedPool(
-  { guildId, seed, guarantee }: {
+  { guildId, guarantee }: {
     guildId: string;
-    seed?: string;
     guarantee: number;
   },
 ): Promise<{
-  pool: Awaited<ReturnType<typeof packs.pool>>;
+  pool: import('search-index').Character[];
   validate: (character: Character | DisaggregatedCharacter) => boolean;
+  role?: CharacterRole;
+  range?: [number, number];
 }> {
-  const pool = await packs.pool({
-    seed,
-    stars: guarantee,
+  const pool = await searchIndex.filterCharacters(
+    { rating: guarantee },
     guildId,
-  });
+  );
 
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
     if (
@@ -211,85 +212,93 @@ async function rngPull(
     ? await gacha.guaranteedPool({ guildId, guarantee })
     : await gacha.rangePool({ guildId });
 
-  // let _user: Schema.User | undefined = undefined;
-
-  // let inventory: Schema.Inventory | undefined = undefined;
-  // let inventoryStamp: string | null = null;
-
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
-  while (pool.length > 0) {
-    const i = Math.floor(Math.random() * pool.length);
+  const controller = new AbortController();
 
-    const characterId = pool.splice(i, 1)[0].id;
+  const { signal } = controller;
 
-    if (packs.isDisabled(characterId, guildId)) {
-      continue;
-    }
+  const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
-    const results = await packs.characters({ guildId, ids: [characterId] });
+  if (!pool.length) {
+    throw new PoolError();
+  }
 
-    if (!results.length || !validate(results[0])) {
-      continue;
-    }
+  try {
+    while (!signal.aborted) {
+      const i = Math.floor(Math.random() * pool.length);
 
-    // aggregate will filter out any disabled media
-    const candidate = await packs.aggregate<Character>({
-      guildId,
-      character: results[0],
-      end: 1,
-    });
+      const characterId = pool[i].id;
 
-    const edge = candidate.media?.edges?.[0];
-
-    if (!edge || !validate(candidate)) {
-      continue;
-    }
-
-    if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
-      continue;
-    }
-
-    rating = Rating.fromCharacter(candidate);
-
-    if (rating.stars < 1) {
-      continue;
-    }
-
-    // add character to user's inventory
-    if (userId) {
-      try {
-        await db.addCharacter({
-          characterId,
-          guildId,
-          userId,
-          mediaId: `${edge.node.packId}:${edge.node.id}`,
-          guaranteed: typeof guarantee === 'number',
-          rating: rating.stars,
-          sacrifices,
-        });
-      } catch (err) {
-        // E11000 duplicate key error collection
-        // character already exists in guild
-        if (err.code === 11000) {
-          continue;
-        }
-
-        // TODO #325 avoid retrying by lower the chances of a conflict if possible
-        if (err.message.includes('Write conflict during plan execution')) {
-          continue;
-        }
-
-        throw err;
+      if (packs.isDisabled(characterId, guildId)) {
+        continue;
       }
+
+      const results = await packs.characters({ guildId, ids: [characterId] });
+
+      if (!results.length || !validate(results[0])) {
+        continue;
+      }
+
+      // aggregate will filter out any disabled media
+      const candidate = await packs.aggregate<Character>({
+        guildId,
+        character: results[0],
+        end: 1,
+      });
+
+      const edge = candidate.media?.edges?.[0];
+
+      if (!edge || !validate(candidate)) {
+        continue;
+      }
+
+      if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
+        continue;
+      }
+
+      rating = Rating.fromCharacter(candidate);
+
+      if (rating.stars < 1) {
+        continue;
+      }
+
+      // add character to user's inventory
+      if (userId) {
+        try {
+          await db.addCharacter({
+            characterId,
+            guildId,
+            userId,
+            mediaId: `${edge.node.packId}:${edge.node.id}`,
+            guaranteed: typeof guarantee === 'number',
+            rating: rating.stars,
+            sacrifices,
+          });
+        } catch (err) {
+          // E11000 duplicate key error collection
+          // character already exists in guild
+          if (err.code === 11000) {
+            continue;
+          }
+
+          if (err.message.includes('Write conflict during plan execution')) {
+            continue;
+          }
+
+          throw err;
+        }
+      }
+
+      media = edge.node;
+      character = candidate;
+
+      break;
     }
-
-    media = edge.node;
-    character = candidate;
-
-    break;
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   if (!character || !media || !rating) {

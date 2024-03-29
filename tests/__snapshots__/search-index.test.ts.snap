@@ -1,0 +1,1190 @@
+export const snapshot = {};
+
+snapshot[`characters search > aqua 1`] = `
+[
+  {
+    id: "anilist:89362",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 377616,
+    rating: 4,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:302601",
+    mediaId: "anilist:154965",
+    mediaTitle: [
+      "My Love Story with Yamada-kun at Lv999",
+      "Yamada-kun to Lv999 no Koi wo Suru",
+      "山田くんとLv999の恋をする",
+    ],
+    name: [
+      "Shikkoku no Aqua",
+      "漆黒のアクア",
+    ],
+    popularity: 108707,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:247460",
+    mediaId: "anilist:125206",
+    mediaTitle: [
+      "TSUKIMICHI -Moonlit Fantasy-",
+      "Tsuki ga Michibiku Isekai Douchuu",
+      "月が導く異世界道中",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 94330,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:223874",
+    mediaId: "anilist:2156",
+    mediaTitle: [
+      "Bakugan Battle Brawlers",
+      "爆丸バトルブローラーズ",
+    ],
+    name: [
+      "Aqua Predator",
+      "アクアプレデター",
+    ],
+    popularity: 21560,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:206959",
+    mediaId: "anilist:113666",
+    mediaTitle: [
+      "FFF-Class Trashero",
+      "FFF Geum Gwansimyongsa",
+      "FFF급 관심용사",
+    ],
+    name: [
+      "Aqua",
+    ],
+    popularity: 17031,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:3165",
+    mediaId: "anilist:521",
+    mediaTitle: [
+      "Mermaid Melody: Pichi Pichi Pitch",
+      "マーメイドメロディー ぴちぴちピッチ",
+    ],
+    name: [
+      "Aqua Regina",
+      "アクア・レジーナ様",
+    ],
+    popularity: 13775,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:329113",
+    mediaId: "anilist:218",
+    mediaTitle: [
+      "Martian Successor Nadesico",
+      "Kidou Senkan Nadesico",
+      "機動戦艦ナデシコ",
+    ],
+    name: [
+      "Aqua Crimson",
+      "アクア·クリムゾン",
+    ],
+    popularity: 12158,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:130382",
+    mediaId: "anilist:98231",
+    mediaTitle: [
+      "Yu-Gi-Oh! VRAINS",
+      "Yu☆Gi☆Oh! VRAINS",
+      "遊☆戯☆王VRAINS",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 9517,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:18095",
+    mediaId: "anilist:738",
+    mediaTitle: [
+      "Marchen Awakens Romance",
+      "MÄR",
+      "メル",
+    ],
+    name: [
+      "Aqua",
+    ],
+    popularity: 7948,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:153617",
+    mediaId: "anilist:6008",
+    mediaTitle: [
+      "Jewelpet",
+      "Jewelpet",
+      "ジュエルペット",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 3261,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:31301",
+    mediaId: "anilist:3051",
+    mediaTitle: [
+      "Yes! Precure 5: Kagami no Kuni no Miracle Daibouken!",
+      "Yes! プリキュア５ 鏡の国のミラクル大冒険！",
+    ],
+    name: [
+      "Dark Aqua",
+      "ダークアクア",
+    ],
+    popularity: 1980,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:122432",
+    mediaId: "anilist:21517",
+    mediaTitle: [
+      "Love Tyrant",
+      "Renai Boukun",
+      "恋愛暴君",
+    ],
+    name: [
+      "Akua Aino",
+      "藍野あくあ",
+    ],
+    popularity: 70168,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:18866",
+    mediaId: "anilist:10080",
+    mediaTitle: [
+      "The World God Only Knows II",
+      "Kami nomi zo Shiru Sekai II",
+      "神のみぞ知るセカイⅡ",
+    ],
+    name: [
+      "Haqua du Lot Herminium",
+      "ハクア・ド・ロット・ヘルミニウム",
+    ],
+    popularity: 63554,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:37096",
+    mediaId: "anilist:8086",
+    mediaTitle: [
+      "The Legend of the Legendary Heroes",
+      "Densetsu no Yuusha no Densetsu",
+      "伝説の勇者の伝説",
+    ],
+    name: [
+      "Arua",
+      "アルア",
+    ],
+    popularity: 42920,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:232854",
+    mediaId: "anilist:110810",
+    mediaTitle: [
+      "Kandagawa Jet Girls",
+      "Kandagawa JET GIRLS",
+      "神田川JET GIRLS",
+    ],
+    name: [
+      "Akua Manjou",
+      "万条あくあ",
+    ],
+    popularity: 12272,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:31949",
+    mediaId: "anilist:33403",
+    mediaTitle: [
+      "Rosario+Vampire: Season II",
+      "Rosario to Vampire: Season II",
+      "ロザリオとバンパイア SeasonⅡ",
+    ],
+    name: [
+      "Akua Shuzen",
+      "朱染 亞愛",
+    ],
+    popularity: 11552,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:326120",
+    mediaId: "anilist:164857",
+    mediaTitle: [
+      "Surviving the Game as a Barbarian",
+      "Game Sok Babarian-euro Saranamgi",
+      "게임 속 바바리안으로 살아남기",
+    ],
+    name: [
+      "Arua Raven",
+      "아루아 레이븐",
+    ],
+    popularity: 4832,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:263083",
+    mediaId: "anilist:143289",
+    mediaTitle: [
+      "ESTAB LIFE: Great Escape",
+      "Estab-Life: Great Escape",
+      "エスタブライフ グレイトエスケープ",
+    ],
+    name: [
+      "Equa",
+      "エクア",
+    ],
+    popularity: 3478,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:13452",
+    mediaId: "anilist:1944",
+    mediaTitle: [
+      "Photon: The Idiot Adventures",
+      "Photon",
+      "フォトン",
+    ],
+    name: [
+      "Keyne Acqua",
+      "キーネ アクア",
+    ],
+    popularity: 2770,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:177513",
+    mediaId: "anilist:103441",
+    mediaTitle: [
+      "Kingdom Hearts χ Back Cover",
+      "Kingdom Hearts χ Back Cover",
+      "キングダム ハーツ キー バックカバー",
+    ],
+    name: [
+      "Ava",
+      "アヴァ",
+    ],
+    popularity: 1608,
+    rating: 1,
+    role: "MAIN",
+  },
+]
+`;
+
+snapshot[`characters search > megumin 1`] = `
+[
+  {
+    id: "anilist:89361",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Megumin",
+      "めぐみん",
+    ],
+    popularity: 377616,
+    rating: 4,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:126635",
+    mediaId: "anilist:113415",
+    mediaTitle: [
+      "JUJUTSU KAISEN",
+      "Jujutsu Kaisen",
+      "呪術廻戦",
+    ],
+    name: [
+      "Megumi Fushiguro",
+      "伏黒恵",
+    ],
+    popularity: 650027,
+    rating: 5,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:76026",
+    mediaId: "anilist:20923",
+    mediaTitle: [
+      "Food Wars!",
+      "Shokugeki no Souma",
+      "食戟のソーマ",
+    ],
+    name: [
+      "Megumi Tadokoro",
+      "田所恵",
+    ],
+    popularity: 314144,
+    rating: 4,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:319096",
+    mediaId: "anilist:145064",
+    mediaTitle: [
+      "JUJUTSU KAISEN Season 2",
+      "Jujutsu Kaisen 2nd Season",
+      "呪術廻戦 第2期",
+    ],
+    name: [
+      "Megumi no Haha",
+      "恵の母",
+    ],
+    popularity: 249306,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:15870",
+    mediaId: "anilist:105334",
+    mediaTitle: [
+      "Fruits Basket (2019)",
+      "Fruits Basket: 1st Season",
+      "フルーツバスケット 1st Season",
+    ],
+    name: [
+      "Megumi Hanajima",
+      "花島恵",
+    ],
+    popularity: 227473,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:23344",
+    mediaId: "anilist:5680",
+    mediaTitle: [
+      "K-ON!",
+      "K-ON!",
+      "けいおん!",
+    ],
+    name: [
+      "Megumi Sokabe",
+      "曽我部恵",
+    ],
+    popularity: 210302,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:121471",
+    mediaId: "anilist:21685",
+    mediaTitle: [
+      "Eromanga Sensei",
+      "Eromanga Sensei",
+      "エロマンガ先生",
+    ],
+    name: [
+      "Megumi Jinno",
+      "神野めぐみ",
+    ],
+    popularity: 148646,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:135872",
+    mediaId: "anilist:21595",
+    mediaTitle: [
+      "Haven't You Heard? I'm Sakamoto",
+      "Sakamoto desu ga?",
+      "坂本ですが?",
+    ],
+    name: [
+      "Megumi Fujita",
+      "藤田恵",
+    ],
+    popularity: 147296,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:11941",
+    mediaId: "anilist:1210",
+    mediaTitle: [
+      "Welcome to the N-H-K",
+      "NHK ni Youkoso!",
+      "N・H・Kにようこそ！",
+    ],
+    name: [
+      "Megumi Kobayashi",
+      "小林恵",
+    ],
+    popularity: 138103,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:88748",
+    mediaId: "anilist:20657",
+    mediaTitle: [
+      "Saekano: How to Raise a Boring Girlfriend",
+      "Saenai Heroine no Sodatekata",
+      "冴えない彼女の育てかた",
+    ],
+    name: [
+      "Megumi Katou",
+      "加藤恵",
+    ],
+    popularity: 135500,
+    rating: 3,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:124552",
+    mediaId: "anilist:99426",
+    mediaTitle: [
+      "A Place Further Than the Universe",
+      "Sora yori mo Tooi Basho",
+      "宇宙よりも遠い場所",
+    ],
+    name: [
+      "Megumi Takahashi",
+      "高橋めぐみ",
+    ],
+    popularity: 130113,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:34010",
+    mediaId: "anilist:245",
+    mediaTitle: [
+      "GTO: Great Teacher Onizuka",
+      "GTO",
+      "GTO",
+    ],
+    name: [
+      "Megumi Hoshino",
+      "星野めぐみ",
+    ],
+    popularity: 122665,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:34122",
+    mediaId: "anilist:245",
+    mediaTitle: [
+      "GTO: Great Teacher Onizuka",
+      "GTO",
+      "GTO",
+    ],
+    name: [
+      "Megumi Asakura",
+      "浅倉恵",
+    ],
+    popularity: 122665,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:46399",
+    mediaId: "anilist:14289",
+    mediaTitle: [
+      'Say "I love you".',
+      "Sukitte Ii na yo.",
+      "好きっていいなよ。",
+    ],
+    name: [
+      "Megumi Kitagawa",
+      "北川めぐみ",
+    ],
+    popularity: 120980,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:131590",
+    mediaId: "anilist:16742",
+    mediaTitle: [
+      "WataMote: No Matter How I Look At It, It's You Guys' Fault I'm Not Popular!",
+      "Watashi ga Motenai no wa Dou Kangaetemo Omaera ga Warui!",
+      "私がモテないのはどう考えてもお前らが悪い!",
+    ],
+    name: [
+      "Megumi Imae",
+      "今江恵美",
+    ],
+    popularity: 118200,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:248881",
+    mediaId: "anilist:17729",
+    mediaTitle: [
+      "The Fruit of Grisaia",
+      "Grisaia no Kajitsu",
+      "グリザイアの果実",
+    ],
+    name: [
+      "Megumi Komori",
+      "古森めぐみ",
+    ],
+    popularity: 111081,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:132713",
+    mediaId: "anilist:98478",
+    mediaTitle: [
+      "March comes in like a lion Season 2",
+      "3-gatsu no Lion 2",
+      "３月のライオン 2",
+    ],
+    name: [
+      "Megumi Takagi",
+      "高城めぐみ",
+    ],
+    popularity: 107347,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:58573",
+    mediaId: "anilist:11759",
+    mediaTitle: [
+      "Accel World",
+      "Accel World",
+      "アクセル・ワールド",
+    ],
+    name: [
+      "Megumi Wakamiya",
+      "若宮恵",
+    ],
+    popularity: 105961,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:89055",
+    mediaId: "anilist:20754",
+    mediaTitle: [
+      "SCHOOL-LIVE!",
+      "Gakkou Gurashi!",
+      "がっこうぐらし!",
+    ],
+    name: [
+      "Megumi Sakura",
+      "佐倉慈",
+    ],
+    popularity: 99943,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:7581",
+    mediaId: "anilist:7724",
+    mediaTitle: [
+      "Shiki",
+      "Shiki",
+      "屍鬼",
+    ],
+    name: [
+      "Megumi Shimizu",
+      "清水恵",
+    ],
+    popularity: 98459,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:209481",
+    mediaId: "anilist:125428",
+    mediaTitle: [
+      "High-Rise Invasion",
+      "Tenkuu Shinpan",
+      "天空侵犯",
+    ],
+    name: [
+      "Megumi Saito",
+      "齋藤めぐみ",
+    ],
+    popularity: 96388,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:77803",
+    mediaId: "anilist:10800",
+    mediaTitle: [
+      "Chihayafuru",
+      "Chihayafuru",
+      "ちはやふる",
+    ],
+    name: [
+      "Megumi Suda",
+      "須田恵美",
+    ],
+    popularity: 96204,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:32315",
+    mediaId: "anilist:6114",
+    mediaTitle: [
+      "Rainbow",
+      "RAINBOW: Nisha Rokubou no Shichinin",
+      "RAINBOW -二舎六房の七人-",
+    ],
+    name: [
+      "Megumi Yokosuka",
+      "横須賀メグ",
+    ],
+    popularity: 71063,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:151",
+    mediaId: "anilist:45",
+    mediaTitle: [
+      "Rurouni Kenshin",
+      "Rurouni Kenshin: Meiji Kenkaku Romantan",
+      "るろうに剣心 -明治剣客浪漫譚-",
+    ],
+    name: [
+      "Megumi Takani",
+      "高荷恵",
+    ],
+    popularity: 70174,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:284843",
+    mediaId: "anilist:21659",
+    mediaTitle: [
+      "Sweetness & Lightning",
+      "Amaama to Inazuma",
+      "甘々と稲妻",
+    ],
+    name: [
+      "Megumi Iida",
+      "飯田恵",
+    ],
+    popularity: 66853,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+]
+`;
+
+snapshot[`characters search > konosuba 1`] = `
+[
+  {
+    id: "anilist:329387",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Fudousan Gyousha",
+      "不動産業者",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:326530",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Uketsuke Succubus",
+      "受付サキュバス",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:326528",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Taylor",
+      "テイラー",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:120652",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Yunyun",
+      "ゆんゆん",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:120657",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Luna",
+      "ルナ",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:137174",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Tenshi",
+      "天使",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:326526",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Cedre",
+      "セドル",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:89364",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Kazuma Satou",
+      "佐藤和真",
+    ],
+    popularity: 377616,
+    rating: 4,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:326527",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Garilhe",
+      "ガリル",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:89361",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Megumin",
+      "めぐみん",
+    ],
+    popularity: 377616,
+    rating: 4,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:120655",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Wiz",
+      "ウィズ",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:122424",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Sena",
+      "セナ",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:136046",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Dust",
+      "ダスト",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:307853",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Fio",
+      "フィオ",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:240105",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Rin",
+      "リーン",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:89362",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 377616,
+    rating: 4,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:329386",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Cabbage",
+      "キャベツ",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:326529",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Heinz",
+      "ヘインズ",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:89363",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Darkness",
+      "ダクネス",
+    ],
+    popularity: 377616,
+    rating: 4,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:326531",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Priest",
+      "プリースト",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:136044",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Kyouya Mitsurugi",
+      "御剣響夜",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:203544",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Hakase",
+      "博士",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:307854",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Cremea",
+      "クレメア",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:126854",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Arakuremono",
+      "荒くれ者",
+    ],
+    popularity: 377616,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:329389",
+    mediaId: "anilist:21202",
+    mediaTitle: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+    name: [
+      "Uketsuke",
+      "受付",
+    ],
+    popularity: 377616,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+]
+`;
+
+snapshot[`media search > konosuba 1`] = `
+[
+  {
+    id: "anilist:21202",
+    popularity: 377616,
+    title: [
+      "KONOSUBA -God's blessing on this wonderful world!",
+      "Kono Subarashii Sekai ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！",
+    ],
+  },
+  {
+    id: "anilist:21699",
+    popularity: 278305,
+    title: [
+      "KONOSUBA -God's blessing on this wonderful world! 2",
+      "Kono Subarashii Sekai ni Shukufuku wo! 2",
+      "この素晴らしい世界に祝福を！2",
+    ],
+  },
+  {
+    id: "anilist:102976",
+    popularity: 172248,
+    title: [
+      "KONOSUBA -God's blessing on this wonderful world!- Legend of Crimson",
+      "Kono Subarashii Sekai ni Shukufuku wo! Kurenai Densetsu",
+      "この素晴らしい世界に祝福を！紅伝説",
+    ],
+  },
+  {
+    id: "anilist:97996",
+    popularity: 83827,
+    title: [
+      "KONOSUBA -God's blessing on this wonderful world! 2: God's Blessings on These Wonderful Works of Art!",
+      "Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!",
+      "この素晴らしい世界に祝福を！ 2 この素晴らしい芸術に祝福を!",
+    ],
+  },
+  {
+    id: "anilist:150075",
+    popularity: 78637,
+    title: [
+      "KONOSUBA -An Explosion on This Wonderful World!",
+      "Kono Subarashii Sekai ni Bakuen wo!",
+      "この素晴らしい世界に爆焔を！",
+    ],
+  },
+  {
+    id: "anilist:136804",
+    popularity: 67899,
+    title: [
+      "KONOSUBA -God's Blessing on This Wonderful World! 3",
+      "Kono Subarashii Sekai ni Shukufuku wo! 3",
+      "この素晴らしい世界に祝福を! 3",
+    ],
+  },
+]
+`;
