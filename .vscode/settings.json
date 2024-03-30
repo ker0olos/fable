@@ -23,20 +23,6 @@
   "deno.lint": true,
   "deno.enable": true,
   "deno.config": "deno.json",
-  "deno.enablePaths": [
-    "src",
-    "db",
-    "tests",
-    "search-index/index.ts",
-    "search-index/mod.ts",
-    "update_commands.ts",
-    "upload_emote.ts",
-    "update_commands.test.ts",
-    "update_topgg_stats.ts",
-    "update_indexes.ts",
-    "start_dev.ts",
-    "setup.ts"
-  ],
   //
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
