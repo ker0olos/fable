@@ -4,6 +4,8 @@ import { emotes } from '~/src/discord.ts';
 
 import { Character, CharacterRole } from '~/src/types.ts';
 
+import { AniListCharacter } from '~/packs/anilist/types.ts';
+
 export default class Rating {
   #stars = 0;
 
@@ -63,7 +65,7 @@ export default class Rating {
     }`;
   }
 
-  static fromCharacter(character: Character): Rating {
+  static fromCharacter(character: Character | AniListCharacter): Rating {
     if (character.popularity) {
       return new Rating({ popularity: character.popularity });
     }
@@ -73,7 +75,7 @@ export default class Rating {
 
       return new Rating({
         popularity: edge.node.popularity,
-        role: edge.role,
+        role: 'characterRole' in edge ? edge.characterRole : edge.role,
       });
     }
 

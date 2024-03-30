@@ -26,8 +26,6 @@ export async function ensureIndexes(): Promise<void> {
   await createPacksIndexes();
   await createBattleIndexes();
 
-  await createAnimeIndexes();
-
   await db.client.close();
 }
 
@@ -92,12 +90,4 @@ async function createBattleIndexes() {
     .createIndex({
       'createdAt': Direction.ascending,
     }, { expireAfterSeconds: MAX_BATTLE_TIME });
-}
-
-async function createAnimeIndexes() {
-  await db.anime.media()
-    .createIndex({ 'id': Direction.ascending });
-
-  await db.anime.characters()
-    .createIndex({ 'id': Direction.ascending });
 }

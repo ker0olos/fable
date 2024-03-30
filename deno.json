@@ -26,7 +26,12 @@
   "fmt": {
     "useTabs": false,
     "singleQuote": true,
-    "indentWidth": 2
+    "indentWidth": 2,
+    "exclude": [
+      "packs/anilist/pool.json",
+      "packs/anilist/characters_directory.json",
+      "packs/anilist/media_directory.json"
+    ]
   },
   "imports": {
     "~/": "./",
