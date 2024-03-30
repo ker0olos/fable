@@ -371,16 +371,14 @@ async function findById<T>(
   // request the ids from anilist
   if (list.length && list[0].manifest.id === 'anilist') {
     const anilistResults = await _anilist[key](
-      { ids: anilistIds },
+      anilistIds,
     );
 
     anilistIds.forEach((n) => {
       const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
 
       if (i > -1) {
-        results[`anilist:${n}`] = _anilist.transform<T>({
-          item: anilistResults[i],
-        });
+        results[`anilist:${n}`] = anilistResults[i] as T;
       }
     });
   }
