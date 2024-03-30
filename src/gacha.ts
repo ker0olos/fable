@@ -109,8 +109,7 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
     if (
       typeof character.popularity === 'number' &&
-      !(character.popularity >= range[0] &&
-        (isNaN(range[1]) || character.popularity <= range[1]))
+      !(character.popularity >= range[0] && character.popularity <= range[1])
     ) {
       return false;
     }
@@ -131,7 +130,7 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
       const popularity = character.popularity || edge.node.popularity || lowest;
 
       if (
-        !(popularity >= range[0] && (isNaN(range[1]) || popularity <= range[1]))
+        !(popularity >= range[0] && popularity <= range[1])
       ) {
         return false;
       }
@@ -144,10 +143,7 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
     return true;
   };
 
-  return {
-    pool,
-    validate,
-  };
+  return { pool, validate };
 }
 
 export async function guaranteedPool(
