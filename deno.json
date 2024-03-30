@@ -41,7 +41,7 @@
     "mongodb": "npm:mongodb",
     "mongodb-memory-server": "npm:mongodb-memory-server-core",
     "levenshtein": "https://deno.land/x/fastest_levenshtein@1.0.10/mod.ts",
-    "search-index": "https://raw.githubusercontent.com/fable-community/search-index/a15dcbce009427ea15482ca4cd726338f69f7ddd/mod.ts",
+    "search-index": "https://raw.githubusercontent.com/fable-community/search-index/c6dab33cc05a964d6503c240887c89e07d28808c/mod.ts",
     "images-proxy": "https://raw.githubusercontent.com/fable-community/images-proxy/aeef6031ca57087e0511565463c1f43e591fdf91/mod.ts",
     "dyn-images": "https://raw.githubusercontent.com/fable-community/dyn-images/09fd5302653054bc7c5203ce75502b37d1c6f7cd/mod.ts"
   }
