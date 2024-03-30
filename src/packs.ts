@@ -43,6 +43,8 @@ const vtubersManifest = _vtubersManifest as Manifest;
 const cachedGuilds: Record<string, {
   packs: Pack[];
   disables: string[];
+  builtinsDisabled: boolean;
+  excluded: boolean;
 }> = {};
 
 const packs = {
@@ -82,9 +84,30 @@ async function all(
     { manifest: vtubersManifest, _id: '_' } as any,
   ];
 
-  const guild = await db.getGuild(guildId);
+  let cachedGuild = packs.cachedGuilds[guildId];
 
-  if (guild.builtinsDisabled) {
+  if (!cachedGuild) {
+    const guild = await db.getGuild(guildId);
+
+    const _packs = guild.packs;
+
+    cachedGuild = packs.cachedGuilds[guildId] = {
+      packs: _packs,
+      builtinsDisabled: guild.builtinsDisabled,
+      excluded: guild.excluded,
+      disables: Array.from(
+        new Set(
+          _packs
+            .map((pack) => pack.manifest.conflicts ?? [])
+            .flat(),
+        ),
+      ),
+    };
+  }
+
+  const _packs = cachedGuild.packs;
+
+  if (cachedGuild.builtinsDisabled) {
     builtins = [];
   }
 
@@ -103,19 +126,6 @@ async function all(
 
     return [...builtins, ...packs.cachedGuilds[guildId].packs];
   }
-
-  const _packs = guild.packs;
-
-  packs.cachedGuilds[guildId] = {
-    packs: _packs,
-    disables: Array.from(
-      new Set(
-        _packs
-          .map((pack) => pack.manifest.conflicts ?? [])
-          .flat(),
-      ),
-    ),
-  };
 
   if (filter) {
     return _packs;
