@@ -36,6 +36,7 @@ import {
 import { NonFetalError } from '~/src/errors.ts';
 
 import type { Pack } from '~/db/schema.ts';
+import { transform } from '~/packs/anilist/api.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
@@ -381,14 +382,14 @@ async function findById<T>(
   // request the ids from anilist
   if (list.length && list[0].manifest.id === 'anilist') {
     const anilistResults = await _anilist[key](
-      anilistIds,
+      { ids: anilistIds },
     );
 
     anilistIds.forEach((n) => {
       const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
 
       if (i > -1) {
-        results[`anilist:${n}`] = anilistResults[i] as T;
+        results[`anilist:${n}`] = transform<T>({ item: anilistResults[i] });
       }
     });
   }
