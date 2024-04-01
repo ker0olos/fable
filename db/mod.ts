@@ -76,11 +76,6 @@ import { disableBuiltins } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type {
-  DisaggregatedCharacter,
-  DisaggregatedMedia,
-} from '~/src/types.ts';
-
 const _db = {} as { client: MongoClient };
 
 const db = {
