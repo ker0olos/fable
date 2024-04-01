@@ -428,6 +428,16 @@ async function pullAnimation(
   if (guildId && userId && !background) {
     const pings = new Set<string>();
 
+    const characterId = `${pull.character.packId}:${pull.character.id}`;
+
+    const mediaIds = [
+      pull.media,
+      ...pull.media.relations?.edges?.filter(({ relation }) =>
+        // deno-lint-ignore no-non-null-assertion
+        relationFilter.includes(relation!)
+      ).map(({ node }) => node) ?? [],
+    ].map(({ packId, id }) => `${packId}:${id}`);
+
     const users = await db.getActiveUsersIfLiked(
       guildId,
       characterId,
