@@ -17,6 +17,7 @@ import tower, {
 import db from '~/db/mod.ts';
 import utils from '~/src/utils.ts';
 import config from '~/src/config.ts';
+import packs from '~/src/packs.ts';
 
 import { MediaType } from '~/src/types.ts';
 
@@ -1059,6 +1060,11 @@ Deno.test('/reclear', async (test) => {
         ),
     );
 
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1124,6 +1130,7 @@ Deno.test('/reclear', async (test) => {
 
       timeStub.restore();
       fetchStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
       getInventoryStub.restore();
@@ -1274,6 +1281,11 @@ Deno.test('/reclear', async (test) => {
         ),
     );
 
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1339,6 +1351,7 @@ Deno.test('/reclear', async (test) => {
 
       timeStub.restore();
       fetchStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
       getInventoryStub.restore();
@@ -1489,6 +1502,11 @@ Deno.test('/reclear', async (test) => {
         ),
     );
 
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1555,6 +1573,7 @@ Deno.test('/reclear', async (test) => {
 
       timeStub.restore();
       fetchStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
       getInventoryStub.restore();
@@ -1705,6 +1724,11 @@ Deno.test('/reclear', async (test) => {
         ),
     );
 
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1771,6 +1795,7 @@ Deno.test('/reclear', async (test) => {
 
       timeStub.restore();
       fetchStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
       getInventoryStub.restore();
@@ -1921,6 +1946,11 @@ Deno.test('/reclear', async (test) => {
         ),
     );
 
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1989,6 +2019,7 @@ Deno.test('/reclear', async (test) => {
       getGuildStub.restore();
       getInventoryStub.restore();
       gainExpStub.restore();
+      listStub.restore();
     }
   });
 

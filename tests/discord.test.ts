@@ -188,10 +188,6 @@ Deno.test('interactions', async (test) => {
   });
 });
 
-// why are embeds test and  components test set up differently?
-// because embeds can contain all parameters
-// while components have parameters that can't overlap
-
 Deno.test('embeds', () => {
   const embed = new discord.Embed();
 

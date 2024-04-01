@@ -32,7 +32,7 @@ if (import.meta.main) {
 
 async function startMongod() {
   mongod = await MongoMemoryReplSet.create({
-    replSet: { storageEngine: 'wiredTiger' },
+    replSet: { storageEngine: 'ephemeralForTest' },
   });
 
   const uri = mongod.getUri();

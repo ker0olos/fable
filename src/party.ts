@@ -74,7 +74,6 @@ async function embed({ guildId, party, locale }: {
     if (
       !character ||
       mediaIndex === -1 ||
-      packs.isDisabled(characterId, guildId) ||
       // deno-lint-ignore no-non-null-assertion
       packs.isDisabled(mediaIds[i]!, guildId)
     ) {
@@ -174,7 +173,6 @@ function assign({
 
       if (
         !results.length ||
-        packs.isDisabled(`${character.packId}:${character.id}`, guildId) ||
         (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
       ) {
         throw new Error('404');
@@ -334,7 +332,6 @@ function remove({ token, spot, userId, guildId }: {
 
       if (
         !characters.length ||
-        packs.isDisabled(character.characterId, guildId) ||
         packs.isDisabled(character.mediaId, guildId)
       ) {
         return message

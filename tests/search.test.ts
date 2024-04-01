@@ -63,11 +63,16 @@ Deno.test('/media', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -131,10 +136,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
     }
   });
@@ -169,11 +174,16 @@ Deno.test('/media', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -238,10 +248,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
     }
   });
@@ -276,11 +286,16 @@ Deno.test('/media', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -345,9 +360,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
     }
@@ -389,11 +405,16 @@ Deno.test('/media', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const sechStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -482,9 +503,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      sechStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
     }
@@ -515,11 +537,16 @@ Deno.test('/media', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -582,9 +609,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
     }
@@ -624,11 +652,16 @@ Deno.test('/media', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -704,9 +737,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
     }
@@ -786,11 +820,16 @@ Deno.test('/media', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -885,9 +924,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
     }
@@ -992,11 +1032,16 @@ Deno.test('/media', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const saarchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1090,9 +1135,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      saarchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
     }
   });
 
@@ -1171,11 +1217,16 @@ Deno.test('/media', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const sarrchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1269,9 +1320,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      sarrchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
     }
   });
 
@@ -1313,11 +1365,16 @@ Deno.test('/media', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1393,9 +1450,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
     }
   });
 
@@ -1462,11 +1520,16 @@ Deno.test('/media', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const sarchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1548,9 +1611,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      sarchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
     }
   });
 
@@ -1617,11 +1681,16 @@ Deno.test('/media', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const sarchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1709,9 +1778,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      sarchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
     }
   });
 
@@ -1769,11 +1839,16 @@ Deno.test('/media', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const sarchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1863,9 +1938,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      sarchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
     }
   });
 
@@ -1878,11 +1954,16 @@ Deno.test('/media', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const sarchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(undefined),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1939,9 +2020,10 @@ Deno.test('/media', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      sarchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
     }
   });
 
@@ -1990,11 +2072,16 @@ Deno.test('/media debug', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2077,9 +2164,10 @@ Deno.test('/media debug', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
     }
@@ -2110,11 +2198,16 @@ Deno.test('/media debug', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2196,9 +2289,10 @@ Deno.test('/media debug', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
     }
@@ -2255,7 +2349,7 @@ Deno.test('/character', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
@@ -2272,6 +2366,11 @@ Deno.test('/character', async (test) => {
       'findCharacter',
       () => undefined as any,
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2352,9 +2451,10 @@ Deno.test('/character', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
 
@@ -2401,11 +2501,16 @@ Deno.test('/character', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2488,9 +2593,10 @@ Deno.test('/character', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
 
@@ -2532,11 +2638,16 @@ Deno.test('/character', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2617,9 +2728,10 @@ Deno.test('/character', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
 
@@ -2661,11 +2773,16 @@ Deno.test('/character', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2746,9 +2863,10 @@ Deno.test('/character', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
 
@@ -2804,11 +2922,16 @@ Deno.test('/character', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2892,9 +3015,10 @@ Deno.test('/character', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
 
@@ -2931,11 +3055,16 @@ Deno.test('/character', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -3013,9 +3142,10 @@ Deno.test('/character', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
 
@@ -3044,11 +3174,16 @@ Deno.test('/character', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(undefined),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -3105,10 +3240,10 @@ Deno.test('/character', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
 
       findCharactersStub.restore();
@@ -3397,11 +3532,16 @@ Deno.test('/character debug', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -3505,9 +3645,10 @@ Deno.test('/character debug', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
 
@@ -3550,11 +3691,16 @@ Deno.test('/character debug', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -3658,10 +3804,10 @@ Deno.test('/character debug', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
 
       findCharactersStub.restore();
@@ -3718,7 +3864,7 @@ Deno.test('/character debug', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
@@ -3821,7 +3967,7 @@ Deno.test('/character debug', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
 
@@ -3860,11 +4006,17 @@ Deno.test('/character debug', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneCharacter',
       () => Promise.resolve(character),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     config.appId = 'app_id';
@@ -3967,10 +4119,10 @@ Deno.test('/character debug', async (test) => {
       delete config.origin;
 
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
 
       findCharactersStub.restore();
@@ -4291,63 +4443,6 @@ Deno.test('media characters', async (test) => {
       getGuildStub.restore();
 
       findCharactersStub.restore();
-    }
-  });
-
-  await test.step('disabled character', async () => {
-    const characterStub = stub(
-      packs,
-      'mediaCharacters',
-      () =>
-        Promise.resolve({
-          next: false,
-          media: {
-            id: '1',
-            type: MediaType.Anime,
-            title: {
-              english: 'title',
-            },
-          },
-          character: {
-            id: '2',
-            name: {
-              english: 'name',
-            },
-          },
-        }),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      returnsNext([
-        false,
-        true,
-      ]),
-    );
-
-    try {
-      await assertRejects(
-        async () =>
-          await search.mediaCharacters({
-            id: 'pack-id:1',
-            userId: 'user_id',
-            guildId: 'guild_id',
-            index: 0,
-          }),
-        NonFetalError,
-        'This character was removed or disabled',
-      );
-    } finally {
-      characterStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
     }
   });
 

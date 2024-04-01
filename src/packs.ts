@@ -36,15 +36,16 @@ import {
 import { NonFetalError } from '~/src/errors.ts';
 
 import type { Pack } from '~/db/schema.ts';
+import { transform } from '~/packs/anilist/api.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
 
 const cachedGuilds: Record<string, {
   packs: Pack[];
-  disables: string[];
-  builtinsDisabled: boolean;
-  excluded: boolean;
+  disables: Map<string, boolean>;
+  builtinsDisabled?: boolean;
+  excluded?: boolean;
 }> = {};
 
 const packs = {
@@ -95,14 +96,20 @@ async function all(
       packs: _packs,
       builtinsDisabled: guild.builtinsDisabled,
       excluded: guild.excluded,
-      disables: Array.from(
-        new Set(
-          _packs
-            .map((pack) => pack.manifest.conflicts ?? [])
-            .flat(),
-        ),
+      disables: new Map(
+        !guild.builtinsDisabled
+          // deno-lint-ignore no-non-null-assertion
+          ? vtubersManifest.conflicts!.map((id) => [id, true])
+          : undefined,
       ),
     };
+
+    _packs
+      .forEach((pack) => {
+        pack.manifest.conflicts?.forEach((id) => {
+          cachedGuild.disables.set(id, true);
+        });
+      });
   }
 
   const _packs = cachedGuild.packs;
@@ -112,39 +119,22 @@ async function all(
   }
 
   if (!config.communityPacks) {
-    if (filter) {
+    if (filter || cachedGuild.builtinsDisabled) {
       return [];
     }
 
     return builtins;
   }
 
-  if (guildId in packs.cachedGuilds) {
-    if (filter) {
-      return packs.cachedGuilds[guildId].packs;
-    }
-
-    return [...builtins, ...packs.cachedGuilds[guildId].packs];
-  }
-
-  if (filter) {
+  if (filter || cachedGuild.builtinsDisabled) {
     return _packs;
   }
 
-  return [...builtins, ..._packs];
+  return builtins.concat(_packs);
 }
 
 function isDisabled(id: string, guildId: string): boolean {
-  const disables = [
-    // deno-lint-ignore no-non-null-assertion
-    ...vtubersManifest.conflicts!,
-  ];
-
-  if (guildId in packs.cachedGuilds) {
-    disables.push(...packs.cachedGuilds[guildId].disables);
-  }
-
-  return disables.includes(id);
+  return packs.cachedGuilds[guildId]?.disables?.has(id);
 }
 
 function packEmbed(pack: Pack): discord.Embed {
@@ -381,14 +371,14 @@ async function findById<T>(
   // request the ids from anilist
   if (list.length && list[0].manifest.id === 'anilist') {
     const anilistResults = await _anilist[key](
-      anilistIds,
+      { ids: anilistIds },
     );
 
     anilistIds.forEach((n) => {
       const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
 
       if (i > -1) {
-        results[`anilist:${n}`] = anilistResults[i] as T;
+        results[`anilist:${n}`] = transform<T>({ item: anilistResults[i] });
       }
     });
   }
@@ -622,7 +612,7 @@ async function aggregate<T>({ media, character, start, end, guildId }: {
       (media.relations && 'edges' in media.relations) ||
       (media.characters && 'edges' in media.characters)
     ) {
-      // is anilist media or already aggregated
+      // is already aggregated
       // doesn't need to be aggregated return as is
       return media as T;
     }
@@ -632,9 +622,7 @@ async function aggregate<T>({ media, character, start, end, guildId }: {
     const mediaIds = (media.relations instanceof Array
       ? media.relations.slice(start, end)
       : [])
-      .map((
-        { mediaId },
-      ) =>
+      .map(({ mediaId }) =>
         mediaId
       );
 

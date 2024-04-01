@@ -112,6 +112,21 @@ snapshot[`characters search > aqua 1`] = `
     role: "SUPPORTING",
   },
   {
+    id: "anilist:169497",
+    mediaId: "anilist:118123",
+    mediaTitle: [
+      "Holo no Graffiti",
+      "ホロのぐらふぃてぃ",
+    ],
+    name: [
+      "Aqua Minato",
+      "湊あくあ",
+    ],
+    popularity: 10993,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
     id: "anilist:130382",
     mediaId: "anilist:98231",
     mediaTitle: [

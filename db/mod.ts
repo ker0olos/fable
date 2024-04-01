@@ -76,11 +76,6 @@ import { disableBuiltins } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-import type {
-  DisaggregatedCharacter,
-  DisaggregatedMedia,
-} from '~/src/types.ts';
-
 const _db = {} as { client: MongoClient };
 
 const db = {
@@ -103,14 +98,14 @@ const db = {
   battles: (): Collection<Schema.BattleData> => {
     return db.client.db('default').collection('battles');
   },
-  anime: {
-    media: (): Collection<DisaggregatedMedia> => {
-      return db.client.db('anime').collection('media');
-    },
-    characters: (): Collection<DisaggregatedCharacter> => {
-      return db.client.db('anime').collection('characters');
-    },
-  },
+  // anime: {
+  //   media: (): Collection<DisaggregatedMedia> => {
+  //     return db.client.db('anime').collection('media');
+  //   },
+  //   characters: (): Collection<DisaggregatedCharacter> => {
+  //     return db.client.db('anime').collection('characters');
+  //   },
+  // },
   getInventory,
   getUser,
   getGuild,

@@ -105,12 +105,8 @@ const searchCharacters = async (
     builtin ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
   )
-    .filter(({ id, mediaId }) => {
+    .filter(({ mediaId }) => {
       if (packs.isDisabled(mediaId, guildId)) {
-        return false;
-      }
-
-      if (packs.isDisabled(id, guildId)) {
         return false;
       }
 
