@@ -614,6 +614,11 @@ Deno.test('synthesis confirmed', async (test) => {
       () => ({ ok: true }) as any,
     );
 
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
     const poolStub = stub(
       searchIndex,
       'filterCharacters',
@@ -802,7 +807,7 @@ Deno.test('synthesis confirmed', async (test) => {
       synthesisStub.restore();
       poolStub.restore();
       timeStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -928,6 +933,11 @@ Deno.test('synthesis confirmed', async (test) => {
           },
         ] as any),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1109,7 +1119,7 @@ Deno.test('synthesis confirmed', async (test) => {
       synthesisStub.restore();
       poolStub.restore();
       timeStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();

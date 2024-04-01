@@ -6528,11 +6528,16 @@ Deno.test('/likeall', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const searchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -6614,9 +6619,9 @@ Deno.test('/likeall', async (test) => {
 
       timeStub.restore();
       fetchStub.restore();
-      listStub.restore();
+      searchStub.restore();
       isDisabledStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
 
       getUserStub.restore();
@@ -6660,11 +6665,16 @@ Deno.test('/likeall', async (test) => {
       () => (undefined as any),
     );
 
-    const listStub = stub(
+    const sarchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(media),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -6734,8 +6744,9 @@ Deno.test('/likeall', async (test) => {
 
       timeStub.restore();
       fetchStub.restore();
-      listStub.restore();
+      sarchStub.restore();
       isDisabledStub.restore();
+      listStub.restore();
 
       getGuildStub.restore();
 
@@ -6759,11 +6770,16 @@ Deno.test('/likeall', async (test) => {
       () => '' as any,
     );
 
-    const listStub = stub(
+    const sarchStub = stub(
       packs,
       'searchOneMedia',
       () => Promise.resolve(undefined),
     );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -6826,9 +6842,9 @@ Deno.test('/likeall', async (test) => {
 
       timeStub.restore();
       fetchStub.restore();
-      listStub.restore();
+      sarchStub.restore();
       isDisabledStub.restore();
-
+      listStub.restore();
       getGuildStub.restore();
     }
   });

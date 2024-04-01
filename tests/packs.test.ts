@@ -52,6 +52,8 @@ Deno.test('list', async (test) => {
       await assertMonochromeSnapshot(test, pack);
     } finally {
       getGuildStub.restore();
+
+      delete packs.cachedGuilds['0'];
     }
   });
 
@@ -74,6 +76,8 @@ Deno.test('list', async (test) => {
       await assertMonochromeSnapshot(test, pack);
     } finally {
       getGuildStub.restore();
+
+      delete packs.cachedGuilds['0'];
     }
   });
 
@@ -90,6 +94,8 @@ Deno.test('list', async (test) => {
       assertEquals(list.length, 0);
     } finally {
       getGuildStub.restore();
+
+      delete packs.cachedGuilds['0'];
     }
   });
 
@@ -106,6 +112,8 @@ Deno.test('list', async (test) => {
       assertEquals(list.length, 0);
     } finally {
       getGuildStub.restore();
+
+      delete packs.cachedGuilds['0'];
     }
   });
 });
@@ -127,6 +135,8 @@ Deno.test('reserved ids', async () => {
     });
   } finally {
     getGuildStub.restore();
+
+    delete packs.cachedGuilds['0'];
   }
 });
 
@@ -135,22 +145,7 @@ Deno.test('disabled', async (test) => {
     packs.cachedGuilds = {
       'guild_id': {
         packs: [],
-        disables: ['another-pack:1'],
-      },
-    };
-
-    try {
-      assert(packs.isDisabled('another-pack:1', 'guild_id'));
-    } finally {
-      packs.cachedGuilds = {};
-    }
-  });
-
-  await test.step('disabled character', () => {
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [],
-        disables: ['another-pack:1'],
+        disables: new Map([['another-pack:1', true]]),
       },
     };
 
@@ -165,7 +160,7 @@ Deno.test('disabled', async (test) => {
     const pack: Schema.Pack = { _id: '_', manifest: { id: 'pack-id' } } as any;
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -402,7 +397,7 @@ Deno.test('media character', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -489,7 +484,7 @@ Deno.test('media character', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -700,7 +695,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -906,7 +901,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -1005,7 +1000,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -1094,7 +1089,7 @@ Deno.test('aggregate media', async (test) => {
       ] as any));
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -1187,7 +1182,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -1294,7 +1289,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -1588,7 +1583,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -1772,7 +1767,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -1874,7 +1869,7 @@ Deno.test('aggregate characters', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -1956,7 +1951,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {
@@ -2056,7 +2051,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: [] },
+      'guild_id': { packs: [pack], disables: new Map() },
     };
 
     try {

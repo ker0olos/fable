@@ -326,14 +326,6 @@ async function pullAnimation(
 
   const characterId = `${_pull.character.packId}:${_pull.character.id}`;
 
-  const mediaIds = [
-    _pull.media,
-    ..._pull.media.relations?.edges?.filter(({ relation }) =>
-      // deno-lint-ignore no-non-null-assertion
-      relationFilter.includes(relation!)
-    ).map(({ node }) => node) ?? [],
-  ].map(({ packId, id }) => `${packId}:${id}`);
-
   const mediaTitles = packs.aliasToArray(_pull.media.title);
 
   const mediaImage = _pull.media.images?.[0];
