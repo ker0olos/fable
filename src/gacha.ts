@@ -85,7 +85,7 @@ const boostedVariables: Variables = {
 
 async function rangePool({ guildId }: { guildId: string }): Promise<{
   pool: import('search-index').Character[];
-  validate: (character: Character | DisaggregatedCharacter) => boolean;
+  validate: (character: Character) => boolean;
 }> {
   let variables: Variables = gacha.variables;
 
@@ -153,7 +153,7 @@ export async function guaranteedPool(
   },
 ): Promise<{
   pool: import('search-index').Character[];
-  validate: (character: Character | DisaggregatedCharacter) => boolean;
+  validate: (character: Character) => boolean;
   role?: CharacterRole;
   range?: [number, number];
 }> {
@@ -228,15 +228,7 @@ async function rngPull(
 
       const characterId = pool[i].id;
 
-      if (packs.isDisabled(characterId, guildId)) {
-        continue;
-      }
-
       const results = await packs.characters({ guildId, ids: [characterId] });
-
-      if (!results.length || !validate(results[0])) {
-        continue;
-      }
 
       // aggregate will filter out any disabled media
       const candidate = await packs.aggregate<Character>({
@@ -301,11 +293,9 @@ async function rngPull(
     throw new PoolError();
   }
 
-  return {
-    rating,
-    character,
-    media: await packs.aggregate<Media>({ media, guildId }),
-  };
+  media = await packs.aggregate<Media>({ media, guildId });
+
+  return { rating, character, media };
 }
 
 async function pullAnimation(

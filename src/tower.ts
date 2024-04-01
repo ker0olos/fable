@@ -181,10 +181,6 @@ export async function getEnemyCharacter(
 
       const characterId = pool[i].id;
 
-      if (packs.isDisabled(characterId, guildId)) {
-        continue;
-      }
-
       const results = await packs.aggregatedCharacters({
         guildId,
         ids: [characterId],

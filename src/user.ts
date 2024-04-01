@@ -226,10 +226,7 @@ function nick({
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
-      if (
-        !results.length ||
-        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
-      ) {
+      if (!results.length) {
         throw new Error('404');
       }
 
@@ -375,10 +372,7 @@ function image({
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
-      if (
-        !results.length ||
-        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
-      ) {
+      if (!results.length) {
         throw new Error('404');
       }
 
@@ -526,10 +520,7 @@ function like({
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
-      if (
-        !results.length ||
-        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
-      ) {
+      if (!results.length) {
         throw new Error('404');
       }
 
@@ -646,10 +637,7 @@ function likeall({
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Media | DisaggregatedMedia)[]) => {
-      if (
-        !results.length ||
-        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
-      ) {
+      if (!results.length) {
         throw new Error('404');
       }
 
@@ -851,11 +839,8 @@ function list({
         } ${existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
         if (
-          packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
-          (
-            media &&
-            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-          )
+          media &&
+          packs.isDisabled(`${media.packId}:${media.id}`, guildId)
         ) {
           return;
         }
@@ -1147,11 +1132,8 @@ function likeslist({
           }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
           if (
-            packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
-            (
-              media &&
-              packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-            )
+            media &&
+            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
           ) {
             return;
           }
@@ -1255,7 +1237,6 @@ function logs({
 
         if (
           !char ||
-          packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
           packs.isDisabled(existing.mediaId, guildId)
         ) {
           return;

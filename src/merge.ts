@@ -255,7 +255,6 @@ async function synthesize({ token, userId, guildId, mode, target }: {
           const media = character?.media?.edges?.[0]?.node;
 
           if (
-            packs.isDisabled(`${character.packId}:${character.id}`, guildId) ||
             (packs.isDisabled(existing.mediaId, guildId)) ||
             (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
           ) {

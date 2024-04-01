@@ -259,10 +259,6 @@ function character(
         throw new Error('404');
       }
 
-      if (packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)) {
-        throw new Error('404');
-      }
-
       return Promise.all([
         // aggregate the media by populating any references to other media/character objects
         packs.aggregate<Character>({
@@ -614,10 +610,6 @@ async function mediaCharacters(
     );
   }
 
-  if (packs.isDisabled(`${node.packId}:${node.id}`, guildId)) {
-    throw new NonFetalError('This character was removed or disabled');
-  }
-
   const [character, existing] = await Promise.all([
     // aggregate the media by populating any references to other media/character objects
     packs.aggregate<Character>({
@@ -750,11 +742,8 @@ function mediaFound(
           : undefined;
 
         if (
-          packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
-          (
-            _media &&
-            packs.isDisabled(`${_media.packId}:${_media.id}`, guildId)
-          )
+          _media &&
+          packs.isDisabled(`${_media.packId}:${_media.id}`, guildId)
         ) {
           continue;
         }

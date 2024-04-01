@@ -1872,7 +1872,7 @@ Deno.test('/merge', async (test) => {
     }
   });
 
-  await test.step('disabled characters', async () => {
+  await test.step('disabled media', async () => {
     const characters: AniListCharacter[] = [
       {
         id: '1',
@@ -1960,10 +1960,12 @@ Deno.test('/merge', async (test) => {
       () =>
         [
           {
+            mediaId: 'anilist:m',
             characterId: 'anilist:1',
             rating: 1,
           },
           {
+            mediaId: 'anilist:m',
             characterId: 'anilist:2',
             rating: 1,
           },
@@ -1990,7 +1992,7 @@ Deno.test('/merge', async (test) => {
     const isDisabledStub = stub(
       packs,
       'isDisabled',
-      (id) => id === 'anilist:1' || id === 'anilist:2',
+      (id) => id === 'anilist:m',
     );
 
     config.appId = 'app_id';

@@ -84,10 +84,7 @@ function pre({ token, userId, guildId, search, id }: {
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
-      if (
-        !results.length ||
-        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
-      ) {
+      if (!results.length) {
         throw new Error('404');
       }
 

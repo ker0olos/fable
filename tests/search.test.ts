@@ -4446,63 +4446,6 @@ Deno.test('media characters', async (test) => {
     }
   });
 
-  await test.step('disabled character', async () => {
-    const characterStub = stub(
-      packs,
-      'mediaCharacters',
-      () =>
-        Promise.resolve({
-          next: false,
-          media: {
-            id: '1',
-            type: MediaType.Anime,
-            title: {
-              english: 'title',
-            },
-          },
-          character: {
-            id: '2',
-            name: {
-              english: 'name',
-            },
-          },
-        }),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      returnsNext([
-        false,
-        true,
-      ]),
-    );
-
-    try {
-      await assertRejects(
-        async () =>
-          await search.mediaCharacters({
-            id: 'pack-id:1',
-            userId: 'user_id',
-            guildId: 'guild_id',
-            index: 0,
-          }),
-        NonFetalError,
-        'This character was removed or disabled',
-      );
-    } finally {
-      characterStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
-
   await test.step('no characters', async () => {
     const characterStub = stub(
       packs,

@@ -44,10 +44,6 @@ function view({ token, character, userId, guildId }: {
         throw new Error('404');
       }
 
-      if (packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)) {
-        throw new Error('404');
-      }
-
       return Promise.all([
         Promise.resolve(results[0]!),
         db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
@@ -71,6 +67,10 @@ function view({ token, character, userId, guildId }: {
         message.addEmbed(embed);
 
         return await message.patch(token);
+      }
+
+      if (packs.isDisabled(existing.mediaId, guildId)) {
+        throw new Error('404');
       }
 
       const message = new discord.Message();
