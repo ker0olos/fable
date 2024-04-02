@@ -1385,11 +1385,6 @@ export async function start(): Promise<void> {
 
   utils.initSentry({ dsn: config.sentry });
 
-  // deno-lint-ignore no-non-null-assertion
-  db.client = await new MongoClient(config.mongoUri!, {
-    retryWrites: true,
-  }).connect();
-
   utils.serve({
     '/': handler,
     '/api/user': communityAPI.user,

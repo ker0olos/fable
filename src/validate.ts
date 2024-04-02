@@ -6,27 +6,27 @@ import { prettify } from 'awesome-ajv';
 
 import { AssertionError } from '$std/assert/mod.ts';
 
-import alias from '../json/alias.json' with {
+import alias from '~/json/alias.json' with {
   type: 'json',
 };
 
-import image from '../json/image.json' with {
+import image from '~/json/image.json' with {
   type: 'json',
 };
 
-import media from '../json/media.json' with {
+import media from '~/json/media.json' with {
   type: 'json',
 };
 
-import character from '../json/character.json' with {
+import character from '~/json/character.json' with {
   type: 'json',
 };
 
-import index from '../json/schema.json' with {
+import index from '~/json/schema.json' with {
   type: 'json',
 };
 
-import { Manifest } from './types.ts';
+import { Manifest } from '~/src/types.ts';
 
 const reservedIds = ['fable', 'anilist', 'vtubers'];
 

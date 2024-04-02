@@ -3,7 +3,7 @@ import packs from '~/src/packs.ts';
 import utils from '~/src/utils.ts';
 import i18n from '~/src/i18n.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
 
 import * as dynImages from 'dyn-images';
 
@@ -37,8 +37,17 @@ const MESSAGE_DELAY = 2; // 2 seconds
 export const MAX_BATTLE_TIME = 3 * 60; // 3 minutes
 
 async function skipBattle(hexId: string): Promise<void> {
-  const battleId = ObjectId.createFromHexString(hexId);
-  await db.battles().deleteOne({ _id: battleId });
+  const db = new Mongo();
+
+  try {
+    const battleId = ObjectId.createFromHexString(hexId);
+
+    await db.connect();
+
+    await db.battles().deleteOne({ _id: battleId });
+  } finally {
+    await db.close();
+  }
 }
 
 function challengeTower({ token, guildId, user }: {
@@ -216,158 +225,173 @@ async function startCombat(
     floor?: number;
   },
 ): Promise<{ winnerId?: string; lastMessage: discord.Message }> {
-  let battleData: Schema.BattleData | null = { createdAt: new Date() };
+  const mongo = new Mongo();
 
-  const consumed = await db.consumeKey(user.id, guildId);
+  try {
+    await mongo.connect();
 
-  if (!consumed) {
-    throw new NonFetalError(i18n.get('combat-no-more-keys', locale));
-  }
+    let battleData: Schema.BattleData | null = { createdAt: new Date() };
 
-  // deno-lint-ignore no-non-null-assertion
-  const { insertedId: battleId } = await db.battles().insertOne(battleData!);
+    const consumed = await db.consumeKey(user.id, guildId);
 
-  // NOTE watch streams aren't supported in atlas serverless
-  // https://www.mongodb.com/docs/atlas/app-services/reference/service-limitations/#serverless-instances
-  // const watchStream = db.battles().watch([{
-  //   $match: { _id: battleId, operationType: 'delete' },
-  // }]);
-
-  const checkBattleData = async () => {
-    battleData = await db.battles().findOne({ _id: battleId });
-    return !!battleData;
-  };
-
-  const message = new discord.Message()
-    .addComponents([
-      new discord.Component()
-        .setId(discord.join('sbattle', battleId.toString('hex'), user.id))
-        .setLabel(i18n.get('skip', locale)),
-    ]);
-
-  if (floor) {
-    message.addEmbed(
-      new discord.Embed().setTitle(`${i18n.get('floor', locale)} ${floor}`),
-    );
-  }
-
-  const party1UsedSkills: Partial<Record<SkillKey, boolean>> = {};
-  const party2UsedSkills: Partial<Record<SkillKey, boolean>> = {};
-
-  while (true) {
-    const party1Alive = party1.filter((m) => m.alive);
-    const party2Alive = party2.filter((m) => m.alive);
-
-    // no one is still alive
-    if (!party1Alive.length || !party2Alive.length) {
-      break;
+    if (!consumed) {
+      throw new NonFetalError(i18n.get('combat-no-more-keys', locale));
     }
 
-    const party1Character: PartyMember = party1Alive[0];
-    const party2Character: PartyMember = party2Alive[0];
-
-    party1Character.ensureBoosts(party1Alive, party2Alive);
-    party2Character.ensureBoosts(party2Alive, party1Alive);
-
-    const fastestCharacter = determineFastest(party1Character, party2Character);
-
-    const speedDiffPercent = calculateSpeedDiffPercent(
-      party1Character,
-      party2Character,
+    const { insertedId: battleId } = await mongo.battles().insertOne(
+      // deno-lint-ignore no-non-null-assertion
+      battleData!,
     );
 
-    const extraTurnsBonus = calculateExtraTurns(speedDiffPercent);
+    // NOTE watch streams aren't supported in atlas serverless
+    // https://www.mongodb.com/docs/atlas/app-services/reference/service-limitations/#serverless-instances
+    // const watchStream = db.battles().watch([{
+    //   $match: { _id: battleId, operationType: 'delete' },
+    // }]);
 
-    const turns: ReturnType<typeof determineFastest>[] = [
-      fastestCharacter,
-      ...Array(extraTurnsBonus).fill(fastestCharacter),
-      fastestCharacter === 'party1' ? 'party2' : 'party1',
-    ];
+    const checkBattleData = async () => {
+      battleData = await mongo.battles().findOne({ _id: battleId });
+      return !!battleData;
+    };
 
-    for (let i = 0; i < turns.length; i++) {
-      const turn = turns[i];
+    const message = new discord.Message()
+      .addComponents([
+        new discord.Component()
+          .setId(discord.join('sbattle', battleId.toString('hex'), user.id))
+          .setLabel(i18n.get('skip', locale)),
+      ]);
 
-      if (!party1Character.alive || !party2Character.alive) {
+    if (floor) {
+      message.addEmbed(
+        new discord.Embed().setTitle(`${i18n.get('floor', locale)} ${floor}`),
+      );
+    }
+
+    const party1UsedSkills: Partial<Record<SkillKey, boolean>> = {};
+    const party2UsedSkills: Partial<Record<SkillKey, boolean>> = {};
+
+    while (true) {
+      const party1Alive = party1.filter((m) => m.alive);
+      const party2Alive = party2.filter((m) => m.alive);
+
+      // no one is still alive
+      if (!party1Alive.length || !party2Alive.length) {
         break;
       }
 
-      // const attackingParty = turn === 'party1' ? party1Alive : party2Alive;
-      const receivingParty = turn === 'party1' ? party2Alive : party1Alive;
+      const party1Character: PartyMember = party1Alive[0];
+      const party2Character: PartyMember = party2Alive[0];
 
-      let receiving = turn === 'party1' ? party2Character : party1Character;
-      const attacking = turn === 'party1' ? party1Character : party2Character;
+      party1Character.ensureBoosts(party1Alive, party2Alive);
+      party2Character.ensureBoosts(party2Alive, party1Alive);
 
-      const receivingUsedSkills = turn === 'party1'
-        ? party2UsedSkills
-        : party1UsedSkills;
+      const fastestCharacter = determineFastest(
+        party1Character,
+        party2Character,
+      );
 
-      const { stunned } = attacking.effects;
+      const speedDiffPercent = calculateSpeedDiffPercent(
+        party1Character,
+        party2Character,
+      );
 
-      const combo = i > 0 && i < turns.length - 1 ? i + 1 : 0;
+      const extraTurnsBonus = calculateExtraTurns(speedDiffPercent);
 
-      // skip extra turns if character is stunned
-      if (stunned?.active && combo > 1) {
-        continue;
-      }
+      const turns: ReturnType<typeof determineFastest>[] = [
+        fastestCharacter,
+        ...Array(extraTurnsBonus).fill(fastestCharacter),
+        fastestCharacter === 'party1' ? 'party2' : 'party1',
+      ];
 
-      prepRound({
-        combo,
-        message,
-        attacking,
-        receiving,
-        locale,
-      });
+      for (let i = 0; i < turns.length; i++) {
+        const turn = turns[i];
 
-      await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
-      await checkBattleData() && await message.patch(token);
+        if (!party1Character.alive || !party2Character.alive) {
+          break;
+        }
 
-      // sneak attack the backline if the attacking character has the skill
-      if (attacking.canSneakAttack) {
-        receiving = receivingParty.filter((m) => m.alive).slice(-1)[0];
-        attacking.effects.sneaky = { active: true };
-      }
+        // const attackingParty = turn === 'party1' ? party1Alive : party2Alive;
+        const receivingParty = turn === 'party1' ? party2Alive : party1Alive;
 
-      // if stunned skip attack and cancel the stun
-      if (stunned?.active) {
-        stunned.active = false;
-      } else {
-        actionRound({
+        let receiving = turn === 'party1' ? party2Character : party1Character;
+        const attacking = turn === 'party1' ? party1Character : party2Character;
+
+        const receivingUsedSkills = turn === 'party1'
+          ? party2UsedSkills
+          : party1UsedSkills;
+
+        const { stunned } = attacking.effects;
+
+        const combo = i > 0 && i < turns.length - 1 ? i + 1 : 0;
+
+        // skip extra turns if character is stunned
+        if (stunned?.active && combo > 1) {
+          continue;
+        }
+
+        prepRound({
+          combo,
           message,
           attacking,
           receiving,
-          combo,
           locale,
         });
 
         await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
         await checkBattleData() && await message.patch(token);
 
-        delete attacking.effects.sneaky;
-        delete receiving.effects.sneaky;
-      }
+        // sneak attack the backline if the attacking character has the skill
+        if (attacking.canSneakAttack) {
+          receiving = receivingParty.filter((m) => m.alive).slice(-1)[0];
+          attacking.effects.sneaky = { active: true };
+        }
 
-      if (
-        healRound({
-          message,
-          healing: receiving,
-          receiving: attacking,
-          receivingUsedSkills,
-          receivingParty,
-          locale,
-        })
-      ) {
-        await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
-        await checkBattleData() && await message.patch(token);
+        // if stunned skip attack and cancel the stun
+        if (stunned?.active) {
+          stunned.active = false;
+        } else {
+          actionRound({
+            message,
+            attacking,
+            receiving,
+            combo,
+            locale,
+          });
+
+          await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
+          await checkBattleData() && await message.patch(token);
+
+          delete attacking.effects.sneaky;
+          delete receiving.effects.sneaky;
+        }
+
+        if (
+          healRound({
+            message,
+            healing: receiving,
+            receiving: attacking,
+            receivingUsedSkills,
+            receivingParty,
+            locale,
+          })
+        ) {
+          await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
+          await checkBattleData() && await message.patch(token);
+        }
       }
     }
+
+    const party1Win = party1.some((m) => m.alive);
+
+    await mongo.close();
+
+    return {
+      lastMessage: message.clearComponents(),
+      winnerId: party1Win ? user.id : target?.id,
+    };
+  } finally {
+    await mongo.close();
   }
-
-  const party1Win = party1.some((m) => m.alive);
-
-  return {
-    lastMessage: message.clearComponents(),
-    winnerId: party1Win ? user.id : target?.id,
-  };
 }
 
 function determineFastest(

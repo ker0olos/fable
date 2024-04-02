@@ -1,10 +1,8 @@
 // deno-lint-ignore-file explicit-function-return-type
 
-import { MongoClient } from 'mongodb';
-
 import { green } from '$std/fmt/colors.ts';
 
-import db from '~/db/mod.ts';
+import { Mongo } from '~/db/mod.ts';
 
 import { MAX_BATTLE_TIME } from '~/src/battle.ts';
 
@@ -15,20 +13,18 @@ enum Direction {
 
 export async function ensureIndexes(): Promise<void> {
   // deno-lint-ignore no-non-null-assertion
-  db.client = await new MongoClient(Deno.env.get('MONGO_URI')!, {
-    retryWrites: true,
-  }).connect();
+  const db = new Mongo(Deno.env.get('MONGO_URI')!);
 
-  await createGuildsIndexes();
-  await createUsersIndexes();
-  await createInventoriesIndexes();
-  await createCharactersIndexes();
-  await createPacksIndexes();
-  await createBattleIndexes();
+  await createGuildsIndexes(db);
+  await createUsersIndexes(db);
+  await createInventoriesIndexes(db);
+  await createCharactersIndexes(db);
+  await createPacksIndexes(db);
+  await createBattleIndexes(db);
 
   // await createAnimeIndexes();
 
-  await db.client.close();
+  await db.close();
 }
 
 if (import.meta.main) {
@@ -37,7 +33,7 @@ if (import.meta.main) {
   console.log(green('Ensured Database Indexes'));
 }
 
-async function createGuildsIndexes() {
+async function createGuildsIndexes(db: Mongo) {
   await db.guilds() // Uniqueness Index
     .createIndex({ discordId: Direction.ascending }, { unique: true });
 
@@ -45,12 +41,12 @@ async function createGuildsIndexes() {
     .createIndex({ packIds: Direction.ascending });
 }
 
-async function createUsersIndexes() {
+async function createUsersIndexes(db: Mongo) {
   await db.users() // Compound Index (speeds up queries)
     .createIndex({ discordId: Direction.ascending }, { unique: true });
 }
 
-async function createInventoriesIndexes() {
+async function createInventoriesIndexes(db: Mongo) {
   await db.inventories() // Uniqueness Index
     .createIndex({
       userId: Direction.ascending,
@@ -58,7 +54,7 @@ async function createInventoriesIndexes() {
     }, { unique: true });
 }
 
-async function createCharactersIndexes() {
+async function createCharactersIndexes(db: Mongo) {
   await db.characters() // Uniqueness Index
     .createIndex({
       characterId: Direction.ascending,
@@ -74,7 +70,7 @@ async function createCharactersIndexes() {
     ]);
 }
 
-async function createPacksIndexes() {
+async function createPacksIndexes(db: Mongo) {
   await db.packs() // Uniqueness Index
     .createIndex({ 'manifest.id': Direction.ascending }, { unique: true });
 
@@ -87,17 +83,17 @@ async function createPacksIndexes() {
     });
 }
 
-async function createBattleIndexes() {
+async function createBattleIndexes(db: Mongo) {
   await db.battles() // TTL Index
     .createIndex({
       'createdAt': Direction.ascending,
     }, { expireAfterSeconds: MAX_BATTLE_TIME });
 }
 
-// async function createAnimeIndexes() {
+// async function createAnimeIndexes(db: Mongo) {
 //   await db.anime.media()
 //     .createIndex({ 'id': Direction.ascending });
 
-//   await db.anime.characters()
+//   await db.anime.characters(db: Mongo)
 //     .createIndex({ 'id': Direction.ascending });
 // }

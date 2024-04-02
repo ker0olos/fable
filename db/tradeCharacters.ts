@@ -1,4 +1,4 @@
-import db from '~/db/mod.ts';
+import { Mongo } from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -23,9 +23,13 @@ export async function giveCharacters(
     giveIds: string[];
   },
 ): Promise<void> {
-  const session = db.client.startSession();
+  const db = new Mongo();
+
+  const session = db.startSession();
 
   try {
+    await db.connect();
+
     session.startTransaction();
 
     const giveCharacters = await db.characters().aggregate()
@@ -80,9 +84,13 @@ export async function giveCharacters(
     await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
+    await session.endSession();
+    await db.close();
+
     throw err;
   } finally {
     await session.endSession();
+    await db.close();
   }
 }
 
@@ -101,7 +109,9 @@ export async function tradeCharacters(
     takeIds: string[];
   },
 ): Promise<void> {
-  const session = db.client.startSession();
+  const db = new Mongo();
+
+  const session = db.startSession();
 
   try {
     session.startTransaction();
@@ -195,8 +205,9 @@ export async function tradeCharacters(
       throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
-    const bulk: Parameters<ReturnType<typeof db.characters>['bulkWrite']>[0] =
-      [];
+    const bulk: Parameters<
+      ReturnType<typeof db.characters>['bulkWrite']
+    >[0] = [];
 
     bulk.push(
       {
@@ -221,9 +232,13 @@ export async function tradeCharacters(
     await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
+    await session.endSession();
+    await db.close();
+
     throw err;
   } finally {
     await session.endSession();
+    await db.close();
   }
 }
 
@@ -232,7 +247,9 @@ export async function stealCharacter(
   guildId: string,
   characterId: string,
 ): Promise<void> {
-  const session = db.client.startSession();
+  const db = new Mongo();
+
+  const session = db.startSession();
 
   try {
     session.startTransaction();
@@ -295,9 +312,13 @@ export async function stealCharacter(
     await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
+    await session.endSession();
+    await db.close();
+
     throw err;
   } finally {
     await session.endSession();
+    await db.close();
   }
 }
 
@@ -305,12 +326,20 @@ export async function failSteal(
   guildId: string,
   userId: string,
 ): Promise<void> {
-  await db.inventories().updateOne(
-    { guildId, userId },
-    {
-      $setOnInsert: newInventory(guildId, userId, ['stealTimestamp']),
-      $set: { stealTimestamp: new Date() },
-    },
-    { upsert: true },
-  );
+  const db = new Mongo();
+
+  try {
+    await db.connect();
+
+    await db.inventories().updateOne(
+      { guildId, userId },
+      {
+        $setOnInsert: newInventory(guildId, userId, ['stealTimestamp']),
+        $set: { stealTimestamp: new Date() },
+      },
+      { upsert: true },
+    );
+  } finally {
+    await db.close();
+  }
 }
