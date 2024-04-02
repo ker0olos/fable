@@ -230,26 +230,38 @@ const skills = {
 const format = (
   skill: CharacterSkill,
   locale?: discord.AvailableLocales,
-  options?: { maxed?: boolean; lvl?: number },
+  options?: { showcase?: boolean; lvl?: number },
 ): string => {
-  function generateStatsString(
+  const generateStatsString = (
     s: CharacterAdditionalStat,
-    options?: { lvl?: number },
-  ): string {
+    options?: { showcase?: boolean; lvl?: number },
+  ): string => {
     const { scale, prefix, suffix, factor } = s;
-    const startIndex = Math.max(options?.lvl ? options?.lvl - 2 : 0, 0);
-    const endIndex = options?.lvl ? options?.lvl : undefined;
 
-    const stats = scale
-      ? scale.slice(startIndex, endIndex).map((t) =>
-        `${prefix ?? ''}${t}${suffix ?? ''}`
-      )
-      : [1, 2, 3].slice(startIndex, endIndex).map((lvl) =>
-        `${prefix ?? ''}${factor! * lvl}${suffix ?? ''}`
-      );
+    options ??= {};
 
-    return stats.join(options?.lvl ? ` ${discord.emotes.rightArrow} ` : ', ');
-  }
+    options.lvl ??= options.showcase
+      ? skill.max === Infinity ? 10 : skill.max
+      : 0;
+
+    const i = !options.showcase
+      ? Math.min(options.lvl + 1, skill.max)
+      : options.lvl;
+
+    const lvl = Array.isArray(scale)
+      ? `${prefix ?? ''}${(scale[i - 1])}${suffix ?? ''}`
+      : `${prefix ?? ''}${(factor! * i)}${suffix ?? ''}`;
+
+    const prev = options.lvl && i > 1 && i < skill.max
+      ? Array.isArray(scale)
+        ? `${prefix ?? ''}${(scale[options.lvl - 1])}${suffix ?? ''}`
+        : `${prefix ?? ''}${(factor! * options.lvl)}${suffix ?? ''}`
+      : '';
+
+    return prev && !options.showcase
+      ? `${prev} ${discord.emotes.rightArrow} ${lvl}`
+      : lvl;
+  };
 
   const stats =
     skill.stats?.map((s, index) =>
@@ -258,25 +270,27 @@ const format = (
       })_`
     ) ?? [];
 
-  const cost = options?.maxed
-    ? ` **(${i18n.get('lvl', locale)} ${i18n.get('max', locale)})**`
-    : typeof options?.lvl === 'number'
-    ? options?.lvl > 1
-      ? ` **(${i18n.get('lvl', locale)} ${
-        options.lvl - 1
-      } ${discord.emotes.rightArrow} ${
-        i18n.get('lvl', locale)
-      } ${options.lvl})**`
-      : ` **(${i18n.get('lvl', locale)} ${options.lvl})**`
-    : ` (${skill.cost} ${
+  let cost = '';
+
+  if (options?.showcase) {
+    cost = `(${skill.cost} ${
       i18n.get(
         skill.cost === 1 ? 'skill-point' : 'skill-points',
         locale,
       )
     })`;
+  } else if (typeof skill.max === 'number' && options?.lvl === skill.max) {
+    cost = `**(${i18n.get('lvl', locale)} ${i18n.get('max', locale)})**`;
+  } else if (typeof options?.lvl === 'number' && !options?.showcase) {
+    cost = `**(${
+      i18n.get('lvl', locale)
+    } ${options.lvl} ${discord.emotes.rightArrow} ${i18n.get('lvl', locale)} ${
+      options.lvl + 1 === skill.max ? i18n.get('max', locale) : options.lvl + 1
+    })**`;
+  }
 
   return [
-    `**${i18n.get(skill.key, locale)}**${cost}`,
+    `**${i18n.get(skill.key, locale)}** ${cost}`,
     `${i18n.get(skill.descKey, locale)}`,
     `${stats.join('\n')}`,
   ].join('\n');
@@ -381,11 +395,10 @@ function preAcquire(
 
       const existingSkill = existing.combat.skills[skillKey];
 
-      const maxed = skill.max <= (existingSkill?.level ?? 1);
+      const maxed = skill.max <= (existingSkill?.level ?? 0);
 
       const formatted = format(skill, locale, {
-        maxed,
-        lvl: existingSkill?.level ? existingSkill.level + 1 : 1,
+        lvl: existingSkill?.level,
       });
 
       message.addEmbed(
@@ -410,15 +423,14 @@ function preAcquire(
               locale,
             ),
           )
-          .setDescription(i18n.get(
-            'costs-n-points',
-            locale,
-            skill.cost,
-            i18n.get(
-              skill.cost === 1 ? 'skill-point' : 'skill-points',
-              locale,
-            ),
-          )),
+          .setDescription(
+            `${discord.emotes.remove} ${skill.cost} ${
+              i18n.get(
+                skill.cost === 1 ? 'skill-point' : 'skill-points',
+                locale,
+              )
+            }`,
+          ),
       );
 
       discord.Message.dialog({
@@ -494,7 +506,7 @@ async function acquire(
     );
 
     const formatted = format(skill, locale, {
-      lvl: existingSkill.level,
+      lvl: existingSkill.level - 1,
     });
 
     return new discord.Message()
@@ -545,7 +557,7 @@ function all(
   const page = pages[index];
 
   const content = page
-    .map((skill) => format(skill, locale))
+    .map((skill) => format(skill, locale, { showcase: true }))
     .join('\n\n');
 
   message.addEmbed(new discord.Embed().setDescription(content));

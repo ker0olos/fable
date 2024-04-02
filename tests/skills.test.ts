@@ -208,7 +208,7 @@ Deno.test('/skills acquire', async (test) => {
             {
               type: 'rich',
               description: [
-                `**Critical Hit** **(LVL 1)**`,
+                `**Critical Hit** **(LVL 0 <:rarrow:1170533290105655428> LVL 1)**`,
                 `The art of performing the traditional critical hit.`,
                 `1. _Crit Chance (0.5%)_`,
                 `2. _Crit Damage (30%)_`,
@@ -216,7 +216,7 @@ Deno.test('/skills acquire', async (test) => {
             },
             {
               type: 'rich',
-              description: 'Costs 2 Skill Points',
+              description: '<:remove:1099004424111792158> 2 Skill Points',
               title: 'Acquire Skill',
             },
           ],
@@ -383,7 +383,7 @@ Deno.test('/skills acquire', async (test) => {
             },
             {
               type: 'rich',
-              description: 'Costs 2 Skill Points',
+              description: '<:remove:1099004424111792158> 2 Skill Points',
               title: 'Upgrade Skill',
             },
           ],
@@ -954,7 +954,7 @@ Deno.test('acquire skill', async (test) => {
               {
                 type: 'rich',
                 description: [
-                  `**Critical Hit** **(LVL 1)**`,
+                  `**Critical Hit** **(LVL 0 <:rarrow:1170533290105655428> LVL 1)**`,
                   `The art of performing the traditional critical hit.`,
                   `1. _Crit Chance (0.5%)_`,
                   `2. _Crit Damage (30%)_`,
