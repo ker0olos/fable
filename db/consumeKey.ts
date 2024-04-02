@@ -23,7 +23,7 @@ export async function consumeKey(
     { userId, guildId, availableKeys: { $gte: 1 } },
     {
       $inc: { availableKeys: -1 },
-      $set: { keysTimestamp: new Date() },
+      $set: { keysTimestamp: new Date(), lastPVE: new Date() },
     },
   );
 

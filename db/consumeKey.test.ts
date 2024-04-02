@@ -80,6 +80,7 @@ describe('db.consumeKey()', () => {
     const inventory = await db.inventories().findOne({ _id: insertedId });
 
     assertWithinLast5secs(inventory!.keysTimestamp!);
+    assertWithinLast5secs(inventory!.lastPVE!);
 
     assertObjectMatch(inventory!, {
       _id: insertedId,

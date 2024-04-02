@@ -116,6 +116,7 @@ export async function gainExp(
         $set: {
           floorsCleared: floor,
           keysTimestamp: new Date(),
+          lastPVE: new Date(),
         },
       },
       { session },
