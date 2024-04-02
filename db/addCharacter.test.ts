@@ -1,6 +1,5 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient } from 'mongodb';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
@@ -10,9 +9,11 @@ import {
   assertRejects,
 } from '$std/assert/mod.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryReplSet;
+let client: Mongo;
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
@@ -27,17 +28,16 @@ describe({
   sanitizeExit: false,
   sanitizeResources: false,
   sanitizeOps: false,
-  //
   fn: () => {
     beforeEach(async () => {
       mongod = await MongoMemoryReplSet.create();
-
-      db.client = await new MongoClient(mongod.getUri())
-        .connect();
+      client = new Mongo(mongod.getUri());
+      config.mongoUri = mongod.getUri();
     });
 
     afterEach(async () => {
-      await db.client.close();
+      delete config.mongoUri;
+      await client.close();
       await mongod.stop();
     });
 
@@ -51,13 +51,13 @@ describe({
         guaranteed: false,
       });
 
-      const character = await db.characters().findOne({
+      const character = await client.characters().findOne({
         userId: 'user-id',
         guildId: 'guild-id',
         characterId: 'character-id',
       });
 
-      const inventory = await db.inventories().findOne({
+      const inventory = await client.inventories().findOne({
         userId: 'user-id',
         guildId: 'guild-id',
       });
@@ -93,7 +93,7 @@ describe({
     });
 
     it('guaranteed pull', async () => {
-      await db.users().insertOne({
+      await client.users().insertOne({
         discordId: 'user-id',
         guarantees: [2, 3, 5],
         availableTokens: 0,
@@ -110,18 +110,18 @@ describe({
         guaranteed: true,
       });
 
-      const character = await db.characters().findOne({
+      const character = await client.characters().findOne({
         userId: 'user-id',
         guildId: 'guild-id',
         characterId: 'character-id',
       });
 
-      const inventory = await db.inventories().findOne({
+      const inventory = await client.inventories().findOne({
         userId: 'user-id',
         guildId: 'guild-id',
       });
 
-      const user = await db.users().findOne({
+      const user = await client.users().findOne({
         discordId: 'user-id',
       } as any);
 

@@ -1,14 +1,15 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
+let client: Mongo;
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
@@ -19,18 +20,18 @@ const assertWithinLast5secs = (ts: Date) => {
 describe('db.addPack()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('install public on new guild', async () => {
-    await db.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-id',
@@ -39,7 +40,7 @@ describe('db.addPack()', () => {
 
     const pack = await db.addPack('user-id', 'guild-id', 'pack-id');
 
-    const guild = await db.guilds().findOne({
+    const guild = await client.guilds().findOne({
       discordId: 'guild-id',
     });
 
@@ -51,12 +52,12 @@ describe('db.addPack()', () => {
   });
 
   it('install public on existing guild', async () => {
-    const { insertedId: guildInsertedId } = await db.guilds().insertOne({
+    const { insertedId: guildInsertedId } = await client.guilds().insertOne({
       discordId: 'guild-id',
       packIds: ['old-pack-id'],
     } as any);
 
-    await db.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-id',
@@ -65,7 +66,7 @@ describe('db.addPack()', () => {
 
     const pack = await db.addPack('user-id', 'guild-id', 'pack-id');
 
-    const guild = await db.guilds().findOne({
+    const guild = await client.guilds().findOne({
       _id: guildInsertedId,
     });
 
@@ -75,7 +76,7 @@ describe('db.addPack()', () => {
   });
 
   it('install private (owned)', async () => {
-    await db.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-id',
@@ -85,7 +86,7 @@ describe('db.addPack()', () => {
 
     const pack = await db.addPack('user-id', 'guild-id', 'pack-id');
 
-    const guild = await db.guilds().findOne({
+    const guild = await client.guilds().findOne({
       discordId: 'guild-id',
     });
 
@@ -97,7 +98,7 @@ describe('db.addPack()', () => {
   });
 
   it('install private (maintained)', async () => {
-    await db.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'another-user-id',
       manifest: {
         id: 'pack-id',
@@ -108,7 +109,7 @@ describe('db.addPack()', () => {
 
     const pack = await db.addPack('user-id', 'guild-id', 'pack-id');
 
-    const guild = await db.guilds().findOne({
+    const guild = await client.guilds().findOne({
       discordId: 'guild-id',
     });
 
@@ -120,7 +121,7 @@ describe('db.addPack()', () => {
   });
 
   it('install private (not allowed)', async () => {
-    await db.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'another-user-id',
       manifest: {
         id: 'pack-id',
@@ -131,7 +132,7 @@ describe('db.addPack()', () => {
 
     const pack = await db.addPack('user-id', 'guild-id', 'pack-id');
 
-    const guild = await db.guilds().findOne({
+    const guild = await client.guilds().findOne({
       discordId: 'guild-id',
     });
 
@@ -143,39 +144,39 @@ describe('db.addPack()', () => {
 describe('db.removePack()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('normal', async () => {
-    await db.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-1',
       },
     } as any);
 
-    await db.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'user-id',
       manifest: {
         id: 'pack-2',
       },
     } as any);
 
-    const { insertedId: guildInsertedId } = await db.guilds().insertOne({
+    const { insertedId: guildInsertedId } = await client.guilds().insertOne({
       discordId: 'guild-id',
       packIds: ['pack-1', 'pack-2'],
     } as any);
 
     const pack = await db.removePack('guild-id', 'pack-1');
 
-    const guild = await db.guilds().findOne({
+    const guild = await client.guilds().findOne({
       _id: guildInsertedId,
     });
 
@@ -185,7 +186,7 @@ describe('db.removePack()', () => {
   });
 
   it('not found', async () => {
-    const { insertedId: _guildInsertedId } = await db.guilds().insertOne({
+    const { insertedId: _guildInsertedId } = await client.guilds().insertOne({
       discordId: 'guild-id',
       packIds: [],
     } as any);
@@ -199,20 +200,20 @@ describe('db.removePack()', () => {
 describe('db.publishPack()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('publish new pack', async () => {
     await db.publishPack('user-id', { id: 'pack-id' } as any);
 
-    const pack = await db.packs().findOne({ 'manifest.id': 'pack-id' });
+    const pack = await client.packs().findOne({ 'manifest.id': 'pack-id' });
 
     assertEquals(objectIdRegex.test(pack!._id.toHexString()), true);
 
@@ -240,7 +241,7 @@ describe('db.publishPack()', () => {
   });
 
   it('update existing pack (owner)', async () => {
-    const { insertedId } = await db.packs().insertOne(
+    const { insertedId } = await client.packs().insertOne(
       {
         owner: 'user-id',
         createdAt: new Date('1999-1-1'),
@@ -251,7 +252,7 @@ describe('db.publishPack()', () => {
 
     await db.publishPack('user-id', { id: 'pack-id', title: 'new' } as any);
 
-    const pack = await db.packs().findOne({ 'manifest.id': 'pack-id' });
+    const pack = await client.packs().findOne({ 'manifest.id': 'pack-id' });
 
     assertWithinLast5secs(pack!.updatedAt);
 
@@ -266,7 +267,7 @@ describe('db.publishPack()', () => {
   });
 
   it('update existing pack (maintainer)', async () => {
-    const { insertedId } = await db.packs().insertOne(
+    const { insertedId } = await client.packs().insertOne(
       {
         owner: 'another-user-id',
         createdAt: new Date('1999-1-1'),
@@ -277,7 +278,7 @@ describe('db.publishPack()', () => {
 
     await db.publishPack('user-id', { id: 'pack-id', title: 'new' } as any);
 
-    const pack = await db.packs().findOne({ 'manifest.id': 'pack-id' });
+    const pack = await client.packs().findOne({ 'manifest.id': 'pack-id' });
 
     assertWithinLast5secs(pack!.updatedAt);
 
@@ -292,7 +293,7 @@ describe('db.publishPack()', () => {
   });
 
   it('update existing pack (no permission)', async () => {
-    const { insertedId } = await db.packs().insertOne(
+    const { insertedId } = await client.packs().insertOne(
       {
         owner: 'another-user-id',
         createdAt: new Date('1999-1-1'),
@@ -303,7 +304,7 @@ describe('db.publishPack()', () => {
 
     await db.publishPack('user-id', { id: 'pack-id', title: 'new' } as any);
 
-    const pack = await db.packs().findOne({ 'manifest.id': 'pack-id' });
+    const pack = await client.packs().findOne({ 'manifest.id': 'pack-id' });
 
     assertEquals(pack!.updatedAt, new Date('1999-1-1'));
 

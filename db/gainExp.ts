@@ -1,6 +1,4 @@
-// deno-lint-ignore-file
-
-import db, { type ObjectId } from '~/db/mod.ts';
+import { Mongo, type ObjectId } from '~/db/mod.ts';
 
 import { getFloorExp } from '~/src/tower.ts';
 
@@ -100,13 +98,19 @@ export async function gainExp(
   party: ObjectId[],
   keys: number,
 ): Promise<Status[]> {
-  const session = db.client.startSession();
+  const db = new Mongo();
+
+  const session = db.startSession();
 
   const bulk: Parameters<
     ReturnType<typeof db.characters>['bulkWrite']
   >[0] = [];
 
+  let status: Status[];
+
   try {
+    await db.connect();
+
     session.startTransaction();
 
     const inventory = await db.inventories().updateOne(
@@ -137,7 +141,7 @@ export async function gainExp(
     const expGained = getFloorExp(Math.max(floor, 1)) *
       Math.max(keys, 1);
 
-    const status = characters.map((character) => {
+    status = characters.map((character) => {
       const status: Status = {
         exp: 0,
         expToLevel: 0,
@@ -216,12 +220,16 @@ export async function gainExp(
     }
 
     await session.commitTransaction();
-    await session.endSession();
-
-    return status;
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
+    await db.close();
+
     throw err;
+  } finally {
+    await session.endSession();
+    await db.close();
   }
+
+  return status;
 }

@@ -1,17 +1,18 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { stub } from '$std/testing/mock.ts';
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
 
-import db, { MAX_KEYS, MAX_PULLS } from '~/db/mod.ts';
+import db, { MAX_KEYS, MAX_PULLS, Mongo } from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
+let client: Mongo;
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
@@ -26,13 +27,13 @@ const assertWithinLastMins = (ts: Date, mins: number) => {
 describe('db.getUser()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
@@ -61,7 +62,7 @@ describe('db.getUser()', () => {
   });
 
   it('get existing user', async () => {
-    const { insertedId } = await db.users().insertOne({
+    const { insertedId } = await client.users().insertOne({
       discordId: 'user-id',
     } as any);
 
@@ -75,13 +76,13 @@ describe('db.getUser()', () => {
 describe('db.getGuild()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
@@ -108,7 +109,7 @@ describe('db.getGuild()', () => {
   });
 
   it('get existing guild', async () => {
-    const { insertedId } = await db.guilds().insertOne({
+    const { insertedId } = await client.guilds().insertOne({
       discordId: 'guild-id',
     } as any);
 
@@ -121,11 +122,11 @@ describe('db.getGuild()', () => {
   });
 
   it('packs population', async () => {
-    const { insertedId: insertedPackId } = await db.packs().insertOne(
+    const { insertedId: insertedPackId } = await client.packs().insertOne(
       { manifest: { id: 'pack-id' } } as any,
     );
 
-    const { insertedId: insertedGuildId } = await db.guilds().insertOne({
+    const { insertedId: insertedGuildId } = await client.guilds().insertOne({
       discordId: 'guild-id',
       packIds: ['pack-id'],
     } as any);
@@ -144,13 +145,13 @@ describe('db.getGuild()', () => {
 describe('db.getInventory()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
@@ -188,11 +189,11 @@ describe('db.getInventory()', () => {
   });
 
   it('get existing inventory', async () => {
-    const { insertedId: userInsertedId } = await db.users().insertOne({
+    const { insertedId: userInsertedId } = await client.users().insertOne({
       discordId: 'user-id',
     } as any);
 
-    const { insertedId } = await db.inventories().insertOne({
+    const { insertedId } = await client.inventories().insertOne({
       guildId: 'guild-id',
       userId: 'user-id',
     } as any);
@@ -210,7 +211,7 @@ describe('db.getInventory()', () => {
   });
 
   it('party population', async () => {
-    const { insertedIds } = await db.characters().bulkWrite([
+    const { insertedIds } = await client.characters().bulkWrite([
       { insertOne: { document: { characterId: 'character-1' } as any } },
       { insertOne: { document: { characterId: 'character-2' } as any } },
       { insertOne: { document: { characterId: 'character-3' } as any } },
@@ -226,7 +227,7 @@ describe('db.getInventory()', () => {
       member5Id: insertedIds[4],
     };
 
-    const { insertedId } = await db.inventories().insertOne({
+    const { insertedId } = await client.inventories().insertOne({
       guildId: 'guild-id',
       userId: 'user-id',
       party: { ...partyIds },
@@ -253,13 +254,13 @@ describe('db.getInventory()', () => {
 describe('db.rechargeConsumables()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
@@ -284,7 +285,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge 2 keys (20 mins ago ts)', async () => {
-    await db.inventories().insertOne(
+    await client.inventories().insertOne(
       {
         guildId: 'guild-id',
         userId: 'user-id',
@@ -316,7 +317,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge 2 keys (25 mins ago ts)', async () => {
-    await db.inventories().insertOne(
+    await client.inventories().insertOne(
       {
         guildId: 'guild-id',
         userId: 'user-id',
@@ -348,7 +349,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge MAX keys (50 mins ago ts)', async () => {
-    await db.inventories().insertOne(
+    await client.inventories().insertOne(
       {
         guildId: 'guild-id',
         userId: 'user-id',
@@ -378,7 +379,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge 2 pulls (60 mins ago ts)', async () => {
-    await db.inventories().insertOne(
+    await client.inventories().insertOne(
       {
         guildId: 'guild-id',
         userId: 'user-id',
@@ -410,7 +411,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge 2 pulls (70 mins ago ts)', async () => {
-    await db.inventories().insertOne(
+    await client.inventories().insertOne(
       {
         guildId: 'guild-id',
         userId: 'user-id',
@@ -442,7 +443,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge MAX pulls (2.5 hours ago ts)', async () => {
-    await db.inventories().insertOne(
+    await client.inventories().insertOne(
       {
         guildId: 'guild-id',
         userId: 'user-id',
@@ -472,7 +473,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('recharge 0 tokens (11 hours ago)', async () => {
-    await db.users().insertOne(
+    await client.users().insertOne(
       {
         discordId: 'user-id',
         availableTokens: 0,
@@ -509,7 +510,7 @@ describe('db.rechargeConsumables()', () => {
     const dayOfWeekStub = stub(utils, 'getDayOfWeek', () => 'Monday' as const);
 
     try {
-      await db.users().insertOne(
+      await client.users().insertOne(
         {
           discordId: 'user-id',
           availableTokens: 1,
@@ -551,7 +552,7 @@ describe('db.rechargeConsumables()', () => {
     const dayOfWeekStub = stub(utils, 'getDayOfWeek', () => 'Sunday' as const);
 
     try {
-      await db.users().insertOne(
+      await client.users().insertOne(
         {
           discordId: 'user-id',
           availableTokens: 1,
@@ -590,7 +591,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('reset steal cooldown (1 day ago)', async () => {
-    await db.inventories().insertOne(
+    await client.inventories().insertOne(
       {
         guildId: 'guild-id',
         userId: 'user-id',
@@ -615,7 +616,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   it('reset steal cooldown (3 day ago)', async () => {
-    await db.inventories().insertOne(
+    await client.inventories().insertOne(
       {
         guildId: 'guild-id',
         userId: 'user-id',
@@ -642,18 +643,18 @@ describe('db.rechargeConsumables()', () => {
 describe('db.getActiveUsersIfLiked()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('2 users like character', async () => {
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-id',
       likes: [
         { characterId: 'character-id' },
@@ -661,14 +662,14 @@ describe('db.getActiveUsersIfLiked()', () => {
       ],
     } as any);
 
-    await db.inventories()
+    await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         lastPull: new Date(),
       } as any);
 
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-2',
       likes: [
         { characterId: 'character-id' },
@@ -676,7 +677,7 @@ describe('db.getActiveUsersIfLiked()', () => {
       ],
     } as any);
 
-    await db.inventories()
+    await client.inventories()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
@@ -693,7 +694,7 @@ describe('db.getActiveUsersIfLiked()', () => {
   });
 
   it('2 users like media', async () => {
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-id',
       likes: [
         { mediaId: 'media-id' },
@@ -701,14 +702,14 @@ describe('db.getActiveUsersIfLiked()', () => {
       ],
     } as any);
 
-    await db.inventories()
+    await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         lastPull: new Date(),
       } as any);
 
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-2',
       likes: [
         { mediaId: 'media-id' },
@@ -716,7 +717,7 @@ describe('db.getActiveUsersIfLiked()', () => {
       ],
     } as any);
 
-    await db.inventories()
+    await client.inventories()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
@@ -733,28 +734,28 @@ describe('db.getActiveUsersIfLiked()', () => {
   });
 
   it('1 active user likes character', async () => {
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-id',
       likes: [
         { characterId: 'character-id' },
       ],
     } as any);
 
-    await db.inventories()
+    await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         lastPull: new Date('1999-1-1'),
       } as any);
 
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-2',
       likes: [
         { characterId: 'character-id' },
       ],
     } as any);
 
-    await db.inventories()
+    await client.inventories()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
@@ -771,21 +772,21 @@ describe('db.getActiveUsersIfLiked()', () => {
   });
 
   it('no users like character', async () => {
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-id',
       likes: [
         { characterId: 'character-2' },
       ],
     } as any);
 
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-2',
       likes: [
         { mediaId: 'media-2' },
       ],
     } as any);
 
-    await db.inventories()
+    await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -805,36 +806,36 @@ describe('db.getActiveUsersIfLiked()', () => {
 describe('db.getUserCharacters()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('normal', async () => {
-    await db.characters().insertOne({
+    await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-1',
     } as any);
 
-    await db.characters().insertOne({
+    await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-2',
     } as any);
 
-    await db.characters().insertOne({
+    await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'another-guild-id',
       characterId: 'character-1',
     } as any);
 
-    await db.characters().insertOne({
+    await client.characters().insertOne({
       userId: 'another-user-id',
       guildId: 'guild-id',
       characterId: 'character-3',
@@ -861,13 +862,13 @@ describe('db.getUserCharacters()', () => {
   });
 
   it('none', async () => {
-    await db.characters().insertOne({
+    await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'another-guild-id',
       characterId: 'character-1',
     } as any);
 
-    await db.characters().insertOne({
+    await client.characters().insertOne({
       userId: 'another-user-id',
       guildId: 'guild-id',
       characterId: 'character-2',

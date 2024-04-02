@@ -1,36 +1,38 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals } from '$std/assert/mod.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
+
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
+let client: Mongo;
 
 describe('db.findCharacter()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('exists', async () => {
-    const { insertedId: inventoryInsertedId } = await db.inventories()
+    const { insertedId: inventoryInsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: characterInsertedId } = await db.characters()
+    const { insertedId: characterInsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -64,24 +66,24 @@ describe('db.findCharacter()', () => {
 describe('db.findCharacters()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('2 exists', async () => {
-    const { insertedId: inventory1InsertedId } = await db.inventories()
+    const { insertedId: inventory1InsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await db.characters()
+    const { insertedId: character1InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
@@ -89,13 +91,13 @@ describe('db.findCharacters()', () => {
         characterId: 'character-1',
       } as any);
 
-    const { insertedId: inventory2InsertedId } = await db.inventories()
+    const { insertedId: inventory2InsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character2InsertedId } = await db.characters()
+    const { insertedId: character2InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
@@ -138,13 +140,13 @@ describe('db.findCharacters()', () => {
   });
 
   it("1 exists 1 doesn't", async () => {
-    const { insertedId: inventory1InsertedId } = await db.inventories()
+    const { insertedId: inventory1InsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await db.characters()
+    const { insertedId: character1InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
@@ -191,24 +193,24 @@ describe('db.findCharacters()', () => {
 describe('db.findMediaCharacters()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('2 character - 1 media (exists)', async () => {
-    const { insertedId: inventoryInsertedId } = await db.inventories()
+    const { insertedId: inventoryInsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await db.characters()
+    const { insertedId: character1InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -217,7 +219,7 @@ describe('db.findMediaCharacters()', () => {
         mediaId: 'media-id',
       } as any);
 
-    const { insertedId: character2InsertedId } = await db.characters()
+    const { insertedId: character2InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -226,7 +228,7 @@ describe('db.findMediaCharacters()', () => {
         mediaId: 'media-id',
       } as any);
 
-    const { insertedId: _character3InsertedId } = await db.characters()
+    const { insertedId: _character3InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -271,13 +273,13 @@ describe('db.findMediaCharacters()', () => {
   });
 
   it('2 character - 2 media (exists)', async () => {
-    const { insertedId: inventoryInsertedId } = await db.inventories()
+    const { insertedId: inventoryInsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await db.characters()
+    const { insertedId: character1InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -286,7 +288,7 @@ describe('db.findMediaCharacters()', () => {
         mediaId: 'media-id',
       } as any);
 
-    const { insertedId: character2InsertedId } = await db.characters()
+    const { insertedId: character2InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -295,7 +297,7 @@ describe('db.findMediaCharacters()', () => {
         mediaId: 'media-id',
       } as any);
 
-    const { insertedId: character3InsertedId } = await db.characters()
+    const { insertedId: character3InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -367,24 +369,24 @@ describe('db.findMediaCharacters()', () => {
 describe('db.findUserCharacters()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('2 characters', async () => {
-    const { insertedId: inventoryInsertedId } = await db.inventories()
+    const { insertedId: inventoryInsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await db.characters()
+    const { insertedId: character1InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -392,7 +394,7 @@ describe('db.findUserCharacters()', () => {
         characterId: 'character-1',
       } as any);
 
-    const { insertedId: character2InsertedId } = await db.characters()
+    const { insertedId: character2InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -400,7 +402,7 @@ describe('db.findUserCharacters()', () => {
         characterId: 'character-2',
       } as any);
 
-    const { insertedId: _character3InsertedId } = await db.characters()
+    const { insertedId: _character3InsertedId } = await client.characters()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',

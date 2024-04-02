@@ -227,13 +227,6 @@ function comma(n: number): string {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-// function chunks<T>(a: Array<T>, size: number): T[][] {
-//   return Array.from(
-//     new Array(Math.ceil(a.length / size)),
-//     (_, i) => a.slice(i * size, i * size + size),
-//   );
-// }
-
 function distance(a: string, b: string): number {
   return 100 -
     (100 * levenshtein(a.toLowerCase(), b.toLowerCase())) /

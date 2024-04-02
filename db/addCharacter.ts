@@ -1,4 +1,4 @@
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -116,14 +116,20 @@ export async function addCharacter(
     sacrifices?: ObjectId[];
   },
 ): Promise<void> {
-  const session = db.client.startSession();
+  const mongo = new Mongo();
+
+  const session = mongo.startSession();
 
   try {
+    await mongo.connect();
+
     session.startTransaction();
 
     const { user, ...inventory } = await db.rechargeConsumables(
       guildId,
       userId,
+      mongo,
+      true,
     );
 
     if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
@@ -151,7 +157,7 @@ export async function addCharacter(
     };
 
     const deleteSacrifices: Parameters<
-      ReturnType<typeof db.characters>['bulkWrite']
+      ReturnType<typeof mongo.characters>['bulkWrite']
     >[0] = [];
 
     // if sacrifices (merge)
@@ -165,7 +171,7 @@ export async function addCharacter(
 
       user.guarantees.splice(i, 1);
 
-      await db.users().updateOne({ _id: user._id }, {
+      await mongo.users().updateOne({ _id: user._id }, {
         $set: { guarantees: user.guarantees },
       }, { session });
     } else {
@@ -174,13 +180,13 @@ export async function addCharacter(
       update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
     }
 
-    await db.inventories().updateOne(
+    await mongo.inventories().updateOne(
       { _id: inventory._id },
       { $set: update },
       { session },
     );
 
-    await db.characters().bulkWrite([
+    await mongo.characters().bulkWrite([
       ...deleteSacrifices,
       { insertOne: { document: newCharacter } },
     ], { session });
@@ -188,8 +194,12 @@ export async function addCharacter(
     await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
+    await session.endSession();
+    await mongo.close();
+
     throw err;
   } finally {
     await session.endSession();
+    await mongo.close();
   }
 }

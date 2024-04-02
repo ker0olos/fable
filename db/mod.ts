@@ -1,4 +1,6 @@
-import { type Collection, MongoClient } from 'mongodb';
+import { type ClientSession, type Collection, MongoClient } from 'mongodb';
+
+import config from '~/src/config.ts';
 
 import {
   getActiveUsersIfLiked,
@@ -76,36 +78,63 @@ import { disableBuiltins } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
-const _db = {} as { client: MongoClient };
+export class Mongo {
+  #client: MongoClient;
+
+  // deno-lint-ignore no-non-null-assertion
+  constructor(url = config.mongoUri!) {
+    this.#client = new MongoClient(url, {
+      retryWrites: true,
+    });
+  }
+
+  async connect(): Promise<void> {
+    this.#client = await this.#client.connect();
+  }
+
+  startSession(): ClientSession {
+    return this.#client.startSession();
+  }
+
+  async close(): Promise<void> {
+    await this.#client.close();
+  }
+
+  users(): Collection<Schema.User> {
+    return this.#client.db('default').collection('users');
+  }
+
+  guilds(): Collection<Schema.Guild> {
+    return this.#client.db('default').collection('guilds');
+  }
+
+  inventories(): Collection<Schema.Inventory> {
+    return this.#client.db('default').collection('inventories');
+  }
+
+  characters(): Collection<Schema.Character> {
+    return this.#client.db('default').collection('characters');
+  }
+
+  packs(): Collection<Schema.Pack> {
+    return this.#client.db('default').collection('packs');
+  }
+
+  battles(): Collection<Schema.BattleData> {
+    return this.#client.db('default').collection('battles');
+  }
+
+  // anime: {
+  //   media(): Collection<DisaggregatedMedia> {
+  //     return db.client.db('anime').collection('media');
+  //   }
+  //   characters(): Collection<DisaggregatedCharacter> {
+  //     return db.client.db('anime').collection('characters');
+  //   }
+  // },
+}
 
 const db = {
-  ..._db,
-  users: (): Collection<Schema.User> => {
-    return db.client.db('default').collection('users');
-  },
-  guilds: (): Collection<Schema.Guild> => {
-    return db.client.db('default').collection('guilds');
-  },
-  inventories: (): Collection<Schema.Inventory> => {
-    return db.client.db('default').collection('inventories');
-  },
-  characters: (): Collection<Schema.Character> => {
-    return db.client.db('default').collection('characters');
-  },
-  packs: (): Collection<Schema.Pack> => {
-    return db.client.db('default').collection('packs');
-  },
-  battles: (): Collection<Schema.BattleData> => {
-    return db.client.db('default').collection('battles');
-  },
-  // anime: {
-  //   media: (): Collection<DisaggregatedMedia> => {
-  //     return db.client.db('anime').collection('media');
-  //   },
-  //   characters: (): Collection<DisaggregatedCharacter> => {
-  //     return db.client.db('anime').collection('characters');
-  //   },
-  // },
   getInventory,
   getUser,
   getGuild,

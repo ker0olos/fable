@@ -1,6 +1,5 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
@@ -10,9 +9,11 @@ import {
   assertRejects,
 } from '$std/assert/mod.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
+let client: Mongo;
 
 describe({
   name: 'db.acquireSkill()',
@@ -24,18 +25,18 @@ describe({
   fn: () => {
     beforeEach(async () => {
       mongod = await MongoMemoryServer.create();
-
-      db.client = await new MongoClient(mongod.getUri())
-        .connect();
+      client = new Mongo(mongod.getUri());
+      config.mongoUri = mongod.getUri();
     });
 
     afterEach(async () => {
-      await db.client.close();
+      delete config.mongoUri;
+      await client.close();
       await mongod.stop();
     });
 
     it('normal', async () => {
-      const { insertedId } = await db.characters().insertOne({
+      const { insertedId } = await client.characters().insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         characterId: 'character-id',
@@ -56,7 +57,7 @@ describe({
         'crit',
       );
 
-      const character = await db.characters().findOne({ _id: insertedId });
+      const character = await client.characters().findOne({ _id: insertedId });
 
       assertEquals(character!._id, insertedId);
 
@@ -75,7 +76,7 @@ describe({
     });
 
     it('no skill points', async () => {
-      const { insertedId } = await db.characters().insertOne({
+      const { insertedId } = await client.characters().insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         characterId: 'character-id',
@@ -98,7 +99,7 @@ describe({
         )
       );
 
-      const character = await db.characters().findOne({ _id: insertedId });
+      const character = await client.characters().findOne({ _id: insertedId });
 
       assertObjectMatch(character!, {
         combat: {
@@ -113,7 +114,7 @@ describe({
     });
 
     it('max level', async () => {
-      const { insertedId } = await db.characters().insertOne({
+      const { insertedId } = await client.characters().insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         characterId: 'character-id',
@@ -136,7 +137,7 @@ describe({
         )
       );
 
-      const character = await db.characters().findOne({ _id: insertedId });
+      const character = await client.characters().findOne({ _id: insertedId });
 
       assertObjectMatch(character!, {
         combat: {

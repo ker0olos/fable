@@ -1,4 +1,4 @@
-import db from '~/db/mod.ts';
+import { Mongo } from '~/db/mod.ts';
 
 import type { WithId } from 'mongodb';
 
@@ -14,10 +14,18 @@ export async function addTokens(
   userId: string,
   amount: number,
 ): Promise<void> {
-  await db.users().updateOne(
-    { discordId: userId },
-    { $inc: { availableTokens: amount } },
-  );
+  const db = new Mongo();
+
+  try {
+    await db.connect();
+
+    await db.users().updateOne(
+      { discordId: userId },
+      { $inc: { availableTokens: amount } },
+    );
+  } finally {
+    await db.close();
+  }
 }
 
 export async function addPulls(
@@ -25,9 +33,13 @@ export async function addPulls(
   guildId: string,
   amount: number,
 ): Promise<void> {
-  const session = db.client.startSession();
+  const db = new Mongo();
+
+  const session = db.startSession();
 
   try {
+    await db.connect();
+
     session.startTransaction();
 
     const { modifiedCount } = await db.users().updateOne({
@@ -47,9 +59,13 @@ export async function addPulls(
     await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
+    await session.endSession();
+    await db.close();
+
     throw err;
   } finally {
     await session.endSession();
+    await db.close();
   }
 }
 
@@ -63,15 +79,25 @@ export async function addGuarantee(
     ? COSTS.FOUR
     : COSTS.THREE;
 
-  const user = await db.users().findOneAndUpdate({
-    discordId: userId,
-    availableTokens: { $gte: cost },
-  }, {
-    $push: { guarantees: guarantee },
-    $inc: { availableTokens: -cost },
-  }, { returnDocument: 'after' });
+  const db = new Mongo();
 
-  return user;
+  let result: WithId<Schema.User> | null;
+
+  try {
+    await db.connect();
+
+    result = await db.users().findOneAndUpdate({
+      discordId: userId,
+      availableTokens: { $gte: cost },
+    }, {
+      $push: { guarantees: guarantee },
+      $inc: { availableTokens: -cost },
+    }, { returnDocument: 'after' });
+  } finally {
+    await db.close();
+  }
+
+  return result;
 }
 
 export async function addKeys(
@@ -79,9 +105,13 @@ export async function addKeys(
   guildId: string,
   amount: number,
 ): Promise<void> {
-  const session = db.client.startSession();
+  const db = new Mongo();
+
+  const session = db.startSession();
 
   try {
+    await db.connect();
+
     session.startTransaction();
 
     const { modifiedCount } = await db.users().updateOne({
@@ -101,8 +131,12 @@ export async function addKeys(
     await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
+    await session.endSession();
+    await db.close();
+
     throw err;
   } finally {
     await session.endSession();
+    await db.close();
   }
 }

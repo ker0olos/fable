@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
@@ -11,9 +11,12 @@ import {
   assertRejects,
 } from '$std/assert/mod.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
+
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryReplSet;
+let client: Mongo;
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
@@ -24,18 +27,18 @@ const assertWithinLast5secs = (ts: Date) => {
 describe('db.giveCharacters()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryReplSet.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('give 1 character to new user', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -43,7 +46,7 @@ describe('db.giveCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         characterId: 'character-id',
         inventoryId: inventoryId[0],
@@ -59,7 +62,7 @@ describe('db.giveCharacters()', () => {
       giveIds: ['character-id'],
     });
 
-    const character = await db.characters().findOne({
+    const character = await client.characters().findOne({
       characterId: 'character-id',
     });
 
@@ -81,7 +84,7 @@ describe('db.giveCharacters()', () => {
   });
 
   it('give 1 character to existing user', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -94,7 +97,7 @@ describe('db.giveCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -110,7 +113,7 @@ describe('db.giveCharacters()', () => {
       giveIds: ['character-id'],
     });
 
-    const character = await db.characters().findOne({
+    const character = await client.characters().findOne({
       characterId: 'character-id',
     });
 
@@ -125,7 +128,7 @@ describe('db.giveCharacters()', () => {
   });
 
   it('character not found', async () => {
-    await db.inventories().insertMany([
+    await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -147,7 +150,7 @@ describe('db.giveCharacters()', () => {
   });
 
   it('character not owned', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -160,7 +163,7 @@ describe('db.giveCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         userId: 'user-2',
         guildId: 'guild-id',
@@ -185,7 +188,7 @@ describe('db.giveCharacters()', () => {
   it('give party characters', async () => {
     const characterInsertedId = new ObjectId();
 
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -195,7 +198,7 @@ describe('db.giveCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         _id: characterInsertedId,
         characterId: 'character-id',
@@ -222,18 +225,18 @@ describe('db.giveCharacters()', () => {
 describe('db.tradeCharacters()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryReplSet.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('give 1 character take 1 character', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -246,7 +249,7 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -269,7 +272,7 @@ describe('db.tradeCharacters()', () => {
       takeIds: ['character-2'],
     });
 
-    const [character1, character2] = await db.characters().find({
+    const [character1, character2] = await client.characters().find({
       characterId: { $in: ['character-1', 'character-2'] },
     }).toArray();
 
@@ -292,7 +295,7 @@ describe('db.tradeCharacters()', () => {
   });
 
   it('give character not found', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -305,7 +308,7 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       // {
       //   userId: 'user-1',
       //   guildId: 'guild-id',
@@ -335,7 +338,7 @@ describe('db.tradeCharacters()', () => {
   });
 
   it('take character not found', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -348,7 +351,7 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -378,7 +381,7 @@ describe('db.tradeCharacters()', () => {
   });
 
   it('give character not owned', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -391,7 +394,7 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         userId: 'user-2',
         guildId: 'guild-id',
@@ -421,7 +424,7 @@ describe('db.tradeCharacters()', () => {
   });
 
   it('take character not owned', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -434,7 +437,7 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -466,7 +469,7 @@ describe('db.tradeCharacters()', () => {
   it('give character in party', async () => {
     const characterInsertedId = new ObjectId();
 
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -481,7 +484,7 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         _id: characterInsertedId,
         userId: 'user-1',
@@ -514,7 +517,7 @@ describe('db.tradeCharacters()', () => {
   it('take character in party', async () => {
     const characterInsertedId = new ObjectId();
 
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -529,7 +532,7 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -563,18 +566,18 @@ describe('db.tradeCharacters()', () => {
 describe('db.stealCharacter()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryReplSet.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('normal', async () => {
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -587,7 +590,7 @@ describe('db.stealCharacter()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         userId: 'user-2',
         guildId: 'guild-id',
@@ -602,7 +605,7 @@ describe('db.stealCharacter()', () => {
       'character-id',
     );
 
-    const character = await db.characters().findOne({
+    const character = await client.characters().findOne({
       characterId: 'character-id',
     });
 
@@ -619,7 +622,7 @@ describe('db.stealCharacter()', () => {
   it('from target party', async () => {
     const characterInsertedId = new ObjectId();
 
-    const { insertedIds: inventoryId } = await db.inventories().insertMany([
+    const { insertedIds: inventoryId } = await client.inventories().insertMany([
       {
         userId: 'user-1',
         guildId: 'guild-id',
@@ -632,7 +635,7 @@ describe('db.stealCharacter()', () => {
       },
     ] as any);
 
-    await db.characters().insertMany([
+    await client.characters().insertMany([
       {
         _id: characterInsertedId,
         userId: 'user-2',
@@ -648,7 +651,7 @@ describe('db.stealCharacter()', () => {
       'character-id',
     );
 
-    const character = await db.characters().findOne({
+    const character = await client.characters().findOne({
       characterId: 'character-id',
     });
 
@@ -661,7 +664,7 @@ describe('db.stealCharacter()', () => {
       characterId: 'character-id',
     });
 
-    const targetInventory = await db.inventories().findOne({
+    const targetInventory = await client.inventories().findOne({
       _id: inventoryId[1],
     });
 
@@ -680,20 +683,20 @@ describe('db.stealCharacter()', () => {
 describe('db.failSteal()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryReplSet.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('new inventory', async () => {
     await db.failSteal('guild-id', 'user-id');
 
-    const inventory = await db.inventories().findOne({
+    const inventory = await client.inventories().findOne({
       userId: 'user-id',
       guildId: 'guild-id',
     });
@@ -704,7 +707,7 @@ describe('db.failSteal()', () => {
   });
 
   it('existing', async () => {
-    const { insertedId } = await db.inventories().insertOne(
+    const { insertedId } = await client.inventories().insertOne(
       {
         userId: 'user-id',
         guildId: 'guild-id',
@@ -714,7 +717,7 @@ describe('db.failSteal()', () => {
 
     await db.failSteal('guild-id', 'user-id');
 
-    const inventory = await db.inventories().findOne({
+    const inventory = await client.inventories().findOne({
       userId: 'user-id',
       guildId: 'guild-id',
     });
