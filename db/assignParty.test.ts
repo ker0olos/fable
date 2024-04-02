@@ -1,30 +1,31 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
+let client: Mongo;
 
 describe('db.assignCharacter()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('1st spot (auto)', async () => {
-    const { insertedId: inventoryInsertedId } = await db.inventories()
+    const { insertedId: inventoryInsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -37,7 +38,7 @@ describe('db.assignCharacter()', () => {
         },
       } as any);
 
-    const { insertedId: characterInsertedId } = await db.characters()
+    const { insertedId: characterInsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -59,7 +60,7 @@ describe('db.assignCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    const inventory = await db.inventories().findOne(
+    const inventory = await client.inventories().findOne(
       { userId: 'user-id', guildId: 'guild-id' },
     );
 
@@ -75,7 +76,7 @@ describe('db.assignCharacter()', () => {
   });
 
   it('3rd spot (auto)', async () => {
-    const { insertedId: inventoryInsertedId } = await db.inventories()
+    const { insertedId: inventoryInsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -88,7 +89,7 @@ describe('db.assignCharacter()', () => {
         },
       } as any);
 
-    const { insertedId: characterInsertedId } = await db.characters()
+    const { insertedId: characterInsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -110,7 +111,7 @@ describe('db.assignCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    const inventory = await db.inventories().findOne(
+    const inventory = await client.inventories().findOne(
       { userId: 'user-id', guildId: 'guild-id' },
     );
 
@@ -126,7 +127,7 @@ describe('db.assignCharacter()', () => {
   });
 
   it('1st spot (specified spot)', async () => {
-    const { insertedId: inventoryInsertedId } = await db.inventories()
+    const { insertedId: inventoryInsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -139,7 +140,7 @@ describe('db.assignCharacter()', () => {
         },
       } as any);
 
-    const { insertedId: characterInsertedId } = await db.characters()
+    const { insertedId: characterInsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -162,7 +163,7 @@ describe('db.assignCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    const inventory = await db.inventories().findOne(
+    const inventory = await client.inventories().findOne(
       { userId: 'user-id', guildId: 'guild-id' },
     );
 
@@ -178,14 +179,14 @@ describe('db.assignCharacter()', () => {
   });
 
   it('reassign (specified spot)', async () => {
-    const { insertedId: characterInsertedId } = await db.characters()
+    const { insertedId: characterInsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         characterId: 'character-id',
       } as any);
 
-    const { insertedId: _inventoryInsertedId } = await db.inventories()
+    const { insertedId: _inventoryInsertedId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -211,7 +212,7 @@ describe('db.assignCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    const inventory = await db.inventories().findOne(
+    const inventory = await client.inventories().findOne(
       { userId: 'user-id', guildId: 'guild-id' },
     );
 
@@ -230,18 +231,18 @@ describe('db.assignCharacter()', () => {
 describe('db.swapCharacters()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('1-to-undefined', async () => {
-    const inventory = await db.inventories()
+    const inventory = await client.inventories()
       .findOneAndUpdate(
         {},
         {
@@ -262,7 +263,7 @@ describe('db.swapCharacters()', () => {
 
     await db.swapSpots(inventory!, 1, 3);
 
-    const inventoryUpdated = await db.inventories().findOne(
+    const inventoryUpdated = await client.inventories().findOne(
       { userId: 'user-id', guildId: 'guild-id' },
     );
 
@@ -278,7 +279,7 @@ describe('db.swapCharacters()', () => {
   });
 
   it('1-to-1', async () => {
-    const inventory = await db.inventories()
+    const inventory = await client.inventories()
       .findOneAndUpdate(
         {},
         {
@@ -299,7 +300,7 @@ describe('db.swapCharacters()', () => {
 
     await db.swapSpots(inventory!, 1, 3);
 
-    const inventoryUpdated = await db.inventories().findOne(
+    const inventoryUpdated = await client.inventories().findOne(
       { userId: 'user-id', guildId: 'guild-id' },
     );
 
@@ -318,18 +319,18 @@ describe('db.swapCharacters()', () => {
 describe('db.unassignCharacter()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('normal', async () => {
-    const { insertedId: inventoryInsertedId } = await db.inventories()
+    const { insertedId: inventoryInsertedId } = await client.inventories()
       .insertOne(
         {
           userId: 'user-id',
@@ -346,7 +347,7 @@ describe('db.unassignCharacter()', () => {
 
     await db.unassignCharacter('user-id', 'guild-id', 3);
 
-    const inventoryUpdated = await db.inventories().findOne(
+    const inventoryUpdated = await client.inventories().findOne(
       { _id: inventoryInsertedId },
     );
 

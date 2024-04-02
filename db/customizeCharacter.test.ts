@@ -1,30 +1,31 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals } from '$std/assert/mod.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
+let client: Mongo;
 
 describe('db.setCharacterNickname()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('set new nickname', async () => {
-    const { insertedId } = await db.characters().insertOne({
+    const { insertedId } = await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',
@@ -42,7 +43,7 @@ describe('db.setCharacterNickname()', () => {
   });
 
   it('reset nickname', async () => {
-    const { insertedId } = await db.characters().insertOne({
+    const { insertedId } = await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',
@@ -63,18 +64,18 @@ describe('db.setCharacterNickname()', () => {
 describe('db.setCharacterImage()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('set new image', async () => {
-    const { insertedId } = await db.characters().insertOne({
+    const { insertedId } = await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',
@@ -92,7 +93,7 @@ describe('db.setCharacterImage()', () => {
   });
 
   it('reset image', async () => {
-    const { insertedId } = await db.characters().insertOne({
+    const { insertedId } = await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',

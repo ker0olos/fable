@@ -1,5 +1,7 @@
 import { type ClientSession, type Collection, MongoClient } from 'mongodb';
 
+import config from '~/src/config.ts';
+
 import {
   getActiveUsersIfLiked,
   getGuild,
@@ -75,53 +77,53 @@ import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 import { disableBuiltins } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
-import config from '~/src/config.ts';
 
 export class Mongo {
-  #self: MongoClient;
+  #client: MongoClient;
 
   // deno-lint-ignore no-non-null-assertion
   constructor(url = config.mongoUri!) {
-    this.#self = new MongoClient(url, {
+    this.#client = new MongoClient(url, {
       retryWrites: true,
     });
   }
 
   async connect(): Promise<void> {
-    this.#self = await this.#self.connect();
+    this.#client = await this.#client.connect();
   }
 
   startSession(): ClientSession {
-    return this.#self.startSession();
+    return this.#client.startSession();
   }
 
   async close(): Promise<void> {
-    await this.#self.close();
+    await this.#client.close();
   }
 
   users(): Collection<Schema.User> {
-    return this.#self.db('default').collection('users');
+    return this.#client.db('default').collection('users');
   }
 
   guilds(): Collection<Schema.Guild> {
-    return this.#self.db('default').collection('guilds');
+    return this.#client.db('default').collection('guilds');
   }
 
   inventories(): Collection<Schema.Inventory> {
-    return this.#self.db('default').collection('inventories');
+    return this.#client.db('default').collection('inventories');
   }
 
   characters(): Collection<Schema.Character> {
-    return this.#self.db('default').collection('characters');
+    return this.#client.db('default').collection('characters');
   }
 
   packs(): Collection<Schema.Pack> {
-    return this.#self.db('default').collection('packs');
+    return this.#client.db('default').collection('packs');
   }
 
   battles(): Collection<Schema.BattleData> {
-    return this.#self.db('default').collection('battles');
+    return this.#client.db('default').collection('battles');
   }
+
   // anime: {
   //   media(): Collection<DisaggregatedMedia> {
   //     return db.client.db('anime').collection('media');

@@ -109,6 +109,8 @@ export async function gainExp(
   let status: Status[];
 
   try {
+    await db.connect();
+
     session.startTransaction();
 
     const inventory = await db.inventories().updateOne(
@@ -218,7 +220,6 @@ export async function gainExp(
     }
 
     await session.commitTransaction();
-    await session.endSession();
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();

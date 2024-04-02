@@ -1,37 +1,38 @@
 // deno-lint-ignore-file no-explicit-any no-non-null-assertion
 
-import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
 import { assertEquals, assertRejects } from '$std/assert/mod.ts';
 
-import db, { COSTS } from '~/db/mod.ts';
+import db, { COSTS, Mongo } from '~/db/mod.ts';
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
+let client: Mongo;
 
 describe('db.addTokens()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('add 3 tokens', async () => {
-    const { insertedId } = await db.users().insertOne({
+    const { insertedId } = await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: 2,
     } as any);
 
     await db.addTokens('user-id', 3);
 
-    const user = await db.users().findOne({ discordId: 'user-id' });
+    const user = await client.users().findOne({ discordId: 'user-id' });
 
     assertEquals(user!._id, insertedId);
     assertEquals(user!.availableTokens, 5);
@@ -41,18 +42,18 @@ describe('db.addTokens()', () => {
 describe('db.addGuarantee()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('add 5*', async () => {
-    const { insertedId } = await db.users().insertOne({
+    const { insertedId } = await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: COSTS.FIVE,
       guarantees: [1],
@@ -66,7 +67,7 @@ describe('db.addGuarantee()', () => {
   });
 
   it('add 4*', async () => {
-    const { insertedId } = await db.users().insertOne({
+    const { insertedId } = await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: COSTS.FOUR,
       guarantees: [1],
@@ -80,7 +81,7 @@ describe('db.addGuarantee()', () => {
   });
 
   it('add 3*', async () => {
-    const { insertedId } = await db.users().insertOne({
+    const { insertedId } = await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: COSTS.THREE,
       guarantees: [1],
@@ -94,7 +95,7 @@ describe('db.addGuarantee()', () => {
   });
 
   it('not enough tokens', async () => {
-    const { insertedId } = await db.users().insertOne({
+    const { insertedId } = await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: COSTS.FIVE - 1,
       guarantees: [1],
@@ -104,7 +105,7 @@ describe('db.addGuarantee()', () => {
 
     assertEquals(user, null);
 
-    const _user = await db.users().findOne({ discordId: 'user-id' });
+    const _user = await client.users().findOne({ discordId: 'user-id' });
 
     assertEquals(_user!._id, insertedId);
     assertEquals(_user!.availableTokens, COSTS.FIVE - 1);
@@ -115,23 +116,23 @@ describe('db.addGuarantee()', () => {
 describe('db.addPulls()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('add 2 pulls', async () => {
-    const { insertedId: insertedUserId } = await db.users().insertOne({
+    const { insertedId: insertedUserId } = await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: 2,
     } as any);
 
-    const { insertedId: insertedInventoryId } = await db.inventories()
+    const { insertedId: insertedInventoryId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -140,8 +141,8 @@ describe('db.addPulls()', () => {
 
     await db.addPulls('user-id', 'guild-id', 2);
 
-    const user = await db.users().findOne({ discordId: 'user-id' });
-    const inventory = await db.inventories().findOne({
+    const user = await client.users().findOne({ discordId: 'user-id' });
+    const inventory = await client.inventories().findOne({
       userId: 'user-id',
       guildId: 'guild-id',
     });
@@ -154,7 +155,7 @@ describe('db.addPulls()', () => {
   });
 
   it('add 2 pulls (not enough tokens)', async () => {
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: 1,
     } as any);
@@ -170,23 +171,23 @@ describe('db.addPulls()', () => {
 describe('db.addKeys()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('add 2 keys', async () => {
-    const { insertedId: insertedUserId } = await db.users().insertOne({
+    const { insertedId: insertedUserId } = await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: 2,
     } as any);
 
-    const { insertedId: insertedInventoryId } = await db.inventories()
+    const { insertedId: insertedInventoryId } = await client.inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -195,8 +196,8 @@ describe('db.addKeys()', () => {
 
     await db.addKeys('user-id', 'guild-id', 2);
 
-    const user = await db.users().findOne({ discordId: 'user-id' });
-    const inventory = await db.inventories().findOne({
+    const user = await client.users().findOne({ discordId: 'user-id' });
+    const inventory = await client.inventories().findOne({
       userId: 'user-id',
       guildId: 'guild-id',
     });
@@ -209,7 +210,7 @@ describe('db.addKeys()', () => {
   });
 
   it('add 2 keys (not enough tokens)', async () => {
-    await db.users().insertOne({
+    await client.users().insertOne({
       discordId: 'user-id',
       availableTokens: 1,
     } as any);

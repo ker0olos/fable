@@ -331,7 +331,7 @@ export async function rechargeConsumables(
       !newDailyTokens &&
       !resetSteal
     ) {
-      await db.close();
+      !manual && await db.close();
       return inventory;
     }
 

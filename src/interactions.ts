@@ -1,5 +1,3 @@
-import { MongoClient } from 'mongodb';
-
 import * as discord from '~/src/discord.ts';
 
 import search, { idPrefix } from '~/src/search.ts';
@@ -25,8 +23,6 @@ import merge from '~/src/merge.ts';
 import * as communityAPI from '~/src/communityAPI.ts';
 
 import config, { initConfig } from '~/src/config.ts';
-
-import db from '~/db/mod.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 

@@ -1,6 +1,6 @@
 // deno-lint-ignore-file
 
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
@@ -10,11 +10,13 @@ import {
   assertRejects,
 } from '$std/assert/mod.ts';
 
-import db from '~/db/mod.ts';
+import db, { Mongo } from '~/db/mod.ts';
 
 import { experienceToNextLevel } from '~/db/gainExp.ts';
+import config from '~/src/config.ts';
 
 let mongod: MongoMemoryReplSet;
+let client: Mongo;
 
 const assertWithinLast5secs = (ts: Date) => {
   assertEquals(Math.abs(Date.now() - ts.getTime()) <= 5000, true);
@@ -314,25 +316,25 @@ describe('distribute new stat points', () => {
 describe('db.gainExp()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryReplSet.create();
-
-    db.client = await new MongoClient(mongod.getUri())
-      .connect();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
   afterEach(async () => {
-    await db.client.close();
+    delete config.mongoUri;
+    await client.close();
     await mongod.stop();
   });
 
   it('gain 1 exp (no levels up)', async () => {
-    const { insertedId: inventoryId } = await db.inventories().insertOne({
+    const { insertedId: inventoryId } = await client.inventories().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       availableKeys: 1,
       floorsCleared: 1,
     } as any);
 
-    const { insertedId } = await db.characters().insertOne({
+    const { insertedId } = await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',
@@ -355,8 +357,8 @@ describe('db.gainExp()', () => {
       1,
     );
 
-    const inventory = await db.inventories().findOne({ _id: inventoryId });
-    const character = await db.characters().findOne({ _id: insertedId });
+    const inventory = await client.inventories().findOne({ _id: inventoryId });
+    const character = await client.characters().findOne({ _id: insertedId });
 
     assertWithinLast5secs(inventory!.keysTimestamp!);
     assertWithinLast5secs(inventory!.lastPVE!);
@@ -388,14 +390,14 @@ describe('db.gainExp()', () => {
   });
 
   it('gain 10 exp (1 level up)', async () => {
-    const { insertedId: inventoryId } = await db.inventories().insertOne({
+    const { insertedId: inventoryId } = await client.inventories().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       availableKeys: 10,
       floorsCleared: 1,
     } as any);
 
-    const { insertedId } = await db.characters().insertOne({
+    const { insertedId } = await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',
@@ -418,8 +420,8 @@ describe('db.gainExp()', () => {
       10,
     );
 
-    const inventory = await db.inventories().findOne({ _id: inventoryId });
-    const character = await db.characters().findOne({ _id: insertedId });
+    const inventory = await client.inventories().findOne({ _id: inventoryId });
+    const character = await client.characters().findOne({ _id: insertedId });
 
     assertWithinLast5secs(inventory!.keysTimestamp!);
 
@@ -450,14 +452,14 @@ describe('db.gainExp()', () => {
   });
 
   it('gain 30 exp (1 level up)', async () => {
-    const { insertedId: inventoryId } = await db.inventories().insertOne({
+    const { insertedId: inventoryId } = await client.inventories().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       availableKeys: 20,
       floorsCleared: 1,
     } as any);
 
-    const { insertedId } = await db.characters().insertOne({
+    const { insertedId } = await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',
@@ -480,8 +482,8 @@ describe('db.gainExp()', () => {
       20,
     );
 
-    const inventory = await db.inventories().findOne({ _id: inventoryId });
-    const character = await db.characters().findOne({ _id: insertedId });
+    const inventory = await client.inventories().findOne({ _id: inventoryId });
+    const character = await client.characters().findOne({ _id: insertedId });
 
     assertWithinLast5secs(inventory!.keysTimestamp!);
 
@@ -512,14 +514,14 @@ describe('db.gainExp()', () => {
   });
 
   it('gain 40 exp (2 level up)', async () => {
-    const { insertedId: inventoryId } = await db.inventories().insertOne({
+    const { insertedId: inventoryId } = await client.inventories().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       availableKeys: 30,
       floorsCleared: 1,
     } as any);
 
-    const { insertedId } = await db.characters().insertOne({
+    const { insertedId } = await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',
@@ -542,8 +544,8 @@ describe('db.gainExp()', () => {
       30,
     );
 
-    const inventory = await db.inventories().findOne({ _id: inventoryId });
-    const character = await db.characters().findOne({ _id: insertedId });
+    const inventory = await client.inventories().findOne({ _id: inventoryId });
+    const character = await client.characters().findOne({ _id: insertedId });
 
     assertWithinLast5secs(inventory!.keysTimestamp!);
 
@@ -574,7 +576,7 @@ describe('db.gainExp()', () => {
   });
 
   it('no keys', async () => {
-    const { insertedId: inventoryId } = await db.inventories().insertOne({
+    const { insertedId: inventoryId } = await client.inventories().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       availableKeys: 0,
@@ -593,7 +595,7 @@ describe('db.gainExp()', () => {
   });
 
   it('not found (edge-case since object ids are used in query)', async () => {
-    const { insertedId: inventoryId } = await db.inventories().insertOne({
+    const { insertedId: inventoryId } = await client.inventories().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       availableKeys: 1,

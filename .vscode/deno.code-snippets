@@ -26,23 +26,5 @@
       "  }",
       "});"
     ]
-  },
-  "mongodb atomic transaction": {
-    "scope": "javascript,typescript",
-    "prefix": "database atomic transaction",
-    "body": [
-      "const session = database.client.startSession();",
-      "",
-      "try {",
-      "        session.startTransaction();",
-      "        $0",
-      "        await session.commitTransaction();",
-      "      } catch (err) {",
-      "        await session.abortTransaction();",
-      "        throw err;",
-      "      } finally {",
-      "        await session.endSession();",
-      "}"
-    ]
   }
 }

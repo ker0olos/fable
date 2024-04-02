@@ -38,6 +38,8 @@ export async function addPulls(
   const session = db.startSession();
 
   try {
+    await db.connect();
+
     session.startTransaction();
 
     const { modifiedCount } = await db.users().updateOne({
@@ -108,6 +110,8 @@ export async function addKeys(
   const session = db.startSession();
 
   try {
+    await db.connect();
+
     session.startTransaction();
 
     const { modifiedCount } = await db.users().updateOne({

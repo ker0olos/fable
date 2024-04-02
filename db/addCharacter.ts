@@ -121,6 +121,8 @@ export async function addCharacter(
   const session = mongo.startSession();
 
   try {
+    await mongo.connect();
+
     session.startTransaction();
 
     const { user, ...inventory } = await db.rechargeConsumables(

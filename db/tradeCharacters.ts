@@ -114,6 +114,8 @@ export async function tradeCharacters(
   const session = db.startSession();
 
   try {
+    await db.connect();
+
     session.startTransaction();
 
     // TODO can be grouped using aggregate
@@ -252,6 +254,8 @@ export async function stealCharacter(
   const session = db.startSession();
 
   try {
+    await db.connect();
+
     session.startTransaction();
 
     const [character] = await db.characters().aggregate()
