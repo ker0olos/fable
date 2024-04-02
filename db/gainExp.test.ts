@@ -359,6 +359,7 @@ describe('db.gainExp()', () => {
     const character = await db.characters().findOne({ _id: insertedId });
 
     assertWithinLast5secs(inventory!.keysTimestamp!);
+    assertWithinLast5secs(inventory!.lastPVE!);
 
     assertEquals(status, [{
       exp: 1,

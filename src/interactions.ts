@@ -1388,7 +1388,6 @@ export async function start(): Promise<void> {
   // deno-lint-ignore no-non-null-assertion
   db.client = await new MongoClient(config.mongoUri!, {
     retryWrites: true,
-    minPoolSize: 5,
   }).connect();
 
   utils.serve({

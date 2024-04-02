@@ -183,7 +183,6 @@
   "upgrade-skill": "Upgrade Skill",
   "skill-upgraded": "Skill Upgraded",
 
-  "costs-n-points": "Costs {0} {1}",
   "character-not-enough-skill-points": "Character doesn't have enough skill points left",
   "skill-is-maxed": "Skill is maxed",
   "maxed-skill-slots": "This character already has the max number of skills possible, and can't acquire new skills",

@@ -219,7 +219,7 @@ snapshot[`/skills showall > page 0 1`] = `
     "embeds": [
       {
         "type": "rich",
-        "description": "**Critical Hit** (2 Skill Points)\\nThe art of performing the traditional critical hit.\\n1. _Crit Chance (0.5%, 5%, 15%)_\\n2. _Crit Damage (30%, 45%, 60%)_\\n\\n**Speed Boost** (1 Skill Point)\\nBoost the speed of all party members (Not stackable)\\n1. _Boost by (1%, 2%, 3%)_\\n\\n**Defense Boost** (1 Skill Point)\\nBoost the defense of all party members (Not stackable)\\n1. _Boost by (1%, 2%, 3%)_"
+        "description": "**Critical Hit** (2 Skill Points)\\nThe art of performing the traditional critical hit.\\n1. _Crit Chance (15%)_\\n2. _Crit Damage (60%)_\\n\\n**Speed Boost** (1 Skill Point)\\nBoost the speed of all party members (Not stackable)\\n1. _Boost by (10%)_\\n\\n**Defense Boost** (1 Skill Point)\\nBoost the defense of all party members (Not stackable)\\n1. _Boost by (10%)_"
       }
     ],
     "attachments": [],
