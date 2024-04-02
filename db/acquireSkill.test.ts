@@ -15,132 +15,140 @@ import config from '~/src/config.ts';
 let mongod: MongoMemoryServer;
 let client: Mongo;
 
-describe('db.acquireSkill()', () => {
-  beforeEach(async () => {
-    mongod = await MongoMemoryServer.create();
-    client = new Mongo(mongod.getUri());
-    config.mongoUri = mongod.getUri();
-  });
-
-  afterEach(async () => {
-    delete config.mongoUri;
-    await client.close();
-    await mongod.stop();
-  });
-
-  it('normal', async () => {
-    const { insertedId } = await client.characters().insertOne({
-      userId: 'user-id',
-      guildId: 'guild-id',
-      characterId: 'character-id',
-      combat: {
-        skillPoints: 2,
-        skills: {
-          crit: {
-            level: 1,
-          },
-        },
-      },
-    } as any);
-
-    const skill = await db.acquireSkill(
-      'user-id',
-      'guild-id',
-      'character-id',
-      'crit',
-    );
-
-    const character = await client.characters().findOne({ _id: insertedId });
-
-    assertEquals(character!._id, insertedId);
-
-    assertEquals(skill.level, 2);
-
-    assertObjectMatch(character!, {
-      combat: {
-        skillPoints: 0,
-        skills: {
-          crit: {
-            level: 2,
-          },
-        },
-      },
+describe({
+  name: 'db.acquireSkill()',
+  // WORKAROUND fails to clean up properly in github ci
+  // causing an error unrelated to test results
+  sanitizeExit: false,
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: () => {
+    beforeEach(async () => {
+      mongod = await MongoMemoryServer.create();
+      client = new Mongo(mongod.getUri());
+      config.mongoUri = mongod.getUri();
     });
-  });
 
-  it('no skill points', async () => {
-    const { insertedId } = await client.characters().insertOne({
-      userId: 'user-id',
-      guildId: 'guild-id',
-      characterId: 'character-id',
-      combat: {
-        skillPoints: 1,
-        skills: {
-          crit: {
-            level: 1,
+    afterEach(async () => {
+      delete config.mongoUri;
+      await client.close();
+      await mongod.stop();
+    });
+
+    it('normal', async () => {
+      const { insertedId } = await client.characters().insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+        combat: {
+          skillPoints: 2,
+          skills: {
+            crit: {
+              level: 1,
+            },
           },
         },
-      },
-    } as any);
+      } as any);
 
-    await assertRejects(() =>
-      db.acquireSkill(
+      const skill = await db.acquireSkill(
         'user-id',
         'guild-id',
         'character-id',
         'crit',
-      )
-    );
+      );
 
-    const character = await client.characters().findOne({ _id: insertedId });
+      const character = await client.characters().findOne({ _id: insertedId });
 
-    assertObjectMatch(character!, {
-      combat: {
-        skillPoints: 1,
-        skills: {
-          crit: {
-            level: 1,
+      assertEquals(character!._id, insertedId);
+
+      assertEquals(skill.level, 2);
+
+      assertObjectMatch(character!, {
+        combat: {
+          skillPoints: 0,
+          skills: {
+            crit: {
+              level: 2,
+            },
           },
         },
-      },
+      });
     });
-  });
 
-  it('max level', async () => {
-    const { insertedId } = await client.characters().insertOne({
-      userId: 'user-id',
-      guildId: 'guild-id',
-      characterId: 'character-id',
-      combat: {
-        skillPoints: 999,
-        skills: {
-          crit: {
-            level: 3,
+    it('no skill points', async () => {
+      const { insertedId } = await client.characters().insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+        combat: {
+          skillPoints: 1,
+          skills: {
+            crit: {
+              level: 1,
+            },
           },
         },
-      },
-    } as any);
+      } as any);
 
-    await assertRejects(() =>
-      db.acquireSkill(
-        'user-id',
-        'guild-id',
-        'character-id',
-        'crit',
-      )
-    );
+      await assertRejects(() =>
+        db.acquireSkill(
+          'user-id',
+          'guild-id',
+          'character-id',
+          'crit',
+        )
+      );
 
-    const character = await client.characters().findOne({ _id: insertedId });
+      const character = await client.characters().findOne({ _id: insertedId });
 
-    assertObjectMatch(character!, {
-      combat: {
-        skillPoints: 999,
-        skills: {
-          crit: {
-            level: 3,
+      assertObjectMatch(character!, {
+        combat: {
+          skillPoints: 1,
+          skills: {
+            crit: {
+              level: 1,
+            },
           },
         },
-      },
+      });
     });
-  });
+
+    it('max level', async () => {
+      const { insertedId } = await client.characters().insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+        combat: {
+          skillPoints: 999,
+          skills: {
+            crit: {
+              level: 3,
+            },
+          },
+        },
+      } as any);
+
+      await assertRejects(() =>
+        db.acquireSkill(
+          'user-id',
+          'guild-id',
+          'character-id',
+          'crit',
+        )
+      );
+
+      const character = await client.characters().findOne({ _id: insertedId });
+
+      assertObjectMatch(character!, {
+        combat: {
+          skillPoints: 999,
+          skills: {
+            crit: {
+              level: 3,
+            },
+          },
+        },
+      });
+    });
+  },
 });
