@@ -19,70 +19,6 @@ snapshot[`characters search > aqua 1`] = `
     role: "MAIN",
   },
   {
-    id: "anilist:247460",
-    mediaId: "anilist:125206",
-    mediaTitle: [
-      "TSUKIMICHI -Moonlit Fantasy-",
-      "Tsuki ga Michibiku Isekai Douchuu",
-      "月が導く異世界道中",
-    ],
-    name: [
-      "Aqua",
-      "アクア",
-    ],
-    popularity: 94330,
-    rating: 2,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:130382",
-    mediaId: "anilist:98231",
-    mediaTitle: [
-      "Yu-Gi-Oh! VRAINS",
-      "Yu☆Gi☆Oh! VRAINS",
-      "遊☆戯☆王VRAINS",
-    ],
-    name: [
-      "Aqua",
-      "アクア",
-    ],
-    popularity: 9517,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:153617",
-    mediaId: "anilist:6008",
-    mediaTitle: [
-      "Jewelpet",
-      "Jewelpet",
-      "ジュエルペット",
-    ],
-    name: [
-      "Aqua",
-      "アクア",
-    ],
-    popularity: 3261,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:13452",
-    mediaId: "anilist:1944",
-    mediaTitle: [
-      "Photon: The Idiot Adventures",
-      "Photon",
-      "フォトン",
-    ],
-    name: [
-      "Keyne Acqua",
-      "キーネ アクア",
-    ],
-    popularity: 2770,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
     id: "anilist:302601",
     mediaId: "anilist:154965",
     mediaTitle: [
@@ -97,6 +33,22 @@ snapshot[`characters search > aqua 1`] = `
     popularity: 108707,
     rating: 1,
     role: "BACKGROUND",
+  },
+  {
+    id: "anilist:247460",
+    mediaId: "anilist:125206",
+    mediaTitle: [
+      "TSUKIMICHI -Moonlit Fantasy-",
+      "Tsuki ga Michibiku Isekai Douchuu",
+      "月が導く異世界道中",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 94330,
+    rating: 2,
+    role: "SUPPORTING",
   },
   {
     id: "anilist:223874",
@@ -175,6 +127,22 @@ snapshot[`characters search > aqua 1`] = `
     role: "MAIN",
   },
   {
+    id: "anilist:130382",
+    mediaId: "anilist:98231",
+    mediaTitle: [
+      "Yu-Gi-Oh! VRAINS",
+      "Yu☆Gi☆Oh! VRAINS",
+      "遊☆戯☆王VRAINS",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 9517,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
     id: "anilist:18095",
     mediaId: "anilist:738",
     mediaTitle: [
@@ -186,6 +154,22 @@ snapshot[`characters search > aqua 1`] = `
       "Aqua",
     ],
     popularity: 7948,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:153617",
+    mediaId: "anilist:6008",
+    mediaTitle: [
+      "Jewelpet",
+      "Jewelpet",
+      "ジュエルペット",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 3261,
     rating: 1,
     role: "SUPPORTING",
   },
@@ -313,6 +297,22 @@ snapshot[`characters search > aqua 1`] = `
       "エクア",
     ],
     popularity: 3478,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:13452",
+    mediaId: "anilist:1944",
+    mediaTitle: [
+      "Photon: The Idiot Adventures",
+      "Photon",
+      "フォトン",
+    ],
+    name: [
+      "Keyne Acqua",
+      "キーネ アクア",
+    ],
+    popularity: 2770,
     rating: 1,
     role: "MAIN",
   },
@@ -734,6 +734,411 @@ snapshot[`characters search > megumin 1`] = `
       "飯田恵",
     ],
     popularity: 66853,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+]
+`;
+
+snapshot[`characters search > gura 1`] = `
+[
+  {
+    id: "vtubers:gura",
+    mediaId: "vtubers:holomyth",
+    mediaTitle: [
+      "hololive English -Myth-",
+      "holoMyth",
+    ],
+    name: [
+      "Gawr Gura",
+      "がうる・ぐら",
+      "gura",
+      "shork",
+      "goorUH",
+    ],
+    popularity: 4000000,
+    rating: 0,
+    role: "",
+  },
+  {
+    id: "anilist:29204",
+    mediaId: "anilist:6682",
+    mediaTitle: [
+      "11eyes",
+      "11eyes",
+      "イレブンアイズ",
+    ],
+    name: [
+      "Gula",
+      "グラ",
+    ],
+    popularity: 31042,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:213553",
+    mediaId: "anilist:20680",
+    mediaTitle: [
+      "Macross Δ",
+      "マクロスΔ",
+    ],
+    name: [
+      "Wolf Gura",
+      "ヴォルフ・グーラ",
+    ],
+    popularity: 19371,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:206017",
+    mediaId: "anilist:118123",
+    mediaTitle: [
+      "Holo no Graffiti",
+      "ホロのぐらふぃてぃ",
+    ],
+    name: [
+      "Gura Gawr",
+      "がうる・ぐら",
+    ],
+    popularity: 10993,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:138017",
+    mediaId: "anilist:105928",
+    mediaTitle: [
+      "RobiHachi",
+      "RobiHachi",
+      "RobiHachi",
+    ],
+    name: [
+      "Gras",
+      "グラ",
+    ],
+    popularity: 9748,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:192145",
+    mediaId: "anilist:930",
+    mediaTitle: [
+      "Space Runaway Ideon",
+      "Densetsu Kyojin Ideon",
+      "伝説巨神イデオン",
+    ],
+    name: [
+      "Galbaba Gura",
+      "ガルババ・グラ",
+    ],
+    popularity: 7147,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:241553",
+    mediaId: "anilist:20605",
+    mediaTitle: [
+      "Tokyo Ghoul",
+      "Tokyo Ghoul",
+      "東京喰種 トーキョーグール",
+    ],
+    name: [
+      "Hisashi Ogura",
+      "小倉久志",
+    ],
+    popularity: 547041,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:86665",
+    mediaId: "anilist:20789",
+    mediaTitle: [
+      "The Seven Deadly Sins",
+      "Nanatsu no Taizai",
+      "七つの大罪",
+    ],
+    name: [
+      "Guila",
+      "ギーラ",
+    ],
+    popularity: 402793,
+    rating: 4,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:66967",
+    mediaId: "anilist:124080",
+    mediaTitle: [
+      "Horimiya",
+      "Horimiya",
+      "ホリミヤ",
+    ],
+    name: [
+      "Shuu Iura",
+      "井浦秀",
+    ],
+    popularity: 356081,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:72467",
+    mediaId: "anilist:124080",
+    mediaTitle: [
+      "Horimiya",
+      "Horimiya",
+      "ホリミヤ",
+    ],
+    name: [
+      "Motoko Iura",
+      "井浦基子",
+    ],
+    popularity: 356081,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:137687",
+    mediaId: "anilist:20992",
+    mediaTitle: [
+      "HAIKYU!! 2nd Season",
+      "Haikyuu!! 2nd Season",
+      "ハイキュー!! セカンドシーズン",
+    ],
+    name: [
+      "Masaki Goura",
+      "強羅昌己",
+    ],
+    popularity: 309025,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:145217",
+    mediaId: "anilist:20850",
+    mediaTitle: [
+      "Tokyo Ghoul √A",
+      "Tokyo Ghoul √A",
+      "東京喰種[トーキョーグール]√A",
+    ],
+    name: [
+      "Taishi Fura",
+      "富良太志",
+    ],
+    popularity: 308625,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:241532",
+    mediaId: "anilist:20850",
+    mediaTitle: [
+      "Tokyo Ghoul √A",
+      "Tokyo Ghoul √A",
+      "東京喰種[トーキョーグール]√A",
+    ],
+    name: [
+      "Kiyoko Aura",
+      "安浦清子",
+    ],
+    popularity: 308625,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:58549",
+    mediaId: "anilist:11111",
+    mediaTitle: [
+      "Another",
+      "Another",
+      "アナザー",
+    ],
+    name: [
+      "Yumi Ogura",
+      "小椋由美",
+    ],
+    popularity: 294490,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:89129",
+    mediaId: "anilist:20832",
+    mediaTitle: [
+      "Overlord",
+      "Overlord",
+      "オーバーロード",
+    ],
+    name: [
+      "Aura Bella Fiora",
+      "アウラ・ベラ・フィオーラ",
+    ],
+    popularity: 284054,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:72531",
+    mediaId: "anilist:6702",
+    mediaTitle: [
+      "Fairy Tail",
+      "FAIRY TAIL",
+      "FAIRY TAIL",
+    ],
+    name: [
+      "Guran Doma",
+      "グラン・ドマ",
+    ],
+    popularity: 282047,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:130582",
+    mediaId: "anilist:6702",
+    mediaTitle: [
+      "Fairy Tail",
+      "FAIRY TAIL",
+      "FAIRY TAIL",
+    ],
+    name: [
+      "Jura Neekis",
+      "ジュラ・ネェキス",
+    ],
+    popularity: 282047,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:199913",
+    mediaId: "anilist:11617",
+    mediaTitle: [
+      "High School DxD",
+      "High School DxD",
+      "ハイスクールD×D",
+    ],
+    name: [
+      "Tsubasa Yura",
+      "由良翼紗",
+    ],
+    popularity: 228141,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:290127",
+    mediaId: "anilist:106625",
+    mediaTitle: [
+      "HAIKYU!! TO THE TOP",
+      "Haikyuu!! TO THE TOP",
+      "ハイキュー!! TO THE TOP",
+    ],
+    name: [
+      "Shouta Yura",
+      "由良正太",
+    ],
+    popularity: 225937,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:410",
+    mediaId: "anilist:205",
+    mediaTitle: [
+      "Samurai Champloo",
+      "Samurai Champloo",
+      "サムライチャンプルー",
+    ],
+    name: [
+      "Bunta Ogura",
+      "小倉",
+    ],
+    popularity: 203206,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:2733",
+    mediaId: "anilist:813",
+    mediaTitle: [
+      "Dragon Ball Z",
+      "Dragon Ball Z",
+      "ドラゴンボールZ",
+    ],
+    name: [
+      "Bra",
+      "ブラ",
+    ],
+    popularity: 185710,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:28105",
+    mediaId: "anilist:813",
+    mediaTitle: [
+      "Dragon Ball Z",
+      "Dragon Ball Z",
+      "ドラゴンボールZ",
+    ],
+    name: [
+      "Guru",
+      "最長老",
+    ],
+    popularity: 185710,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:41613",
+    mediaId: "anilist:10165",
+    mediaTitle: [
+      "Nichijou - My Ordinary Life",
+      "Nichijou",
+      "日常",
+    ],
+    name: [
+      "Kousuke Oura",
+      "邑楽耕介",
+    ],
+    popularity: 177933,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:58439",
+    mediaId: "anilist:223",
+    mediaTitle: [
+      "Dragon Ball",
+      "Dragon Ball",
+      "ドラゴンボール",
+    ],
+    name: [
+      "Gala",
+      "ガラ",
+    ],
+    popularity: 165342,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:219110",
+    mediaId: "anilist:154587",
+    mediaTitle: [
+      "Frieren: Beyond Journey’s End",
+      "Sousou no Frieren",
+      "葬送のフリーレン",
+    ],
+    name: [
+      "Aura",
+      "アウラ",
+    ],
+    popularity: 158781,
     rating: 2,
     role: "SUPPORTING",
   },
