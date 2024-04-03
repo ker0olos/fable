@@ -66,6 +66,22 @@ Deno.test('characters search', async (test) => {
     }
   });
 
+  await test.step('sayuri haruno', async (test) => {
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    try {
+      await assertSnapshot(
+        test,
+        await toString(searchIndex.searchCharacters('sayuri haruno', '')),
+      );
+    } finally {
+      listStub.restore();
+    }
+  });
+
   await test.step('konosuba', async (test) => {
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([

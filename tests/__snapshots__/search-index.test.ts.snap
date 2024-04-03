@@ -19,22 +19,6 @@ snapshot[`characters search > aqua 1`] = `
     role: "MAIN",
   },
   {
-    id: "anilist:302601",
-    mediaId: "anilist:154965",
-    mediaTitle: [
-      "My Love Story with Yamada-kun at Lv999",
-      "Yamada-kun to Lv999 no Koi wo Suru",
-      "山田くんとLv999の恋をする",
-    ],
-    name: [
-      "Shikkoku no Aqua",
-      "漆黒のアクア",
-    ],
-    popularity: 108707,
-    rating: 1,
-    role: "BACKGROUND",
-  },
-  {
     id: "anilist:247460",
     mediaId: "anilist:125206",
     mediaTitle: [
@@ -49,6 +33,70 @@ snapshot[`characters search > aqua 1`] = `
     popularity: 94330,
     rating: 2,
     role: "SUPPORTING",
+  },
+  {
+    id: "anilist:130382",
+    mediaId: "anilist:98231",
+    mediaTitle: [
+      "Yu-Gi-Oh! VRAINS",
+      "Yu☆Gi☆Oh! VRAINS",
+      "遊☆戯☆王VRAINS",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 9517,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:153617",
+    mediaId: "anilist:6008",
+    mediaTitle: [
+      "Jewelpet",
+      "Jewelpet",
+      "ジュエルペット",
+    ],
+    name: [
+      "Aqua",
+      "アクア",
+    ],
+    popularity: 3261,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:13452",
+    mediaId: "anilist:1944",
+    mediaTitle: [
+      "Photon: The Idiot Adventures",
+      "Photon",
+      "フォトン",
+    ],
+    name: [
+      "Keyne Acqua",
+      "キーネ アクア",
+    ],
+    popularity: 2770,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:302601",
+    mediaId: "anilist:154965",
+    mediaTitle: [
+      "My Love Story with Yamada-kun at Lv999",
+      "Yamada-kun to Lv999 no Koi wo Suru",
+      "山田くんとLv999の恋をする",
+    ],
+    name: [
+      "Shikkoku no Aqua",
+      "漆黒のアクア",
+    ],
+    popularity: 108707,
+    rating: 1,
+    role: "BACKGROUND",
   },
   {
     id: "anilist:223874",
@@ -127,22 +175,6 @@ snapshot[`characters search > aqua 1`] = `
     role: "MAIN",
   },
   {
-    id: "anilist:130382",
-    mediaId: "anilist:98231",
-    mediaTitle: [
-      "Yu-Gi-Oh! VRAINS",
-      "Yu☆Gi☆Oh! VRAINS",
-      "遊☆戯☆王VRAINS",
-    ],
-    name: [
-      "Aqua",
-      "アクア",
-    ],
-    popularity: 9517,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
     id: "anilist:18095",
     mediaId: "anilist:738",
     mediaTitle: [
@@ -154,22 +186,6 @@ snapshot[`characters search > aqua 1`] = `
       "Aqua",
     ],
     popularity: 7948,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:153617",
-    mediaId: "anilist:6008",
-    mediaTitle: [
-      "Jewelpet",
-      "Jewelpet",
-      "ジュエルペット",
-    ],
-    name: [
-      "Aqua",
-      "アクア",
-    ],
-    popularity: 3261,
     rating: 1,
     role: "SUPPORTING",
   },
@@ -297,22 +313,6 @@ snapshot[`characters search > aqua 1`] = `
       "エクア",
     ],
     popularity: 3478,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:13452",
-    mediaId: "anilist:1944",
-    mediaTitle: [
-      "Photon: The Idiot Adventures",
-      "Photon",
-      "フォトン",
-    ],
-    name: [
-      "Keyne Acqua",
-      "キーネ アクア",
-    ],
-    popularity: 2770,
     rating: 1,
     role: "MAIN",
   },
@@ -735,6 +735,409 @@ snapshot[`characters search > megumin 1`] = `
     ],
     popularity: 66853,
     rating: 2,
+    role: "SUPPORTING",
+  },
+]
+`;
+
+snapshot[`characters search > sayuri haruno 1`] = `
+[
+  {
+    id: "anilist:135734",
+    mediaId: "anilist:20813",
+    mediaTitle: [
+      "Bonjour♪Sweet Love Patisserie",
+      "Bonjour♪ Koiaji Pâtisserie",
+      "Bonjour♪恋味パティスリー",
+    ],
+    name: [
+      "Sayuri Haruno",
+      "春野小百合",
+    ],
+    popularity: 9879,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:67289",
+    mediaId: "anilist:20",
+    mediaTitle: [
+      "Naruto",
+      "NARUTO",
+      "NARUTO -ナルト-",
+    ],
+    name: [
+      "Mebuki Haruno",
+      "春野メブキ",
+    ],
+    popularity: 524944,
+    rating: 4,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:145",
+    mediaId: "anilist:20",
+    mediaTitle: [
+      "Naruto",
+      "NARUTO",
+      "NARUTO -ナルト-",
+    ],
+    name: [
+      "Sakura Haruno",
+      "春野サクラ",
+    ],
+    popularity: 524944,
+    rating: 5,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:67287",
+    mediaId: "anilist:1735",
+    mediaTitle: [
+      "Naruto: Shippuden",
+      "NARUTO: Shippuuden",
+      "NARUTO -ナルト- 疾風伝",
+    ],
+    name: [
+      "Kizashi Haruno",
+      "春野キザシ",
+    ],
+    popularity: 447335,
+    rating: 4,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:58855",
+    mediaId: "anilist:11111",
+    mediaTitle: [
+      "Another",
+      "Another",
+      "アナザー",
+    ],
+    name: [
+      "Sayuri Kakinuma",
+      "柿沼小百合",
+    ],
+    popularity: 294490,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:79589",
+    mediaId: "anilist:14813",
+    mediaTitle: [
+      "My Teen Romantic Comedy SNAFU",
+      "Yahari Ore no Seishun Love Come wa Machigatteiru.",
+      "やはり俺の青春ラブコメはまちがっている。",
+    ],
+    name: [
+      "Haruno Yukinoshita",
+      "雪ノ下陽乃",
+    ],
+    popularity: 275027,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:135249",
+    mediaId: "anilist:20829",
+    mediaTitle: [
+      "Seraph of the End: Vampire Reign",
+      "Owari no Seraph",
+      "終わりのセラフ",
+    ],
+    name: [
+      "Sayuri  Hanayori",
+      "花依小百合",
+    ],
+    popularity: 242459,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:283247",
+    mediaId: "anilist:113813",
+    mediaTitle: [
+      "Rent-a-Girlfriend",
+      "Kanojo, Okarishimasu",
+      "彼女、お借りします",
+    ],
+    name: [
+      "Sayuri Ichinose",
+      "一ノ瀬小百合",
+    ],
+    popularity: 232606,
+    rating: 3,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:79163",
+    mediaId: "anilist:20458",
+    mediaTitle: [
+      "The Irregular at Magic High School",
+      "Mahouka Koukou no Rettousei",
+      "魔法科高校の劣等生",
+    ],
+    name: [
+      "Sayuri Shiba",
+      "司波小百合",
+    ],
+    popularity: 190674,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:138142",
+    mediaId: "anilist:21679",
+    mediaTitle: [
+      "Bungo Stray Dogs 2",
+      "Bungou Stray Dogs 2nd Season",
+      "文豪ストレイドッグス 第2シーズン",
+    ],
+    name: [
+      "Kirako Haruno",
+      "春野綺羅子",
+    ],
+    popularity: 184901,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:187683",
+    mediaId: "anilist:114888",
+    mediaTitle: [
+      "The Millionaire Detective - Balance: UNLIMITED",
+      "Fugou Keiji: Balance:UNLIMITED",
+      "富豪刑事 Balance:UNLIMITED",
+    ],
+    name: [
+      "Sayuri Kanbe",
+      "神戸小百合",
+    ],
+    popularity: 132950,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:156472",
+    mediaId: "anilist:107693",
+    mediaTitle: [
+      "Welcome to Demon School! Iruma-kun",
+      "Mairimashita! Iruma-kun",
+      "魔入りました！入間くん",
+    ],
+    name: [
+      "Haruno",
+      "ハルノ",
+    ],
+    popularity: 109790,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:77591",
+    mediaId: "anilist:16417",
+    mediaTitle: [
+      "Tamako Market",
+      "Tamako Market",
+      "たまこまーけっと",
+    ],
+    name: [
+      "Sayuri Yumoto",
+      "湯本さゆり",
+    ],
+    popularity: 100610,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:239452",
+    mediaId: "anilist:114065",
+    mediaTitle: [
+      "Remake Our Life!",
+      "Bokutachi no Remake",
+      "ぼくたちのリメイク",
+    ],
+    name: [
+      "Sayuri Jishouji",
+      "慈照寺さゆり",
+    ],
+    popularity: 79741,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:55843",
+    mediaId: "anilist:12291",
+    mediaTitle: [
+      "Place to Place",
+      "Acchi Kocchi",
+      "あっちこっち",
+    ],
+    name: [
+      "Hime Haruno",
+      "春野 姫",
+    ],
+    popularity: 59120,
+    rating: 3,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:178525",
+    mediaId: "anilist:235",
+    mediaTitle: [
+      "Case Closed",
+      "Meitantei Conan",
+      "名探偵コナン",
+    ],
+    name: [
+      "Sayuri Matsumoto",
+      "松本小百合",
+    ],
+    popularity: 58224,
+    rating: 1,
+    role: "BACKGROUND",
+  },
+  {
+    id: "anilist:120458",
+    mediaId: "anilist:21714",
+    mediaTitle: [
+      "FLIP FLAPPERS",
+      "Flip Flappers",
+      "フリップフラッパーズ",
+    ],
+    name: [
+      "Sayuri",
+      "サユリ",
+    ],
+    popularity: 54308,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:146441",
+    mediaId: "anilist:20771",
+    mediaTitle: [
+      "Shomin Sample",
+      'Ore ga Ojou-sama Gakkou ni "Shomin Sample" Toshite Gets-Sareta Ken',
+      "俺がお嬢様学校に「庶民サンプル」としてゲッツされた件",
+    ],
+    name: [
+      "Sayuri Kimachi",
+      "来待早百合",
+    ],
+    popularity: 51868,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:89416",
+    mediaId: "anilist:18689",
+    mediaTitle: [
+      "Ace of the Diamond",
+      "Diamond no Ace",
+      "ダイヤのA",
+    ],
+    name: [
+      "Haruno Yoshikawa",
+      "吉川春乃",
+    ],
+    popularity: 50803,
+    rating: 2,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:151126",
+    mediaId: "anilist:101239",
+    mediaTitle: [
+      "Ahiru no Sora",
+      "Ahiru no Sora",
+      "あひるの空",
+    ],
+    name: [
+      "Sayuri Wakamori",
+      "若森さゆり",
+    ],
+    popularity: 48129,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:44328",
+    mediaId: "anilist:10568",
+    mediaTitle: [
+      "Heaven's Memo Pad",
+      "Kamisama no Memochou",
+      "神様のメモ帳",
+    ],
+    name: [
+      "Sayuri Kuroda",
+      "黒田 小百合",
+    ],
+    popularity: 43205,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:3902",
+    mediaId: "anilist:433",
+    mediaTitle: [
+      "The Place Promised in Our Early Days",
+      "Kumo no Mukou, Yakusoku no Basho",
+      "雲のむこう、約束の場所",
+    ],
+    name: [
+      "Sayuri Sawatari",
+    ],
+    popularity: 40304,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:333",
+    mediaId: "anilist:1530",
+    mediaTitle: [
+      "Kanon (2006)",
+      "Kanon (2006)",
+      "カノン (2006)",
+    ],
+    name: [
+      "Sayuri Kurata",
+      "倉田佐祐理",
+    ],
+    popularity: 39647,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
+    id: "anilist:148966",
+    mediaId: "anilist:155963",
+    mediaTitle: [
+      "Hokkaido Gals Are Super Adorable!",
+      "Dosanko Gal wa Namaramenkoi",
+      "道産子ギャルはなまらめんこい",
+    ],
+    name: [
+      "Sayuri Akino",
+      "秋野沙友理",
+    ],
+    popularity: 38164,
+    rating: 1,
+    role: "MAIN",
+  },
+  {
+    id: "anilist:140130",
+    mediaId: "anilist:99483",
+    mediaTitle: [
+      "Hakata Tonkotsu Ramens",
+      "博多豚骨ラーメンズ",
+    ],
+    name: [
+      "Sayuri",
+      "小百合",
+    ],
+    popularity: 34863,
+    rating: 1,
     role: "SUPPORTING",
   },
 ]
