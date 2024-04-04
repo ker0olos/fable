@@ -2,11 +2,6 @@ import nacl from 'tweetnacl';
 
 import { chunk } from '$std/collections/chunk.ts';
 
-// import {
-//   captureException as _captureException,
-//   init as initSentry,
-// } from 'sentry';
-
 import {
   captureException as _captureException,
   init as initSentry,

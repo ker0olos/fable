@@ -10,13 +10,12 @@ jobs:
   update-stats:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
 
-      - name: Update top.gg stats
-        run: deno run -A update_topgg_stats.ts
+      - run: deno run -A update_topgg_stats.ts
         env:
           APP_ID: ${{ secrets.APP_ID }}
           TOPGG_TOKEN: ${{ secrets.TOPGG_TOKEN }}
