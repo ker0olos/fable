@@ -299,10 +299,9 @@ async function rngPull(
 }
 
 async function pullAnimation(
-  { token, userId, guildId, quiet, mention, components, pull, fakePull }: {
+  { token, userId, guildId, quiet, mention, components, pull }: {
     token: string;
     pull: Pull;
-    fakePull?: Pull;
     userId?: string;
     guildId?: string;
     quiet?: boolean;
@@ -311,8 +310,6 @@ async function pullAnimation(
   },
 ): Promise<void> {
   components ??= true;
-
-  const _pull = fakePull ?? pull;
 
   const characterId = `${pull.character.packId}:${pull.character.id}`;
 
@@ -324,9 +321,9 @@ async function pullAnimation(
     ).map(({ node }) => node) ?? [],
   ].map(({ packId, id }) => `${packId}:${id}`);
 
-  const mediaTitles = packs.aliasToArray(_pull.media.title);
+  const mediaTitles = packs.aliasToArray(pull.media.title);
 
-  const mediaImage = _pull.media.images?.[0];
+  const mediaImage = pull.media.images?.[0];
 
   let message = new discord.Message()
     .addEmbed(
@@ -355,7 +352,7 @@ async function pullAnimation(
       .addEmbed(
         new discord.Embed()
           .setImage({
-            url: `${config.origin}/assets/stars/${_pull.rating.stars}.gif`,
+            url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
           }),
       );
 
@@ -367,7 +364,7 @@ async function pullAnimation(
 
     await message.patch(token);
 
-    await utils.sleep(_pull.rating.stars + 3);
+    await utils.sleep(pull.rating.stars + 3);
   }
   //
 
@@ -474,13 +471,7 @@ function start(
   }
 
   gacha.rngPull({ userId, guildId, guarantee })
-    .then(async (pull) => {
-      let fakePull: Pull | undefined = undefined;
-
-      if (config.fools) {
-        fakePull = await gacha.rngPull({ guildId, guarantee: 5 });
-      }
-
+    .then((pull) => {
       return pullAnimation({
         token,
         userId,
@@ -488,7 +479,6 @@ function start(
         mention,
         quiet,
         pull,
-        fakePull,
       });
     })
     .catch(async (err) => {
