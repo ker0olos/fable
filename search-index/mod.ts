@@ -177,6 +177,8 @@ const pool = async (
     filter.rating,
   );
 
+  // attempt to speed pulls by pre-removing existing characters on smaller pools
+  // avoids checking if db.addCharacter() will fail with no-unique error
   if (
     (filter.popularity && filter.popularity.between[0] > 200_000) ||
     filter.rating && filter.rating > 3
