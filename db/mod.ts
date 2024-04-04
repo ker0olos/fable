@@ -5,6 +5,7 @@ import config from '~/src/config.ts';
 import {
   getActiveUsersIfLiked,
   getGuild,
+  getGuildCharacters,
   getInventory,
   getUser,
   getUserCharacters,
@@ -139,6 +140,7 @@ const db = {
   getUser,
   getGuild,
   getUserCharacters,
+  getGuildCharacters,
   rechargeConsumables,
   getActiveUsersIfLiked,
   //

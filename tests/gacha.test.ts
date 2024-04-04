@@ -43,7 +43,7 @@ Deno.test('adding character to inventory', async (test) => {
 
     const poolStub = stub(
       searchIndex,
-      'filterCharacters',
+      'pool',
       () =>
         Promise.resolve([
           new IndexedCharacter(
@@ -204,7 +204,7 @@ Deno.test('adding character to inventory', async (test) => {
 
     const poolStub = stub(
       searchIndex,
-      'filterCharacters',
+      'pool',
       () =>
         Promise.resolve([
           new IndexedCharacter(
@@ -324,7 +324,7 @@ Deno.test('adding character to inventory', async (test) => {
 
     const poolStub = stub(
       searchIndex,
-      'filterCharacters',
+      'pool',
       () =>
         Promise.resolve([
           new IndexedCharacter(
@@ -444,7 +444,7 @@ Deno.test('adding character to inventory', async (test) => {
 
     const poolStub = stub(
       searchIndex,
-      'filterCharacters',
+      'pool',
       () =>
         Promise.resolve([
           new IndexedCharacter(

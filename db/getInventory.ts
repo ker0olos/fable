@@ -470,3 +470,21 @@ export async function getUserCharacters(
 
   return result;
 }
+
+export async function getGuildCharacters(
+  guildId: string,
+): Promise<string[]> {
+  const db = new Mongo();
+
+  let result: WithId<Schema.Character>[];
+
+  try {
+    await db.connect();
+
+    result = await db.characters().find({ guildId }).toArray();
+  } finally {
+    await db.close();
+  }
+
+  return result.map(({ characterId }) => characterId);
+}

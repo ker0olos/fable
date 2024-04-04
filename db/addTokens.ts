@@ -1,9 +1,5 @@
 import { Mongo } from '~/db/mod.ts';
 
-import type { WithId } from 'mongodb';
-
-import type * as Schema from '~/db/schema.ts';
-
 export const COSTS = {
   THREE: 4,
   FOUR: 12,
@@ -72,7 +68,7 @@ export async function addPulls(
 export async function addGuarantee(
   userId: string,
   guarantee: number,
-): Promise<WithId<Schema.User> | null> {
+): Promise<void> {
   const cost = guarantee === 5
     ? COSTS.FIVE
     : guarantee === 4
@@ -81,23 +77,23 @@ export async function addGuarantee(
 
   const db = new Mongo();
 
-  let result: WithId<Schema.User> | null;
-
   try {
     await db.connect();
 
-    result = await db.users().findOneAndUpdate({
+    const { modifiedCount } = await db.users().updateOne({
       discordId: userId,
       availableTokens: { $gte: cost },
     }, {
       $push: { guarantees: guarantee },
       $inc: { availableTokens: -cost },
-    }, { returnDocument: 'after' });
+    });
+
+    if (!modifiedCount) {
+      throw new Error('INSUFFICIENT_TOKENS');
+    }
   } finally {
     await db.close();
   }
-
-  return result;
 }
 
 export async function addKeys(

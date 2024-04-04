@@ -8,6 +8,8 @@ import {
   search_media,
 } from 'search-index';
 
+import db from '~/db/mod.ts';
+
 import packs from '~/src/packs.ts';
 
 import utils from '~/src/utils.ts';
@@ -114,7 +116,7 @@ const searchCharacters = async (
     });
 };
 
-const filterCharacters = async (
+const pool = async (
   filter: {
     rating?: number;
     popularity?: { between: [number, number] };
@@ -166,7 +168,7 @@ const filterCharacters = async (
     }),
   )).flat();
 
-  return filter_characters(
+  let pool = filter_characters(
     builtin ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
     filter.role,
@@ -174,12 +176,25 @@ const filterCharacters = async (
     filter.popularity?.between?.[1],
     filter.rating,
   );
+
+  // attempt to speed pulls by pre-removing existing characters on smaller pools
+  // avoids checking if db.addCharacter() will fail with no-unique error
+  if (
+    (filter.popularity && filter.popularity.between[0] > 200_000) ||
+    filter.rating && filter.rating > 3
+  ) {
+    const existing = await db.getGuildCharacters(guildId);
+
+    pool = pool.filter(({ id }) => !existing.includes(id));
+  }
+
+  return pool;
 };
 
 const searchIndex = {
   searchMedia,
   searchCharacters,
-  filterCharacters,
+  pool,
 };
 
 export default searchIndex;

@@ -68,6 +68,12 @@ async function createCharactersIndexes(db: Mongo) {
       { key: { userId: Direction.ascending, guildId: Direction.ascending } },
       { key: { mediaId: Direction.ascending, guildId: Direction.ascending } },
     ]);
+
+  // @findCharacters.findGuildCharacters
+  await db.characters() // Normal Index (speeds up queries)
+    .createIndexes([
+      { key: { guildId: Direction.ascending } },
+    ]);
 }
 
 async function createPacksIndexes(db: Mongo) {
