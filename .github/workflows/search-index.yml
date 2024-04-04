@@ -1,52 +1,52 @@
-name: search
+# name: search
 
-on:
-  workflow_dispatch:
-  schedule:
-    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
-    - cron: "0 0 * * 0"
+# on:
+#   workflow_dispatch:
+#   schedule:
+#     # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+#     - cron: "0 0 * * 0"
 
-jobs:
-  index:
-    runs-on: ubuntu-latest
-    timeout-minutes: 240 # 4 hours
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          token: ${{ secrets.PAT }}
-          repository: ker0olos/fable
+# jobs:
+#   index:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 240 # 4 hours
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           submodules: recursive
+#           token: ${{ secrets.PAT }}
+#           repository: ker0olos/fable
 
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
+#       - uses: denoland/setup-deno@v1
+#         with:
+#           deno-version: v1.x
 
-      - run: deno run -A --unstable-kv search-index/index.ts
+#       - run: deno run -A --unstable-kv search-index/index.ts
 
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: backup-anilist-cache
-          path: search-index.sqlite
+#       - if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: backup-anilist-cache
+#           path: search-index.sqlite
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: search-indexes
-          path: search-index/*_index.bin
+#       - uses: actions/upload-artifact@v4
+#         with:
+#           name: search-indexes
+#           path: search-index/*_index.bin
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.PAT }}
-          title: "[bot] Updated Search Indexes"
-          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          commit-message: "[bot] Updated `search-index/*.bin`"
-          branch: update-search-index
-          delete-branch: true
-          body: |
+#       - name: Create Pull Request
+#         uses: peter-evans/create-pull-request@v5
+#         with:
+#           token: ${{ secrets.PAT }}
+#           title: "[bot] Updated Search Indexes"
+#           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+#           commit-message: "[bot] Updated `search-index/*.bin`"
+#           branch: update-search-index
+#           delete-branch: true
+#           body: |
 
-            *Updated the search indexes for all AniList entries above 1000 popularity.*
+#             *Updated the search indexes for all AniList entries above 1000 popularity.*
 
-            > [!NOTE]
-            > This PR is auto-generated every Sunday!
-            > This is due to AniList full-text search and pagination being too limited/unreliable.
+#             > [!NOTE]
+#             > This PR is auto-generated every Sunday!
+#             > This is due to AniList full-text search and pagination being too limited/unreliable.
