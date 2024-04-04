@@ -8,6 +8,8 @@ import {
   search_media,
 } from 'search-index';
 
+import db from '~/db/mod.ts';
+
 import packs from '~/src/packs.ts';
 
 import utils from '~/src/utils.ts';
@@ -114,7 +116,7 @@ const searchCharacters = async (
     });
 };
 
-const filterCharacters = async (
+const pool = async (
   filter: {
     rating?: number;
     popularity?: { between: [number, number] };
@@ -123,6 +125,8 @@ const filterCharacters = async (
   guildId: string,
 ): Promise<IndexedCharacter[]> => {
   const list = await packs.all({ guildId });
+
+  const existing = await db.getGuildCharacters(guildId);
 
   const builtin = list[0].manifest.id === 'anilist';
 
@@ -166,7 +170,7 @@ const filterCharacters = async (
     }),
   )).flat();
 
-  return filter_characters(
+  const pool = filter_characters(
     builtin ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
     filter.role,
@@ -174,12 +178,14 @@ const filterCharacters = async (
     filter.popularity?.between?.[1],
     filter.rating,
   );
+
+  return pool.filter(({ id }) => !existing.includes(id));
 };
 
 const searchIndex = {
   searchMedia,
   searchCharacters,
-  filterCharacters,
+  pool,
 };
 
 export default searchIndex;

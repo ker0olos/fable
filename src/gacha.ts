@@ -101,7 +101,7 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
     // one specific role for the whole pool
     : utils.rng(variables.roles);
 
-  const pool = await searchIndex.filterCharacters(
+  const pool = await searchIndex.pool(
     { role, popularity: { between: range } },
     guildId,
   );
@@ -157,7 +157,7 @@ export async function guaranteedPool(
   role?: CharacterRole;
   range?: [number, number];
 }> {
-  const pool = await searchIndex.filterCharacters(
+  const pool = await searchIndex.pool(
     { rating: guarantee },
     guildId,
   );
