@@ -1,9 +1,5 @@
 import { Mongo } from '~/db/mod.ts';
 
-import type { WithId } from 'mongodb';
-
-import type * as Schema from '~/db/schema.ts';
-
 export const COSTS = {
   THREE: 4,
   FOUR: 12,

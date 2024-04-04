@@ -621,7 +621,7 @@ Deno.test('synthesis confirmed', async (test) => {
 
     const poolStub = stub(
       searchIndex,
-      'filterCharacters',
+      'pool',
       () =>
         Promise.resolve([
           new IndexedCharacter(
@@ -891,7 +891,7 @@ Deno.test('synthesis confirmed', async (test) => {
 
     const poolStub = stub(
       searchIndex,
-      'filterCharacters',
+      'pool',
       () =>
         Promise.resolve([
           new IndexedCharacter(
