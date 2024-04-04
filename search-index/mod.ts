@@ -126,8 +126,6 @@ const pool = async (
 ): Promise<IndexedCharacter[]> => {
   const list = await packs.all({ guildId });
 
-  const existing = await db.getGuildCharacters(guildId);
-
   const builtin = list[0].manifest.id === 'anilist';
 
   const extra = (await Promise.all(
@@ -170,7 +168,7 @@ const pool = async (
     }),
   )).flat();
 
-  const pool = filter_characters(
+  let pool = filter_characters(
     builtin ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
     filter.role,
@@ -179,7 +177,16 @@ const pool = async (
     filter.rating,
   );
 
-  return pool.filter(({ id }) => !existing.includes(id));
+  if (
+    (filter.popularity && filter.popularity.between[0] > 200_000) ||
+    filter.rating && filter.rating > 3
+  ) {
+    const existing = await db.getGuildCharacters(guildId);
+
+    pool = pool.filter(({ id }) => !existing.includes(id));
+  }
+
+  return pool;
 };
 
 const searchIndex = {
