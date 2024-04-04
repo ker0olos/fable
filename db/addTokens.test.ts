@@ -59,11 +59,13 @@ describe('db.addGuarantee()', () => {
       guarantees: [1],
     } as any);
 
-    const user = await db.addGuarantee('user-id', 5);
+    await db.addGuarantee('user-id', 5);
 
-    assertEquals(user!._id, insertedId);
-    assertEquals(user!.availableTokens, 0);
-    assertEquals(user!.guarantees, [1, 5]);
+    const _user = await client.users().findOne({ discordId: 'user-id' });
+
+    assertEquals(_user!._id, insertedId);
+    assertEquals(_user!.availableTokens, 0);
+    assertEquals(_user!.guarantees, [1, 5]);
   });
 
   it('add 4*', async () => {
@@ -73,11 +75,13 @@ describe('db.addGuarantee()', () => {
       guarantees: [1],
     } as any);
 
-    const user = await db.addGuarantee('user-id', 4);
+    await db.addGuarantee('user-id', 4);
 
-    assertEquals(user!._id, insertedId);
-    assertEquals(user!.availableTokens, 0);
-    assertEquals(user!.guarantees, [1, 4]);
+    const _user = await client.users().findOne({ discordId: 'user-id' });
+
+    assertEquals(_user!._id, insertedId);
+    assertEquals(_user!.availableTokens, 0);
+    assertEquals(_user!.guarantees, [1, 4]);
   });
 
   it('add 3*', async () => {
@@ -87,11 +91,13 @@ describe('db.addGuarantee()', () => {
       guarantees: [1],
     } as any);
 
-    const user = await db.addGuarantee('user-id', 3);
+    await db.addGuarantee('user-id', 3);
 
-    assertEquals(user!._id, insertedId);
-    assertEquals(user!.availableTokens, 0);
-    assertEquals(user!.guarantees, [1, 3]);
+    const _user = await client.users().findOne({ discordId: 'user-id' });
+
+    assertEquals(_user!._id, insertedId);
+    assertEquals(_user!.availableTokens, 0);
+    assertEquals(_user!.guarantees, [1, 3]);
   });
 
   it('not enough tokens', async () => {
@@ -101,9 +107,11 @@ describe('db.addGuarantee()', () => {
       guarantees: [1],
     } as any);
 
-    const user = await db.addGuarantee('user-id', 5);
-
-    assertEquals(user, null);
+    await assertRejects(
+      () => db.addGuarantee('user-id', 5),
+      Error,
+      'INSUFFICIENT_TOKENS',
+    );
 
     const _user = await client.users().findOne({ discordId: 'user-id' });
 
