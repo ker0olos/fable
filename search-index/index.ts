@@ -1,316 +1,80 @@
-// /// <reference lib="deno.unstable" />
+import { green } from '$std/fmt/colors.ts';
 
-// import { green } from '$std/fmt/colors.ts';
+import Rating from '~/src/rating.ts';
 
-// import Rating from '~/src/rating.ts';
+import packs from '~/src/packs.ts';
 
-// import utils from '~/src/utils.ts';
+import { Mongo } from '~/db/mod.ts';
 
-// import { gql, request } from '~/packs/anilist/graphql.ts';
+import { charactersIndexPath, mediaIndexPath } from '~/search-index/mod.ts';
 
-// import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
+import { create_characters_index, create_media_index } from 'search-index';
 
-// import { charactersIndexPath, mediaIndexPath } from '~/search-index/mod.ts';
+import type { DisaggregatedMedia } from '~/src/types.ts';
 
-// import {
-//   type Character,
-//   create_characters_index,
-//   create_media_index,
-//   type Media,
-// } from 'search-index';
+const mediaMap: Record<string, DisaggregatedMedia> = {};
 
-// const anilistAPI = 'https://graphql.anilist.co';
+async function storeMediaIndex(db: Mongo): Promise<void> {
+  console.log('starting the creation of the media index...');
 
-// type PageInfo = {
-//   hasNextPage: boolean;
-// };
+  const media = await db.anime.media().find({}).toArray();
 
-// async function queryMedia(
-//   page: number,
-//   popularityGreater = 1000,
-// ): Promise<{
-//   pageInfo: PageInfo;
-//   media: AniListMedia[];
-// }> {
-//   const query = gql`
-//     query ($page: Int!, $popularity_greater: Int!) {
-//       Page(page: $page, perPage: 50) {
-//         pageInfo {
-//           hasNextPage
-//         }
-//         media(
-//           popularity_greater: $popularity_greater,
-//           format_not_in: [ NOVEL, MUSIC, SPECIAL ],
-//           isAdult: false,
-//         ) {
-//           id
-//           characters(page: 1, perPage: 25) {
-//             pageInfo {
-//               hasNextPage
-//             }
-//             nodes {
-//               id # character id
-//               name {
-//                 full
-//                 native
-//               }
-//               media(sort: POPULARITY_DESC) {
-//                 edges {
-//                   characterRole # actual role
-//                   # actual media
-//                   node {
-//                     id
-//                     popularity
-//                     isAdult
-//                     title {
-//                       english
-//                       native
-//                       romaji
-//                     }
-//                   }
-//                 }
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//   `;
+  const json = JSON.stringify(media.map((media) => {
+    const id = `${media.packId}:${media.id}`;
 
-//   const response: {
-//     pageInfo: PageInfo;
-//     media: AniListMedia[];
-//   } = (await request({
-//     url: anilistAPI,
-//     query,
-//     variables: {
-//       page,
-//       popularity_greater: popularityGreater,
-//     },
-//   })).Page;
+    mediaMap[id] = media;
 
-//   return response;
-// }
+    return {
+      id,
+      title: packs.aliasToArray(media.title),
+      popularity: media.popularity,
+    };
+  }));
 
-// async function queryCharacters(
-//   variables: {
-//     id: string;
-//     page: number;
-//   },
-// ): Promise<{
-//   pageInfo: PageInfo;
-//   nodes: AniListCharacter[];
-// }> {
-//   const query = gql`
-//     query ($id: Int!, $page: Int!) {
-//       Media(id: $id) {
-//         characters(page: $page, perPage: 25) {
-//           pageInfo {
-//             hasNextPage
-//           }
-//           nodes {
-//             id # character id
-//             name {
-//               full
-//               native
-//             }
-//             media(sort: POPULARITY_DESC) {
-//               edges {
-//                 characterRole # actual role
-//                 # actual media
-//                 node {
-//                   id
-//                   popularity
-//                   isAdult
-//                   title {
-//                       english
-//                       native
-//                       romaji
-//                     }
-//                 }
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//   `;
+  const mediaIndex = create_media_index(json);
 
-//   const response: {
-//     Media: AniListMedia;
-//   } = await request({ url: anilistAPI, query, variables });
+  await Deno.writeFile(mediaIndexPath, mediaIndex);
 
-//   return {
-//     // deno-lint-ignore ban-ts-comment
-//     //@ts-ignore
-//     pageInfo: response.Media.characters?.pageInfo,
-//     // deno-lint-ignore no-non-null-assertion
-//     nodes: response.Media.characters?.nodes!,
-//   };
-// }
+  console.log(green('wrote the media index cache to disk\n'));
+}
 
-// async function queryAniList(kv: Deno.Kv): Promise<void> {
-//   let mediaPage = 1;
+async function storeCharacterIndex(db: Mongo): Promise<void> {
+  console.log('starting the creation of the characters index...');
 
-//   console.log('starting requests from anilist...');
+  const characters = await db.anime.characters().find({}).toArray();
 
-//   while (true) {
-//     try {
-//       console.log(`requesting page ${mediaPage} from anilist`);
+  const json = JSON.stringify(characters.map((character) => {
+    const edge = character.media?.[0];
+    const media = edge?.mediaId ? mediaMap[edge.mediaId] : undefined;
+    const popularity = character.popularity ?? media?.popularity ?? 1000;
 
-//       const { pageInfo, media } = await queryMedia(mediaPage);
+    return {
+      id: `${character.packId}:${character.id}`,
+      name: packs.aliasToArray(character.name),
+      mediaId: media ? `${media.packId}:${media.id}` : undefined,
+      mediaTitle: media?.title ? packs.aliasToArray(media?.title) : undefined,
+      popularity,
+      role: edge?.role,
+      rating: new Rating({
+        popularity,
+        role: edge?.role,
+      }).stars,
+    };
+  }));
 
-//       for (const { id, characters: firstPage } of media) {
-//         let charactersPage = 1;
+  const charactersIndex = create_characters_index(json);
 
-//         while (true) {
-//           try {
-//             const { nodes, pageInfo } = charactersPage === 1
-//               // deno-lint-ignore no-non-null-assertion
-//               ? { nodes: firstPage!.nodes!, pageInfo: firstPage!.pageInfo }
-//               : await queryCharacters({
-//                 id,
-//                 page: charactersPage,
-//               });
+  await Deno.writeFile(charactersIndexPath, charactersIndex);
 
-//             await Promise.all(nodes.map(async (character) => {
-//               const name = [
-//                 character.name?.full,
-//                 character.name?.native,
-//                 ...(character.name?.alternative ?? []),
-//               ].filter(utils.nonNullable);
+  console.log(green('wrote the characters index cache to disk\n'));
+}
 
-//               const media = character.media?.edges[0];
+if (import.meta.main) {
+  // deno-lint-ignore no-non-null-assertion
+  const client = new Mongo(Deno.env.get('MONGO_URI')!);
 
-//               const id = `anilist:${character.id}`;
+  await storeMediaIndex(client);
+  await storeCharacterIndex(client);
 
-//               if (media && !media.node.isAdult) {
-//                 const mediaId = `anilist:${media.node.id}`;
-
-//                 if (typeof media.node.popularity === 'number') {
-//                   const mediaTitle = [
-//                     media.node.title.english,
-//                     media.node.title.romaji,
-//                     media.node.title.native,
-//                     ...(media.node.synonyms ?? []),
-//                   ].filter(utils.nonNullable);
-
-//                   if (
-//                     media?.node?.id && mediaTitle?.length
-//                   ) {
-//                     await kv.set(
-//                       ['media', mediaId],
-//                       {
-//                         id: mediaId,
-//                         title: mediaTitle,
-//                         popularity: media?.node.popularity,
-//                       },
-//                     );
-//                   }
-
-//                   if (
-//                     name.length
-//                   ) {
-//                     await kv.set(
-//                       ['characters', id],
-//                       {
-//                         id,
-//                         name,
-//                         mediaId,
-//                         mediaTitle,
-//                         popularity: media?.node.popularity,
-//                         role: media.characterRole,
-//                         rating: new Rating({
-//                           role: media.characterRole,
-//                           popularity: media?.node.popularity,
-//                         }).stars,
-//                       },
-//                     );
-//                   }
-//                 }
-//               }
-//             }));
-
-//             if (pageInfo.hasNextPage) {
-//               charactersPage += 1;
-//               continue;
-//             }
-
-//             break;
-//           } catch (e) {
-//             // handle the rate limit
-//             // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
-//             if (e.message?.includes('Too Many Requests')) {
-//               // console.log('sleeping for a minute...');
-//               await utils.sleep(60);
-//               continue;
-//             }
-
-//             throw e;
-//           }
-//         }
-//       }
-
-//       if (pageInfo.hasNextPage) {
-//         mediaPage += 1;
-//         continue;
-//       }
-
-//       break;
-//     } catch (e) {
-//       // handle the rate limit
-//       // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
-//       if (e.message?.includes('Too Many Requests')) {
-//         console.log('sleeping for a minute...');
-//         await utils.sleep(60);
-//         continue;
-//       }
-
-//       throw e;
-//     }
-//   }
-
-//   console.log(green('finished requests from anilist\n'));
-// }
-
-// async function storeMediaIndex(kv: Deno.Kv): Promise<void> {
-//   console.log('starting the creation of the media index...');
-
-//   const media = await Array.fromAsync(kv.list<Media>({
-//     prefix: ['media'],
-//   }));
-
-//   const mediaIndex = create_media_index(
-//     JSON.stringify(media.map(({ value }) => value)),
-//   );
-
-//   await Deno.writeFile(mediaIndexPath, mediaIndex);
-
-//   console.log(green('wrote the media index cache to disk\n'));
-// }
-
-// async function storeCharacterIndex(kv: Deno.Kv): Promise<void> {
-//   console.log('starting the creation of the characters index...');
-
-//   const media = await Array.fromAsync(kv.list<Character>({
-//     prefix: ['characters'],
-//   }));
-
-//   const charactersIndex = create_characters_index(
-//     JSON.stringify(media.map(({ value }) => value)),
-//   );
-
-//   await Deno.writeFile(charactersIndexPath, charactersIndex);
-
-//   console.log(green('wrote the characters index cache to disk\n'));
-// }
-
-// if (import.meta.main) {
-//   const kv = await Deno.openKv('search-index.sqlite');
-
-//   await queryAniList(kv);
-//   await storeMediaIndex(kv);
-//   await storeCharacterIndex(kv);
-
-//   kv.close();
-// }
+  await client.close();
+}
