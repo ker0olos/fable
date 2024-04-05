@@ -339,7 +339,8 @@ export const handler = async (r: Request) => {
             const title = options['title'] as string;
 
             if (options['characters']) {
-              return (await search.mediaCharacters({
+              return search.mediaCharacters({
+                token,
                 guildId,
                 index: 0,
                 search: title,
@@ -347,7 +348,7 @@ export const handler = async (r: Request) => {
                 id: title.startsWith(idPrefix)
                   ? title.substring(idPrefix.length)
                   : undefined,
-              })).send();
+              }).send();
             }
 
             return search.media({
@@ -873,12 +874,13 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return (await search.mediaCharacters({
+            return search.mediaCharacters({
+              token,
               index,
               userId: member.user.id,
               guildId,
               id: mediaId,
-            }))
+            })
               .setType(discord.MessageType.Update)
               .send();
           }

@@ -22,7 +22,7 @@ export async function ensureIndexes(): Promise<void> {
   await createPacksIndexes(db);
   await createBattleIndexes(db);
 
-  // await createAnimeIndexes();
+  await createAnimeIndexes(db);
 
   await db.close();
 }
@@ -96,10 +96,10 @@ async function createBattleIndexes(db: Mongo) {
     }, { expireAfterSeconds: MAX_BATTLE_TIME });
 }
 
-// async function createAnimeIndexes(db: Mongo) {
-//   await db.anime.media()
-//     .createIndex({ 'id': Direction.ascending });
+async function createAnimeIndexes(db: Mongo) {
+  await db.anime.media()
+    .createIndex({ 'id': Direction.ascending }, { unique: true });
 
-//   await db.anime.characters(db: Mongo)
-//     .createIndex({ 'id': Direction.ascending });
-// }
+  await db.anime.characters()
+    .createIndex({ 'id': Direction.ascending }, { unique: true });
+}

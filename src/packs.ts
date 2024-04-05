@@ -6,7 +6,7 @@ import _vtubersManifest from '~/packs/vtubers/manifest.json' with {
   type: 'json',
 };
 
-import * as _anilist from '~/packs/anilist/index.ts';
+import * as _anilist from '~/packs/anilist/mod.ts';
 
 import * as discord from '~/src/discord.ts';
 
@@ -36,7 +36,6 @@ import {
 import { NonFetalError } from '~/src/errors.ts';
 
 import type { Pack } from '~/db/schema.ts';
-import { transform } from '~/packs/anilist/api.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
@@ -334,7 +333,7 @@ async function findById<T>(
     defaultPackId?: string;
   },
 ): Promise<{ [key: string]: T }> {
-  const anilistIds: number[] = [];
+  const anilistIds: string[] = [];
 
   const results: { [key: string]: T } = {};
 
@@ -348,11 +347,7 @@ async function findById<T>(
     }
 
     if (packId === 'anilist') {
-      const n = utils.parseInt(id);
-
-      if (typeof n === 'number') {
-        anilistIds.push(n);
-      }
+      anilistIds.push(id);
     } else {
       const pack = list.find(({ manifest }) => manifest.id === packId);
 
@@ -370,15 +365,13 @@ async function findById<T>(
   // if anilist pack is enabled
   // request the ids from anilist
   if (list.length && list[0].manifest.id === 'anilist') {
-    const anilistResults = await _anilist[key](
-      { ids: anilistIds },
-    );
+    const anilistResults = await _anilist[key](anilistIds);
 
     anilistIds.forEach((n) => {
       const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
 
       if (i > -1) {
-        results[`anilist:${n}`] = transform<T>({ item: anilistResults[i] });
+        results[`anilist:${n}`] = anilistResults[i] as T;
       }
     });
   }
@@ -581,9 +574,9 @@ async function mediaCharacters({ id, search, guildId, index }: {
 
   const media = await aggregate<Media>({ guildId, media: results[0] });
 
-  const total = media.characters?.edges?.length || 0;
+  const total = media.characters?.edges?.length ?? 0;
 
-  const character = media.characters?.edges?.[index || 0];
+  const character = media.characters?.edges?.[index];
 
   return {
     total,
