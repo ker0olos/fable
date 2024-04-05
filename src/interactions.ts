@@ -1379,7 +1379,7 @@ export const handler = async (r: Request) => {
 export async function start(): Promise<void> {
   await initConfig();
 
-  utils.initSentry({ dsn: config.sentry });
+  utils.initSentry(config.sentry);
 
   utils.serve({
     '/': handler,

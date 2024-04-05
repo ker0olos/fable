@@ -4,7 +4,7 @@ import { chunk } from '$std/collections/chunk.ts';
 
 import {
   captureException as _captureException,
-  init as initSentry,
+  init as _initSentry,
 } from 'sentry';
 
 import { LRU } from 'lru';
@@ -483,6 +483,14 @@ function getDayOfWeek(): DayOfWeek {
   ];
 
   return days[new Date().getUTCDay()] as DayOfWeek;
+}
+
+function initSentry(dsn?: string): void {
+  const DENO_DEPLOYMENT_ID = Deno.env.get('DENO_DEPLOYMENT_ID');
+
+  if (dsn) {
+    _initSentry({ dsn, release: DENO_DEPLOYMENT_ID });
+  }
 }
 
 const utils = {
