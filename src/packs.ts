@@ -51,6 +51,7 @@ const packs = {
   aggregate,
   aliasToArray,
   all,
+  findById,
   confirmDisableBuiltins,
   cachedGuilds,
   characters,
@@ -400,7 +401,7 @@ async function searchManyCharacters(
   });
 
   return Object.values(
-    await findById<Character | DisaggregatedCharacter>({
+    await packs.findById<Character | DisaggregatedCharacter>({
       ids: results.map((r) => r.id),
       key: 'characters',
       guildId,
@@ -420,7 +421,7 @@ async function searchOneCharacter(
   });
 
   return Object.values(
-    await findById<Character | DisaggregatedCharacter>({
+    await packs.findById<Character | DisaggregatedCharacter>({
       ids: [results[0].id],
       key: 'characters',
       guildId,
@@ -449,7 +450,7 @@ async function searchManyMedia(
   });
 
   return Object.values(
-    await findById<Media | DisaggregatedMedia>({
+    await packs.findById<Media | DisaggregatedMedia>({
       ids: results.map((r) => r.id),
       key: 'media',
       guildId,
@@ -469,7 +470,7 @@ async function searchOneMedia(
   });
 
   return Object.values(
-    await findById<Media | DisaggregatedMedia>({
+    await packs.findById<Media | DisaggregatedMedia>({
       ids: [results[0].id],
       key: 'media',
       guildId,
@@ -486,7 +487,7 @@ async function media({ ids, search, guildId }: {
     // remove duplicates
     ids = Array.from(new Set(ids));
 
-    const results = await findById<Media | DisaggregatedMedia>(
+    const results = await packs.findById<Media | DisaggregatedMedia>(
       {
         ids,
         guildId,
@@ -515,7 +516,7 @@ async function characters({ ids, search, guildId }: {
     // remove duplicates
     ids = Array.from(new Set(ids));
 
-    const results = await findById<Character | DisaggregatedCharacter>(
+    const results = await packs.findById<Character | DisaggregatedCharacter>(
       {
         ids,
         guildId,
@@ -627,13 +628,13 @@ async function aggregate<T>({ media, character, start, end, guildId }: {
       ) => characterId);
 
     const [mediaRefs, characterRefs] = await Promise.all([
-      findById<Media>({
+      packs.findById<Media>({
         guildId,
         key: 'media',
         ids: mediaIds,
         defaultPackId: media.packId,
       }),
-      findById<Character>({
+      packs.findById<Character>({
         guildId,
         key: 'characters',
         ids: characterIds,
@@ -677,7 +678,7 @@ async function aggregate<T>({ media, character, start, end, guildId }: {
       );
 
     const [mediaRefs] = [
-      await findById<Media>({
+      await packs.findById<Media>({
         guildId,
         key: 'media',
         ids: mediaIds,

@@ -24,6 +24,7 @@ import {
 } from '~/src/types.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
+import i18n from '~/src/i18n.ts';
 
 export const idPrefix = 'id=';
 
@@ -50,6 +51,8 @@ function media(
     guildId: string;
   },
 ): discord.Message {
+  const locale = user.cachedGuilds[guildId]?.locale;
+
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
     .then((results: (Media | DisaggregatedMedia)[]) => {
@@ -80,7 +83,7 @@ function media(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -252,6 +255,8 @@ function character(
     debug?: boolean;
   },
 ): discord.Message {
+  const locale = user.cachedGuilds[guildId]?.locale;
+
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then((results) => {
@@ -318,7 +323,7 @@ function character(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -662,9 +667,15 @@ function mediaCharacters(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
+      }
+
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(new discord.Embed().setDescription(err.message))
+          .patch(token);
       }
 
       if (!config.sentry) {

@@ -4,7 +4,7 @@ import { assertEquals } from '$std/assert/mod.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
-import { returnsNext, stub } from '$std/testing/mock.ts';
+import { stub } from '$std/testing/mock.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -15,15 +15,14 @@ import config from '~/src/config.ts';
 
 import db from '~/db/mod.ts';
 
-import { MediaType } from '~/src/types.ts';
-
-import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
+import { Character, Media, MediaType } from '~/src/types.ts';
 
 Deno.test('/party view', async (test) => {
   await test.step('normal', async () => {
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title',
@@ -31,35 +30,40 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -69,33 +73,7 @@ Deno.test('/party view', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -159,6 +137,18 @@ Deno.test('/party view', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     config.appId = 'app_id';
@@ -188,15 +178,15 @@ Deno.test('/party view', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -290,16 +280,18 @@ Deno.test('/party view', async (test) => {
       fetchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getInventoryStub.restore();
     }
   });
 
   await test.step('custom', async () => {
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title',
@@ -307,35 +299,40 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -345,33 +342,7 @@ Deno.test('/party view', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -432,6 +403,18 @@ Deno.test('/party view', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -460,15 +443,15 @@ Deno.test('/party view', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -562,16 +545,18 @@ Deno.test('/party view', async (test) => {
       fetchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getInventoryStub.restore();
     }
   });
 
   await test.step('unassigned members', async () => {
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title',
@@ -579,35 +564,40 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -617,33 +607,7 @@ Deno.test('/party view', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -690,6 +654,18 @@ Deno.test('/party view', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -718,15 +694,15 @@ Deno.test('/party view', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -798,7 +774,8 @@ Deno.test('/party view', async (test) => {
       fetchStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
@@ -806,43 +783,49 @@ Deno.test('/party view', async (test) => {
   });
 
   await test.step('disabled media', async () => {
-    const media: AniListMedia = {
+    const media: Media = {
       id: '0',
+      packId: 'anilist',
       type: MediaType.Anime,
       title: {
         english: 'title',
       },
     };
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -852,33 +835,7 @@ Deno.test('/party view', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media: [media],
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -939,6 +896,18 @@ Deno.test('/party view', async (test) => {
       (id) => id === 'anilist:0',
     );
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve([media]),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -966,15 +935,15 @@ Deno.test('/party view', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1013,7 +982,8 @@ Deno.test('/party view', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
@@ -1023,11 +993,12 @@ Deno.test('/party view', async (test) => {
 
 Deno.test('/party assign', async (test) => {
   await test.step('normal', async () => {
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
     ];
@@ -1037,20 +1008,7 @@ Deno.test('/party assign', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -1083,6 +1041,18 @@ Deno.test('/party assign', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve([]),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -1112,15 +1082,15 @@ Deno.test('/party assign', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1173,7 +1143,8 @@ Deno.test('/party assign', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getGuildStub.restore();
       assignCharacterStub.restore();
@@ -1181,11 +1152,12 @@ Deno.test('/party assign', async (test) => {
   });
 
   await test.step('custom', async () => {
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
     ];
@@ -1195,20 +1167,7 @@ Deno.test('/party assign', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -1243,6 +1202,18 @@ Deno.test('/party assign', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve([]),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -1272,15 +1243,15 @@ Deno.test('/party assign', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1333,7 +1304,8 @@ Deno.test('/party assign', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getGuildStub.restore();
       assignCharacterStub.restore();
@@ -1341,11 +1313,12 @@ Deno.test('/party assign', async (test) => {
   });
 
   await test.step('character not found', async () => {
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
     ];
@@ -1355,20 +1328,7 @@ Deno.test('/party assign', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -1397,6 +1357,18 @@ Deno.test('/party assign', async (test) => {
       ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve([]),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1427,15 +1399,15 @@ Deno.test('/party assign', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1468,7 +1440,8 @@ Deno.test('/party assign', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getGuildStub.restore();
       assignCharacterStub.restore();
@@ -1478,9 +1451,10 @@ Deno.test('/party assign', async (test) => {
 
 Deno.test('/party swap', async (test) => {
   await test.step('normal', async () => {
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title',
@@ -1488,35 +1462,40 @@ Deno.test('/party swap', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -1526,33 +1505,7 @@ Deno.test('/party swap', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -1609,6 +1562,18 @@ Deno.test('/party swap', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -1638,15 +1603,15 @@ Deno.test('/party swap', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1740,7 +1705,8 @@ Deno.test('/party swap', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getInventoryStub.restore();
       swapSpotsStub.restore();
@@ -1748,9 +1714,10 @@ Deno.test('/party swap', async (test) => {
   });
 
   await test.step('custom', async () => {
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title',
@@ -1758,35 +1725,40 @@ Deno.test('/party swap', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -1796,33 +1768,7 @@ Deno.test('/party swap', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -1889,6 +1835,18 @@ Deno.test('/party swap', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -1918,15 +1876,15 @@ Deno.test('/party swap', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -2020,7 +1978,8 @@ Deno.test('/party swap', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getInventoryStub.restore();
       swapSpotsStub.restore();
@@ -2030,11 +1989,12 @@ Deno.test('/party swap', async (test) => {
 
 Deno.test('/party remove', async (test) => {
   await test.step('normal', async () => {
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
     ];
@@ -2044,20 +2004,7 @@ Deno.test('/party remove', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -2094,6 +2041,18 @@ Deno.test('/party remove', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve([]),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -2122,15 +2081,15 @@ Deno.test('/party remove', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -2177,7 +2136,8 @@ Deno.test('/party remove', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getInventoryStub.restore();
       unassignCharacterStub.restore();
@@ -2185,11 +2145,12 @@ Deno.test('/party remove', async (test) => {
   });
 
   await test.step('custom', async () => {
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
     ];
@@ -2199,20 +2160,7 @@ Deno.test('/party remove', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -2251,6 +2199,18 @@ Deno.test('/party remove', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve([]),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -2279,15 +2239,15 @@ Deno.test('/party remove', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -2334,7 +2294,8 @@ Deno.test('/party remove', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
-
+      mediaStub.restore();
+      charactersStub.restore();
       getUserStub.restore();
       getInventoryStub.restore();
       unassignCharacterStub.restore();
@@ -2342,11 +2303,12 @@ Deno.test('/party remove', async (test) => {
   });
 
   await test.step('empty spot', async () => {
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
     ];
@@ -2356,20 +2318,7 @@ Deno.test('/party remove', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getUserStub = stub(
@@ -2396,6 +2345,18 @@ Deno.test('/party remove', async (test) => {
       ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve([]),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -2461,6 +2422,9 @@ Deno.test('/party remove', async (test) => {
       getUserStub.restore();
       getInventoryStub.restore();
       unassignCharacterStub.restore();
+
+      mediaStub.restore();
+      charactersStub.restore();
     }
   });
 });

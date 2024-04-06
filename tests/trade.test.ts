@@ -17,23 +17,23 @@ import db from '~/db/mod.ts';
 
 import { Character, CharacterRole, MediaType } from '~/src/types.ts';
 
-import { AniListCharacter } from '~/packs/anilist/types.ts';
-
 import { NonFetalError } from '~/src/errors.ts';
 
 Deno.test('give', async (test) => {
   await test.step('normal', async () => {
-    const character: AniListCharacter = {
+    const character: Character = {
       id: '1',
+      packId: 'anilist',
       description: 'description',
       name: {
-        full: 'title',
+        english: 'title',
       },
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media',
@@ -48,21 +48,7 @@ Deno.test('give', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getInventoryStub = stub(
@@ -86,6 +72,12 @@ Deno.test('give', async (test) => {
       ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -116,15 +108,15 @@ Deno.test('give', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -141,15 +133,15 @@ Deno.test('give', async (test) => {
       );
 
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[1].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'POST');
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'POST');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -209,24 +201,26 @@ Deno.test('give', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      charactersStub.restore();
       getInventoryStub.restore();
       tradeCharactersStub.restore();
     }
   });
 
   await test.step('not found', async () => {
-    const character: AniListCharacter = {
+    const character: Character = {
       id: '1',
+      packId: 'anilist',
       description: 'description',
       name: {
-        full: 'title',
+        english: 'title',
       },
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media',
@@ -239,20 +233,7 @@ Deno.test('give', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getInventoryStub = stub(
@@ -280,6 +261,12 @@ Deno.test('give', async (test) => {
     const timeStub = new FakeTime();
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -341,24 +328,26 @@ Deno.test('give', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      charactersStub.restore();
       getInventoryStub.restore();
       tradeCharactersStub.restore();
     }
   });
 
   await test.step('not owned', async () => {
-    const character: AniListCharacter = {
+    const character: Character = {
       id: '1',
+      packId: 'anilist',
       description: 'description',
       name: {
-        full: 'title',
+        english: 'title',
       },
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media',
@@ -371,20 +360,7 @@ Deno.test('give', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getInventoryStub = stub(
@@ -412,6 +388,12 @@ Deno.test('give', async (test) => {
     const timeStub = new FakeTime();
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -473,24 +455,26 @@ Deno.test('give', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      charactersStub.restore();
       getInventoryStub.restore();
       tradeCharactersStub.restore();
     }
   });
 
   await test.step('in party', async () => {
-    const character: AniListCharacter = {
+    const character: Character = {
       id: '1',
+      packId: 'anilist',
       description: 'description',
       name: {
-        full: 'title',
+        english: 'title',
       },
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media',
@@ -503,20 +487,7 @@ Deno.test('give', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getInventoryStub = stub(
@@ -544,6 +515,12 @@ Deno.test('give', async (test) => {
     const timeStub = new FakeTime();
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -606,7 +583,7 @@ Deno.test('give', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      charactersStub.restore();
       getInventoryStub.restore();
       tradeCharactersStub.restore();
     }
@@ -615,17 +592,19 @@ Deno.test('give', async (test) => {
 
 Deno.test('trade', async (test) => {
   await test.step('normal', async () => {
-    const character: AniListCharacter = {
+    const character: Character = {
       id: '1',
+      packId: 'anilist',
       name: {
-        full: 'title',
+        english: 'title',
       },
       description: 'description',
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media',
@@ -635,17 +614,19 @@ Deno.test('trade', async (test) => {
       },
     };
 
-    const character2: AniListCharacter = {
+    const character2: Character = {
       id: '2',
+      packId: 'anilist',
       name: {
-        full: 'title 2',
+        english: 'title 2',
       },
       description: 'description 2',
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '3',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media 2',
@@ -660,21 +641,7 @@ Deno.test('trade', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character, character2],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getInventoryStub = stub(
@@ -698,6 +665,12 @@ Deno.test('trade', async (test) => {
       ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character, character2]),
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -729,15 +702,15 @@ Deno.test('trade', async (test) => {
       await timeStub.runMicrotasks();
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -827,15 +800,15 @@ Deno.test('trade', async (test) => {
       );
 
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[1].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'POST');
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'POST');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -854,24 +827,26 @@ Deno.test('trade', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      charactersStub.restore();
       getInventoryStub.restore();
       tradeCharactersStub.restore();
     }
   });
 
   await test.step('not found', async () => {
-    const character: AniListCharacter = {
+    const character: Character = {
       id: '1',
+      packId: 'anilist',
       name: {
-        full: 'title',
+        english: 'title',
       },
       description: 'description',
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media',
@@ -881,17 +856,19 @@ Deno.test('trade', async (test) => {
       },
     };
 
-    const character2: AniListCharacter = {
+    const character2: Character = {
       id: '2',
+      packId: 'anilist',
       name: {
-        full: 'title 2',
+        english: 'title 2',
       },
       description: 'description 2',
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '3',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media 2',
@@ -904,20 +881,7 @@ Deno.test('trade', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character, character2],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getInventoryStub = stub(
@@ -946,6 +910,12 @@ Deno.test('trade', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character, character2]),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -1008,24 +978,26 @@ Deno.test('trade', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      charactersStub.restore();
       getInventoryStub.restore();
       tradeCharactersStub.restore();
     }
   });
 
   await test.step('not owned', async () => {
-    const character: AniListCharacter = {
+    const character: Character = {
       id: '1',
+      packId: 'anilist',
       name: {
-        full: 'title',
+        english: 'title',
       },
       description: 'description',
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media',
@@ -1035,17 +1007,19 @@ Deno.test('trade', async (test) => {
       },
     };
 
-    const character2: AniListCharacter = {
+    const character2: Character = {
       id: '2',
+      packId: 'anilist',
       name: {
-        full: 'title 2',
+        english: 'title 2',
       },
       description: 'description 2',
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '3',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media 2',
@@ -1058,20 +1032,7 @@ Deno.test('trade', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character, character2],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getInventoryStub = stub(
@@ -1100,6 +1061,12 @@ Deno.test('trade', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character, character2]),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -1161,24 +1128,26 @@ Deno.test('trade', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      charactersStub.restore();
       getInventoryStub.restore();
       tradeCharactersStub.restore();
     }
   });
 
   await test.step('in party', async () => {
-    const character: AniListCharacter = {
+    const character: Character = {
       id: '1',
+      packId: 'anilist',
       name: {
-        full: 'title',
+        english: 'title',
       },
       description: 'description',
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media',
@@ -1188,17 +1157,19 @@ Deno.test('trade', async (test) => {
       },
     };
 
-    const character2: AniListCharacter = {
+    const character2: Character = {
       id: '2',
+      packId: 'anilist',
       name: {
-        full: 'title 2',
+        english: 'title 2',
       },
       description: 'description 2',
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '3',
+            packId: 'anilist',
             type: MediaType.Anime,
             title: {
               english: 'media 2',
@@ -1211,20 +1182,7 @@ Deno.test('trade', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character, character2],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getInventoryStub = stub(
@@ -1252,6 +1210,12 @@ Deno.test('trade', async (test) => {
     const timeStub = new FakeTime();
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character, character2]),
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1314,7 +1278,7 @@ Deno.test('trade', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      charactersStub.restore();
       getInventoryStub.restore();
       tradeCharactersStub.restore();
     }

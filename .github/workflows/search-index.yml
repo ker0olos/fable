@@ -16,12 +16,7 @@ jobs:
         with:
           deno-version: v1.x
 
-      - run: deno run -A --unstable-kv search-index/index.ts
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: search-indexes
-          path: search-index/*_index.bin
+      - run: deno run -A search-index/index.ts
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5

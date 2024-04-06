@@ -17,6 +17,7 @@ const mediaMap: Record<string, DisaggregatedMedia> = {};
 async function storeMediaIndex(db: Mongo): Promise<void> {
   console.log('starting the creation of the media index...');
 
+  // TODO lower database load by using the provided json datadump of the database
   const media = await db.anime.media().find({}).toArray();
 
   const json = JSON.stringify(media.map((media) => {
@@ -41,6 +42,7 @@ async function storeMediaIndex(db: Mongo): Promise<void> {
 async function storeCharacterIndex(db: Mongo): Promise<void> {
   console.log('starting the creation of the characters index...');
 
+  // TODO lower database load by using the provided json datadump of the database
   const characters = await db.anime.characters().find({}).toArray();
 
   const json = JSON.stringify(characters.map((character) => {

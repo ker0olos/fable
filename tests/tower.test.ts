@@ -19,9 +19,7 @@ import utils from '~/src/utils.ts';
 import config from '~/src/config.ts';
 import packs from '~/src/packs.ts';
 
-import { MediaType } from '~/src/types.ts';
-
-import type { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
+import { Character, Media, MediaType } from '~/src/types.ts';
 
 Deno.test('max floors', () => {
   assertEquals(MAX_FLOORS, 20);
@@ -920,7 +918,7 @@ Deno.test('/reclear', async (test) => {
   await test.step('normal', async () => {
     const timeStub = new FakeTime();
 
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
         type: MediaType.Anime,
@@ -930,35 +928,40 @@ Deno.test('/reclear', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -1141,7 +1144,7 @@ Deno.test('/reclear', async (test) => {
   await test.step('multiple reclear', async () => {
     const timeStub = new FakeTime();
 
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
         type: MediaType.Anime,
@@ -1151,35 +1154,40 @@ Deno.test('/reclear', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -1362,7 +1370,7 @@ Deno.test('/reclear', async (test) => {
   await test.step('level up x1', async () => {
     const timeStub = new FakeTime();
 
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
         type: MediaType.Anime,
@@ -1372,35 +1380,40 @@ Deno.test('/reclear', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -1584,7 +1597,7 @@ Deno.test('/reclear', async (test) => {
   await test.step('level up x2', async () => {
     const timeStub = new FakeTime();
 
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
         type: MediaType.Anime,
@@ -1594,35 +1607,40 @@ Deno.test('/reclear', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
@@ -1806,7 +1824,7 @@ Deno.test('/reclear', async (test) => {
   await test.step('no keys', async () => {
     const timeStub = new FakeTime('2011/1/25 00:00 UTC');
 
-    const media: AniListMedia[] = [
+    const media: Media[] = [
       {
         id: '0',
         type: MediaType.Anime,
@@ -1816,35 +1834,40 @@ Deno.test('/reclear', async (test) => {
       },
     ];
 
-    const characters: AniListCharacter[] = [
+    const characters: Character[] = [
       {
         id: '1',
+        packId: 'anilist',
         name: {
-          full: 'name 1',
+          english: 'name 1',
         },
       },
       {
         id: '2',
+        packId: 'anilist',
         name: {
-          full: 'name 2',
+          english: 'name 2',
         },
       },
       {
         id: '3',
+        packId: 'anilist',
         name: {
-          full: 'name 3',
+          english: 'name 3',
         },
       },
       {
         id: '4',
+        packId: 'anilist',
         name: {
-          full: 'name 4',
+          english: 'name 4',
         },
       },
       {
         id: '5',
+        packId: 'anilist',
         name: {
-          full: 'name 5',
+          english: 'name 5',
         },
       },
     ];
