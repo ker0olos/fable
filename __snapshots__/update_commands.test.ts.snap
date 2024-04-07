@@ -2312,26 +2312,6 @@ snapshot[`commands 1`] = `
             }
           }
         ]
-      },
-      {
-        "name": "sum",
-        "description": "view the sum numbers of a user collection",
-        "type": 1,
-        "required": false,
-        "description_localizations": {
-          "es-ES": "visualiza la suma total de la colección de un usuario"
-        },
-        "options": [
-          {
-            "name": "user",
-            "description": "the user of the list",
-            "type": 6,
-            "required": false,
-            "description_localizations": {
-              "es-ES": "el usuario de la lista"
-            }
-          }
-        ]
       }
     ]
   },
@@ -2421,26 +2401,6 @@ snapshot[`commands 1`] = `
             }
           }
         ]
-      },
-      {
-        "name": "sum",
-        "description": "view the sum numbers of a user collection",
-        "type": 1,
-        "required": false,
-        "description_localizations": {
-          "es-ES": "visualiza la suma total de la colección de un usuario"
-        },
-        "options": [
-          {
-            "name": "user",
-            "description": "the user of the list",
-            "type": 6,
-            "required": false,
-            "description_localizations": {
-              "es-ES": "el usuario de la lista"
-            }
-          }
-        ]
       }
     ]
   },
@@ -2520,26 +2480,6 @@ snapshot[`commands 1`] = `
               "es-ES": "el título de la serie"
             }
           },
-          {
-            "name": "user",
-            "description": "the user of the list",
-            "type": 6,
-            "required": false,
-            "description_localizations": {
-              "es-ES": "el usuario de la lista"
-            }
-          }
-        ]
-      },
-      {
-        "name": "sum",
-        "description": "view the sum numbers of a user collection",
-        "type": 1,
-        "required": false,
-        "description_localizations": {
-          "es-ES": "visualiza la suma total de la colección de un usuario"
-        },
-        "options": [
           {
             "name": "user",
             "description": "the user of the list",

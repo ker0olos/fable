@@ -4,7 +4,7 @@ import { assertEquals } from '$std/assert/mod.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
-import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
+import { assertSpyCalls, stub } from '$std/testing/mock.ts';
 
 import tower, {
   getEnemyMaxSkillLevel,
@@ -969,33 +969,7 @@ Deno.test('/reclear', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getGuildStub = stub(
@@ -1068,6 +1042,18 @@ Deno.test('/reclear', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1095,18 +1081,16 @@ Deno.test('/reclear', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
-
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1134,6 +1118,9 @@ Deno.test('/reclear', async (test) => {
       timeStub.restore();
       fetchStub.restore();
       listStub.restore();
+
+      mediaStub.restore();
+      characterStub.restore();
 
       getGuildStub.restore();
       getInventoryStub.restore();
@@ -1195,33 +1182,7 @@ Deno.test('/reclear', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getGuildStub = stub(
@@ -1294,6 +1255,18 @@ Deno.test('/reclear', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1321,18 +1294,16 @@ Deno.test('/reclear', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
-
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1360,7 +1331,8 @@ Deno.test('/reclear', async (test) => {
       timeStub.restore();
       fetchStub.restore();
       listStub.restore();
-
+      mediaStub.restore();
+      characterStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
       gainExpStub.restore();
@@ -1421,33 +1393,7 @@ Deno.test('/reclear', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getGuildStub = stub(
@@ -1520,6 +1466,18 @@ Deno.test('/reclear', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1547,18 +1505,16 @@ Deno.test('/reclear', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
-
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1587,7 +1543,8 @@ Deno.test('/reclear', async (test) => {
       timeStub.restore();
       fetchStub.restore();
       listStub.restore();
-
+      mediaStub.restore();
+      characterStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
       gainExpStub.restore();
@@ -1648,33 +1605,7 @@ Deno.test('/reclear', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getGuildStub = stub(
@@ -1747,6 +1678,18 @@ Deno.test('/reclear', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1774,18 +1717,16 @@ Deno.test('/reclear', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
-
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1814,7 +1755,8 @@ Deno.test('/reclear', async (test) => {
       timeStub.restore();
       fetchStub.restore();
       listStub.restore();
-
+      mediaStub.restore();
+      characterStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
       gainExpStub.restore();
@@ -1875,33 +1817,7 @@ Deno.test('/reclear', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
+      () => undefined as any,
     );
 
     const getGuildStub = stub(
@@ -1974,6 +1890,18 @@ Deno.test('/reclear', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
     config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -2038,7 +1966,8 @@ Deno.test('/reclear', async (test) => {
 
       timeStub.restore();
       fetchStub.restore();
-
+      mediaStub.restore();
+      characterStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
       gainExpStub.restore();

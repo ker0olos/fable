@@ -806,6 +806,47 @@ function list({
 
       const chunks = utils.chunks(characters, 5);
 
+      if (!chunks.length) {
+        message.addEmbed(embed.setDescription(
+          nick
+            ? (media.length
+              ? i18n.get(
+                'user-empty-media-collection',
+                locale,
+                `<@${userId}>`,
+                packs.aliasToArray(media[0].title)[0],
+              )
+              : i18n.get(
+                'user-empty-collection',
+                locale,
+                `<@${userId}>`,
+                rating ? `${rating}${discord.emotes.smolStar}` : '',
+              ))
+            : (media.length
+              ? i18n.get(
+                'you-empty-media-collection',
+                locale,
+                packs.aliasToArray(media[0].title)[0],
+              )
+              : i18n.get(
+                'you-empty-collection',
+                locale,
+                rating ? `${rating}${discord.emotes.smolStar}` : '',
+              )),
+        ));
+
+        if (!nick) {
+          message.addComponents([
+            // `/gacha` shortcut
+            new discord.Component()
+              .setId('gacha', userId)
+              .setLabel('/gacha'),
+          ]);
+        }
+
+        return message.patch(token);
+      }
+
       const _characters = await packs.characters({
         ids: chunks[index]?.map(({ characterId }) => characterId),
         guildId,
@@ -853,47 +894,6 @@ function list({
           value: mediaTitle ? name : undefined,
         });
       }));
-
-      if (embed.getFieldsCount() <= 0) {
-        message.addEmbed(embed.setDescription(
-          nick
-            ? (media.length
-              ? i18n.get(
-                'user-empty-media-collection',
-                locale,
-                `<@${userId}>`,
-                packs.aliasToArray(media[0].title)[0],
-              )
-              : i18n.get(
-                'user-empty-collection',
-                locale,
-                `<@${userId}>`,
-                rating ? `${rating}${discord.emotes.smolStar}` : '',
-              ))
-            : (media.length
-              ? i18n.get(
-                'you-empty-media-collection',
-                locale,
-                packs.aliasToArray(media[0].title)[0],
-              )
-              : i18n.get(
-                'you-empty-collection',
-                locale,
-                rating ? `${rating}${discord.emotes.smolStar}` : '',
-              )),
-        ));
-
-        if (!nick) {
-          message.addComponents([
-            // `/gacha` shortcut
-            new discord.Component()
-              .setId('gacha', userId)
-              .setLabel('/gacha'),
-          ]);
-        }
-
-        return message.patch(token);
-      }
 
       return discord.Message.page({
         index,
@@ -1007,8 +1007,31 @@ function likeslist({
         }),
       ]);
 
+      if (!chunks.length) {
+        if (index > 0) {
+          embed.setDescription(
+            'This page is empty',
+          );
+        } else {
+          message.addEmbed(embed.setDescription(
+            nick
+              ? i18n.get('user-empty-likeslist', locale, `<@${userId}>`)
+              : i18n.get('you-empty-likeslist', locale),
+          ));
+
+          return message.patch(token);
+        }
+      }
+
       await Promise.all(
-        characters.map(async (character) => {
+        chunks[index].map(async (like) => {
+          // deno-lint-ignore no-non-null-assertion
+          const character = characters.find((
+            { packId, id },
+          ) => (
+            like.characterId === `${packId}:${id}`
+          ))!;
+
           const existing = results.find((r) =>
             r?.characterId === `${character.packId}:${character.id}`
           );
@@ -1059,21 +1082,7 @@ function likeslist({
         });
       });
 
-      if (embed.getFieldsCount() <= 0) {
-        if (index > 0) {
-          embed.setDescription(
-            'This page is empty',
-          );
-        } else {
-          message.addEmbed(embed.setDescription(
-            nick
-              ? i18n.get('user-empty-likeslist', locale, `<@${userId}>`)
-              : i18n.get('you-empty-likeslist', locale),
-          ));
-
-          return message.patch(token);
-        }
-      }
+  
 
       return discord.Message.page({
         index,
