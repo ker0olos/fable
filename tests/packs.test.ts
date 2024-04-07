@@ -28,8 +28,6 @@ import {
   MediaType,
 } from '~/src/types.ts';
 
-import { AniListCharacter, AniListMedia } from '~/packs/anilist/types.ts';
-
 import { NonFetalError } from '~/src/errors.ts';
 
 Deno.test('list', async (test) => {
@@ -173,23 +171,22 @@ Deno.test('disabled', async (test) => {
 
 Deno.test('media character', async (test) => {
   await test.step('anilist (id)', async () => {
-    const media: AniListMedia = {
+    const media: Media = {
       id: '1',
+      packId: 'anilist',
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {
         english: 'title',
       },
       characters: {
-        pageInfo: {
-          hasNextPage: true,
-        },
         edges: [{
           role: CharacterRole.Main,
           node: {
             id: '2',
+            packId: 'anilist',
             name: {
-              full: 'name',
+              english: 'name',
             },
           },
         }],
@@ -199,23 +196,25 @@ Deno.test('media character', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [media],
-              },
-            },
-          }))),
-      } as any),
+      () => undefined as any,
     );
 
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([
         { manifest: { id: 'anilist' } },
       ] as any));
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve([media]),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([]),
+    );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -250,9 +249,6 @@ Deno.test('media character', async (test) => {
                 },
               },
             ],
-            pageInfo: {
-              hasNextPage: true,
-            },
           } as any,
         },
         role: CharacterRole.Main,
@@ -268,6 +264,8 @@ Deno.test('media character', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mediaStub.restore();
+      charactersStub.restore();
     }
   });
 
@@ -524,116 +522,6 @@ Deno.test('media character', async (test) => {
 });
 
 Deno.test('aggregate media', async (test) => {
-  await test.step('aggregate from anilist', async () => {
-    const parent: AniListMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media parent',
-      },
-    };
-
-    const character: AniListCharacter = {
-      id: '2',
-      name: {
-        full: 'character name',
-      },
-    };
-
-    const child: DisaggregatedMedia = {
-      id: '1',
-      packId: 'test',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media child',
-      },
-      relations: [{
-        relation: MediaRelation.Parent,
-        mediaId: 'anilist:1',
-      }],
-      characters: [{
-        role: CharacterRole.Main,
-        characterId: 'anilist:2',
-      }],
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [parent],
-                characters: [character],
-              },
-            },
-          }))),
-      } as any),
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      assertEquals(
-        await packs.aggregate<Media>({
-          guildId: 'guild_id',
-          media: child,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'media child',
-          },
-          relations: {
-            edges: [{
-              relation: MediaRelation.Parent,
-              node: {
-                id: '1',
-                packId: 'anilist',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media parent',
-                },
-              },
-            }],
-          },
-          characters: {
-            edges: [{
-              role: CharacterRole.Main,
-              node: {
-                id: '2',
-                packId: 'anilist',
-                name: {
-                  english: 'character name',
-                },
-              },
-            }],
-          },
-        },
-      );
-
-      assertSpyCalls(fetchStub, 2);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
-
   await test.step('aggregate from pack', async () => {
     const parent: DisaggregatedMedia = {
       id: '1',
@@ -752,6 +640,7 @@ Deno.test('aggregate media', async (test) => {
   await test.step('referring to the same media more than once (anilist)', async () => {
     const media: Media = {
       id: '1',
+      packId: 'anilist',
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {
@@ -779,17 +668,13 @@ Deno.test('aggregate media', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [media],
-              },
-            },
-          }))),
-      } as any),
+      () => undefined as any,
+    );
+
+    const mediaStub = stub(
+      packs,
+      'findById',
+      () => Promise.resolve({ 'anilist:1': media }),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -843,12 +728,11 @@ Deno.test('aggregate media', async (test) => {
           },
         },
       );
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mediaStub.restore();
     }
   });
 
@@ -1069,18 +953,13 @@ Deno.test('aggregate media', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [],
-                characters: [],
-              },
-            },
-          }))),
-      } as any),
+      () => undefined as any,
+    );
+
+    const mediaStub = stub(
+      packs,
+      'findById',
+      () => Promise.resolve({}),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -1114,12 +993,11 @@ Deno.test('aggregate media', async (test) => {
           },
         },
       );
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
       packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
+      mediaStub.restore();
     }
   });
 
@@ -1459,6 +1337,7 @@ Deno.test('aggregate characters', async (test) => {
   await test.step('aggregate from anilist', async () => {
     const media: Media = {
       id: '1',
+      packId: 'anilist',
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {
@@ -1481,17 +1360,13 @@ Deno.test('aggregate characters', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [media],
-              },
-            },
-          }))),
-      } as any),
+      () => undefined as any,
+    );
+
+    const mediaStub = stub(
+      packs,
+      'findById',
+      () => Promise.resolve({ 'anilist:1': media }),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -1529,12 +1404,11 @@ Deno.test('aggregate characters', async (test) => {
           },
         },
       );
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mediaStub.restore();
     }
   });
 
@@ -1614,8 +1488,6 @@ Deno.test('aggregate characters', async (test) => {
           },
         },
       );
-
-      assertSpyCalls(fetchStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -1626,6 +1498,7 @@ Deno.test('aggregate characters', async (test) => {
   await test.step('referring to the same media more than once (anilist)', async () => {
     const media: Media = {
       id: '1',
+      packId: 'anilist',
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {
@@ -1651,17 +1524,13 @@ Deno.test('aggregate characters', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [media],
-              },
-            },
-          }))),
-      } as any),
+      () => undefined as any,
+    );
+
+    const mediaStub = stub(
+      packs,
+      'findById',
+      () => Promise.resolve({ 'anilist:1': media }),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -1710,12 +1579,11 @@ Deno.test('aggregate characters', async (test) => {
           },
         },
       );
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mediaStub.restore();
     }
   });
 
@@ -1850,27 +1718,23 @@ Deno.test('aggregate characters', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [],
-                characters: [],
-              },
-            },
-          }))),
-      } as any),
+      () => undefined as any,
     );
 
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([
         { manifest: { id: 'anilist' } },
       ] as any));
+
     packs.cachedGuilds = {
       'guild_id': { packs: [pack], disables: new Map() },
     };
+
+    const mediaStub = stub(
+      packs,
+      'findById',
+      () => Promise.resolve({ character }),
+    );
 
     try {
       assertEquals(
@@ -1889,12 +1753,11 @@ Deno.test('aggregate characters', async (test) => {
           },
         },
       );
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
       packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
+      mediaStub.restore();
     }
   });
 

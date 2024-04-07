@@ -24,6 +24,7 @@ import {
 } from '~/src/types.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
+import i18n from '~/src/i18n.ts';
 
 export const idPrefix = 'id=';
 
@@ -50,6 +51,8 @@ function media(
     guildId: string;
   },
 ): discord.Message {
+  const locale = user.cachedGuilds[guildId]?.locale;
+
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
     .then((results: (Media | DisaggregatedMedia)[]) => {
@@ -80,7 +83,7 @@ function media(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -252,6 +255,8 @@ function character(
     debug?: boolean;
   },
 ): discord.Message {
+  const locale = user.cachedGuilds[guildId]?.locale;
+
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then((results) => {
@@ -318,7 +323,7 @@ function character(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -577,79 +582,119 @@ function characterDebugMessage(character: Character): discord.Message {
   return new discord.Message().addEmbed(embed);
 }
 
-async function mediaCharacters(
-  { search, id, userId, guildId, index }: {
+function mediaCharacters(
+  { token, search, id, userId, guildId, index }: {
+    token: string;
     search?: string;
     id?: string;
     userId: string;
     guildId: string;
     index: number;
   },
-): Promise<discord.Message> {
-  const locale = user.cachedUsers[userId]?.locale;
+): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
 
-  const { character: node, media, next, total } = await packs
+  packs
     .mediaCharacters({
       id,
       search,
       guildId,
       index,
+    })
+    .then(async ({ character, role, media, next, total }) => {
+      if (!media || packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
+        throw new Error('404');
+      }
+
+      const titles = packs.aliasToArray(media.title);
+
+      if (!character) {
+        throw new NonFetalError(
+          index > 0
+            ? `${titles[0]} contains no more characters`
+            : `${titles[0]} contains no characters`,
+        );
+      }
+
+      const existing = await db.findCharacter(
+        guildId,
+        `${character.packId}:${character.id}`,
+      );
+
+      // const [character, existing] = await Promise.all([
+      //   packs.aggregate<Character>({
+      //     guildId,
+      //     character: character,
+      //     end: 1,
+      //   }),
+      //   // find if the character is owned
+      //   db.findCharacter(guildId, `${character.packId}:${character.id}`),
+      // ]);
+
+      const message = characterMessage(character, {
+        rating: new Rating({ role, popularity: media.popularity }),
+        relations: false,
+        description: true,
+        externalLinks: true,
+        footer: true,
+        existing: existing ?? undefined,
+        userId: existing?.userId,
+      }).addComponents([
+        new discord.Component()
+          .setId('media', `${media.packId}:${media.id}`)
+          .setLabel(`/${media.type.toLowerCase()}`),
+      ]);
+
+      message.insertComponents([
+        new discord.Component()
+          .setLabel('/like')
+          .setId(`like`, `${character.packId}:${character.id}`),
+      ]);
+
+      await discord.Message.page({
+        total,
+        type: 'mcharacters',
+        target: `${media.packId}:${media.id}`,
+        message,
+        index,
+        next,
+        locale,
+      }).patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('found-nothing', locale),
+            ),
+          ).patch(token);
+      }
+
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(new discord.Embed().setDescription(err.message))
+          .patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
     });
 
-  if (!media || packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
-    throw new Error('404');
-  }
-
-  const titles = packs.aliasToArray(media.title);
-
-  if (!node) {
-    throw new NonFetalError(
-      index > 0
-        ? `${titles[0]} contains no more characters`
-        : `${titles[0]} contains no characters`,
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
     );
-  }
 
-  const [character, existing] = await Promise.all([
-    // aggregate the media by populating any references to other media/character objects
-    packs.aggregate<Character>({
-      guildId,
-      character: node,
-      end: 1,
-    }),
-    // find if the character is owned
-    db.findCharacter(guildId, `${node.packId}:${node.id}`),
-  ]);
-
-  const message = characterMessage(character, {
-    rating: false,
-    relations: false,
-    description: true,
-    externalLinks: true,
-    footer: true,
-    existing: existing ?? undefined,
-    userId: existing?.userId,
-  }).addComponents([
-    new discord.Component()
-      .setId('media', `${media.packId}:${media.id}`)
-      .setLabel(`/${media.type.toLowerCase()}`),
-  ]);
-
-  message.insertComponents([
-    new discord.Component()
-      .setLabel('/like')
-      .setId(`like`, `${character.packId}:${character.id}`),
-  ]);
-
-  return discord.Message.page({
-    total,
-    type: 'mcharacters',
-    target: `${media.packId}:${media.id}`,
-    message,
-    index,
-    next,
-    locale,
-  });
+  return loading;
 }
 
 function mediaFound(

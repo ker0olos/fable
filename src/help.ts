@@ -284,9 +284,6 @@ function pages(
             `- \`/collection media\` \`/coll media\` \`/mm media\`: _${
               i18n.get('/coll media', locale)
             }_`,
-            `- \`/collection sum\` \`/coll sum\` \`/mm sum\`: _${
-              i18n.get('/coll sum', locale)
-            }_`,
             '',
             `- \`/steal\`: _${i18n.get('/steal', locale)}_`,
             `- \`/trade\` \`/offer\`: _${i18n.get('/trade', locale)}_`,

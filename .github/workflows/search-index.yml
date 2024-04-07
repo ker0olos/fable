@@ -3,36 +3,20 @@ name: search
 on:
   workflow_dispatch:
   schedule:
-    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
-    - cron: "0 0 * * 0"
+    # Once a month "At 00:00 on day-of-month 2" (see https://crontab.guru/once-a-month)
+    - cron: "0 0 2 * *"
 
 jobs:
   index:
     runs-on: ubuntu-latest
-    timeout-minutes: 240 # 4 hours
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.PAT }}
-          repository: ker0olos/fable
+      - uses: actions/checkout@v4
 
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
 
-      - run: deno run -A --unstable-kv search-index/index.ts
-
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: backup-anilist-cache
-          path: search-index.sqlite
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: search-indexes
-          path: search-index/*_index.bin
+      - run: deno run -A search-index/index.ts
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -45,8 +29,5 @@ jobs:
           delete-branch: true
           body: |
 
-            *Updated the search indexes for all AniList entries above 1000 popularity.*
-
             > [!NOTE]
             > This PR is auto-generated every Sunday!
-            > This is due to AniList full-text search and pagination being too limited/unreliable.

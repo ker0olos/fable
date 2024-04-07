@@ -361,6 +361,7 @@ Deno.test('media characters components', async () => {
         userId: 'user_id',
         guildId: 'guild_id',
         index: 1,
+        token: 'token',
       }],
     });
 

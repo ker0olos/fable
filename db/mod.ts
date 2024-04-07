@@ -79,6 +79,11 @@ import { disableBuiltins } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
+import type {
+  DisaggregatedCharacter,
+  DisaggregatedMedia,
+} from '~/src/types.ts';
+
 export class Mongo {
   #client: MongoClient;
 
@@ -125,14 +130,17 @@ export class Mongo {
     return this.#client.db('default').collection('battles');
   }
 
-  // anime: {
-  //   media(): Collection<DisaggregatedMedia> {
-  //     return db.client.db('anime').collection('media');
-  //   }
-  //   characters(): Collection<DisaggregatedCharacter> {
-  //     return db.client.db('anime').collection('characters');
-  //   }
-  // },
+  // deno-lint-ignore explicit-function-return-type
+  public get anime() {
+    return {
+      media: (): Collection<DisaggregatedMedia> => {
+        return this.#client.db('anime').collection('media');
+      },
+      characters: (): Collection<DisaggregatedCharacter> => {
+        return this.#client.db('anime').collection('characters');
+      },
+    };
+  }
 }
 
 const db = {

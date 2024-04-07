@@ -1,8 +1,6 @@
 {
   "files.exclude": {
     ".git": true,
-    "**/build": true,
-    "**/target": true,
     "**/__snapshots__": true
   },
   "discord.enabled": true,
@@ -15,43 +13,30 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "README.md": "LICENSE,.gitignore,ToS.md,Policy.md",
     ".env.example": ".env",
-    "deno.json": "deno.lock"
+    "README.md": "LICENSE,.gitignore,ToS.md,Policy.md"
   },
   //
   "deno.lint": true,
   "deno.enable": true,
   "deno.config": "deno.json",
   //
-  "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
+  "[typescript]": { "editor.defaultFormatter": "denoland.vscode-deno" },
+  "[typescriptreact]": { "editor.defaultFormatter": "denoland.vscode-deno" },
+  "[jsonc]": { "editor.defaultFormatter": "denoland.vscode-deno" },
+  "[markdown]": { "editor.defaultFormatter": "denoland.vscode-deno" },
   //
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file://.github/workflows/deploy.yml"
+  },
   "json.schemas": [
     {
       "url": "http://json-schema.org/schema",
-      "fileMatch": [
-        "json/*.json"
-      ]
+      "fileMatch": ["json/*.json"]
     },
     {
       "url": "./json/schema.json",
-      "fileMatch": [
-        "packs/*/manifest.json"
-      ]
+      "fileMatch": ["packs/*/manifest.json"]
     }
-  ],
-  "yaml.schemas": {
-    "https://json.schemastore.org/github-workflow.json": "file://.github/workflows/deploy.yml"
-  }
+  ]
 }

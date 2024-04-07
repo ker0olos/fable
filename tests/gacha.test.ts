@@ -70,59 +70,7 @@ Deno.test('adding character to inventory', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [{
-                    id: '1',
-                    packId: 'anilist',
-                    name: {
-                      full: 'name',
-                    },
-                    media: {
-                      edges: [{
-                        characterRole: CharacterRole.Main,
-                        node: {
-                          id: 'anime',
-                          popularity: 2500,
-                          type: MediaType.Anime,
-                          format: MediaFormat.TV,
-                          title: {
-                            english: 'title',
-                          },
-                        },
-                      }],
-                    },
-                  }],
-                },
-              },
-            }))),
-        } as any,
-        // {
-        //   ok: true,
-        //   text: (() =>
-        //     Promise.resolve(JSON.stringify({
-        //       data: {
-        //         addCharacterToInventory: {
-        //           ok: true,
-        //           character: {
-        //             _id: 'anchor',
-        //           },
-        //           inventory: {
-        //             availablePulls: 2,
-        //             user: {
-        //               guaranteed: [5, 4, 4, 3],
-        //             },
-        //           },
-        //         },
-        //       },
-        //     }))),
-        // }
-      ]),
+      () => undefined as any,
     );
 
     const getGuildStub = stub(
@@ -147,6 +95,34 @@ Deno.test('adding character to inventory', async (test) => {
       Promise.resolve([
         { manifest: { id: 'anilist' } },
       ] as any));
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () =>
+        Promise.resolve([{
+          id: '1',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+              },
+            }],
+          },
+        }]),
+    );
 
     try {
       assertObjectMatch(
@@ -183,13 +159,12 @@ Deno.test('adding character to inventory', async (test) => {
       );
 
       assertSpyCalls(poolStub, 1);
-      assertSpyCalls(fetchStub, 1);
     } finally {
       poolStub.restore();
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-      //
+      charactersStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -231,39 +206,7 @@ Deno.test('adding character to inventory', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [{
-                    id: '1',
-                    packId: 'anilist',
-                    name: {
-                      full: 'name',
-                    },
-                    media: {
-                      edges: [{
-                        characterRole: CharacterRole.Main,
-                        node: {
-                          id: 'anime',
-                          popularity: 2500,
-                          type: MediaType.Anime,
-                          format: MediaFormat.TV,
-                          title: {
-                            english: 'title',
-                          },
-                        },
-                      }],
-                    },
-                  }],
-                },
-              },
-            }))),
-        } as any,
-      ]),
+      () => undefined as any,
     );
 
     const getGuildStub = stub(
@@ -291,6 +234,34 @@ Deno.test('adding character to inventory', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () =>
+        Promise.resolve([{
+          id: '1',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+              },
+            }],
+          },
+        }]),
+    );
+
     try {
       await assertRejects(
         async () =>
@@ -303,13 +274,12 @@ Deno.test('adding character to inventory', async (test) => {
       );
 
       assertSpyCalls(poolStub, 1);
-      assertSpyCalls(fetchStub, 1);
     } finally {
       poolStub.restore();
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-
+      charactersStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -351,39 +321,7 @@ Deno.test('adding character to inventory', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [{
-                    id: '1',
-                    packId: 'anilist',
-                    name: {
-                      full: 'name',
-                    },
-                    media: {
-                      edges: [{
-                        characterRole: CharacterRole.Main,
-                        node: {
-                          id: 'anime',
-                          popularity: 2500,
-                          type: MediaType.Anime,
-                          format: MediaFormat.TV,
-                          title: {
-                            english: 'title',
-                          },
-                        },
-                      }],
-                    },
-                  }],
-                },
-              },
-            }))),
-        } as any,
-      ]),
+      () => undefined as any,
     );
 
     const getGuildStub = stub(
@@ -411,6 +349,34 @@ Deno.test('adding character to inventory', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () =>
+        Promise.resolve([{
+          id: '1',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+              },
+            }],
+          },
+        }]),
+    );
+
     try {
       await assertRejects(
         async () =>
@@ -423,13 +389,12 @@ Deno.test('adding character to inventory', async (test) => {
       );
 
       assertSpyCalls(poolStub, 1);
-      assertSpyCalls(fetchStub, 1);
     } finally {
       poolStub.restore();
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-
+      charactersStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -471,39 +436,35 @@ Deno.test('adding character to inventory', async (test) => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [{
-                    id: '1',
-                    packId: 'anilist',
-                    name: {
-                      full: 'name',
-                    },
-                    media: {
-                      edges: [{
-                        characterRole: CharacterRole.Main,
-                        node: {
-                          id: 'anime',
-                          popularity: 2500,
-                          type: MediaType.Anime,
-                          format: MediaFormat.TV,
-                          title: {
-                            english: 'title',
-                          },
-                        },
-                      }],
-                    },
-                  }],
+      () => undefined as any,
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () =>
+        Promise.resolve([{
+          id: '1',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
                 },
               },
-            }))),
-        } as any,
-      ]),
+            }],
+          },
+        }]),
     );
 
     const getGuildStub = stub(
@@ -544,13 +505,12 @@ Deno.test('adding character to inventory', async (test) => {
       );
 
       assertSpyCalls(poolStub, 1);
-      assertSpyCalls(fetchStub, 1);
     } finally {
       poolStub.restore();
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-
+      charactersStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
