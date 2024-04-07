@@ -35,7 +35,7 @@
     "ajv": "https://esm.sh/ajv@8.12.0",
     "awesome-ajv": "https://esm.sh/awesome-ajv-errors@5.1.0",
     "lru": "https://deno.land/x/lru@1.0.2/mod.ts",
-    "sentry": "https://deno.land/x/sentry@8.0.0-alpha.7/index.mjs",
+    "sentry": "npm:@sentry/node",
     "tweetnacl": "https://esm.sh/tweetnacl@1.0.3",
     "mongodb": "npm:mongodb",
     "mongodb-memory-server": "npm:mongodb-memory-server-core",
