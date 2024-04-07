@@ -774,20 +774,6 @@ export const commands = [
           }),
         ],
       }),
-      Option({
-        name: 'sum',
-        description: '/coll sum',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'user',
-            description: '$user-list',
-            type: Type.USER,
-            optional: true,
-          }),
-        ],
-      }),
     ],
   }),
   // pack viewing

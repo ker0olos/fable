@@ -811,11 +811,13 @@ function list({
         guildId,
       });
 
-      await Promise.all(_characters.map(async (char) => {
+      await Promise.all(chunks[index].map(async (existing) => {
         // deno-lint-ignore no-non-null-assertion
-        const existing = chunks[index].find(({ characterId }) =>
-          characterId === `${char.packId}:${char.id}`
-        )!;
+        const char = _characters.find((
+          { packId, id },
+        ) => (
+          existing.characterId === `${packId}:${id}`
+        ))!;
 
         const media = (await packs.aggregate<Character>({
           character: char,
@@ -917,105 +919,6 @@ function list({
           ).patch(token);
       }
 
-      if (!config.sentry) {
-        throw err;
-      }
-
-      const refId = utils.captureException(err);
-
-      await discord.Message.internal(refId).patch(token);
-    });
-
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
-}
-
-function sum({
-  token,
-  userId,
-  guildId,
-  // nick,
-}: {
-  token: string;
-  userId: string;
-  guildId: string;
-  nick?: boolean;
-}): discord.Message {
-  const locale = cachedUsers[userId]?.locale;
-
-  Promise.resolve()
-    .then(async () => {
-      const { user, ...inventory } = await db.getInventory(guildId, userId);
-
-      const likes = (user.likes ?? [])
-        .map(({ characterId }) => characterId);
-
-      const characters = await db.getUserCharacters(userId, guildId);
-
-      const embed = new discord.Embed();
-
-      const message = new discord.Message()
-        .addEmbed(embed);
-
-      const party = [
-        inventory.party.member1Id,
-        inventory.party.member2Id,
-        inventory.party.member3Id,
-        inventory.party.member4Id,
-        inventory.party.member5Id,
-      ];
-
-      const sum: Record<number, number> = {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-      };
-
-      const sumProtected: Record<number, number> = {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-      };
-
-      characters.forEach((char) => {
-        sum[char.rating as keyof typeof sum] += 1;
-
-        if (likes.includes(char.characterId) || party.includes(char._id)) {
-          sumProtected[char.rating as keyof typeof sum] += 1;
-        }
-      });
-
-      const description: string[] = [];
-
-      [1, 2, 3, 4, 5].forEach(
-        (n) =>
-          description.push(
-            // deno-lint-ignore prefer-ascii
-            `${n}${discord.emotes.smolStar} — **${sum[n]} ${sum[n] === 1
-                ? i18n.get('character', locale)
-                : i18n.get('characters', locale)
-              // deno-lint-ignore prefer-ascii
-            }** — ${sumProtected[n]} ${discord.emotes.liked}(${
-              sum[n] - sumProtected[n]
-            })`,
-          ),
-      );
-
-      embed.setDescription(description.join('\n'));
-
-      return message.patch(token);
-    })
-    .catch(async (err) => {
       if (!config.sentry) {
         throw err;
       }
@@ -1295,7 +1198,6 @@ const user = {
   likeall,
   likeslist,
   list,
-  sum,
   logs,
   nick,
   now,

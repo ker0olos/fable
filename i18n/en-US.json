@@ -281,7 +281,6 @@
 
   "/coll stars": "view user stars",
   "/coll media": "view user characters in a specific series",
-  "/coll sum": "view the sum numbers of a user collection",
 
   "/steal": "steal a character from another user",
   "/trade": "trade characters with another user",
