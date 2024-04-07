@@ -197,6 +197,7 @@ Deno.test('/now', async (test) => {
     );
 
     config.appId = 'app_id';
+    config.combat = true;
 
     try {
       const message = await user.now({
@@ -242,6 +243,7 @@ Deno.test('/now', async (test) => {
       });
     } finally {
       delete config.appId;
+      delete config.combat;
 
       rechargeConsumablesStub.restore();
     }
@@ -264,6 +266,7 @@ Deno.test('/now', async (test) => {
     );
 
     config.appId = 'app_id';
+    config.combat = true;
 
     try {
       const message = await user.now({
@@ -315,6 +318,7 @@ Deno.test('/now', async (test) => {
       });
     } finally {
       delete config.appId;
+      delete config.combat;
 
       rechargeConsumablesStub.restore();
     }
@@ -339,6 +343,7 @@ Deno.test('/now', async (test) => {
     );
 
     config.appId = 'app_id';
+    config.combat = true;
 
     try {
       const message = await user.now({
@@ -374,6 +379,7 @@ Deno.test('/now', async (test) => {
       });
     } finally {
       delete config.appId;
+      delete config.combat;
 
       rechargeConsumablesStub.restore();
     }
