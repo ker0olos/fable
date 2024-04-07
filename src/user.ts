@@ -860,6 +860,10 @@ function list({
           existing.characterId === `${packId}:${id}`
         ))!;
 
+        if (!char) {
+          return;
+        }
+
         const media = (await packs.aggregate<Character>({
           character: char,
           guildId,
@@ -1031,6 +1035,10 @@ function likeslist({
           ) => (
             like.characterId === `${packId}:${id}`
           ))!;
+
+          if (!character) {
+            return;
+          }
 
           const existing = results.find((r) =>
             r?.characterId === `${character.packId}:${character.id}`
