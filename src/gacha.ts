@@ -393,13 +393,15 @@ async function pullAnimation(
     new discord.Component()
       .setLabel('/character')
       .setId(`character`, characterId, '1'),
-    new discord.Component()
-      .setLabel('/stats')
-      .setId(`stats`, characterId),
+    config.combat
+      ? new discord.Component()
+        .setLabel('/stats')
+        .setId(`stats`, characterId)
+      : undefined,
     new discord.Component()
       .setLabel('/like')
       .setId(`like`, characterId),
-  ]);
+  ].filter(utils.nonNullable));
 
   if (mention && userId) {
     message

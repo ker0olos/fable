@@ -60,7 +60,7 @@ async function now({
   const keysRecharge = utils.rechargeKeysTimestamp(keysTimestamp);
   const stealRecharge = utils.rechargeStealTimestamp(stealTimestamp);
 
-  const showKeys = utils.isWithin14Days(lastPVE);
+  const showKeys = config.combat && utils.isWithin14Days(lastPVE);
 
   const guarantees = Array.from(new Set(user.guarantees ?? []))
     .sort((a, b) => b - a);
