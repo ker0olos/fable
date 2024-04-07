@@ -835,6 +835,10 @@ Deno.test('patch messages', async () => {
         {
           method: 'PATCH',
           body: form,
+          headers: {
+            'User-Agent':
+              'Fable (https://github.com/ker0olos/fable, localhost)',
+          },
         },
       ],
       returned: true as any,
@@ -875,6 +879,10 @@ Deno.test('followup messages', async () => {
         {
           method: 'POST',
           body: form,
+          headers: {
+            'User-Agent':
+              'Fable (https://github.com/ker0olos/fable, localhost)',
+          },
         },
       ],
       returned: true as any,
