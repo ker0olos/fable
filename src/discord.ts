@@ -922,6 +922,11 @@ export class Message {
     const response = await utils.fetchWithRetry(url, {
       method,
       body: formData,
+      headers: {
+        'User-Agent': `Fable (https://github.com/ker0olos/fable, ${
+          Deno.env.get('DENO_DEPLOYMENT_ID') ?? 'localhost'
+        })`,
+      },
     });
 
     console.log(method, response?.status, response?.statusText);
