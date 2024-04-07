@@ -1082,8 +1082,6 @@ function likeslist({
         });
       });
 
-  
-
       return discord.Message.page({
         index,
         type: 'likes',

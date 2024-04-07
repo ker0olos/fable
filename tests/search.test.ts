@@ -2,7 +2,7 @@
 
 import { assertEquals, assertThrows } from '$std/assert/mod.ts';
 
-import { returnsNext, stub } from '$std/testing/mock.ts';
+import { stub } from '$std/testing/mock.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
