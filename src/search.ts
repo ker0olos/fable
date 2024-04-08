@@ -12,8 +12,6 @@ import config from '~/src/config.ts';
 
 import db from '~/db/mod.ts';
 
-import type * as Schema from '~/db/schema.ts';
-
 import {
   Character,
   DisaggregatedCharacter,
@@ -411,7 +409,11 @@ function characterEmbed(
   character: Character | DisaggregatedCharacter,
   options?: {
     userId?: string;
-    existing?: Partial<Schema.Character>;
+    existing?: {
+      image?: string;
+      nickname?: string;
+      rating?: number;
+    };
     suffix?: string;
     rating?: Rating | boolean;
     media?: {
@@ -479,6 +481,7 @@ function characterEmbed(
 
   const description = options.mode === 'thumbnail'
     ? utils.truncate(utils.decodeDescription(character.description), 128)
+      ?.replaceAll('\n', ' ')
     : utils.decodeDescription(character.description);
 
   let mediaTitle: string | undefined = undefined;

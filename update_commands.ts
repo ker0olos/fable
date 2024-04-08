@@ -392,6 +392,18 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'chat',
+    description: '/chat',
+    options: [
+      Option({
+        name: 'name',
+        description: '$character-name',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'help',
     description: '/help',
     aliases: ['start', 'guide', 'wiki', 'tuto'],
@@ -445,32 +457,25 @@ export const commands = [
             value: 5,
           },
           {
-            name: EN['$help-page-roadmap'],
-            name_localizations: {
-              'es-ES': ES['$help-page-roadmap'],
-            },
-            value: 6,
-          },
-          {
             name: EN['$help-page-essential-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-essential-commands'],
             },
-            value: 7,
+            value: 6,
           },
           {
             name: EN['$help-page-other-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-other-commands'],
             },
-            value: 8,
+            value: 7,
           },
           {
             name: EN['$help-page-admin-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-admin-commands'],
             },
-            value: 9,
+            value: 8,
           },
         ],
       }),

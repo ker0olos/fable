@@ -24,14 +24,14 @@ snapshot[`/help 1`] = `
         "components": [
           {
             "type": 2,
-            "custom_id": "help==9=prev",
+            "custom_id": "help==8=prev",
             "label": "Prev",
             "style": 2
           },
           {
             "type": 2,
             "custom_id": "_",
-            "label": "1/10",
+            "label": "1/9",
             "disabled": true,
             "style": 2
           },
@@ -52,6 +52,29 @@ snapshot[`/help 1`] = `
             "custom_id": "now=user_id",
             "label": "/now",
             "style": 2
+          }
+        ]
+      },
+      {
+        "type": 1,
+        "components": [
+          {
+            "type": 2,
+            "label": "GitHub",
+            "url": "https://github.com/ker0olos/fable",
+            "style": 5
+          },
+          {
+            "type": 2,
+            "label": "Discord Support Server",
+            "url": "https://discord.gg/H69RVBxeYY",
+            "style": 5
+          },
+          {
+            "type": 2,
+            "label": "Donate",
+            "url": "https://ko-fi.com/ker0olos",
+            "style": 5
           }
         ]
       }
@@ -91,7 +114,7 @@ snapshot[`/help 2`] = `
           {
             "type": 2,
             "custom_id": "_",
-            "label": "2/10",
+            "label": "2/9",
             "disabled": true,
             "style": 2
           },
@@ -139,7 +162,7 @@ snapshot[`/help 3`] = `
           {
             "type": 2,
             "custom_id": "_",
-            "label": "3/10",
+            "label": "3/9",
             "disabled": true,
             "style": 2
           },
@@ -195,7 +218,7 @@ snapshot[`/help 4`] = `
           {
             "type": 2,
             "custom_id": "_",
-            "label": "4/10",
+            "label": "4/9",
             "disabled": true,
             "style": 2
           },
@@ -239,7 +262,7 @@ snapshot[`/help 5`] = `
           {
             "type": 2,
             "custom_id": "_",
-            "label": "5/10",
+            "label": "5/9",
             "disabled": true,
             "style": 2
           },
@@ -286,7 +309,7 @@ snapshot[`/help 6`] = `
           {
             "type": 2,
             "custom_id": "_",
-            "label": "6/10",
+            "label": "6/9",
             "disabled": true,
             "style": 2
           },
@@ -317,9 +340,9 @@ snapshot[`/help 7`] = `
       {
         "type": "rich",
         "author": {
-          "name": "Roadmap"
+          "name": "Essential Commands"
         },
-        "description": "__**Releasing in the near future (~3 months)**__\\n\\n**[Classes And Skills](https://github.com/ker0olos/fable/issues/64)**\\n\\n**[Server vs. Server](https://github.com/ker0olos/fable/issues/65)**\\n"
+        "description": "- \`/gacha\` \`/w\`: _start a new gacha pull_\\n- \`/q\`: _start a gacha pull but with no animations_\\n- \`/pull\` \`/guaranteed\`: _use a guaranteed pull you have_\\n\\n- \`/now\` \`/tu\`: _check what you can do right now_\\n- \`/search\` \`/anime\` \`/manga\` \`/series\`: _search for a specific series_\\n- \`/character\` \`/char\`: _search for a specific character_\\n\\n- \`/merge\` \`/synthesize\`: _sacrifice characters to pull a new more shiny character_\\n\\n- \`/party view\` \`/team view\` \`/p view\`: _view your current party_\\n- \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_\\n- \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_\\n- \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_\\n\\n- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user stars_\\n- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific series_\\n\\n- \`/steal\`: _steal a character from another user_\\n- \`/trade\` \`/offer\`: _trade characters with another user_\\n- \`/give\` \`/gift\`: _give characters to another user_\\n\\n- \`/chat\`: _chat with one of your characters_\\n\\n- \`/battle tower\`: _Climb the tower to glory and become a fable_\\n- \`/battle challenge\`: _Challenge the tower's next floor_\\n- \`/reclear\`: _Reclear your current tower floor to gain exp_"
       }
     ],
     "attachments": [],
@@ -336,7 +359,7 @@ snapshot[`/help 7`] = `
           {
             "type": 2,
             "custom_id": "_",
-            "label": "7/10",
+            "label": "7/9",
             "disabled": true,
             "style": 2
           },
@@ -345,29 +368,6 @@ snapshot[`/help 7`] = `
             "custom_id": "help==7=next",
             "label": "Next",
             "style": 2
-          },
-          {
-            "type": 2,
-            "label": "GitHub",
-            "url": "https://github.com/ker0olos/fable",
-            "style": 5
-          },
-          {
-            "type": 2,
-            "label": "Discord Support Server",
-            "url": "https://discord.gg/H69RVBxeYY",
-            "style": 5
-          }
-        ]
-      },
-      {
-        "type": 1,
-        "components": [
-          {
-            "type": 2,
-            "label": "Donate",
-            "url": "https://ko-fi.com/ker0olos",
-            "style": 5
           }
         ]
       }
@@ -384,9 +384,9 @@ snapshot[`/help 8`] = `
       {
         "type": "rich",
         "author": {
-          "name": "Essential Commands"
+          "name": "Other Commands"
         },
-        "description": "- \`/gacha\` \`/w\`: _start a new gacha pull_\\n- \`/q\`: _start a gacha pull but with no animations_\\n- \`/pull\` \`/guaranteed\`: _use a guaranteed pull you have_\\n\\n- \`/now\` \`/tu\`: _check what you can do right now_\\n- \`/search\` \`/anime\` \`/manga\` \`/series\`: _search for a specific series_\\n- \`/character\` \`/char\`: _search for a specific character_\\n\\n- \`/merge\` \`/synthesize\`: _sacrifice characters to pull a new more shiny character_\\n\\n- \`/party view\` \`/team view\` \`/p view\`: _view your current party_\\n- \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_\\n- \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_\\n- \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_\\n\\n- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user stars_\\n- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific series_\\n\\n- \`/steal\`: _steal a character from another user_\\n- \`/trade\` \`/offer\`: _trade characters with another user_\\n- \`/give\` \`/gift\`: _give characters to another user_\\n\\n- \`/battle tower\`: _Climb the tower to glory and become a fable_\\n- \`/reclear\`: _Reclear your current tower floor to gain exp_"
+        "description": "- \`/nick\`: _change the nickname of a character_\\n- \`/image\` \`/custom\`: _change the image of a character_\\n\\n- \`/found\` \`/owned\`: _list all characters found from a specific series_\\n\\n- \`/likeslist\`: _list all user likes_\\n\\n- \`/like\` \`/protect\` \`/wish\`: _like a character to be notified if someone finds them_\\n- \`/unlike\`: _remove character from your likes_\\n- \`/likeall\`: _like a series to be notified if someone finds any character from it_\\n- \`/unlikeall\`: _remove a series from your likes_\\n\\n- \`/buy normal\` \`/shop normal\`: _use tokens to buy normal pulls_\\n- \`/buy guaranteed\` \`/shop guaranteed\`: _use tokens to buy pulls with a specific guaranteed rating_\\n\\n- \`/automerge min\`: _merge your characters together to pull the lowest rating possible_\\n- \`/automerge max\`: _merge your characters together to pull the highest rating possible_\\n\\n- \`/installed packs\`: _list all the installed packs on a server_\\n\\n- \`/logs\`: _list user last few found characters_"
       }
     ],
     "attachments": [],
@@ -403,7 +403,7 @@ snapshot[`/help 8`] = `
           {
             "type": 2,
             "custom_id": "_",
-            "label": "8/10",
+            "label": "8/9",
             "disabled": true,
             "style": 2
           },
@@ -428,9 +428,9 @@ snapshot[`/help 9`] = `
       {
         "type": "rich",
         "author": {
-          "name": "Other Commands"
+          "name": "Admin Commands"
         },
-        "description": "- \`/nick\`: _change the nickname of a character_\\n- \`/image\` \`/custom\`: _change the image of a character_\\n\\n- \`/found\` \`/owned\`: _list all characters found from a specific series_\\n\\n- \`/likeslist\`: _list all user likes_\\n\\n- \`/like\` \`/protect\` \`/wish\`: _like a character to be notified if someone finds them_\\n- \`/unlike\`: _remove character from your likes_\\n- \`/likeall\`: _like a series to be notified if someone finds any character from it_\\n- \`/unlikeall\`: _remove a series from your likes_\\n\\n- \`/buy normal\` \`/shop normal\`: _use tokens to buy normal pulls_\\n- \`/buy guaranteed\` \`/shop guaranteed\`: _use tokens to buy pulls with a specific guaranteed rating_\\n\\n- \`/automerge min\`: _merge your characters together to pull the lowest rating possible_\\n- \`/automerge max\`: _merge your characters together to pull the highest rating possible_\\n\\n- \`/installed packs\`: _list all the installed packs on a server_\\n\\n- \`/logs\`: _list user last few found characters_"
+        "description": "_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._\\n- \`/packs install\`: _install a community pack_\\n- \`/packs uninstall\`: _uninstall a community pack_\\n- \`/packs disable builtins\`: _permanently disable the builtin packs_\\n\\n> To create your own community pack visit <https://packs.deno.dev>"
       }
     ],
     "attachments": [],
@@ -447,51 +447,7 @@ snapshot[`/help 9`] = `
           {
             "type": 2,
             "custom_id": "_",
-            "label": "9/10",
-            "disabled": true,
-            "style": 2
-          },
-          {
-            "type": 2,
-            "custom_id": "help==9=next",
-            "label": "Next",
-            "style": 2
-          }
-        ]
-      }
-    ]
-  }
-}
-`;
-
-snapshot[`/help 10`] = `
-{
-  "type": 4,
-  "data": {
-    "embeds": [
-      {
-        "type": "rich",
-        "author": {
-          "name": "Admin Commands"
-        },
-        "description": "_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._\\n- \`/packs install\`: _install a community pack_\\n- \`/packs uninstall\`: _uninstall a community pack_\\n- \`/packs disable builtins\`: _permanently disable the builtin packs_\\n\\n> To create your own community pack visit <https://packs.deno.dev>"
-      }
-    ],
-    "attachments": [],
-    "components": [
-      {
-        "type": 1,
-        "components": [
-          {
-            "type": 2,
-            "custom_id": "help==8=prev",
-            "label": "Prev",
-            "style": 2
-          },
-          {
-            "type": 2,
-            "custom_id": "_",
-            "label": "10/10",
+            "label": "9/9",
             "disabled": true,
             "style": 2
           },

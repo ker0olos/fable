@@ -15,6 +15,7 @@ import stats from '~/src/stats.ts';
 import battle from '~/src/battle.ts';
 import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
+import chat from '~/src/chat.ts';
 
 import _skills, { skills } from '~/src/skills.ts';
 
@@ -200,6 +201,7 @@ export const handler = async (r: Request) => {
             'like',
             'unlike',
             'stats',
+            'chat',
           ].includes(name) || (
             // deno-lint-ignore no-non-null-assertion
             name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
@@ -683,6 +685,19 @@ export const handler = async (r: Request) => {
                 break;
             }
             break;
+          }
+          case 'chat': {
+            const name = options['name'] as string;
+
+            return chat.start({
+              token,
+              userId: member.user.id,
+              guildId,
+              search: name,
+              id: name.startsWith(idPrefix)
+                ? name.substring(idPrefix.length)
+                : undefined,
+            }).send();
           }
           case 'installed':
           case 'packs': {

@@ -715,6 +715,24 @@ snapshot[`commands 1`] = `
     ]
   },
   {
+    "name": "chat",
+    "description": "chat with one of your characters",
+    "dm_permission": false,
+    "description_localizations": {},
+    "options": [
+      {
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      }
+    ]
+  },
+  {
     "name": "help",
     "description": "need more information? we got you",
     "dm_permission": false,
@@ -768,32 +786,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -857,32 +868,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -946,32 +950,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -1035,32 +1032,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -1124,32 +1114,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
