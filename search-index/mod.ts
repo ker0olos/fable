@@ -108,7 +108,7 @@ const searchCharacters = async (
     extra,
   )
     .filter(({ mediaId }) => {
-      if (packs.isDisabled(mediaId, guildId)) {
+      if (mediaId && packs.isDisabled(mediaId, guildId)) {
         return false;
       }
 

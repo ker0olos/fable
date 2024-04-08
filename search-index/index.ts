@@ -15,10 +15,11 @@ import type { DisaggregatedMedia } from '~/src/types.ts';
 const mediaMap: Record<string, DisaggregatedMedia> = {};
 
 async function storeMediaIndex(db: Mongo): Promise<void> {
-  console.log('starting the creation of the media index...');
+  console.log('fetching all media in the db...');
 
-  // TODO lower database load by using the provided json datadump of the database
-  const media = await db.anime.media().find({}).toArray();
+  const media = await db.anime.media().find().toArray();
+
+  console.log('starting the creation of the media index...');
 
   const json = JSON.stringify(media.map((media) => {
     const id = `${media.packId}:${media.id}`;
@@ -40,10 +41,11 @@ async function storeMediaIndex(db: Mongo): Promise<void> {
 }
 
 async function storeCharacterIndex(db: Mongo): Promise<void> {
-  console.log('starting the creation of the characters index...');
+  console.log('fetching all characters in the db...');
 
-  // TODO lower database load by using the provided json datadump of the database
-  const characters = await db.anime.characters().find({}).toArray();
+  const characters = await db.anime.characters().find().toArray();
+
+  console.log('starting the creation of the characters index...');
 
   const json = JSON.stringify(characters.map((character) => {
     const edge = character.media?.[0];
@@ -54,7 +56,7 @@ async function storeCharacterIndex(db: Mongo): Promise<void> {
       id: `${character.packId}:${character.id}`,
       name: packs.aliasToArray(character.name),
       mediaId: media ? `${media.packId}:${media.id}` : undefined,
-      mediaTitle: media?.title ? packs.aliasToArray(media?.title) : undefined,
+      mediaTitle: media?.title ? packs.aliasToArray(media?.title) : [],
       popularity,
       role: edge?.role,
       rating: new Rating({
