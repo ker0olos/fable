@@ -22,7 +22,7 @@ import {
   STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
 
-const TEN_MIB = 1024 * 1024 * 10;
+const TWENTY_MIB = 1024 * 1024 * 20;
 
 const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
 
@@ -418,7 +418,7 @@ async function handleProxy(r: Request): Promise<Response> {
     },
   });
 
-  if (image.byteLength <= TEN_MIB) {
+  if (image.byteLength <= TWENTY_MIB) {
     const v = {
       body: image.buffer,
       headers: response.headers,
@@ -428,18 +428,6 @@ async function handleProxy(r: Request): Promise<Response> {
   }
 
   return response;
-}
-
-function captureOutage(id: string): Promise<Response> {
-  return fetch(
-    `https://api.instatus.com/v3/integrations/webhook/${id}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        'trigger': 'down',
-      }),
-    },
-  );
 }
 
 function nonNullable<T>(value: T): value is NonNullable<T> {
@@ -498,7 +486,6 @@ const utils = {
   isWithin14Days,
   capitalize,
   captureException,
-  captureOutage,
   chunks: chunk,
   comma,
   compact,
