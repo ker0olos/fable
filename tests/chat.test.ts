@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from '$std/assert/mod.ts';
+import { assertEquals, assertThrows } from '$std/assert/mod.ts';
 
 import { stub } from '$std/testing/mock.ts';
 
@@ -8,14 +8,15 @@ import { FakeTime } from '$std/testing/time.ts';
 
 import utils from '~/src/utils.ts';
 
+import chat from '~/src/chat.ts';
 import packs from '~/src/packs.ts';
 import config from '~/src/config.ts';
 
 import db from '~/db/mod.ts';
 
-import { DisaggregatedCharacter } from '~/src/types.ts';
+import { NonFetalError } from '~/src/errors.ts';
 
-import chat from '~/src/chat.ts';
+import type { DisaggregatedCharacter } from '~/src/types.ts';
 
 Deno.test('/chat', async (test) => {
   await test.step('normal', async () => {
@@ -67,6 +68,7 @@ Deno.test('/chat', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.chat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -130,6 +132,7 @@ Deno.test('/chat', async (test) => {
         },
       );
     } finally {
+      delete config.chat;
       delete config.appId;
       delete config.origin;
 
@@ -198,6 +201,7 @@ Deno.test('/chat', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.chat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -266,6 +270,7 @@ Deno.test('/chat', async (test) => {
         },
       );
     } finally {
+      delete config.chat;
       delete config.appId;
       delete config.origin;
 
@@ -315,6 +320,7 @@ Deno.test('/chat', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.chat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -365,6 +371,7 @@ Deno.test('/chat', async (test) => {
         },
       );
     } finally {
+      delete config.chat;
       delete config.appId;
       delete config.origin;
 
@@ -376,6 +383,26 @@ Deno.test('/chat', async (test) => {
       getGuildStub.restore();
 
       findCharactersStub.restore();
+    }
+  });
+
+  await test.step('under maintenance', () => {
+    config.chat = false;
+
+    try {
+      assertThrows(
+        () =>
+          chat.start({
+            token: 'test_token',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            search: 'full name',
+          }),
+        NonFetalError,
+        'Chat is under maintenance, try again later!',
+      );
+    } finally {
+      delete config.chat;
     }
   });
 });

@@ -14,6 +14,8 @@ import { default as srch } from '~/src/search.ts';
 
 import i18n from '~/src/i18n.ts';
 
+import { NonFetalError } from '~/src/errors.ts';
+
 import type { Character } from '~/src/types.ts';
 
 function start(
@@ -27,6 +29,12 @@ function start(
 ): discord.Message {
   const locale = user.cachedUsers[userId]?.locale ??
     user.cachedGuilds[guildId]?.locale;
+
+  if (!config.chat) {
+    throw new NonFetalError(
+      i18n.get('maintenance-chat', locale),
+    );
+  }
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })

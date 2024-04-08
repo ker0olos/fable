@@ -16,6 +16,7 @@ const config: {
   communityPacksMaintainerAPI?: boolean;
   communityPacksBrowseAPI?: boolean;
   combat?: boolean;
+  chat?: boolean;
   //
   xmas?: boolean;
   fools?: boolean;
@@ -37,6 +38,7 @@ const config: {
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
   combat: undefined,
+  chat: undefined,
   xmas: undefined,
   fools: undefined,
 };
@@ -89,6 +91,9 @@ export async function initConfig(): Promise<void> {
 
     config.combat = !Deno.env.has('COMBAT') ||
       Deno.env.get('COMBAT') === '1';
+
+    config.chat = !Deno.env.has('CHAT') ||
+      Deno.env.get('CHAT') === '1';
 
     // holidays flags
     config.xmas = Deno.env.has('XMAS');
