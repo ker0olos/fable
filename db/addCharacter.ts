@@ -4,13 +4,15 @@ import utils from '~/src/utils.ts';
 
 import { skills } from '~/src/skills.ts';
 
-import { NoPullsError } from '~/src/errors.ts';
+import { NonFetalError, NoPullsError } from '~/src/errors.ts';
 
 import type { ObjectId } from '~/db/mod.ts';
 
 import type * as Schema from './schema.ts';
 
 import type { SkillKey } from '~/src/types.ts';
+import i18n from '~/src/i18n.ts';
+import user from '~/src/user.ts';
 
 const newSkills = (rating: number): number => {
   switch (rating) {
@@ -116,6 +118,9 @@ export async function addCharacter(
     sacrifices?: ObjectId[];
   },
 ): Promise<void> {
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedUsers[guildId]?.locale;
+
   const mongo = new Mongo();
 
   const session = mongo.startSession();
@@ -186,10 +191,14 @@ export async function addCharacter(
       { session },
     );
 
-    await mongo.characters().bulkWrite([
+    const result = await mongo.characters().bulkWrite([
       ...deleteSacrifices,
       { insertOne: { document: newCharacter } },
     ], { session });
+
+    if (sacrifices?.length && result.deletedCount !== sacrifices.length) {
+      throw new NonFetalError(i18n.get('failed', locale));
+    }
 
     await session.commitTransaction();
   } catch (err) {
