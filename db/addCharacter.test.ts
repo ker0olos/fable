@@ -9,8 +9,11 @@ import {
   assertRejects,
 } from '$std/assert/mod.ts';
 
-import db, { Mongo } from '~/db/mod.ts';
+import db, { Mongo, ObjectId } from '~/db/mod.ts';
+
 import config from '~/src/config.ts';
+
+import { NonFetalError } from '~/src/errors.ts';
 
 let mongod: MongoMemoryReplSet;
 let client: Mongo;
@@ -90,6 +93,80 @@ describe({
       assertWithinLast5secs(inventory!.rechargeTimestamp!);
 
       assertEquals(inventory!.availablePulls, 9);
+    });
+
+    it('with sacrifices', async () => {
+      const { insertedId } = await client.characters().insertOne({} as any);
+
+      await db.addCharacter({
+        rating: 3,
+        mediaId: 'media-id',
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+        guaranteed: false,
+        sacrifices: [insertedId],
+      });
+
+      const character = await client.characters().findOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+      });
+
+      const sacrificedCharacter = await client.characters().findOne({
+        _id: insertedId,
+      });
+
+      assertEquals(sacrificedCharacter, null);
+
+      const inventory = await client.inventories().findOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+      });
+
+      assertEquals(Object.keys(character!), [
+        '_id',
+        'createdAt',
+        'inventoryId',
+        'characterId',
+        'guildId',
+        'userId',
+        'mediaId',
+        'rating',
+        'combat',
+      ]);
+
+      assertEquals(objectIdRegex.test(character!._id.toHexString()), true);
+
+      assertWithinLast5secs(character!.createdAt);
+
+      assertObjectMatch(character!, {
+        rating: 3,
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+        mediaId: 'media-id',
+      });
+
+      assertWithinLast5secs(inventory!.lastPull!);
+      assertEquals(inventory!.availablePulls, 10);
+    });
+
+    it('with sacrifices (failed)', async () => {
+      await assertRejects(() =>
+        db.addCharacter({
+          rating: 3,
+          mediaId: 'media-id',
+          userId: 'user-id',
+          guildId: 'guild-id',
+          characterId: 'character-id',
+          guaranteed: false,
+          sacrifices: [new ObjectId()],
+        })
+      ),
+        NonFetalError,
+        'Failed';
     });
 
     it('guaranteed pull', async () => {
