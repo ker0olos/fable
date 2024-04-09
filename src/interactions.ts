@@ -455,6 +455,14 @@ export const handler = async (r: Request) => {
                   nick: userId !== member.user.id,
                 }).send();
               }
+              case 'sum': {
+                return user.sum({
+                  token,
+                  userId,
+                  guildId,
+                  nick: userId !== member.user.id,
+                }).send();
+              }
               default:
                 break;
             }
