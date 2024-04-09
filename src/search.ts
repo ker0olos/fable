@@ -413,6 +413,7 @@ function characterEmbed(
       image?: string;
       nickname?: string;
       rating?: number;
+      mediaId?: string;
     };
     suffix?: string;
     rating?: Rating | boolean;

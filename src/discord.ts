@@ -555,10 +555,12 @@ export class Embed {
         }?size=preview`;
       }
 
+      delete author.proxy;
+
       this.#data.author = {
+        ...author,
         // author name is limited to 256
         name: utils.truncate(author.name, 256),
-        icon_url: author.icon_url,
       };
     }
     return this;
@@ -658,7 +660,7 @@ export class Embed {
   setFooter(footer: { text?: string; icon_url?: string }): Embed {
     if (footer.text) {
       this.#data.footer = {
-        icon_url: footer.icon_url,
+        ...footer,
         text: utils.truncate(footer.text, 2048),
       };
     }

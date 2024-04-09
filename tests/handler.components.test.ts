@@ -4737,12 +4737,12 @@ Deno.test('reply modal component', async (test) => {
       assertEquals({
         type: 9,
         data: {
-          custom_id: 'reply',
+          custom_id: 'reply=user_id=character_id',
           title: 'Reply to Character Name',
           components: [{
             type: 1,
             components: [{
-              custom_id: 'chat=user_id=character_id',
+              custom_id: 'message',
               label: 'Message',
               max_length: 2048,
               min_length: 1,
