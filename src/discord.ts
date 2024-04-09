@@ -189,6 +189,10 @@ type ComponentInternal = {
   min_values?: number;
   // deno-lint-ignore camelcase
   max_values?: number;
+  // deno-lint-ignore camelcase
+  min_length?: number;
+  // deno-lint-ignore camelcase
+  max_length?: number;
   options?: {
     label: string;
     value: string;
@@ -234,26 +238,21 @@ export type Emote = {
   animated?: boolean;
 };
 
-// export const getAvatar = (
-//   member: Member | Omit<Member, 'user'>,
-//   user: User,
-//   guildId: string,
-// ) => {
-//   const base = 'https://cdn.discordapp.com';
+export const getAvatar = (
+  member: Member,
+  guildId: string,
+) => {
+  const base = 'https://cdn.discordapp.com';
 
-//   if (member.avatar) {
-//     return `${base}/guilds/${guildId}/users/${user.id}/avatars/${member.avatar}.png`;
-//   } else if (user.avatar) {
-//     return `${base}/avatars/${user.id}/${user.avatar}.png`;
-//   } else {
-//     // TODO discriminator are going away
-//     // as of now we I have no idea how default avatar is going to work
-//     // they depend on discriminators
-//     // @see https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints
-//     // return `${base}/embed/avatars/${Number(user.discriminator) % 5}.png`;
-//     return `${base}/embed/avatars/2.png`;
-//   }
-// };
+  if (member.avatar) {
+    return `${base}/guilds/${guildId}/users/${member.user.id}/avatars/${member.avatar}.png`;
+  } else if (member.user.avatar) {
+    return `${base}/avatars/${member.user.id}/${member.user.avatar}.png`;
+  } else {
+    // @see https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints
+    return `${base}/embed/avatars/${(parseInt(member.user.id) >> 22) % 5}.png`;
+  }
+};
 
 export class Interaction<Options> {
   id: string;
@@ -394,12 +393,12 @@ export class Interaction<Options> {
         this.customType = custom[0];
         this.customValues = data.values?.length ? data.values : custom.slice(1);
 
-        // if (data.components) {
-        //   // deno-lint-ignore no-explicit-any
-        //   data.components[0].components.forEach((component: any) => {
-        //     this.options[component.custom_id] = component.value as Options;
-        //   });
-        // }
+        if (data.components) {
+          // deno-lint-ignore no-explicit-any
+          data.components[0].components.forEach((component: any) => {
+            this.options[component.custom_id] = component.value as Options;
+          });
+        }
 
         break;
       }
@@ -479,6 +478,16 @@ export class Component {
     return this;
   }
 
+  setMinLength(min: number): Component {
+    this.#data.min_length = min;
+    return this;
+  }
+
+  setMaxLength(max: number): Component {
+    this.#data.max_length = max;
+    return this;
+  }
+
   // deno-lint-ignore no-explicit-any
   json(): any {
     if (!this.#data.style) {
@@ -536,12 +545,20 @@ export class Embed {
     return this;
   }
 
-  setAuthor(author: { name?: string; url?: string; icon_url?: string }): Embed {
+  setAuthor(
+    author: { name?: string; url?: string; icon_url?: string; proxy?: boolean },
+  ): Embed {
     if (author.name) {
+      if (author.proxy && author.icon_url) {
+        author.icon_url = `${config.origin}/external/${
+          encodeURIComponent(author.icon_url ?? '')
+        }?size=preview`;
+      }
+
       this.#data.author = {
-        ...author,
         // author name is limited to 256
         name: utils.truncate(author.name, 256),
+        icon_url: author.icon_url,
       };
     }
     return this;
@@ -641,11 +658,11 @@ export class Embed {
   setFooter(footer: { text?: string; icon_url?: string }): Embed {
     if (footer.text) {
       this.#data.footer = {
-        ...footer,
-        // footer text is limited to 2048
+        icon_url: footer.icon_url,
         text: utils.truncate(footer.text, 2048),
       };
     }
+
     return this;
   }
 
@@ -715,8 +732,15 @@ export class Message {
     return this;
   }
 
-  setId(id: string): Message {
-    this.#data.custom_id = id;
+  setId(...id: string[]): Message {
+    const cid = join(...id);
+
+    // (see https://discord.com/developers/docs/interactions/message-components#custom-id)
+    if (cid.length > 100) {
+      throw new Error(`id length (${cid.length}) is > 100`);
+    }
+
+    this.#data.custom_id = cid;
     return this;
   }
 

@@ -16,6 +16,10 @@
   "decline": "Decline",
   "failed": "Failed",
 
+  "reply": "Reply",
+  "message": "Message",
+  "reply-to": "Reply to {0}",
+
   "homepage": "Homepage",
 
   "assigned": "Assigned",
@@ -354,6 +358,8 @@
   "$party-remove-spot": "the spot to empty",
 
   "$pack-id": "the id of the pack",
+
+  "$message": "your next message",
 
   "page": "page",
   "category": "category",

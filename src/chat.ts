@@ -2,7 +2,7 @@ import packs from '~/src/packs.ts';
 
 import utils from '~/src/utils.ts';
 
-import user from '~/src/user.ts';
+import _user from '~/src/user.ts';
 
 import * as discord from '~/src/discord.ts';
 
@@ -18,17 +18,28 @@ import { NonFetalError } from '~/src/errors.ts';
 
 import type { Character } from '~/src/types.ts';
 
-function start(
-  { token, guildId, userId, search, id }: {
+function process(
+  { token, guildId, member, search, id, message: userMessage }: {
     token: string;
-    userId: string;
+    member: discord.Member;
     guildId: string;
     id?: string;
     search?: string;
+    message: string;
+    continue?: boolean;
   },
 ): discord.Message {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
+  type Bubble = {
+    name: string;
+    imageUrl?: string;
+    message: string;
+    user: boolean;
+  };
+
+  const user = member.user;
+
+  const locale = _user.cachedUsers[user.id]?.locale ??
+    _user.cachedGuilds[guildId]?.locale;
 
   if (!config.chat) {
     throw new NonFetalError(
@@ -67,7 +78,7 @@ function start(
         throw new Error('404');
       }
 
-      if (!existing || existing.userId !== userId) {
+      if (!existing || existing.userId !== user.id) {
         const embed = srch.characterEmbed(character, {
           description: true,
           footer: true,
@@ -90,11 +101,54 @@ function start(
 
       const message = new discord.Message();
 
-      message.addEmbed(
-        srch.characterEmbed(character, {
-          existing: existing ?? undefined,
-        }),
-      );
+      const characterImage = existing?.image
+        ? existing?.image
+        : character.images?.[0]?.url;
+
+      const characterName = existing?.nickname ??
+        packs.aliasToArray(character.name)[0];
+
+      const userName = user.display_name ?? user.global_name ?? user.username;
+      const userImage = discord.getAvatar(member, guildId);
+
+      const bubbles: Bubble[] = [
+        {
+          user: true,
+          name: userName,
+          imageUrl: userImage,
+          message: userMessage,
+        },
+        {
+          user: false,
+          name: characterName,
+          imageUrl: characterImage,
+          message:
+            "Hello, just a reminder that sharks aren't real, just like the moon landing it sharks are also faked by the US government.",
+        },
+      ];
+
+      for (const bubble of bubbles) {
+        const embed = new discord.Embed()
+          .setAuthor({
+            name: bubble.name,
+            icon_url: bubble.imageUrl,
+            proxy: !bubble.user,
+          })
+          .setDescription(bubble.message);
+
+        message.addEmbed(embed);
+      }
+
+      message.addComponents([
+        new discord.Component()
+          .setId(
+            'reply',
+            user.id,
+            `${character.packId}:${character.id}`,
+            characterName,
+          )
+          .setLabel(i18n.get('reply', locale)),
+      ]);
 
       return await message.patch(token);
     })
@@ -120,13 +174,13 @@ function start(
   const loading = new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
+        { url: `${config.origin}/assets/spinner3.gif` },
       ),
     );
 
   return loading;
 }
 
-const chat = { start };
+const chat = { process };
 
 export default chat;

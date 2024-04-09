@@ -107,7 +107,6 @@ const Command = ({
     description: description && description in EN
       ? EN[description as keyof typeof EN]
       : description,
-    dm_permission: false,
     default_member_permissions: defaultPermission,
     description_localizations: {
       'es-ES': description && description in ES
@@ -394,11 +393,17 @@ export const commands = [
   ...Command({
     name: 'chat',
     description: '/chat',
+    aliases: ['talk'],
     options: [
       Option({
         name: 'name',
         description: '$character-name',
         autocomplete: true,
+        type: Type.STRING,
+      }),
+      Option({
+        name: 'message',
+        description: '$message',
         type: Type.STRING,
       }),
     ],
