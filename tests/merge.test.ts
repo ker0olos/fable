@@ -2289,6 +2289,120 @@ Deno.test('/merge', async (test) => {
     }
   });
 
+  await test.step('filter (liked media)', async () => {
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      returnsNext([
+        undefined,
+      ] as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () =>
+        ({
+          party: {},
+          user: {
+            likes: [{ mediaId: 'pack-id:1' }],
+          },
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            characterId: 'anilist:1',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            characterId: 'anilist:2',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            characterId: 'anilist:3',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            characterId: 'anilist:4',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            characterId: 'anilist:5',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            characterId: 'anilist:6',
+            mediaId: 'pack-id:2',
+            rating: 1,
+          },
+          {
+            characterId: 'anilist:7',
+            mediaId: 'pack-id:2',
+            rating: 1,
+          },
+          {
+            characterId: 'anilist:8',
+            mediaId: 'pack-id:2',
+            rating: 1,
+          },
+          {
+            characterId: 'anilist:9',
+            mediaId: 'pack-id:2',
+            rating: 1,
+          },
+        ] as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.synthesis = true;
+
+    try {
+      await assertRejects(
+        () =>
+          merge.synthesize({
+            token: 'test_token',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            mode: 'target',
+            target: 2,
+          }),
+        NonFetalError,
+        'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+      );
+    } finally {
+      delete config.synthesis;
+
+      fetchStub.restore();
+      listStub.restore();
+
+      getGuildStub.restore();
+      getInventoryStub.restore();
+
+      getUserCharactersStub.restore();
+    }
+  });
+
   await test.step('not enough', async () => {
     const fetchStub = stub(
       utils,

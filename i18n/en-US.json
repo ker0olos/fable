@@ -202,7 +202,7 @@
   "help-page1-footer": "> *`/q` allows you to do gacha pulls with no animations*",
 
   "help-page2-sacrifice-characters": "Sacrifice characters to pull a new character with a higher rating.",
-  "help-page2-merge-protect": "__Your party members and likes will never be sacrificed.__ To protect characters from being merged, add them to your likeslist with `/like`",
+  "help-page2-merge-protect": "__Your party members and likes will never be sacrificed.__ To protect characters from being merged, add them to your likeslist with `/like` or `/likeall`",
   "help-page2-merging": "__It takes 5 characters with a lower rating__ to pull a new character",
   "help-page2-auto-merging": "__Fable will always auto-merge your lowest-rated characters first.__",
   "help-page2-merge-example-1": "Example: `/merge target: 3` will sacrifice __25 of your 1{0}characters__",

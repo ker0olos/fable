@@ -1137,23 +1137,23 @@ function sum({
     .then(async () => {
       const { user, ...inventory } = await db.getInventory(guildId, userId);
 
-      const likes = (user.likes ?? [])
+      const likesCharactersIds = (user.likes ?? [])
         .map(({ characterId }) => characterId);
+
+      const likesMediaIds = (user.likes ?? [])
+        .map(({ mediaId }) => mediaId);
 
       const characters = await db.getUserCharacters(userId, guildId);
 
-      const embed = new discord.Embed();
-
-      const message = new discord.Message()
-        .addEmbed(embed);
-
-      const party = [
+      const partyIds = [
         inventory.party.member1Id,
         inventory.party.member2Id,
         inventory.party.member3Id,
         inventory.party.member4Id,
         inventory.party.member5Id,
       ];
+
+      const embed = new discord.Embed();
 
       const sum: Record<number, number> = {
         1: 0,
@@ -1171,15 +1171,21 @@ function sum({
         5: 0,
       };
 
-      characters.forEach((char) => {
-        sum[char.rating as keyof typeof sum] += 1;
-
-        if (likes.includes(char.characterId) || party.includes(char._id)) {
-          sumProtected[char.rating as keyof typeof sum] += 1;
-        }
-      });
-
       const description: string[] = [];
+
+      characters.forEach((char) => {
+        const r = char.rating as keyof typeof sum;
+
+        if (
+          partyIds.includes(char._id) ||
+          likesCharactersIds.includes(char.characterId) ||
+          likesMediaIds.includes(char.mediaId)
+        ) {
+          sumProtected[r] += 1;
+        }
+
+        sum[r] += 1;
+      });
 
       [1, 2, 3, 4, 5].forEach(
         (n) =>
@@ -1197,7 +1203,8 @@ function sum({
 
       embed.setDescription(description.join('\n'));
 
-      return message.patch(token);
+      new discord.Message()
+        .addEmbed(embed).patch(token);
     })
     .catch(async (err) => {
       if (!config.sentry) {

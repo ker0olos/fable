@@ -4954,7 +4954,7 @@ Deno.test('/collection sum', async (test) => {
     }
   });
 
-  await test.step('with likes', async () => {
+  await test.step('with liked characters', async () => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
@@ -4988,6 +4988,124 @@ Deno.test('/collection sum', async (test) => {
             _id: '2',
             characterId: 'anilist:2',
             mediaId: 'anilist:0',
+            rating: 1,
+          },
+        ] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.sum({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      const t = [
+        '1<:smolstar:1107503653956374638> — **2 characters** — 1 <:liked:1110491720375873567>(1)',
+        '2<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '3<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '4<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '5<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+      ];
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: t.join('\n'),
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+
+      getInventoryStub.restore();
+      getUserCharactersStub.restore();
+    }
+  });
+
+  await test.step('with liked media', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () =>
+        ({
+          party: {},
+          user: { likes: [{ mediaId: 'anilist:0' }] },
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            _id: '1',
+            characterId: 'anilist:1',
+            mediaId: 'anilist:0',
+            rating: 1,
+          },
+          {
+            _id: '2',
+            characterId: 'anilist:2',
+            mediaId: 'anilist:10',
             rating: 1,
           },
         ] as any,
