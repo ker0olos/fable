@@ -1417,7 +1417,7 @@ function logs({
 
         const name = `${existing.rating}${discord.emotes.smolStar} ${
           existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
-        } <t:${utils.normalTimestamp(existing.createdAt)}>`;
+        } <t:${utils.normalTimestamp(existing.createdAt)}:R>`;
 
         names.push(name);
       });
