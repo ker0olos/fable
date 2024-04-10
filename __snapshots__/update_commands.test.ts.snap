@@ -1397,6 +1397,24 @@ snapshot[`commands 1`] = `
     ]
   },
   {
+    "name": "history",
+    "description": "list user last few found characters",
+    "description_localizations": {
+      "es-ES": "muestra los últimos personajes obtenidos"
+    },
+    "options": [
+      {
+        "name": "user",
+        "description": "the user of the list",
+        "type": 6,
+        "required": false,
+        "description_localizations": {
+          "es-ES": "el usuario de la lista"
+        }
+      }
+    ]
+  },
+  {
     "name": "buy",
     "description": "token shop commands",
     "description_localizations": {},

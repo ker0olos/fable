@@ -245,6 +245,17 @@ Deno.test('read json', async () => {
   }
 });
 
+Deno.test('normal timestamps', () => {
+  const now = new Date();
+
+  const expected = new Date().getTime().toString();
+
+  assertEquals(
+    utils.normalTimestamp(now),
+    expected.substring(0, expected.length - 3),
+  );
+});
+
 Deno.test('recharge timestamps', () => {
   const now = new Date();
 

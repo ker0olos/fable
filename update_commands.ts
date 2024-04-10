@@ -578,6 +578,7 @@ export const commands = [
   ...Command({
     name: 'logs',
     description: '/logs',
+    aliases: ['history'],
     options: [
       Option({
         name: 'user',

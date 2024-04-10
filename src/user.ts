@@ -769,8 +769,8 @@ function list({
         }
 
         const parent = await packs.aggregate<Media>({
-          media: results[0],
           guildId,
+          media: results[0],
         });
 
         media = [
@@ -1265,7 +1265,7 @@ function logs({
 
         const name = `${existing.rating}${discord.emotes.smolStar} ${
           existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
-        }`;
+        } <t:${utils.normalTimestamp(existing.createdAt)}>`;
 
         names.push(name);
       });

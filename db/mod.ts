@@ -94,8 +94,9 @@ export class Mongo {
     });
   }
 
-  async connect(): Promise<void> {
+  async connect(): Promise<Mongo> {
     this.#client = await this.#client.connect();
+    return this;
   }
 
   startSession(): ClientSession {

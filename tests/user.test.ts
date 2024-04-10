@@ -7415,22 +7415,24 @@ Deno.test('/logs', async (test) => {
       () => ({ party: {}, user: { likes: [] } }) as any,
     );
 
+    const now = new Date('1999-1-1');
+
     const getUserCharactersStub = stub(
       db,
       'getUserCharacters',
       () =>
         [
-          { characterId: 'anilist:1', rating: 4 },
-          { characterId: 'anilist:2', rating: 4 },
-          { characterId: 'anilist:3', rating: 4 },
-          { characterId: 'anilist:4', rating: 4 },
-          { characterId: 'anilist:5', rating: 4 },
-          { characterId: 'anilist:6', rating: 4 },
-          { characterId: 'anilist:7', rating: 4 },
-          { characterId: 'anilist:8', rating: 4 },
-          { characterId: 'anilist:9', rating: 4 },
-          { characterId: 'anilist:10', rating: 4 },
-          { characterId: 'anilist:11', rating: 4 },
+          { characterId: 'anilist:1', rating: 4, createdAt: now },
+          { characterId: 'anilist:2', rating: 4, createdAt: now },
+          { characterId: 'anilist:3', rating: 4, createdAt: now },
+          { characterId: 'anilist:4', rating: 4, createdAt: now },
+          { characterId: 'anilist:5', rating: 4, createdAt: now },
+          { characterId: 'anilist:6', rating: 4, createdAt: now },
+          { characterId: 'anilist:7', rating: 4, createdAt: now },
+          { characterId: 'anilist:8', rating: 4, createdAt: now },
+          { characterId: 'anilist:9', rating: 4, createdAt: now },
+          { characterId: 'anilist:10', rating: 4, createdAt: now },
+          { characterId: 'anilist:11', rating: 4, createdAt: now },
         ] as any,
     );
 
@@ -7493,16 +7495,16 @@ Deno.test('/logs', async (test) => {
             {
               type: 'rich',
               description: [
-                '4<:smolstar:1107503653956374638> character 11',
-                '4<:smolstar:1107503653956374638> character 10',
-                '4<:smolstar:1107503653956374638> character 9',
-                '4<:smolstar:1107503653956374638> character 8',
-                '4<:smolstar:1107503653956374638> character 7',
-                '4<:smolstar:1107503653956374638> character 6',
-                '4<:smolstar:1107503653956374638> character 5',
-                '4<:smolstar:1107503653956374638> character 4',
-                '4<:smolstar:1107503653956374638> character 3',
-                '4<:smolstar:1107503653956374638> character 2',
+                '4<:smolstar:1107503653956374638> character 11 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 10 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 9 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 8 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 7 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 6 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 5 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 4 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 3 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 2 <t:915141600:R>',
               ].join('\n'),
             },
           ],
@@ -7617,22 +7619,79 @@ Deno.test('/logs', async (test) => {
       () => ({ party: {}, user: { likes: [] } }) as any,
     );
 
+    const now = new Date('1999-1-1');
+
     const getUserCharactersStub = stub(
       db,
       'getUserCharacters',
       () =>
         [
-          { characterId: 'anilist:1', nickname: 'nickname 1', rating: 4 },
-          { characterId: 'anilist:2', nickname: 'nickname 2', rating: 4 },
-          { characterId: 'anilist:3', nickname: 'nickname 3', rating: 4 },
-          { characterId: 'anilist:4', nickname: 'nickname 4', rating: 4 },
-          { characterId: 'anilist:5', nickname: 'nickname 5', rating: 4 },
-          { characterId: 'anilist:6', nickname: 'nickname 6', rating: 4 },
-          { characterId: 'anilist:7', nickname: 'nickname 7', rating: 4 },
-          { characterId: 'anilist:8', nickname: 'nickname 8', rating: 4 },
-          { characterId: 'anilist:9', nickname: 'nickname 9', rating: 4 },
-          { characterId: 'anilist:10', nickname: 'nickname 10', rating: 4 },
-          { characterId: 'anilist:11', nickname: 'nickname 11', rating: 4 },
+          {
+            characterId: 'anilist:1',
+            rating: 4,
+            nickname: 'nickname 1',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:2',
+            rating: 4,
+            nickname: 'nickname 2',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:3',
+            rating: 4,
+            nickname: 'nickname 3',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:4',
+            rating: 4,
+            nickname: 'nickname 4',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:5',
+            rating: 4,
+            nickname: 'nickname 5',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:6',
+            rating: 4,
+            nickname: 'nickname 6',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:7',
+            rating: 4,
+            nickname: 'nickname 7',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:8',
+            rating: 4,
+            nickname: 'nickname 8',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:9',
+            rating: 4,
+            nickname: 'nickname 9',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:10',
+            rating: 4,
+            nickname: 'nickname 10',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:11',
+            rating: 4,
+            nickname: 'nickname 11',
+            createdAt: now,
+          },
         ] as any,
     );
 
@@ -7695,16 +7754,16 @@ Deno.test('/logs', async (test) => {
             {
               type: 'rich',
               description: [
-                '4<:smolstar:1107503653956374638> nickname 11',
-                '4<:smolstar:1107503653956374638> nickname 10',
-                '4<:smolstar:1107503653956374638> nickname 9',
-                '4<:smolstar:1107503653956374638> nickname 8',
-                '4<:smolstar:1107503653956374638> nickname 7',
-                '4<:smolstar:1107503653956374638> nickname 6',
-                '4<:smolstar:1107503653956374638> nickname 5',
-                '4<:smolstar:1107503653956374638> nickname 4',
-                '4<:smolstar:1107503653956374638> nickname 3',
-                '4<:smolstar:1107503653956374638> nickname 2',
+                '4<:smolstar:1107503653956374638> nickname 11 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 10 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 9 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 8 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 7 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 6 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 5 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 4 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 3 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 2 <t:915141600:R>',
               ].join('\n'),
             },
           ],

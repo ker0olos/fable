@@ -861,6 +861,74 @@ describe('db.getUserCharacters()', () => {
     });
   });
 
+  it('sorting 1', async () => {
+    await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-1',
+      createdAt: new Date('1999-1-1'),
+    } as any);
+
+    await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+    } as any);
+
+    const characters = await db.getUserCharacters(
+      'user-id',
+      'guild-id',
+    );
+
+    assertEquals(characters.length, 2);
+
+    assertObjectMatch(characters[0], {
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+    });
+
+    assertObjectMatch(characters[1], {
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-1',
+    });
+  });
+
+  it('sorting 2', async () => {
+    await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-1',
+    } as any);
+
+    await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+      createdAt: new Date('1999-1-1'),
+    } as any);
+
+    const characters = await db.getUserCharacters(
+      'user-id',
+      'guild-id',
+    );
+
+    assertEquals(characters.length, 2);
+
+    assertObjectMatch(characters[0], {
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-1',
+    });
+
+    assertObjectMatch(characters[1], {
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+    });
+  });
+
   it('none', async () => {
     await client.characters().insertOne({
       userId: 'user-id',

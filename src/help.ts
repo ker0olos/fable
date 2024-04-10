@@ -315,7 +315,7 @@ function pages(
             '',
             `- \`/installed packs\`: _${i18n.get('/installed packs', locale)}_`,
             '',
-            `- \`/logs\`: _${i18n.get('/logs', locale)}_`,
+            `- \`/logs\` \`/history\`: _${i18n.get('/logs', locale)}_`,
           ].join('\n')),
       ),
     new discord.Message()

@@ -428,29 +428,20 @@ export const handler = async (r: Request) => {
 
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'stars': {
+              case 'stars':
+              case 'media': {
+                const title = options['title'] as string;
                 const rating = options['rating'] as number;
 
                 return user.list({
                   token,
                   userId,
                   guildId,
+                  index: 0,
                   rating,
-                  index: 0,
-                  nick: userId !== member.user.id,
-                }).send();
-              }
-              case 'media': {
-                const title = options['title'] as string;
-
-                return user.list({
-                  token,
-                  userId,
-                  guildId,
-                  index: 0,
                   search: title,
-                  id: title.startsWith(idPrefix)
-                    ? title.substring(idPrefix.length)
+                  id: title?.startsWith(idPrefix)
+                    ? title?.substring(idPrefix.length)
                     : undefined,
                   nick: userId !== member.user.id,
                 }).send();
@@ -823,6 +814,7 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
             })).send();
           }
+          case 'history':
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
 
