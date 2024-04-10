@@ -8322,7 +8322,8 @@ Deno.test('/logs', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    const now = new Date('2024-04-10T11:30:29.172Z');
+    const timeStub = new FakeTime(now);
 
     const fetchStub = stub(
       utils,
@@ -8335,8 +8336,6 @@ Deno.test('/logs', async (test) => {
       'getInventory',
       () => ({ party: {}, user: { likes: [] } }) as any,
     );
-
-    const now = new Date('1999-1-1');
 
     const getUserCharactersStub = stub(
       db,
@@ -8416,16 +8415,16 @@ Deno.test('/logs', async (test) => {
             {
               type: 'rich',
               description: [
-                '4<:smolstar:1107503653956374638> character 11 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 10 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 9 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 8 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 7 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 6 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 5 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 4 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 3 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> character 2 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> character 11 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 10 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 9 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 8 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 7 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 6 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 5 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 4 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 3 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 2 <t:1712748629:R>',
               ].join('\n'),
             },
           ],
@@ -8526,7 +8525,8 @@ Deno.test('/logs', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    const now = new Date('2024-04-10T11:30:29.172Z');
+    const timeStub = new FakeTime(now);
 
     const fetchStub = stub(
       utils,
@@ -8539,8 +8539,6 @@ Deno.test('/logs', async (test) => {
       'getInventory',
       () => ({ party: {}, user: { likes: [] } }) as any,
     );
-
-    const now = new Date('1999-1-1');
 
     const getUserCharactersStub = stub(
       db,
@@ -8675,16 +8673,16 @@ Deno.test('/logs', async (test) => {
             {
               type: 'rich',
               description: [
-                '4<:smolstar:1107503653956374638> nickname 11 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 10 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 9 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 8 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 7 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 6 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 5 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 4 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 3 <t:915141600:R>',
-                '4<:smolstar:1107503653956374638> nickname 2 <t:915141600:R>',
+                '4<:smolstar:1107503653956374638> nickname 11 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 10 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 9 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 8 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 7 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 6 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 5 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 4 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 3 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 2 <t:1712748629:R>',
               ].join('\n'),
             },
           ],
