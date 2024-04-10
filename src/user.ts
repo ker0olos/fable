@@ -14,6 +14,7 @@ import * as discord from '~/src/discord.ts';
 
 import {
   Character,
+  CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
   Media,
@@ -1247,12 +1248,11 @@ function showcase({
       const ownedMedia: Record<string, string[]> = {};
 
       const user = await db.getUser(userId);
-
       const characters = await db.getUserCharacters(userId, guildId);
 
-      user.likes?.forEach(({ mediaId }) => {
-        mediaId && (likedMedia[mediaId] = true);
-      });
+      user.likes?.forEach(({ mediaId }) =>
+        mediaId && (likedMedia[mediaId] = true)
+      );
 
       characters.forEach(({ mediaId, characterId }) => {
         ownedMedia[mediaId] ??= [];
@@ -1267,11 +1267,32 @@ function showcase({
         ],
       }) as DisaggregatedMedia[];
 
-      media = media // filter out any media with 0 characters
+      media = media
+        .map((media) => {
+          const mediaId = `${media.packId}:${media.id}`;
+
+          // filter background characters
+          media.characters = media.characters?.filter(({ role }) =>
+            role !== CharacterRole.Background
+          ) ?? [];
+
+          // filter background characters from owned character
+          ownedMedia[mediaId] = ownedMedia[mediaId]?.filter((id) => {
+            // deno-lint-ignore no-non-null-assertion
+            const edge = media.characters!.find(({ characterId }) =>
+              packs.ensureId(characterId, media.packId) === id
+            );
+
+            return edge && edge.role !== CharacterRole.Background;
+          });
+
+          return media;
+        })
+        // filter out any media with 0 characters
         .filter((m) => m.characters?.length);
 
-      // shadow aggregate liked media
-      // and concat them to the liked media map
+      // shadow aggregate liked media relations
+      // and add them into the liked media list
       media.forEach((media) => {
         const list = [
           `${media.packId}:${media.id}`,
@@ -1282,23 +1303,24 @@ function showcase({
 
         const anyIncludes = list.some((id) => likedMedia[id] || false);
 
-        if (anyIncludes) {
-          list.forEach((id) => likedMedia[id] = true);
-        }
+        if (anyIncludes) list.forEach((id) => likedMedia[id] = true);
       });
 
-      // sort by liked then popularity
+      // sort by liked then owned amount
       media.sort((a, b) => {
-        const aLiked = likedMedia[`${a.packId}:${a.id}`] || false;
-        const bLiked = likedMedia[`${b.packId}:${b.id}`] || false;
+        const aId = `${a.packId}:${a.id}`;
+        const bId = `${b.packId}:${b.id}`;
+
+        const aLiked = likedMedia[aId] || false;
+        const bLiked = likedMedia[bId] || false;
 
         if (aLiked && !bLiked) return -1;
         if (!aLiked && bLiked) return 1;
 
-        const aPopularity = a.popularity ?? 1000;
-        const bPopularity = b.popularity ?? 1000;
+        const aOwned = ownedMedia[aId]?.length ?? 0;
+        const bOwned = ownedMedia[bId]?.length ?? 0;
 
-        return bPopularity - aPopularity;
+        return bOwned - aOwned;
       });
 
       const chunks = utils.chunks(media, 5);
@@ -1334,11 +1356,21 @@ function showcase({
 
         const liked = likedMedia[id] || false;
 
+        const owned = ownedMedia[id]?.length ?? 0;
+        // deno-lint-ignore no-non-null-assertion
+        const total = media.characters!.length;
+
+        const percent = Math.round((owned / total) * 100);
+
+        // deno-lint-ignore prefer-ascii
+        const formatted = `${percent}% — ${owned} / ${total}`;
+
         embed.addField({
           inline: false,
           name: `${title} ${liked ? discord.emotes.liked : ''}`.trim(),
-          // deno-lint-ignore no-non-null-assertion
-          value: `${ownedMedia[id]?.length ?? 0} / ${media.characters!.length}`,
+          value: percent >= 100
+            ? `${discord.emotes.fable} ~~${formatted}~~`
+            : formatted,
         });
       });
 

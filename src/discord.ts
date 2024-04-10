@@ -53,6 +53,7 @@ export const colors = {
 };
 
 export const emotes = {
+  fable: '<:fable:1083677739313274915>',
   star: '<:star:1061016362832642098>',
   noStar: '<:no_star:1109377526662434906>',
   smolStar: '<:smolstar:1107503653956374638>',
