@@ -428,6 +428,15 @@ export const handler = async (r: Request) => {
 
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
+              case 'show': {
+                return user.showcase({
+                  token,
+                  userId,
+                  guildId,
+                  index: 0,
+                  nick: userId !== member.user.id,
+                }).send();
+              }
               case 'stars':
               case 'media': {
                 const title = options['title'] as string;
@@ -895,6 +904,22 @@ export const handler = async (r: Request) => {
               userId,
               rating,
               id: mediaId,
+            })
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'showcase': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return user.showcase({
+              token,
+              index,
+              guildId,
+              userId,
             })
               .setType(discord.MessageType.Update)
               .send();

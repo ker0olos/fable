@@ -82,15 +82,13 @@ export const newInventory = (
 
 export async function getUser(
   userId: string,
-  db?: Mongo,
-  manual?: boolean,
 ): Promise<WithId<Schema.User>> {
-  db ??= new Mongo();
+  const db = new Mongo();
 
   let result: WithId<Schema.User>;
 
   try {
-    !manual && await db.connect();
+    await db.connect();
 
     // deno-lint-ignore no-non-null-assertion
     result = (await db.users().findOneAndUpdate(
@@ -99,7 +97,7 @@ export async function getUser(
       { upsert: true, returnDocument: 'after' },
     ))!;
   } finally {
-    !manual && await db.close();
+    await db.close();
   }
 
   return result;
@@ -459,21 +457,19 @@ export async function getActiveUsersIfLiked(
 export async function getUserCharacters(
   userId: string,
   guildId: string,
-  db?: Mongo,
-  manual?: boolean,
 ): Promise<WithId<Schema.Character>[]> {
-  db ??= new Mongo();
+  const db = new Mongo();
 
   let result: WithId<Schema.Character>[];
 
   try {
-    !manual && await db.connect();
+    await db.connect();
 
     result = await db.characters().find({ userId, guildId }, {
       sort: { createdAt: 1 },
     }).toArray();
   } finally {
-    !manual && await db.close();
+    await db.close();
   }
 
   return result;

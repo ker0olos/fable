@@ -2169,6 +2169,24 @@ snapshot[`commands 1`] = `
     "description_localizations": {},
     "options": [
       {
+        "name": "show",
+        "description": "check and view how complete are a user collections",
+        "type": 1,
+        "required": false,
+        "description_localizations": {},
+        "options": [
+          {
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
+      },
+      {
         "name": "stars",
         "description": "view user stars",
         "type": 1,
@@ -2277,6 +2295,24 @@ snapshot[`commands 1`] = `
     "description_localizations": {},
     "options": [
       {
+        "name": "show",
+        "description": "check and view how complete are a user collections",
+        "type": 1,
+        "required": false,
+        "description_localizations": {},
+        "options": [
+          {
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
+      },
+      {
         "name": "stars",
         "description": "view user stars",
         "type": 1,
@@ -2384,6 +2420,24 @@ snapshot[`commands 1`] = `
     "description": "collection browsing commands",
     "description_localizations": {},
     "options": [
+      {
+        "name": "show",
+        "description": "check and view how complete are a user collections",
+        "type": 1,
+        "required": false,
+        "description_localizations": {},
+        "options": [
+          {
+            "name": "user",
+            "description": "the user of the list",
+            "type": 6,
+            "required": false,
+            "description_localizations": {
+              "es-ES": "el usuario de la lista"
+            }
+          }
+        ]
+      },
       {
         "name": "stars",
         "description": "view user stars",

@@ -1223,6 +1223,158 @@ function sum({
   return loading;
 }
 
+function showcase({
+  token,
+  userId,
+  guildId,
+  index,
+  nick,
+}: {
+  token: string;
+  index: number;
+  userId: string;
+  guildId: string;
+  nick?: boolean;
+}): discord.Message {
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
+
+  Promise.resolve()
+    .then(async () => {
+      const embed = new discord.Embed();
+
+      const likedMedia: Record<string, boolean> = {};
+      const ownedMedia: Record<string, string[]> = {};
+
+      const user = await db.getUser(userId);
+
+      const characters = await db.getUserCharacters(userId, guildId);
+
+      user.likes?.forEach(({ mediaId }) => {
+        mediaId && (likedMedia[mediaId] = true);
+      });
+
+      characters.forEach(({ mediaId, characterId }) => {
+        ownedMedia[mediaId] ??= [];
+        ownedMedia[mediaId].push(characterId);
+      });
+
+      let media = await packs.media({
+        guildId,
+        ids: [
+          ...Object.keys(likedMedia),
+          ...Object.keys(ownedMedia),
+        ],
+      }) as DisaggregatedMedia[];
+
+      media = media // filter out any media with 0 characters
+        .filter((m) => m.characters?.length);
+
+      // shadow aggregate liked media
+      // and concat them to the liked media map
+      media.forEach((media) => {
+        const list = [
+          `${media.packId}:${media.id}`,
+          ...(media.relations ?? []).map(({ mediaId }) =>
+            packs.ensureId(mediaId, media.packId)
+          ),
+        ];
+
+        const anyIncludes = list.some((id) => likedMedia[id] || false);
+
+        if (anyIncludes) {
+          list.forEach((id) => likedMedia[id] = true);
+        }
+      });
+
+      // sort by liked then popularity
+      media.sort((a, b) => {
+        const aLiked = likedMedia[`${a.packId}:${a.id}`] || false;
+        const bLiked = likedMedia[`${b.packId}:${b.id}`] || false;
+
+        if (aLiked && !bLiked) return -1;
+        if (!aLiked && bLiked) return 1;
+
+        const aPopularity = a.popularity ?? 1000;
+        const bPopularity = b.popularity ?? 1000;
+
+        return bPopularity - aPopularity;
+      });
+
+      const chunks = utils.chunks(media, 5);
+
+      if (!chunks.length) {
+        const message = new discord.Message();
+
+        message.addEmbed(
+          new discord.Embed()
+            .setDescription(
+              nick
+                ? i18n.get('user-empty-collection', locale, `<@${userId}>`, '')
+                : i18n.get('you-empty-collection', locale, ''),
+            ),
+        );
+
+        if (!nick) {
+          message.addComponents([
+            // `/gacha` shortcut
+            new discord.Component()
+              .setId('gacha', userId)
+              .setLabel('/gacha'),
+          ]);
+        }
+
+        return message.patch(token);
+      }
+
+      chunks[index].forEach((media) => {
+        const id = `${media.packId}:${media.id}`;
+
+        const title = packs.aliasToArray(media.title)[0];
+
+        const liked = likedMedia[id] || false;
+
+        embed.addField({
+          inline: false,
+          name: `${title} ${liked ? discord.emotes.liked : ''}`.trim(),
+          // deno-lint-ignore no-non-null-assertion
+          value: `${ownedMedia[id]?.length ?? 0} / ${media.characters!.length}`,
+        });
+      });
+
+      const message = new discord.Message()
+        .addEmbed(embed);
+
+      return discord.Message.page({
+        index,
+        message,
+        type: 'showcase',
+        target: userId,
+        total: chunks.length,
+        next: index + 1 < chunks.length,
+        locale,
+      }).patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 function logs({
   token,
   userId,
@@ -1315,6 +1467,7 @@ const user = {
   like,
   likeall,
   likeslist,
+  showcase,
   list,
   logs,
   nick,

@@ -728,6 +728,20 @@ export const commands = [
     aliases: ['coll', 'mm'],
     options: [
       Option({
+        name: 'show',
+        description: '/coll show',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'user',
+            description: '$user-list',
+            type: Type.USER,
+            optional: true,
+          }),
+        ],
+      }),
+      Option({
         name: 'stars',
         description: '/coll stars',
         type: Type.SUB_COMMAND,

@@ -279,6 +279,7 @@
   "/party swap": "swap characters spots with each others",
   "/party remove": "remove a character from your party",
 
+  "/coll show": "check and view how complete are a user collections",
   "/coll stars": "view user stars",
   "/coll media": "view user characters in a specific series",
   "/coll sum": "view the sum numbers of a user collection",

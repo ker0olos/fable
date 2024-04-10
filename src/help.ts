@@ -263,6 +263,9 @@ function pages(
               i18n.get('/party remove', locale)
             }_`,
             '',
+            `- \`/collection show\` \`/coll show\` \`/mm show\`: _${
+              i18n.get('/coll show', locale)
+            }_`,
             `- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _${
               i18n.get('/coll stars', locale)
             }_`,
