@@ -12,8 +12,6 @@ import config from '~/src/config.ts';
 
 import db from '~/db/mod.ts';
 
-import type * as Schema from '~/db/schema.ts';
-
 import {
   Character,
   DisaggregatedCharacter,
@@ -118,7 +116,7 @@ function mediaMessage(media: Media): discord.Message {
   const musicGroup: discord.Component[] = [];
 
   const message = new discord.Message()
-    .addEmbed(mediaEmbed(media, titles));
+    .addEmbed(mediaEmbed(media));
 
   // character embeds
   // sort characters by popularity
@@ -203,14 +201,40 @@ function mediaMessage(media: Media): discord.Message {
 }
 
 function mediaEmbed(
-  media: Media,
-  titles: string[],
+  media: Media | DisaggregatedMedia,
+  options?: {
+    mode?: 'thumbnail' | 'full';
+  },
 ): discord.Embed {
-  return new discord.Embed()
-    .setTitle(utils.wrap(titles[0]))
+  options ??= {
+    mode: 'full',
+  };
+
+  const title = packs.aliasToArray(media.title)[0];
+
+  const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
+    ? 25
+    : 32;
+
+  const titleWrapped = utils.wrap(title, wrapWidth);
+
+  const embed = new discord.Embed();
+
+  if (options.mode === 'full') {
+    embed.setImage({ url: media.images?.[0]?.url });
+  } else {
+    embed.setThumbnail({ url: media.images?.[0]?.url });
+  }
+
+  const description = options.mode === 'thumbnail'
+    ? utils.truncate(utils.decodeDescription(media.description), 128)
+      ?.replaceAll('\n', ' ')
+    : utils.decodeDescription(media.description);
+
+  return embed
+    .setTitle(titleWrapped)
     .setAuthor({ name: packs.formatToString(media.format) })
-    .setDescription(utils.decodeDescription(media.description))
-    .setImage({ url: media.images?.[0]?.url });
+    .setDescription(description);
 }
 
 function mediaDebugMessage(
@@ -411,7 +435,12 @@ function characterEmbed(
   character: Character | DisaggregatedCharacter,
   options?: {
     userId?: string;
-    existing?: Partial<Schema.Character>;
+    existing?: {
+      image?: string;
+      nickname?: string;
+      rating?: number;
+      mediaId?: string;
+    };
     suffix?: string;
     rating?: Rating | boolean;
     media?: {
@@ -479,6 +508,7 @@ function characterEmbed(
 
   const description = options.mode === 'thumbnail'
     ? utils.truncate(utils.decodeDescription(character.description), 128)
+      ?.replaceAll('\n', ' ')
     : utils.decodeDescription(character.description);
 
   let mediaTitle: string | undefined = undefined;

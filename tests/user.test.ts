@@ -6180,8 +6180,8 @@ Deno.test('/likeall', async (test) => {
             {
               type: 'rich',
               title: 'title',
-              image: {
-                url: 'http://localhost:8000/external/',
+              thumbnail: {
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
           ],
@@ -6305,8 +6305,8 @@ Deno.test('/likeall', async (test) => {
             {
               type: 'rich',
               title: 'title',
-              image: {
-                url: 'http://localhost:8000/external/',
+              thumbnail: {
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
           ],

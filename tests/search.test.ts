@@ -3247,6 +3247,119 @@ Deno.test('/character', async (test) => {
   });
 });
 
+Deno.test('media embed', async (test) => {
+  await test.step('normal', () => {
+    const media: DisaggregatedMedia = {
+      id: '1',
+      description: 'long description',
+      title: {
+        english: 'full title',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+    };
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const embed = search.mediaEmbed(media);
+
+      assertEquals(embed.json(), {
+        type: 'rich',
+        title: 'full title',
+        description: 'long description',
+        image: {
+          url: 'http://localhost:8000/external/image_url',
+        },
+        author: {
+          name: 'Anime',
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+    }
+  });
+
+  await test.step('minimized', () => {
+    const media: DisaggregatedMedia = {
+      id: '1',
+      description: 'long description',
+      title: {
+        english: 'full title',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+    };
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const embed = search.mediaEmbed(media, { mode: 'thumbnail' });
+
+      assertEquals(embed.json(), {
+        type: 'rich',
+        title: 'full title',
+        description: 'long description',
+        thumbnail: {
+          url: 'http://localhost:8000/external/image_url?size=thumbnail',
+        },
+        author: {
+          name: 'Anime',
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+    }
+  });
+
+  await test.step('default image', () => {
+    const media: DisaggregatedMedia = {
+      id: '1',
+      description: 'long description',
+      title: {
+        english: 'full title',
+      },
+      popularity: 1_000_000,
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+    };
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const embed = search.mediaEmbed(media);
+
+      assertEquals(embed.json(), {
+        type: 'rich',
+        title: 'full title',
+        description: 'long description',
+        image: {
+          url: 'http://localhost:8000/external/',
+        },
+        author: {
+          name: 'Anime',
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+    }
+  });
+});
+
 Deno.test('character embed', async (test) => {
   await test.step('normal', () => {
     const character: DisaggregatedCharacter = {

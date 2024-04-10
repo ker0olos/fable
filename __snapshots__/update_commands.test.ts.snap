@@ -5,7 +5,6 @@ snapshot[`commands 1`] = `
   {
     "name": "search",
     "description": "search for a specific series",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "busca una serie específica"
     },
@@ -43,7 +42,6 @@ snapshot[`commands 1`] = `
   {
     "name": "anime",
     "description": "search for a specific series",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "busca una serie específica"
     },
@@ -81,7 +79,6 @@ snapshot[`commands 1`] = `
   {
     "name": "manga",
     "description": "search for a specific series",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "busca una serie específica"
     },
@@ -119,7 +116,6 @@ snapshot[`commands 1`] = `
   {
     "name": "media",
     "description": "search for a specific series",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "busca una serie específica"
     },
@@ -157,7 +153,6 @@ snapshot[`commands 1`] = `
   {
     "name": "series",
     "description": "search for a specific series",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "busca una serie específica"
     },
@@ -195,7 +190,6 @@ snapshot[`commands 1`] = `
   {
     "name": "character",
     "description": "search for a specific character",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "busca un personaje específico"
     },
@@ -224,7 +218,6 @@ snapshot[`commands 1`] = `
   {
     "name": "char",
     "description": "search for a specific character",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "busca un personaje específico"
     },
@@ -253,7 +246,6 @@ snapshot[`commands 1`] = `
   {
     "name": "found",
     "description": "list all characters found from a specific series",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "muestra todos los personajes de una serie que hayan sido obtenidos"
     },
@@ -273,7 +265,6 @@ snapshot[`commands 1`] = `
   {
     "name": "owned",
     "description": "list all characters found from a specific series",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "muestra todos los personajes de una serie que hayan sido obtenidos"
     },
@@ -293,7 +284,6 @@ snapshot[`commands 1`] = `
   {
     "name": "like",
     "description": "like a character to be notified if someone finds them",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga"
     },
@@ -313,7 +303,6 @@ snapshot[`commands 1`] = `
   {
     "name": "protect",
     "description": "like a character to be notified if someone finds them",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga"
     },
@@ -333,7 +322,6 @@ snapshot[`commands 1`] = `
   {
     "name": "wish",
     "description": "like a character to be notified if someone finds them",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga"
     },
@@ -353,7 +341,6 @@ snapshot[`commands 1`] = `
   {
     "name": "unlike",
     "description": "remove character from your likes",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "quita personajes de tus likes"
     },
@@ -373,7 +360,6 @@ snapshot[`commands 1`] = `
   {
     "name": "likeall",
     "description": "like a series to be notified if someone finds any character from it",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "da like a una serie y recibe notificaciones cuando alguien obtenga un personaje de ella"
     },
@@ -393,7 +379,6 @@ snapshot[`commands 1`] = `
   {
     "name": "unlikeall",
     "description": "remove a series from your likes",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "quita series de tus likes"
     },
@@ -413,7 +398,6 @@ snapshot[`commands 1`] = `
   {
     "name": "likeslist",
     "description": "list all user likes",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "muestra todos tus likes"
     },
@@ -441,7 +425,6 @@ snapshot[`commands 1`] = `
   {
     "name": "give",
     "description": "give characters to another user",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "regala personajes a otro usuario"
     },
@@ -490,7 +473,6 @@ snapshot[`commands 1`] = `
   {
     "name": "gift",
     "description": "give characters to another user",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "regala personajes a otro usuario"
     },
@@ -539,7 +521,6 @@ snapshot[`commands 1`] = `
   {
     "name": "trade",
     "description": "trade characters with another user",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "intercambia personajes con otro usuario"
     },
@@ -618,7 +599,6 @@ snapshot[`commands 1`] = `
   {
     "name": "offer",
     "description": "trade characters with another user",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "intercambia personajes con otro usuario"
     },
@@ -697,7 +677,6 @@ snapshot[`commands 1`] = `
   {
     "name": "steal",
     "description": "steal a character from another user",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "roba un personaje a otro usuario"
     },
@@ -717,7 +696,6 @@ snapshot[`commands 1`] = `
   {
     "name": "help",
     "description": "need more information? we got you",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "¿Necesitas más información? No te preocupes"
     },
@@ -768,32 +746,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -806,7 +777,6 @@ snapshot[`commands 1`] = `
   {
     "name": "start",
     "description": "need more information? we got you",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "¿Necesitas más información? No te preocupes"
     },
@@ -857,32 +827,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -895,7 +858,6 @@ snapshot[`commands 1`] = `
   {
     "name": "guide",
     "description": "need more information? we got you",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "¿Necesitas más información? No te preocupes"
     },
@@ -946,32 +908,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -984,7 +939,6 @@ snapshot[`commands 1`] = `
   {
     "name": "wiki",
     "description": "need more information? we got you",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "¿Necesitas más información? No te preocupes"
     },
@@ -1035,32 +989,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -1073,7 +1020,6 @@ snapshot[`commands 1`] = `
   {
     "name": "tuto",
     "description": "need more information? we got you",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "¿Necesitas más información? No te preocupes"
     },
@@ -1124,32 +1070,25 @@ snapshot[`commands 1`] = `
             "value": 5
           },
           {
-            "name": "Roadmap",
-            "name_localizations": {
-              "es-ES": "Futuro del bot"
-            },
-            "value": 6
-          },
-          {
             "name": "Essential Commands",
             "name_localizations": {
               "es-ES": "Comandos Esenciales"
             },
-            "value": 7
+            "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
               "es-ES": "Otros Comandos"
             },
-            "value": 8
+            "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
               "es-ES": "Comandos de Administrador"
             },
-            "value": 9
+            "value": 8
           }
         ],
         "required": false,
@@ -1162,7 +1101,6 @@ snapshot[`commands 1`] = `
   {
     "name": "now",
     "description": "check what you can do right now",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "comprueba lo que puedes hacer ahora mismo"
     }
@@ -1170,7 +1108,6 @@ snapshot[`commands 1`] = `
   {
     "name": "tu",
     "description": "check what you can do right now",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "comprueba lo que puedes hacer ahora mismo"
     }
@@ -1178,7 +1115,6 @@ snapshot[`commands 1`] = `
   {
     "name": "q",
     "description": "start a gacha pull but with no animations",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "realiza una tirada pero sin animaciones"
     }
@@ -1186,7 +1122,6 @@ snapshot[`commands 1`] = `
   {
     "name": "gacha",
     "description": "start a new gacha pull",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "realiza una tirada de gacha"
     }
@@ -1194,7 +1129,6 @@ snapshot[`commands 1`] = `
   {
     "name": "w",
     "description": "start a new gacha pull",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "realiza una tirada de gacha"
     }
@@ -1202,7 +1136,6 @@ snapshot[`commands 1`] = `
   {
     "name": "pull",
     "description": "use a guaranteed pull you have",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "usa una tirada garantizada que hayas comprado"
     },
@@ -1235,7 +1168,6 @@ snapshot[`commands 1`] = `
   {
     "name": "guaranteed",
     "description": "use a guaranteed pull you have",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "usa una tirada garantizada que hayas comprado"
     },
@@ -1268,7 +1200,6 @@ snapshot[`commands 1`] = `
   {
     "name": "image",
     "description": "change the image of a character",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "cambia la imagen de un personaje"
     },
@@ -1297,7 +1228,6 @@ snapshot[`commands 1`] = `
   {
     "name": "custom",
     "description": "change the image of a character",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "cambia la imagen de un personaje"
     },
@@ -1326,7 +1256,6 @@ snapshot[`commands 1`] = `
   {
     "name": "nick",
     "description": "change the nickname of a character",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "cambia el apodo de un personaje"
     },
@@ -1355,7 +1284,6 @@ snapshot[`commands 1`] = `
   {
     "name": "merge",
     "description": "sacrifice characters to pull a new more shiny character",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "combina personajes para obtener uno nuevo"
     },
@@ -1392,7 +1320,6 @@ snapshot[`commands 1`] = `
   {
     "name": "synthesize",
     "description": "sacrifice characters to pull a new more shiny character",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "combina personajes para obtener uno nuevo"
     },
@@ -1429,7 +1356,6 @@ snapshot[`commands 1`] = `
   {
     "name": "automerge",
     "description": "create the lowest or hightest possible merge automatically",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -1455,7 +1381,6 @@ snapshot[`commands 1`] = `
   {
     "name": "logs",
     "description": "list user last few found characters",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "muestra los últimos personajes obtenidos"
     },
@@ -1474,7 +1399,6 @@ snapshot[`commands 1`] = `
   {
     "name": "buy",
     "description": "token shop commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -1556,7 +1480,6 @@ snapshot[`commands 1`] = `
   {
     "name": "shop",
     "description": "token shop commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -1638,13 +1561,11 @@ snapshot[`commands 1`] = `
   {
     "name": "Party",
     "type": 2,
-    "dm_permission": false,
     "description_localizations": {}
   },
   {
     "name": "party",
     "description": "party management commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -1839,7 +1760,6 @@ snapshot[`commands 1`] = `
   {
     "name": "team",
     "description": "party management commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2034,7 +1954,6 @@ snapshot[`commands 1`] = `
   {
     "name": "p",
     "description": "party management commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2229,7 +2148,6 @@ snapshot[`commands 1`] = `
   {
     "name": "collection",
     "description": "collection browsing commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2338,7 +2256,6 @@ snapshot[`commands 1`] = `
   {
     "name": "coll",
     "description": "collection browsing commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2447,7 +2364,6 @@ snapshot[`commands 1`] = `
   {
     "name": "mm",
     "description": "collection browsing commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2556,7 +2472,6 @@ snapshot[`commands 1`] = `
   {
     "name": "installed",
     "description": "community packs management commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2573,7 +2488,6 @@ snapshot[`commands 1`] = `
   {
     "name": "packs",
     "description": "community packs management commands",
-    "dm_permission": false,
     "default_member_permissions": 32,
     "description_localizations": {},
     "options": [
@@ -2648,7 +2562,6 @@ snapshot[`commands 1`] = `
   {
     "name": "stats",
     "description": "manage your characters stat points and skills",
-    "dm_permission": false,
     "description_localizations": {
       "es-ES": "administra las estadísticas y habilidades de tus personajes"
     },
@@ -2668,7 +2581,6 @@ snapshot[`commands 1`] = `
   {
     "name": "skills",
     "description": "characters skill management",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2777,7 +2689,6 @@ snapshot[`commands 1`] = `
   {
     "name": "battle",
     "description": "battle/combat commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2799,7 +2710,6 @@ snapshot[`commands 1`] = `
   {
     "name": "bt",
     "description": "battle/combat commands",
-    "dm_permission": false,
     "description_localizations": {},
     "options": [
       {
@@ -2821,7 +2731,6 @@ snapshot[`commands 1`] = `
   {
     "name": "reclear",
     "description": "Reclear your current tower floor to gain exp",
-    "dm_permission": false,
     "description_localizations": {}
   }
 ]

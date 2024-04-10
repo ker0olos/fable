@@ -107,7 +107,6 @@ const Command = ({
     description: description && description in EN
       ? EN[description as keyof typeof EN]
       : description,
-    dm_permission: false,
     default_member_permissions: defaultPermission,
     description_localizations: {
       'es-ES': description && description in ES
@@ -445,32 +444,25 @@ export const commands = [
             value: 5,
           },
           {
-            name: EN['$help-page-roadmap'],
-            name_localizations: {
-              'es-ES': ES['$help-page-roadmap'],
-            },
-            value: 6,
-          },
-          {
             name: EN['$help-page-essential-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-essential-commands'],
             },
-            value: 7,
+            value: 6,
           },
           {
             name: EN['$help-page-other-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-other-commands'],
             },
-            value: 8,
+            value: 7,
           },
           {
             name: EN['$help-page-admin-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-admin-commands'],
             },
-            value: 9,
+            value: 8,
           },
         ],
       }),

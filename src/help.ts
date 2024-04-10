@@ -28,6 +28,15 @@ function pages(
         new discord.Component()
           .setId('now', userId)
           .setLabel('/now'),
+        new discord.Component()
+          .setLabel('GitHub')
+          .setUrl('https://github.com/ker0olos/fable'),
+        new discord.Component()
+          .setLabel(i18n.get('support-server', locale))
+          .setUrl('https://discord.gg/H69RVBxeYY'),
+        new discord.Component()
+          .setLabel(i18n.get('donate', locale))
+          .setUrl('https://ko-fi.com/ker0olos'),
       ])
       .addEmbed(
         new discord.Embed()
@@ -225,30 +234,6 @@ function pages(
           .setFooter({ text: `${i18n.get('aliases', locale)}: /shop` }),
       ),
     new discord.Message()
-      .addComponents([
-        new discord.Component()
-          .setLabel('GitHub')
-          .setUrl('https://github.com/ker0olos/fable'),
-        new discord.Component()
-          .setLabel(i18n.get('support-server', locale))
-          .setUrl('https://discord.gg/H69RVBxeYY'),
-        new discord.Component()
-          .setLabel(i18n.get('donate', locale))
-          .setUrl('https://ko-fi.com/ker0olos'),
-      ])
-      .addEmbed(
-        new discord.Embed()
-          .setAuthor({ name: i18n.get('help-page6-title', locale) })
-          .setDescription([
-            i18n.get('help-page6-release', locale),
-            '',
-            '**[Classes And Skills](https://github.com/ker0olos/fable/issues/64)**',
-            '',
-            '**[Server vs. Server](https://github.com/ker0olos/fable/issues/65)**',
-            '',
-          ].join('\n')),
-      ),
-    new discord.Message()
       .addEmbed(
         new discord.Embed()
           .setAuthor({ name: i18n.get('help-page7-title', locale) })
@@ -293,6 +278,9 @@ function pages(
             `- \`/give\` \`/gift\`: _${i18n.get('/give', locale)}_`,
             '',
             `- \`/battle tower\`: _${i18n.get('/battle tower', locale)}_`,
+            `- \`/battle challenge\`: _${
+              i18n.get('/battle challenge', locale)
+            }_`,
             `- \`/reclear\`: _${i18n.get('/reclear', locale)}_`,
           ].join('\n')),
       ),

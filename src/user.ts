@@ -667,10 +667,7 @@ function likeall({
         });
 
         message
-          .addEmbed(srch.mediaEmbed(
-            media,
-            packs.aliasToArray(media.title),
-          ));
+          .addEmbed(srch.mediaEmbed(media, { mode: 'thumbnail' }));
 
         if (!undo) {
           message.addComponents([
