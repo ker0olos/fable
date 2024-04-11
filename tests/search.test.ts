@@ -5029,9 +5029,9 @@ Deno.test('/found', async (test) => {
       () => Promise.resolve(characters),
     );
 
-    const findMediaCharactersStub = stub(
+    const getMediaCharactersStub = stub(
       db,
-      'findMediaCharacters',
+      'getMediaCharacters',
       () =>
         [
           {
@@ -5158,7 +5158,7 @@ Deno.test('/found', async (test) => {
 
       getGuildStub.restore();
 
-      findMediaCharactersStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 
@@ -5258,9 +5258,9 @@ Deno.test('/found', async (test) => {
       () => 'guild' as any,
     );
 
-    const findMediaCharactersStub = stub(
+    const getMediaCharactersStub = stub(
       db,
-      'findMediaCharacters',
+      'getMediaCharacters',
       () =>
         [
           {
@@ -5399,7 +5399,7 @@ Deno.test('/found', async (test) => {
 
       getGuildStub.restore();
 
-      findMediaCharactersStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 
@@ -5520,9 +5520,9 @@ Deno.test('/found', async (test) => {
       () => Promise.resolve([media]),
     );
 
-    const findMediaCharactersStub = stub(
+    const getMediaCharactersStub = stub(
       db,
-      'findMediaCharacters',
+      'getMediaCharacters',
       () => [] as any,
     );
 
@@ -5598,7 +5598,7 @@ Deno.test('/found', async (test) => {
 
       getGuildStub.restore();
 
-      findMediaCharactersStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 });

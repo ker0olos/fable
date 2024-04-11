@@ -22,7 +22,6 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   Media,
-  MediaRelation,
 } from '~/src/types.ts';
 
 import { NonFetalError, NoPullsError, PoolError } from '~/src/errors.ts';

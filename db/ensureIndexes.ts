@@ -61,15 +61,15 @@ async function createCharactersIndexes(db: Mongo) {
       guildId: Direction.ascending,
     }, { unique: true });
 
-  // @findCharacters.findMediaCharacters
-  // @findCharacters.findUserCharacters
+  // @getInventory.getMediaCharacters
+  // @getInventory.getUserCharacters
   await db.characters() // Compound Index (speeds up queries)
     .createIndexes([
       { key: { userId: Direction.ascending, guildId: Direction.ascending } },
       { key: { mediaId: Direction.ascending, guildId: Direction.ascending } },
     ]);
 
-  // @findCharacters.findGuildCharacters
+  // @getInventory.getGuildCharacters
   await db.characters() // Normal Index (speeds up queries)
     .createIndexes([
       { key: { guildId: Direction.ascending } },
