@@ -7,6 +7,7 @@ import {
   getGuild,
   getGuildCharacters,
   getInventory,
+  getMediaCharacters,
   getUser,
   getUserCharacters,
   MAX_KEYS,
@@ -48,12 +49,7 @@ import {
   setCharacterNickname,
 } from '~/db/customizeCharacter.ts';
 
-import {
-  findCharacter,
-  findCharacters,
-  findMediaCharacters,
-  findUserCharacters,
-} from '~/db/findCharacters.ts';
+import { findCharacter, findCharacters } from '~/db/findCharacters.ts';
 
 import {
   assignCharacter,
@@ -94,8 +90,9 @@ export class Mongo {
     });
   }
 
-  async connect(): Promise<void> {
+  async connect(): Promise<Mongo> {
     this.#client = await this.#client.connect();
+    return this;
   }
 
   startSession(): ClientSession {
@@ -144,6 +141,7 @@ export class Mongo {
 }
 
 const db = {
+  newMongo: () => new Mongo(),
   getInventory,
   getUser,
   getGuild,
@@ -169,8 +167,7 @@ const db = {
   //
   findCharacter,
   findCharacters,
-  findMediaCharacters,
-  findUserCharacters,
+  getMediaCharacters,
   //
   addTokens,
   addGuarantee,

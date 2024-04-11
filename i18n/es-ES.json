@@ -132,7 +132,7 @@
   "help-page1-footer": "> *`/q` realiza una tirada sin animaciones*",
 
   "help-page2-sacrifice-characters": "Sacrifica personajes para obtener uno nuevo de mayor grado.",
-  "help-page2-merge-protect": "__Los miembros de tu equipo y tus likes jamás serán sacrificados.__ Para protegerlos de un merge, añádelos a tu likeslist con `/like`",
+  "help-page2-merge-protect": "__Los miembros de tu equipo y tus likes jamás serán sacrificados.__ Para protegerlos de un merge, añádelos a tu likeslist con `/like` o `/likeall`",
   "help-page2-merging": "__Necesitas 5 personajes de grado más bajo__ para generar uno nuevo",
   "help-page2-auto-merging": "__Fable priorizará sacrificar tus personajes de grado más bajo.__",
   "help-page2-merge-example-1": "Ejemplo: `/merge target: 3` sacrificará __25 de tus personajes 1{0}__",

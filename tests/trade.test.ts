@@ -1624,7 +1624,7 @@ Deno.test('/give', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: "You don't have full name",
+              description: "You don't own full name",
             },
             {
               type: 'rich',
@@ -1642,7 +1642,7 @@ Deno.test('/give', async (test) => {
             },
             {
               type: 'rich',
-              description: "You don't have full name 2",
+              description: "You don't own full name 2",
             },
             {
               type: 'rich',
@@ -2396,7 +2396,7 @@ Deno.test('/trade', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: "<@another_user_id> doesn't have full name",
+              description: "<@another_user_id> doesn't own full name",
             },
             {
               type: 'rich',
