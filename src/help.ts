@@ -263,6 +263,9 @@ function pages(
               i18n.get('/party remove', locale)
             }_`,
             '',
+            `- \`/collection show\` \`/coll show\` \`/mm show\`: _${
+              i18n.get('/coll show', locale)
+            }_`,
             `- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _${
               i18n.get('/coll stars', locale)
             }_`,
@@ -317,7 +320,7 @@ function pages(
             '',
             `- \`/installed packs\`: _${i18n.get('/installed packs', locale)}_`,
             '',
-            `- \`/logs\`: _${i18n.get('/logs', locale)}_`,
+            `- \`/logs\` \`/history\`: _${i18n.get('/logs', locale)}_`,
           ].join('\n')),
       ),
     new discord.Message()

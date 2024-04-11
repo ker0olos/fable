@@ -99,9 +99,9 @@
   "trade-with-yourself": "You can't trade with yourself!",
   "gift-with-yourself": "You can't gift yourself!",
 
-  "trade-you-not-owned": "You don't have {0}",
+  "trade-you-not-owned": "You don't own {0}",
   "trade-you-party-member": "{0} is in your party and can't be traded",
-  "trade-user-not-owned": "{0} doesn't have {1}",
+  "trade-user-not-owned": "{0} doesn't own {1}",
   "trade-user-party-member": "{0} is in {1}'s party and can't be traded",
 
   "give-you-party-members": "Some of those characters are currently in your party",
@@ -127,6 +127,8 @@
   "steal-cooldown": "Steal is on cooldown, try again {0}",
   "steal-try-again": "You can try again {0}",
   "steal-unexpected": "Something happened and affected your chances of stealing **{0}**, Please try again!",
+
+  "owned-by-others": "_{0} owned by other users!_",
 
   "global-maintenance": "Fable is under maintenance, check back in a few hours!",
   "maintenance-gacha": "Gacha is under maintenance, try again later!",
@@ -209,7 +211,7 @@
   "help-page1-footer": "> *`/q` allows you to do gacha pulls with no animations*",
 
   "help-page2-sacrifice-characters": "Sacrifice characters to pull a new character with a higher rating.",
-  "help-page2-merge-protect": "__Your party members and likes will never be sacrificed.__ To protect characters from being merged, add them to your likeslist with `/like`",
+  "help-page2-merge-protect": "__Your party members and likes will never be sacrificed.__ To protect characters from being merged, add them to your likeslist with `/like` or `/likeall`",
   "help-page2-merging": "__It takes 5 characters with a lower rating__ to pull a new character",
   "help-page2-auto-merging": "__Fable will always auto-merge your lowest-rated characters first.__",
   "help-page2-merge-example-1": "Example: `/merge target: 3` will sacrifice __25 of your 1{0}characters__",
@@ -287,6 +289,7 @@
   "/party swap": "swap characters spots with each others",
   "/party remove": "remove a character from your party",
 
+  "/coll show": "check and view how complete are a user collections",
   "/coll stars": "view user stars",
   "/coll media": "view user characters in a specific series",
   "/coll sum": "view the sum numbers of a user collection",

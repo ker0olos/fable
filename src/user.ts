@@ -8,12 +8,13 @@ import packs from '~/src/packs.ts';
 
 import Rating from '~/src/rating.ts';
 
-import { default as srch, relationFilter } from '~/src/search.ts';
+import { default as srch } from '~/src/search.ts';
 
 import * as discord from '~/src/discord.ts';
 
 import {
   Character,
+  CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
   Media,
@@ -667,10 +668,7 @@ function likeall({
         });
 
         message
-          .addEmbed(srch.mediaEmbed(
-            media,
-            packs.aliasToArray(media.title),
-          ));
+          .addEmbed(srch.mediaEmbed(media, { mode: 'thumbnail' }));
 
         if (!undo) {
           message.addComponents([
@@ -772,16 +770,13 @@ function list({
         }
 
         const parent = await packs.aggregate<Media>({
-          media: results[0],
           guildId,
+          media: results[0],
         });
 
         media = [
           parent,
-          ...(parent.relations?.edges?.filter(({ relation }) =>
-            // deno-lint-ignore no-non-null-assertion
-            relationFilter.includes(relation!)
-          ).map(({ node }) => node) ?? []),
+          ...(parent.relations?.edges?.map(({ node }) => node) ?? []),
         ];
 
         const relationsIds = media.map(({ packId, id }) => `${packId}:${id}`);
@@ -1137,23 +1132,23 @@ function sum({
     .then(async () => {
       const { user, ...inventory } = await db.getInventory(guildId, userId);
 
-      const likes = (user.likes ?? [])
+      const likesCharactersIds = (user.likes ?? [])
         .map(({ characterId }) => characterId);
+
+      const likesMediaIds = (user.likes ?? [])
+        .map(({ mediaId }) => mediaId);
 
       const characters = await db.getUserCharacters(userId, guildId);
 
-      const embed = new discord.Embed();
-
-      const message = new discord.Message()
-        .addEmbed(embed);
-
-      const party = [
+      const partyIds = [
         inventory.party.member1Id,
         inventory.party.member2Id,
         inventory.party.member3Id,
         inventory.party.member4Id,
         inventory.party.member5Id,
       ];
+
+      const embed = new discord.Embed();
 
       const sum: Record<number, number> = {
         1: 0,
@@ -1171,15 +1166,21 @@ function sum({
         5: 0,
       };
 
-      characters.forEach((char) => {
-        sum[char.rating as keyof typeof sum] += 1;
-
-        if (likes.includes(char.characterId) || party.includes(char._id)) {
-          sumProtected[char.rating as keyof typeof sum] += 1;
-        }
-      });
-
       const description: string[] = [];
+
+      characters.forEach((char) => {
+        const r = char.rating as keyof typeof sum;
+
+        if (
+          partyIds.includes(char._id) ||
+          likesCharactersIds.includes(char.characterId) ||
+          likesMediaIds.includes(char.mediaId)
+        ) {
+          sumProtected[r] += 1;
+        }
+
+        sum[r] += 1;
+      });
 
       [1, 2, 3, 4, 5].forEach(
         (n) =>
@@ -1197,7 +1198,223 @@ function sum({
 
       embed.setDescription(description.join('\n'));
 
-      return message.patch(token);
+      new discord.Message()
+        .addEmbed(embed).patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
+}
+
+function showcase({
+  token,
+  userId,
+  guildId,
+  index,
+  nick,
+}: {
+  token: string;
+  index: number;
+  userId: string;
+  guildId: string;
+  nick?: boolean;
+}): discord.Message {
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
+
+  Promise.resolve()
+    .then(async () => {
+      const embed = new discord.Embed();
+
+      const likedMedia: Record<string, boolean> = {};
+      const ownedMedia: Record<string, string[]> = {};
+
+      const mongo = await db.newMongo().connect();
+
+      const user = await db.getUser(userId, mongo, true);
+
+      const characters = await db.getUserCharacters(
+        userId,
+        guildId,
+        mongo,
+        true,
+      );
+
+      user.likes?.forEach(({ mediaId }) =>
+        mediaId && (likedMedia[mediaId] = true)
+      );
+
+      characters.forEach(({ mediaId, characterId }) => {
+        ownedMedia[mediaId] ??= [];
+        ownedMedia[mediaId].push(characterId);
+      });
+
+      let media = await packs.media({
+        guildId,
+        ids: [
+          ...Object.keys(likedMedia),
+          ...Object.keys(ownedMedia),
+        ],
+      }) as DisaggregatedMedia[];
+
+      media = media
+        .map((media) => {
+          const mediaId = `${media.packId}:${media.id}`;
+
+          // filter background characters
+          media.characters = media.characters?.filter(({ role }) =>
+            role !== CharacterRole.Background
+          ) ?? [];
+
+          // filter background characters from owned character
+          ownedMedia[mediaId] = ownedMedia[mediaId]?.filter((id) => {
+            // deno-lint-ignore no-non-null-assertion
+            const edge = media.characters!.find(({ characterId }) =>
+              packs.ensureId(characterId, media.packId) === id
+            );
+
+            return edge && edge.role !== CharacterRole.Background;
+          });
+
+          return media;
+        })
+        // filter out any media with 0 characters
+        .filter((m) => m.characters?.length);
+
+      // shadow aggregate liked media relations
+      // and add them into the liked media list
+      media.forEach((media) => {
+        const list = [
+          `${media.packId}:${media.id}`,
+          ...(media.relations ?? []).map(({ mediaId }) =>
+            packs.ensureId(mediaId, media.packId)
+          ),
+        ];
+
+        const anyIncludes = list.some((id) => likedMedia[id] || false);
+
+        if (anyIncludes) list.forEach((id) => likedMedia[id] = true);
+      });
+
+      // sort by liked then owned amount
+      media.sort((a, b) => {
+        const aId = `${a.packId}:${a.id}`;
+        const bId = `${b.packId}:${b.id}`;
+
+        const aLiked = likedMedia[aId] || false;
+        const bLiked = likedMedia[bId] || false;
+
+        if (aLiked && !bLiked) return -1;
+        if (!aLiked && bLiked) return 1;
+
+        const aOwned = ownedMedia[aId]?.length ?? 0;
+        const bOwned = ownedMedia[bId]?.length ?? 0;
+
+        return bOwned - aOwned;
+      });
+
+      const chunks = utils.chunks(media, 5);
+
+      if (!chunks.length) {
+        const message = new discord.Message();
+
+        message.addEmbed(
+          new discord.Embed()
+            .setDescription(
+              nick
+                ? i18n.get('user-empty-collection', locale, `<@${userId}>`, '')
+                : i18n.get('you-empty-collection', locale, ''),
+            ),
+        );
+
+        if (!nick) {
+          message.addComponents([
+            // `/gacha` shortcut
+            new discord.Component()
+              .setId('gacha', userId)
+              .setLabel('/gacha'),
+          ]);
+        }
+
+        return message.patch(token);
+      }
+
+      const mediaAllOwned = await db.getMediaCharacters(
+        guildId,
+        chunks[index].map(({ packId, id }) => `${packId}:${id}`),
+      );
+
+      await mongo.close();
+
+      chunks[index].forEach((media) => {
+        const id = `${media.packId}:${media.id}`;
+
+        const title = packs.aliasToArray(media.title)[0];
+
+        const liked = likedMedia[id] || false;
+
+        const owned = ownedMedia[id]?.length ?? 0;
+        // deno-lint-ignore no-non-null-assertion
+        const total = media.characters!.length;
+
+        const percent = Math.round((owned / total) * 100);
+
+        // deno-lint-ignore prefer-ascii
+        let formatted = `${percent}% — ${owned} / ${total}`;
+
+        // TODO TEST
+        const ownedByOthers = mediaAllOwned.filter((character) =>
+          character.mediaId === id &&
+          // deno-lint-ignore no-non-null-assertion
+          media.characters!.some(({ characterId }) =>
+            // TODO TEST
+            packs.ensureId(characterId, media.packId) === character.characterId
+          ) &&
+          character.userId !== userId
+        );
+
+        if (ownedByOthers.length) {
+          formatted = `${
+            i18n.get('owned-by-others', locale, ownedByOthers.length)
+          }\n${formatted}`;
+        } else if (percent >= 100) {
+          formatted = `~~${formatted}~~`;
+        }
+
+        embed.addField({
+          inline: false,
+          name: `${title} ${liked ? discord.emotes.liked : ''}`.trim(),
+          value: formatted,
+        });
+      });
+
+      const message = new discord.Message()
+        .addEmbed(embed);
+
+      return discord.Message.page({
+        index,
+        message,
+        type: 'showcase',
+        target: userId,
+        total: chunks.length,
+        next: index + 1 < chunks.length,
+        locale,
+      }).patch(token);
     })
     .catch(async (err) => {
       if (!config.sentry) {
@@ -1261,7 +1478,7 @@ function logs({
 
         const name = `${existing.rating}${discord.emotes.smolStar} ${
           existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
-        }`;
+        } <t:${utils.normalTimestamp(existing.createdAt)}:R>`;
 
         names.push(name);
       });
@@ -1311,6 +1528,7 @@ const user = {
   like,
   likeall,
   likeslist,
+  showcase,
   list,
   logs,
   nick,

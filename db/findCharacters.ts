@@ -61,23 +61,3 @@ export async function findCharacters(
 
   return charactersIds.map((id) => map.get(id));
 }
-
-export async function findMediaCharacters(
-  guildId: string,
-  mediaIds: string[],
-): Promise<Schema.PopulatedCharacter[]> {
-  return await populateCharacters({
-    mediaId: { $in: mediaIds },
-    guildId,
-  });
-}
-
-export async function findUserCharacters(
-  guildId: string,
-  userId: string,
-): Promise<Schema.PopulatedCharacter[]> {
-  return await populateCharacters({
-    userId,
-    guildId,
-  });
-}

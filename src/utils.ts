@@ -317,6 +317,15 @@ async function readJson<T>(filePath: string): Promise<T> {
   }
 }
 
+function normalTimestamp(v?: Date): string {
+  const parsed = v ?? new Date();
+
+  const ts = parsed.getTime();
+
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
+}
+
 function rechargeTimestamp(v?: Date): string {
   const parsed = v ?? new Date();
 
@@ -505,6 +514,7 @@ const utils = {
   nanoid,
   parseInt: _parseInt,
   readJson,
+  normalTimestamp,
   rechargeTimestamp,
   rechargeDailyTimestamp,
   rechargeKeysTimestamp,

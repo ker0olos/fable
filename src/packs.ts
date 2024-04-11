@@ -48,6 +48,7 @@ const cachedGuilds: Record<string, {
 }> = {};
 
 const packs = {
+  ensureId,
   aggregate,
   aliasToArray,
   all,
@@ -324,6 +325,16 @@ function parseId(
   }
 
   return [undefined, undefined];
+}
+
+function ensureId(id: string, defaultPackId?: string): string {
+  const valid = /^([-_a-z0-9]+):([-_a-z0-9]+)$/.test(id);
+
+  if (!valid && defaultPackId && /^([-_a-z0-9]+)$/.test(id)) {
+    return `${defaultPackId}:${id}`;
+  }
+
+  return id;
 }
 
 async function findById<T>(

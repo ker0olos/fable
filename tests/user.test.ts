@@ -23,6 +23,7 @@ import {
   MediaRelation,
   MediaType,
 } from '~/src/types.ts';
+import { DisaggregatedMedia } from '~/src/types.ts';
 
 Deno.test('/now', async (test) => {
   await test.step('with pulls', async () => {
@@ -4954,7 +4955,7 @@ Deno.test('/collection sum', async (test) => {
     }
   });
 
-  await test.step('with likes', async () => {
+  await test.step('with liked characters', async () => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
@@ -4988,6 +4989,124 @@ Deno.test('/collection sum', async (test) => {
             _id: '2',
             characterId: 'anilist:2',
             mediaId: 'anilist:0',
+            rating: 1,
+          },
+        ] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.sum({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      const t = [
+        '1<:smolstar:1107503653956374638> — **2 characters** — 1 <:liked:1110491720375873567>(1)',
+        '2<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '3<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '4<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '5<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+      ];
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: t.join('\n'),
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+
+      getInventoryStub.restore();
+      getUserCharactersStub.restore();
+    }
+  });
+
+  await test.step('with liked media', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () =>
+        ({
+          party: {},
+          user: { likes: [{ mediaId: 'anilist:0' }] },
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            _id: '1',
+            characterId: 'anilist:1',
+            mediaId: 'anilist:0',
+            rating: 1,
+          },
+          {
+            _id: '2',
+            characterId: 'anilist:2',
+            mediaId: 'anilist:10',
             rating: 1,
           },
         ] as any,
@@ -5187,6 +5306,1378 @@ Deno.test('/collection sum', async (test) => {
 
       getInventoryStub.restore();
       getUserCharactersStub.restore();
+    }
+  });
+});
+
+Deno.test('/collection show', async (test) => {
+  await test.step('normal', async () => {
+    const media: DisaggregatedMedia[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+        characters: [{ role: CharacterRole.Main, characterId: 'anilist:11' }],
+      },
+      {
+        id: '2',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+        characters: [{ role: CharacterRole.Main, characterId: 'anilist:12' }],
+      },
+      {
+        id: '3',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 3',
+        },
+        characters: [{ role: CharacterRole.Main, characterId: 'anilist:13' }],
+      },
+      {
+        id: '4',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 4',
+        },
+        characters: [{ role: CharacterRole.Main, characterId: 'anilist:14' }],
+      },
+      {
+        id: '5',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 5',
+        },
+        characters: [{ role: CharacterRole.Main, characterId: 'anilist:15' }],
+      },
+      {
+        id: '6',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 6',
+        },
+        characters: [{ role: CharacterRole.Main, characterId: 'anilist:16' }],
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({ likes: [] }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          { characterId: 'anilist:11', mediaId: 'anilist:1' },
+          { characterId: 'anilist:12', mediaId: 'anilist:2' },
+          { characterId: 'anilist:13', mediaId: 'anilist:3' },
+          { characterId: 'anilist:14', mediaId: 'anilist:4' },
+          { characterId: 'anilist:15', mediaId: 'anilist:5' },
+          { characterId: 'anilist:15', mediaId: 'anilist:6' },
+        ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'showcase=user_id=1=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/2',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'showcase=user_id=1=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [{
+                inline: false,
+                name: 'title 1',
+                value: '~~100% — 1 / 1~~',
+              }, {
+                inline: false,
+                name: 'title 2',
+                value: '~~100% — 1 / 1~~',
+              }, {
+                inline: false,
+                name: 'title 3',
+                value: '~~100% — 1 / 1~~',
+              }, {
+                inline: false,
+                name: 'title 4',
+                value: '~~100% — 1 / 1~~',
+              }, {
+                inline: false,
+                name: 'title 5',
+                value: '~~100% — 1 / 1~~',
+              }],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mediaStub.restore();
+      getUserStub.restore();
+      getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
+    }
+  });
+
+  await test.step('sort by owned', async () => {
+    const media: DisaggregatedMedia[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+        characters: [
+          { role: CharacterRole.Main, characterId: 'anilist:11' },
+          { role: CharacterRole.Main, characterId: 'anilist:12' },
+          { role: CharacterRole.Main, characterId: 'anilist:13' },
+        ],
+      },
+      {
+        id: '2',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+        characters: [
+          { role: CharacterRole.Main, characterId: 'anilist:14' },
+          { role: CharacterRole.Main, characterId: 'anilist:15' },
+        ],
+      },
+      {
+        id: '3',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 3',
+        },
+        characters: [
+          { role: CharacterRole.Main, characterId: 'anilist:16' },
+          { role: CharacterRole.Main, characterId: 'anilist:17' },
+        ],
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({ likes: [] }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          { characterId: 'anilist:11', mediaId: 'anilist:1' },
+          { characterId: 'anilist:14', mediaId: 'anilist:2' },
+          { characterId: 'anilist:15', mediaId: 'anilist:2' },
+          { characterId: 'anilist:16', mediaId: 'anilist:3' },
+        ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'showcase=user_id=0=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'showcase=user_id=0=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [{
+                inline: false,
+                name: 'title 2',
+                value: '~~100% — 2 / 2~~',
+              }, {
+                inline: false,
+                name: 'title 1',
+                value: '33% — 1 / 3',
+              }, {
+                inline: false,
+                name: 'title 3',
+                value: '50% — 1 / 2',
+              }],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mediaStub.restore();
+      getUserStub.restore();
+      getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
+    }
+  });
+
+  await test.step('sort by liked then owned', async () => {
+    const media: DisaggregatedMedia[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+        characters: [
+          { role: CharacterRole.Main, characterId: 'anilist:11' },
+        ],
+      },
+      {
+        id: '2',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+        characters: [
+          { role: CharacterRole.Main, characterId: 'anilist:12' },
+          { role: CharacterRole.Main, characterId: 'anilist:13' },
+          { role: CharacterRole.Main, characterId: 'anilist:14' },
+        ],
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          likes: [
+            { mediaId: 'anilist:1' },
+          ],
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          { characterId: 'anilist:11', mediaId: 'anilist:1' },
+          { characterId: 'anilist:12', mediaId: 'anilist:2' },
+          { characterId: 'anilist:13', mediaId: 'anilist:2' },
+          { characterId: 'anilist:14', mediaId: 'anilist:2' },
+        ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'showcase=user_id=0=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'showcase=user_id=0=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [{
+                inline: false,
+                name: 'title 1 <:liked:1110491720375873567>',
+                value: '~~100% — 1 / 1~~',
+              }, {
+                inline: false,
+                name: 'title 2',
+                value: '~~100% — 3 / 3~~',
+              }],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mediaStub.restore();
+      getUserStub.restore();
+      getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
+    }
+  });
+
+  await test.step('aggregate liked media relations', async () => {
+    const media: DisaggregatedMedia[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+        popularity: 2000,
+        characters: [{ role: CharacterRole.Main, characterId: 'anilist:11' }],
+        relations: [{ relation: MediaRelation.Parent, mediaId: '2' }],
+      },
+      {
+        id: '2',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+        popularity: 1000,
+        characters: [{ role: CharacterRole.Main, characterId: 'anilist:12' }],
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          likes: [
+            { mediaId: 'anilist:1' },
+          ],
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          { characterId: 'anilist:11', mediaId: 'anilist:1' },
+          { characterId: 'anilist:12', mediaId: 'anilist:2' },
+        ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'showcase=user_id=0=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'showcase=user_id=0=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [{
+                inline: false,
+                name: 'title 1 <:liked:1110491720375873567>',
+                value: '~~100% — 1 / 1~~',
+              }, {
+                inline: false,
+                name: 'title 2 <:liked:1110491720375873567>',
+                value: '~~100% — 1 / 1~~',
+              }],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mediaStub.restore();
+      getUserStub.restore();
+      mongoClientStub.restore();
+      getUserCharactersStub.restore();
+      getMediaCharactersStub.restore();
+    }
+  });
+
+  await test.step('filter out background characters', async () => {
+    const media: DisaggregatedMedia[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+        characters: [
+          { role: CharacterRole.Supporting, characterId: 'anilist:11' },
+          { role: CharacterRole.Main, characterId: 'anilist:12' },
+          { role: CharacterRole.Background, characterId: 'anilist:13' },
+          { role: CharacterRole.Background, characterId: 'anilist:14' },
+        ],
+      },
+      {
+        id: '2',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+        characters: [
+          { role: CharacterRole.Main, characterId: 'anilist:15' },
+          { role: CharacterRole.Background, characterId: 'anilist:16' },
+        ],
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({ likes: [] }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          { characterId: 'anilist:11', mediaId: 'anilist:1' },
+          { characterId: 'anilist:12', mediaId: 'anilist:1' },
+          { characterId: 'anilist:13', mediaId: 'anilist:1' },
+          { characterId: 'anilist:16', mediaId: 'anilist:2' },
+        ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'showcase=user_id=0=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'showcase=user_id=0=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [{
+                inline: false,
+                name: 'title 1',
+                value: '~~100% — 2 / 2~~',
+              }, {
+                inline: false,
+                name: 'title 2',
+                value: '0% — 0 / 1',
+              }],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mediaStub.restore();
+      getUserStub.restore();
+      getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
+    }
+  });
+
+  await test.step('owned by others', async () => {
+    const media: DisaggregatedMedia[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+        characters: [
+          { role: CharacterRole.Main, characterId: 'anilist:11' },
+          { role: CharacterRole.Main, characterId: 'anilist:12' },
+          { role: CharacterRole.Background, characterId: 'anilist:13' },
+        ],
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({ likes: [] }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          { characterId: 'anilist:11', mediaId: 'anilist:1' },
+        ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () =>
+        [
+          {
+            characterId: 'anilist:11',
+            mediaId: 'anilist:1',
+            userId: 'user_id',
+          },
+          {
+            characterId: 'anilist:12',
+            mediaId: 'anilist:1',
+            userId: 'another_ser_id',
+          },
+          {
+            characterId: 'anilist:13',
+            mediaId: 'anilist:1',
+            userId: 'another_ser_id',
+          },
+        ] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'showcase=user_id=0=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'showcase=user_id=0=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [{
+                inline: false,
+                name: 'title 1',
+                value: '_1 owned by other users!_\n50% — 1 / 2',
+              }],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mediaStub.restore();
+      getUserStub.restore();
+      getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
+    }
+  });
+
+  await test.step('no logs (Self)', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({ likes: [] }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () => [] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              components: [
+                {
+                  custom_id: 'gacha=user_id',
+                  label: '/gacha',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+              type: 1,
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description: "You don't have any characters",
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mongoClientStub.restore();
+      getUserStub.restore();
+      getUserCharactersStub.restore();
+      getMediaCharactersStub.restore();
+    }
+  });
+
+  await test.step('no logs (Dave)', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({ likes: [] }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () => [] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'another_user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+        nick: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: "<@another_user_id> doesn't have any characters",
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mongoClientStub.restore();
+      getUserStub.restore();
+      getUserCharactersStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 });
@@ -6062,8 +7553,8 @@ Deno.test('/likeall', async (test) => {
             {
               type: 'rich',
               title: 'title',
-              image: {
-                url: 'http://localhost:8000/external/',
+              thumbnail: {
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
           ],
@@ -6187,8 +7678,8 @@ Deno.test('/likeall', async (test) => {
             {
               type: 'rich',
               title: 'title',
-              image: {
-                url: 'http://localhost:8000/external/',
+              thumbnail: {
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
           ],
@@ -7283,7 +8774,8 @@ Deno.test('/logs', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    const now = new Date('2024-04-10T11:30:29.172Z');
+    const timeStub = new FakeTime(now);
 
     const fetchStub = stub(
       utils,
@@ -7302,17 +8794,17 @@ Deno.test('/logs', async (test) => {
       'getUserCharacters',
       () =>
         [
-          { characterId: 'anilist:1', rating: 4 },
-          { characterId: 'anilist:2', rating: 4 },
-          { characterId: 'anilist:3', rating: 4 },
-          { characterId: 'anilist:4', rating: 4 },
-          { characterId: 'anilist:5', rating: 4 },
-          { characterId: 'anilist:6', rating: 4 },
-          { characterId: 'anilist:7', rating: 4 },
-          { characterId: 'anilist:8', rating: 4 },
-          { characterId: 'anilist:9', rating: 4 },
-          { characterId: 'anilist:10', rating: 4 },
-          { characterId: 'anilist:11', rating: 4 },
+          { characterId: 'anilist:1', rating: 4, createdAt: now },
+          { characterId: 'anilist:2', rating: 4, createdAt: now },
+          { characterId: 'anilist:3', rating: 4, createdAt: now },
+          { characterId: 'anilist:4', rating: 4, createdAt: now },
+          { characterId: 'anilist:5', rating: 4, createdAt: now },
+          { characterId: 'anilist:6', rating: 4, createdAt: now },
+          { characterId: 'anilist:7', rating: 4, createdAt: now },
+          { characterId: 'anilist:8', rating: 4, createdAt: now },
+          { characterId: 'anilist:9', rating: 4, createdAt: now },
+          { characterId: 'anilist:10', rating: 4, createdAt: now },
+          { characterId: 'anilist:11', rating: 4, createdAt: now },
         ] as any,
     );
 
@@ -7375,16 +8867,16 @@ Deno.test('/logs', async (test) => {
             {
               type: 'rich',
               description: [
-                '4<:smolstar:1107503653956374638> character 11',
-                '4<:smolstar:1107503653956374638> character 10',
-                '4<:smolstar:1107503653956374638> character 9',
-                '4<:smolstar:1107503653956374638> character 8',
-                '4<:smolstar:1107503653956374638> character 7',
-                '4<:smolstar:1107503653956374638> character 6',
-                '4<:smolstar:1107503653956374638> character 5',
-                '4<:smolstar:1107503653956374638> character 4',
-                '4<:smolstar:1107503653956374638> character 3',
-                '4<:smolstar:1107503653956374638> character 2',
+                '4<:smolstar:1107503653956374638> character 11 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 10 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 9 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 8 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 7 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 6 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 5 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 4 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 3 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> character 2 <t:1712748629:R>',
               ].join('\n'),
             },
           ],
@@ -7485,7 +8977,8 @@ Deno.test('/logs', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    const now = new Date('2024-04-10T11:30:29.172Z');
+    const timeStub = new FakeTime(now);
 
     const fetchStub = stub(
       utils,
@@ -7504,17 +8997,72 @@ Deno.test('/logs', async (test) => {
       'getUserCharacters',
       () =>
         [
-          { characterId: 'anilist:1', nickname: 'nickname 1', rating: 4 },
-          { characterId: 'anilist:2', nickname: 'nickname 2', rating: 4 },
-          { characterId: 'anilist:3', nickname: 'nickname 3', rating: 4 },
-          { characterId: 'anilist:4', nickname: 'nickname 4', rating: 4 },
-          { characterId: 'anilist:5', nickname: 'nickname 5', rating: 4 },
-          { characterId: 'anilist:6', nickname: 'nickname 6', rating: 4 },
-          { characterId: 'anilist:7', nickname: 'nickname 7', rating: 4 },
-          { characterId: 'anilist:8', nickname: 'nickname 8', rating: 4 },
-          { characterId: 'anilist:9', nickname: 'nickname 9', rating: 4 },
-          { characterId: 'anilist:10', nickname: 'nickname 10', rating: 4 },
-          { characterId: 'anilist:11', nickname: 'nickname 11', rating: 4 },
+          {
+            characterId: 'anilist:1',
+            rating: 4,
+            nickname: 'nickname 1',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:2',
+            rating: 4,
+            nickname: 'nickname 2',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:3',
+            rating: 4,
+            nickname: 'nickname 3',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:4',
+            rating: 4,
+            nickname: 'nickname 4',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:5',
+            rating: 4,
+            nickname: 'nickname 5',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:6',
+            rating: 4,
+            nickname: 'nickname 6',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:7',
+            rating: 4,
+            nickname: 'nickname 7',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:8',
+            rating: 4,
+            nickname: 'nickname 8',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:9',
+            rating: 4,
+            nickname: 'nickname 9',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:10',
+            rating: 4,
+            nickname: 'nickname 10',
+            createdAt: now,
+          },
+          {
+            characterId: 'anilist:11',
+            rating: 4,
+            nickname: 'nickname 11',
+            createdAt: now,
+          },
         ] as any,
     );
 
@@ -7577,16 +9125,16 @@ Deno.test('/logs', async (test) => {
             {
               type: 'rich',
               description: [
-                '4<:smolstar:1107503653956374638> nickname 11',
-                '4<:smolstar:1107503653956374638> nickname 10',
-                '4<:smolstar:1107503653956374638> nickname 9',
-                '4<:smolstar:1107503653956374638> nickname 8',
-                '4<:smolstar:1107503653956374638> nickname 7',
-                '4<:smolstar:1107503653956374638> nickname 6',
-                '4<:smolstar:1107503653956374638> nickname 5',
-                '4<:smolstar:1107503653956374638> nickname 4',
-                '4<:smolstar:1107503653956374638> nickname 3',
-                '4<:smolstar:1107503653956374638> nickname 2',
+                '4<:smolstar:1107503653956374638> nickname 11 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 10 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 9 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 8 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 7 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 6 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 5 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 4 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 3 <t:1712748629:R>',
+                '4<:smolstar:1107503653956374638> nickname 2 <t:1712748629:R>',
               ].join('\n'),
             },
           ],

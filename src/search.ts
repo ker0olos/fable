@@ -22,18 +22,10 @@ import {
 } from '~/src/types.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
+
 import i18n from '~/src/i18n.ts';
 
 export const idPrefix = 'id=';
-
-export const relationFilter = [
-  MediaRelation.Parent,
-  MediaRelation.Contains,
-  MediaRelation.Prequel,
-  MediaRelation.Sequel,
-  MediaRelation.SideStory,
-  MediaRelation.SpinOff,
-];
 
 const musicUrlRegex = /youtube|spotify/;
 
@@ -116,7 +108,7 @@ function mediaMessage(media: Media): discord.Message {
   const musicGroup: discord.Component[] = [];
 
   const message = new discord.Message()
-    .addEmbed(mediaEmbed(media, titles));
+    .addEmbed(mediaEmbed(media));
 
   // character embeds
   // sort characters by popularity
@@ -201,14 +193,40 @@ function mediaMessage(media: Media): discord.Message {
 }
 
 function mediaEmbed(
-  media: Media,
-  titles: string[],
+  media: Media | DisaggregatedMedia,
+  options?: {
+    mode?: 'thumbnail' | 'full';
+  },
 ): discord.Embed {
-  return new discord.Embed()
-    .setTitle(utils.wrap(titles[0]))
+  options ??= {
+    mode: 'full',
+  };
+
+  const title = packs.aliasToArray(media.title)[0];
+
+  const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
+    ? 25
+    : 32;
+
+  const titleWrapped = utils.wrap(title, wrapWidth);
+
+  const embed = new discord.Embed();
+
+  if (options.mode === 'full') {
+    embed.setImage({ url: media.images?.[0]?.url });
+  } else {
+    embed.setThumbnail({ url: media.images?.[0]?.url });
+  }
+
+  const description = options.mode === 'thumbnail'
+    ? utils.truncate(utils.decodeDescription(media.description), 128)
+      ?.replaceAll('\n', ' ')
+    : utils.decodeDescription(media.description);
+
+  return embed
+    .setTitle(titleWrapped)
     .setAuthor({ name: packs.formatToString(media.format) })
-    .setDescription(utils.decodeDescription(media.description))
-    .setImage({ url: media.images?.[0]?.url });
+    .setDescription(description);
 }
 
 function mediaDebugMessage(
@@ -741,13 +759,10 @@ function mediaFound(
 
       const media = [
         parent,
-        ...(parent.relations?.edges?.filter(({ relation }) =>
-          // deno-lint-ignore no-non-null-assertion
-          relationFilter.includes(relation!)
-        ).map(({ node }) => node) ?? []),
+        ...(parent.relations?.edges?.map(({ node }) => node) ?? []),
       ];
 
-      const characters = await db.findMediaCharacters(
+      const characters = await db.getMediaCharacters(
         guildId,
         media.map(({ packId, id }) => `${packId}:${id}`),
       );
