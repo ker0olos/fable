@@ -950,3 +950,154 @@ describe('db.getUserCharacters()', () => {
     assertEquals(characters.length, 0);
   });
 });
+
+describe('db.getMediaCharacters()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
+  });
+
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
+
+  it('2 character - 1 media (exists)', async () => {
+    const { insertedId: inventoryInsertedId } = await client.inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+      } as any);
+
+    const { insertedId: character1InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        inventoryId: inventoryInsertedId,
+        characterId: 'character-1',
+        mediaId: 'media-id',
+      } as any);
+
+    const { insertedId: character2InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        inventoryId: inventoryInsertedId,
+        characterId: 'character-2',
+        mediaId: 'media-id',
+      } as any);
+
+    const { insertedId: _character3InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        inventoryId: inventoryInsertedId,
+        characterId: 'character-3',
+        mediaId: 'another-media-id',
+      } as any);
+
+    const characters = await db.getMediaCharacters('guild-id', [
+      'media-id',
+    ]);
+
+    assertEquals(characters.length, 2);
+
+    assertEquals(characters[0]!, {
+      _id: character1InsertedId,
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      characterId: 'character-1',
+      mediaId: 'media-id',
+    } as any);
+
+    assertEquals(characters[1]!, {
+      _id: character2InsertedId,
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      characterId: 'character-2',
+      mediaId: 'media-id',
+    } as any);
+  });
+
+  it('2 character - 2 media (exists)', async () => {
+    const { insertedId: inventoryInsertedId } = await client.inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+      } as any);
+
+    const { insertedId: character1InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        inventoryId: inventoryInsertedId,
+        characterId: 'character-1',
+        mediaId: 'media-id',
+      } as any);
+
+    const { insertedId: character2InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        inventoryId: inventoryInsertedId,
+        characterId: 'character-2',
+        mediaId: 'media-id',
+      } as any);
+
+    const { insertedId: character3InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        inventoryId: inventoryInsertedId,
+        characterId: 'character-3',
+        mediaId: 'another-media-id',
+      } as any);
+
+    const characters = await db.getMediaCharacters('guild-id', [
+      'media-id',
+      'another-media-id',
+    ]);
+
+    assertEquals(characters.length, 3);
+
+    assertEquals(characters[0]!, {
+      _id: character1InsertedId,
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      characterId: 'character-1',
+      mediaId: 'media-id',
+    } as any);
+
+    assertEquals(characters[1]!, {
+      _id: character2InsertedId,
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      characterId: 'character-2',
+      mediaId: 'media-id',
+    } as any);
+
+    assertEquals(characters[2]!, {
+      _id: character3InsertedId,
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      characterId: 'character-3',
+      mediaId: 'another-media-id',
+    } as any);
+  });
+
+  it('2 media (nothing found)', async () => {
+    const characters = await db.getMediaCharacters('guild-id', [
+      'media-id',
+      'another-media-id',
+    ]);
+
+    assertEquals(characters.length, 0);
+  });
+});

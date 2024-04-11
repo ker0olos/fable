@@ -95,9 +95,9 @@
   "trade-with-yourself": "You can't trade with yourself!",
   "gift-with-yourself": "You can't gift yourself!",
 
-  "trade-you-not-owned": "You don't have {0}",
+  "trade-you-not-owned": "You don't own {0}",
   "trade-you-party-member": "{0} is in your party and can't be traded",
-  "trade-user-not-owned": "{0} doesn't have {1}",
+  "trade-user-not-owned": "{0} doesn't own {1}",
   "trade-user-party-member": "{0} is in {1}'s party and can't be traded",
 
   "give-you-party-members": "Some of those characters are currently in your party",
@@ -123,6 +123,8 @@
   "steal-cooldown": "Steal is on cooldown, try again {0}",
   "steal-try-again": "You can try again {0}",
   "steal-unexpected": "Something happened and affected your chances of stealing **{0}**, Please try again!",
+
+  "owned-by-others": "_{0} owned by other users!_",
 
   "global-maintenance": "Fable is under maintenance, check back in a few hours!",
   "maintenance-gacha": "Gacha is under maintenance, try again later!",

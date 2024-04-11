@@ -82,13 +82,15 @@ export const newInventory = (
 
 export async function getUser(
   userId: string,
+  db?: Mongo,
+  manual?: boolean,
 ): Promise<WithId<Schema.User>> {
-  const db = new Mongo();
+  db ??= new Mongo();
 
   let result: WithId<Schema.User>;
 
   try {
-    await db.connect();
+    !manual && await db.connect();
 
     // deno-lint-ignore no-non-null-assertion
     result = (await db.users().findOneAndUpdate(
@@ -97,7 +99,7 @@ export async function getUser(
       { upsert: true, returnDocument: 'after' },
     ))!;
   } finally {
-    await db.close();
+    !manual && await db.close();
   }
 
   return result;
@@ -457,19 +459,21 @@ export async function getActiveUsersIfLiked(
 export async function getUserCharacters(
   userId: string,
   guildId: string,
+  db?: Mongo,
+  manual?: boolean,
 ): Promise<WithId<Schema.Character>[]> {
-  const db = new Mongo();
+  db ??= new Mongo();
 
   let result: WithId<Schema.Character>[];
 
   try {
-    await db.connect();
+    !manual && await db.connect();
 
     result = await db.characters().find({ userId, guildId }, {
       sort: { createdAt: 1 },
     }).toArray();
   } finally {
-    await db.close();
+    !manual && await db.close();
   }
 
   return result;
@@ -477,18 +481,44 @@ export async function getUserCharacters(
 
 export async function getGuildCharacters(
   guildId: string,
+  db?: Mongo,
+  manual?: boolean,
 ): Promise<string[]> {
-  const db = new Mongo();
+  db ??= new Mongo();
 
   let result: WithId<Schema.Character>[];
 
   try {
-    await db.connect();
+    !manual && await db.connect();
 
     result = await db.characters().find({ guildId }).toArray();
   } finally {
-    await db.close();
+    !manual && await db.close();
   }
 
   return result.map(({ characterId }) => characterId);
+}
+
+export async function getMediaCharacters(
+  guildId: string,
+  mediaIds: string[],
+  db?: Mongo,
+  manual?: boolean,
+): Promise<Schema.Character[]> {
+  db ??= new Mongo();
+
+  let results: Schema.Character[];
+
+  try {
+    !manual && await db.connect();
+
+    results = await db.characters().find({
+      mediaId: { $in: mediaIds },
+      guildId,
+    }).toArray();
+  } finally {
+    !manual && await db.close();
+  }
+
+  return results;
 }

@@ -5377,6 +5377,17 @@ Deno.test('/collection show', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getUserStub = stub(
       db,
       'getUser',
@@ -5395,6 +5406,12 @@ Deno.test('/collection show', async (test) => {
           { characterId: 'anilist:15', mediaId: 'anilist:5' },
           { characterId: 'anilist:15', mediaId: 'anilist:6' },
         ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -5478,23 +5495,23 @@ Deno.test('/collection show', async (test) => {
               fields: [{
                 inline: false,
                 name: 'title 1',
-                value: '<:fable:1083677739313274915> ~~100% — 1 / 1~~',
+                value: '~~100% — 1 / 1~~',
               }, {
                 inline: false,
                 name: 'title 2',
-                value: '<:fable:1083677739313274915> ~~100% — 1 / 1~~',
+                value: '~~100% — 1 / 1~~',
               }, {
                 inline: false,
                 name: 'title 3',
-                value: '<:fable:1083677739313274915> ~~100% — 1 / 1~~',
+                value: '~~100% — 1 / 1~~',
               }, {
                 inline: false,
                 name: 'title 4',
-                value: '<:fable:1083677739313274915> ~~100% — 1 / 1~~',
+                value: '~~100% — 1 / 1~~',
               }, {
                 inline: false,
                 name: 'title 5',
-                value: '<:fable:1083677739313274915> ~~100% — 1 / 1~~',
+                value: '~~100% — 1 / 1~~',
               }],
             },
           ],
@@ -5511,6 +5528,8 @@ Deno.test('/collection show', async (test) => {
       mediaStub.restore();
       getUserStub.restore();
       getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 
@@ -5563,6 +5582,17 @@ Deno.test('/collection show', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getUserStub = stub(
       db,
       'getUser',
@@ -5579,6 +5609,12 @@ Deno.test('/collection show', async (test) => {
           { characterId: 'anilist:15', mediaId: 'anilist:2' },
           { characterId: 'anilist:16', mediaId: 'anilist:3' },
         ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -5662,7 +5698,7 @@ Deno.test('/collection show', async (test) => {
               fields: [{
                 inline: false,
                 name: 'title 2',
-                value: '<:fable:1083677739313274915> ~~100% — 2 / 2~~',
+                value: '~~100% — 2 / 2~~',
               }, {
                 inline: false,
                 name: 'title 1',
@@ -5687,6 +5723,8 @@ Deno.test('/collection show', async (test) => {
       mediaStub.restore();
       getUserStub.restore();
       getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 
@@ -5726,6 +5764,17 @@ Deno.test('/collection show', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getUserStub = stub(
       db,
       'getUser',
@@ -5747,6 +5796,12 @@ Deno.test('/collection show', async (test) => {
           { characterId: 'anilist:13', mediaId: 'anilist:2' },
           { characterId: 'anilist:14', mediaId: 'anilist:2' },
         ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -5830,11 +5885,11 @@ Deno.test('/collection show', async (test) => {
               fields: [{
                 inline: false,
                 name: 'title 1 <:liked:1110491720375873567>',
-                value: '<:fable:1083677739313274915> ~~100% — 1 / 1~~',
+                value: '~~100% — 1 / 1~~',
               }, {
                 inline: false,
                 name: 'title 2',
-                value: '<:fable:1083677739313274915> ~~100% — 3 / 3~~',
+                value: '~~100% — 3 / 3~~',
               }],
             },
           ],
@@ -5851,6 +5906,8 @@ Deno.test('/collection show', async (test) => {
       mediaStub.restore();
       getUserStub.restore();
       getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 
@@ -5887,6 +5944,17 @@ Deno.test('/collection show', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getUserStub = stub(
       db,
       'getUser',
@@ -5906,6 +5974,12 @@ Deno.test('/collection show', async (test) => {
           { characterId: 'anilist:11', mediaId: 'anilist:1' },
           { characterId: 'anilist:12', mediaId: 'anilist:2' },
         ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -5989,11 +6063,11 @@ Deno.test('/collection show', async (test) => {
               fields: [{
                 inline: false,
                 name: 'title 1 <:liked:1110491720375873567>',
-                value: '<:fable:1083677739313274915> ~~100% — 1 / 1~~',
+                value: '~~100% — 1 / 1~~',
               }, {
                 inline: false,
                 name: 'title 2 <:liked:1110491720375873567>',
-                value: '<:fable:1083677739313274915> ~~100% — 1 / 1~~',
+                value: '~~100% — 1 / 1~~',
               }],
             },
           ],
@@ -6009,7 +6083,9 @@ Deno.test('/collection show', async (test) => {
       isDisabledStub.restore();
       mediaStub.restore();
       getUserStub.restore();
+      mongoClientStub.restore();
       getUserCharactersStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 
@@ -6051,6 +6127,17 @@ Deno.test('/collection show', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getUserStub = stub(
       db,
       'getUser',
@@ -6066,6 +6153,193 @@ Deno.test('/collection show', async (test) => {
           { characterId: 'anilist:12', mediaId: 'anilist:1' },
           { characterId: 'anilist:13', mediaId: 'anilist:1' },
           { characterId: 'anilist:16', mediaId: 'anilist:2' },
+        ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () => [] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.showcase({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'showcase=user_id=0=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'showcase=user_id=0=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [{
+                inline: false,
+                name: 'title 1',
+                value: '~~100% — 2 / 2~~',
+              }, {
+                inline: false,
+                name: 'title 2',
+                value: '0% — 0 / 1',
+              }],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      mediaStub.restore();
+      getUserStub.restore();
+      getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
+    }
+  });
+
+  await test.step('owned by others', async () => {
+    const media: DisaggregatedMedia[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+        characters: [
+          { role: CharacterRole.Main, characterId: 'anilist:11' },
+          { role: CharacterRole.Main, characterId: 'anilist:12' },
+          { role: CharacterRole.Background, characterId: 'anilist:13' },
+        ],
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({ likes: [] }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          { characterId: 'anilist:11', mediaId: 'anilist:1' },
+        ] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
+      () =>
+        [
+          {
+            characterId: 'anilist:11',
+            mediaId: 'anilist:1',
+            userId: 'user_id',
+          },
+          {
+            characterId: 'anilist:12',
+            mediaId: 'anilist:1',
+            userId: 'another_ser_id',
+          },
+          {
+            characterId: 'anilist:13',
+            mediaId: 'anilist:1',
+            userId: 'another_ser_id',
+          },
         ] as any,
     );
 
@@ -6150,11 +6424,7 @@ Deno.test('/collection show', async (test) => {
               fields: [{
                 inline: false,
                 name: 'title 1',
-                value: '<:fable:1083677739313274915> ~~100% — 2 / 2~~',
-              }, {
-                inline: false,
-                name: 'title 2',
-                value: '0% — 0 / 1',
+                value: '_1 owned by other users!_\n50% — 1 / 2',
               }],
             },
           ],
@@ -6171,6 +6441,8 @@ Deno.test('/collection show', async (test) => {
       mediaStub.restore();
       getUserStub.restore();
       getUserCharactersStub.restore();
+      mongoClientStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 
@@ -6183,6 +6455,17 @@ Deno.test('/collection show', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getUserStub = stub(
       db,
       'getUser',
@@ -6192,6 +6475,12 @@ Deno.test('/collection show', async (test) => {
     const getUserCharactersStub = stub(
       db,
       'getUserCharacters',
+      () => [] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
       () => [] as any,
     );
 
@@ -6273,9 +6562,10 @@ Deno.test('/collection show', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      mongoClientStub.restore();
       getUserStub.restore();
       getUserCharactersStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 
@@ -6288,6 +6578,17 @@ Deno.test('/collection show', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getUserStub = stub(
       db,
       'getUser',
@@ -6297,6 +6598,12 @@ Deno.test('/collection show', async (test) => {
     const getUserCharactersStub = stub(
       db,
       'getUserCharacters',
+      () => [] as any,
+    );
+
+    const getMediaCharactersStub = stub(
+      db,
+      'getMediaCharacters',
       () => [] as any,
     );
 
@@ -6367,9 +6674,10 @@ Deno.test('/collection show', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-
+      mongoClientStub.restore();
       getUserStub.restore();
       getUserCharactersStub.restore();
+      getMediaCharactersStub.restore();
     }
   });
 });

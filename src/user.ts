@@ -8,7 +8,7 @@ import packs from '~/src/packs.ts';
 
 import Rating from '~/src/rating.ts';
 
-import { default as srch, relationFilter } from '~/src/search.ts';
+import { default as srch } from '~/src/search.ts';
 
 import * as discord from '~/src/discord.ts';
 
@@ -776,10 +776,7 @@ function list({
 
         media = [
           parent,
-          ...(parent.relations?.edges?.filter(({ relation }) =>
-            // deno-lint-ignore no-non-null-assertion
-            relationFilter.includes(relation!)
-          ).map(({ node }) => node) ?? []),
+          ...(parent.relations?.edges?.map(({ node }) => node) ?? []),
         ];
 
         const relationsIds = media.map(({ packId, id }) => `${packId}:${id}`);
@@ -1247,8 +1244,16 @@ function showcase({
       const likedMedia: Record<string, boolean> = {};
       const ownedMedia: Record<string, string[]> = {};
 
-      const user = await db.getUser(userId);
-      const characters = await db.getUserCharacters(userId, guildId);
+      const mongo = await db.newMongo().connect();
+
+      const user = await db.getUser(userId, mongo, true);
+
+      const characters = await db.getUserCharacters(
+        userId,
+        guildId,
+        mongo,
+        true,
+      );
 
       user.likes?.forEach(({ mediaId }) =>
         mediaId && (likedMedia[mediaId] = true)
@@ -1349,6 +1354,13 @@ function showcase({
         return message.patch(token);
       }
 
+      const mediaAllOwned = await db.getMediaCharacters(
+        guildId,
+        chunks[index].map(({ packId, id }) => `${packId}:${id}`),
+      );
+
+      await mongo.close();
+
       chunks[index].forEach((media) => {
         const id = `${media.packId}:${media.id}`;
 
@@ -1363,14 +1375,31 @@ function showcase({
         const percent = Math.round((owned / total) * 100);
 
         // deno-lint-ignore prefer-ascii
-        const formatted = `${percent}% — ${owned} / ${total}`;
+        let formatted = `${percent}% — ${owned} / ${total}`;
+
+        // TODO TEST
+        const ownedByOthers = mediaAllOwned.filter((character) =>
+          character.mediaId === id &&
+          // deno-lint-ignore no-non-null-assertion
+          media.characters!.some(({ characterId }) =>
+            // TODO TEST
+            packs.ensureId(characterId, media.packId) === character.characterId
+          ) &&
+          character.userId !== userId
+        );
+
+        if (ownedByOthers.length) {
+          formatted = `${
+            i18n.get('owned-by-others', locale, ownedByOthers.length)
+          }\n${formatted}`;
+        } else if (percent >= 100) {
+          formatted = `~~${formatted}~~`;
+        }
 
         embed.addField({
           inline: false,
           name: `${title} ${liked ? discord.emotes.liked : ''}`.trim(),
-          value: percent >= 100
-            ? `${discord.emotes.fable} ~~${formatted}~~`
-            : formatted,
+          value: formatted,
         });
       });
 

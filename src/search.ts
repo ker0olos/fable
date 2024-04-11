@@ -22,18 +22,10 @@ import {
 } from '~/src/types.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
+
 import i18n from '~/src/i18n.ts';
 
 export const idPrefix = 'id=';
-
-export const relationFilter = [
-  MediaRelation.Parent,
-  MediaRelation.Contains,
-  MediaRelation.Prequel,
-  MediaRelation.Sequel,
-  MediaRelation.SideStory,
-  MediaRelation.SpinOff,
-];
 
 const musicUrlRegex = /youtube|spotify/;
 
@@ -767,13 +759,10 @@ function mediaFound(
 
       const media = [
         parent,
-        ...(parent.relations?.edges?.filter(({ relation }) =>
-          // deno-lint-ignore no-non-null-assertion
-          relationFilter.includes(relation!)
-        ).map(({ node }) => node) ?? []),
+        ...(parent.relations?.edges?.map(({ node }) => node) ?? []),
       ];
 
-      const characters = await db.findMediaCharacters(
+      const characters = await db.getMediaCharacters(
         guildId,
         media.map(({ packId, id }) => `${packId}:${id}`),
       );

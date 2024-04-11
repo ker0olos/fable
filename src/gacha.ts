@@ -41,15 +41,6 @@ export type Pull = {
 
 const lowest = 1000;
 
-export const relationFilter = [
-  MediaRelation.Parent,
-  MediaRelation.Contains,
-  MediaRelation.Prequel,
-  MediaRelation.Sequel,
-  // MediaRelation.SideStory,
-  // MediaRelation.SpinOff,
-];
-
 const variables: Variables = {
   roles: {
     10: CharacterRole.Main, // 10% for Main
@@ -315,10 +306,7 @@ async function pullAnimation(
 
   const mediaIds = [
     pull.media,
-    ...pull.media.relations?.edges?.filter(({ relation }) =>
-      // deno-lint-ignore no-non-null-assertion
-      relationFilter.includes(relation!)
-    ).map(({ node }) => node) ?? [],
+    ...pull.media.relations?.edges?.map(({ node }) => node) ?? [],
   ].map(({ packId, id }) => `${packId}:${id}`);
 
   const mediaTitles = packs.aliasToArray(pull.media.title);
