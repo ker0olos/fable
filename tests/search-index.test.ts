@@ -1,9 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
 
-import _vtubersManifest from '~/packs/vtubers/manifest.json' with {
-  type: 'json',
-};
-
 import { assertSnapshot } from '$std/testing/snapshot.ts';
 import { stub } from '$std/testing/mock.ts';
 
@@ -64,23 +60,6 @@ Deno.test('characters search', async (test) => {
       await assertSnapshot(
         test,
         await toString(searchIndex.searchCharacters('megumin', '')),
-      );
-    } finally {
-      listStub.restore();
-    }
-  });
-
-  await test.step('gura', async (test) => {
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-        { manifest: _vtubersManifest, _id: '_' },
-      ] as any));
-
-    try {
-      await assertSnapshot(
-        test,
-        await toString(searchIndex.searchCharacters('gura', '')),
       );
     } finally {
       listStub.restore();

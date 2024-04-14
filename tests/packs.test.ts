@@ -43,31 +43,7 @@ Deno.test('list', async (test) => {
 
       const pack = list[0];
 
-      assertEquals(list.length, 2);
-
-      assertValidManifest(pack.manifest);
-
-      await assertMonochromeSnapshot(test, pack);
-    } finally {
-      getGuildStub.restore();
-
-      delete packs.cachedGuilds['0'];
-    }
-  });
-
-  await test.step('vtubers', async (test) => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => ({ packs: [] }) as any,
-    );
-
-    try {
-      const list = await packs.all({ guildId: '0' });
-
-      const pack = list[1];
-
-      assertEquals(list.length, 2);
+      assertEquals(list.length, 1);
 
       assertValidManifest(pack.manifest);
 
