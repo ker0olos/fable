@@ -7,7 +7,7 @@ import {
   init as _initSentry,
 } from 'sentry';
 
-import { LRU } from 'lru';
+// import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
@@ -22,9 +22,9 @@ import {
   STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
 
-const TWENTY_MIB = 1024 * 1024 * 20;
+// const TEN_MIB = 1024 * 1024 * 10;
 
-const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
+// const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
 
 export enum ImageSize {
   Preview = 'preview',
@@ -397,16 +397,16 @@ function captureException(err: Error, opts?: {
 async function handleProxy(r: Request): Promise<Response> {
   const url = new URL(r.url);
 
-  const key = (url.pathname + url.search)
-    .substring(1);
+  // const key = (url.pathname + url.search)
+  //   .substring(1);
 
-  const hit = lru.get(key);
+  // const hit = lru.get(key);
 
-  if (hit) {
-    console.log(`cache hit: ${key}`);
+  // if (hit) {
+  //   console.log(`cache hit: ${key}`);
 
-    return new Response(hit.body, { headers: hit.headers });
-  }
+  //   return new Response(hit.body, { headers: hit.headers });
+  // }
 
   const imageUrl = decodeURIComponent(
     url.pathname
@@ -427,14 +427,14 @@ async function handleProxy(r: Request): Promise<Response> {
     },
   });
 
-  if (image.byteLength <= TWENTY_MIB) {
-    const v = {
-      body: image.buffer,
-      headers: response.headers,
-    };
+  // if (image.byteLength <= TEN_MIB) {
+  //   const v = {
+  //     body: image.buffer,
+  //     headers: response.headers,
+  //   };
 
-    lru.set(key, v);
-  }
+  //   lru.set(key, v);
+  // }
 
   return response;
 }

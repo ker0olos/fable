@@ -43,7 +43,9 @@ export const newGuild = (
     excluded: false,
     builtinsDisabled: false,
     discordId: guildId,
-    packIds: [],
+    packIds: [
+      'vtubers',
+    ],
   };
 
   omit?.forEach((key) => {

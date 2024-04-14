@@ -104,7 +104,7 @@ describe('db.getGuild()', () => {
       excluded: false,
       builtinsDisabled: false,
       discordId: 'guild-id',
-      packIds: [],
+      packIds: ['vtubers'],
     });
   });
 
