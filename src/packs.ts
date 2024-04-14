@@ -2,10 +2,6 @@ import _anilistManifest from '~/packs/anilist/manifest.json' with {
   type: 'json',
 };
 
-import _vtubersManifest from '~/packs/vtubers/manifest.json' with {
-  type: 'json',
-};
-
 import * as _anilist from '~/packs/anilist/mod.ts';
 
 import * as discord from '~/src/discord.ts';
@@ -38,7 +34,6 @@ import { NonFetalError } from '~/src/errors.ts';
 import type { Pack } from '~/db/schema.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
-const vtubersManifest = _vtubersManifest as Manifest;
 
 const cachedGuilds: Record<string, {
   packs: Pack[];
@@ -79,12 +74,8 @@ const packs = {
 async function all(
   { guildId, filter }: { guildId: string; filter?: boolean },
 ): Promise<(Pack[])> {
-  let builtins: Pack[] = [
-    // deno-lint-ignore no-explicit-any
-    { manifest: anilistManifest, _id: '_' } as any,
-    // deno-lint-ignore no-explicit-any
-    { manifest: vtubersManifest, _id: '_' } as any,
-  ];
+  // deno-lint-ignore no-explicit-any
+  const animePack = { manifest: anilistManifest, _id: '_' } as any as Pack;
 
   let cachedGuild = packs.cachedGuilds[guildId];
 
@@ -97,12 +88,7 @@ async function all(
       packs: _packs,
       builtinsDisabled: guild.builtinsDisabled,
       excluded: guild.excluded,
-      disables: new Map(
-        !guild.builtinsDisabled
-          // deno-lint-ignore no-non-null-assertion
-          ? vtubersManifest.conflicts!.map((id) => [id, true])
-          : undefined,
-      ),
+      disables: new Map(),
     };
 
     _packs
@@ -115,23 +101,19 @@ async function all(
 
   const _packs = cachedGuild.packs;
 
-  if (cachedGuild.builtinsDisabled) {
-    builtins = [];
-  }
-
   if (!config.communityPacks) {
     if (filter || cachedGuild.builtinsDisabled) {
       return [];
     }
 
-    return builtins;
+    return [animePack];
   }
 
   if (filter || cachedGuild.builtinsDisabled) {
     return _packs;
   }
 
-  return builtins.concat(_packs);
+  return [animePack, ..._packs];
 }
 
 function isDisabled(id: string, guildId: string): boolean {
