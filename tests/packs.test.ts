@@ -92,7 +92,7 @@ Deno.test('list', async (test) => {
   });
 });
 
-Deno.test('reserved ids', async () => {
+Deno.test('reserved ids', () => {
   const getGuildStub = stub(
     db,
     'getGuild',
@@ -100,11 +100,9 @@ Deno.test('reserved ids', async () => {
   );
 
   try {
-    const list = await packs.all({ guildId: '0' });
-
-    list.forEach(({ manifest }) => {
-      assertEquals(validate(manifest), {
-        errors: [`${manifest.id} is a reserved id`],
+    ['anilist', 'fable'].forEach((id) => {
+      assertEquals(validate({ id }), {
+        errors: [`${id} is a reserved id`],
       });
     });
   } finally {
