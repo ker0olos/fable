@@ -28,7 +28,7 @@ import index from '~/json/schema.json' with {
 
 import { Manifest } from '~/src/types.ts';
 
-const reservedIds = ['fable', 'anilist', 'vtubers'];
+const reservedIds = ['fable', 'anilist'];
 
 export const purgeReservedProps = (data: Manifest): Manifest => {
   const purged: any = {};
