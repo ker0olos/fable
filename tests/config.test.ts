@@ -50,6 +50,7 @@ Deno.test('init', async (test) => {
         'public_key',
         'mongo_uri',
         'notice_message',
+        '0',
       ]),
     );
 
@@ -69,6 +70,7 @@ Deno.test('init', async (test) => {
         stealing: true,
         synthesis: true,
         shop: true,
+        disableImagesProxy: false,
         communityPacks: true,
         communityPacksMaintainerAPI: true,
         communityPacksBrowseAPI: true,
@@ -140,7 +142,7 @@ Deno.test('init', async (test) => {
         '0',
         '0',
         '0',
-        '0',
+        '1',
       ]),
     );
 
@@ -160,6 +162,7 @@ Deno.test('init', async (test) => {
         stealing: false,
         synthesis: false,
         shop: false,
+        disableImagesProxy: true,
         communityPacks: false,
         communityPacksMaintainerAPI: false,
         communityPacksBrowseAPI: false,
