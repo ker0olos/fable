@@ -17,6 +17,8 @@ const config: {
   communityPacksBrowseAPI?: boolean;
   combat?: boolean;
   //
+  disableImagesProxy?: boolean;
+  //
   xmas?: boolean;
   fools?: boolean;
 } = {
@@ -37,6 +39,9 @@ const config: {
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
   combat: undefined,
+  //
+  disableImagesProxy: undefined,
+  //
   xmas: undefined,
   fools: undefined,
 };
@@ -89,6 +94,9 @@ export async function initConfig(): Promise<void> {
 
     config.combat = !Deno.env.has('COMBAT') ||
       Deno.env.get('COMBAT') === '1';
+
+    //
+    config.disableImagesProxy = Deno.env.get('DISABLE_IMAGES_PROXY') === '1';
 
     // holidays flags
     config.xmas = Deno.env.has('XMAS');

@@ -21,6 +21,7 @@ import {
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
+import config from '~/src/config.ts';
 
 // const TEN_MIB = 1024 * 1024 * 10;
 
@@ -412,6 +413,10 @@ async function handleProxy(r: Request): Promise<Response> {
     url.pathname
       .replace('/external/', ''),
   );
+
+  if (config.disableImagesProxy) {
+    return Response.redirect(imageUrl);
+  }
 
   const { format, image } = await proxy(
     imageUrl,
