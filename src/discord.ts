@@ -971,7 +971,7 @@ export class Message {
     // and it won't work if the initial message doesn't apply in those "100ms"
     // but it's the only workaround I can think of
     if (config.deploy) {
-      await utils.sleep(200 / 1000);
+      await utils.sleep(100 / 1000);
     }
 
     return this.#http(
