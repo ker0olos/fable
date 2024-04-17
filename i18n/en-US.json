@@ -260,7 +260,7 @@
   "help-page8-title": "Other Commands",
   "help-page9-title": "Admin Commands",
 
-  "community-packs-permission": "_> `/community` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._",
+  "community-packs-permission": "_> `/packs` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._",
   "make-your-own-pack": "> To create your own community pack visit <https://packs.deno.dev>",
 
   "/gacha": "start a new gacha pull",
