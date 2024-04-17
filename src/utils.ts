@@ -21,7 +21,6 @@ import {
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
-import config from '~/src/config.ts';
 
 // const TEN_MIB = 1024 * 1024 * 10;
 
