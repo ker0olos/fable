@@ -414,10 +414,6 @@ async function handleProxy(r: Request): Promise<Response> {
       .replace('/external/', ''),
   );
 
-  if (config.disableImagesProxy) {
-    return Response.redirect(imageUrl);
-  }
-
   const { format, image } = await proxy(
     imageUrl,
     // deno-lint-ignore no-explicit-any

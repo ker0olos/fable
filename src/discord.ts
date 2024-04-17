@@ -588,6 +588,7 @@ export class Embed {
 
     if (image.url || image.default) {
       if (
+        config.disableImagesProxy ||
         image.url?.startsWith('attachment://') ||
         (config.origin && image.url?.startsWith(config.origin) ||
           (!image.default && !image.proxy))
@@ -620,6 +621,7 @@ export class Embed {
 
     if (thumbnail.url || thumbnail.default) {
       if (
+        config.disableImagesProxy ||
         thumbnail.url?.startsWith('attachment://') ||
         (config.origin && thumbnail.url?.startsWith(config.origin) ||
           (!thumbnail.default && !thumbnail.proxy))
