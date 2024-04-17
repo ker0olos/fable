@@ -116,26 +116,30 @@ function sleep(secs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
-function fetchWithRetry(
+async function fetchWithRetry(
   input: RequestInfo | URL,
   init: RequestInit,
   n = 0,
 ): Promise<Response> {
-  return new Promise((resolve, reject) => {
-    fetch(input, init)
-      .then((result) => resolve(result))
-      .catch(async (err) => {
-        if (n > 3) {
-          return reject(err);
-        }
+  try {
+    const response = await fetch(input, init);
 
-        await sleep(0.5 * n);
+    if (response.status >= 400) {
+      throw new Error(`${response.status}:${response.statusText}`);
+    }
 
-        fetchWithRetry(input, init, n + 1)
-          .then(resolve)
-          .catch(reject);
-      });
-  });
+    return response;
+  } catch (err) {
+    if (n > 3) {
+      throw err;
+    }
+
+    console.error(`retry ${n}`, err);
+
+    await sleep(0.5 * (n + 1));
+
+    return fetchWithRetry(input, init, n + 1);
+  }
 }
 
 function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
@@ -388,8 +392,8 @@ function captureException(err: Error, opts?: {
 }): string {
   return _captureException(err, {
     extra: {
-      ...err.cause ?? {},
-      ...opts?.extra ?? {},
+      ...(err.cause ?? {}),
+      ...(opts?.extra ?? {}),
     },
   });
 }
