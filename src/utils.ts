@@ -7,7 +7,7 @@ import {
   init as _initSentry,
 } from 'sentry';
 
-// import { LRU } from 'lru';
+import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
@@ -22,9 +22,9 @@ import {
   STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
 
-// const TEN_MIB = 1024 * 1024 * 10;
+const TEN_MIB = 1024 * 1024 * 10;
 
-// const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
+const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
 
 export enum ImageSize {
   Preview = 'preview',
@@ -130,13 +130,13 @@ async function fetchWithRetry(
 
     return response;
   } catch (err) {
-    if (n > 3) {
+    if (n > 5) {
       throw err;
     }
 
     console.error(`retry ${n}`, err);
 
-    await sleep(0.5 * (n + 1));
+    await sleep(0.5);
 
     return fetchWithRetry(input, init, n + 1);
   }
@@ -401,16 +401,16 @@ function captureException(err: Error, opts?: {
 async function handleProxy(r: Request): Promise<Response> {
   const url = new URL(r.url);
 
-  // const key = (url.pathname + url.search)
-  //   .substring(1);
+  const key = (url.pathname + url.search)
+    .substring(1);
 
-  // const hit = lru.get(key);
+  const hit = lru.get(key);
 
-  // if (hit) {
-  //   console.log(`cache hit: ${key}`);
+  if (hit) {
+    console.log(`cache hit: ${key}`);
 
-  //   return new Response(hit.body, { headers: hit.headers });
-  // }
+    return new Response(hit.body, { headers: hit.headers });
+  }
 
   const imageUrl = decodeURIComponent(
     url.pathname
@@ -431,28 +431,16 @@ async function handleProxy(r: Request): Promise<Response> {
     },
   });
 
-  // if (image.byteLength <= TEN_MIB) {
-  //   const v = {
-  //     body: image.buffer,
-  //     headers: response.headers,
-  //   };
+  if (image.byteLength <= TEN_MIB) {
+    const v = {
+      body: image.buffer,
+      headers: response.headers,
+    };
 
-  //   lru.set(key, v);
-  // }
+    lru.set(key, v);
+  }
 
   return response;
-}
-
-function captureOutage(id: string): Promise<Response> {
-  return fetch(
-    `https://api.instatus.com/v3/integrations/webhook/${id}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        'trigger': 'down',
-      }),
-    },
-  );
 }
 
 function nonNullable<T>(value: T): value is NonNullable<T> {
@@ -511,7 +499,6 @@ const utils = {
   isWithin14Days,
   capitalize,
   captureException,
-  captureOutage,
   chunks: chunk,
   comma,
   compact,
