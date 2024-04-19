@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals, assertRejects, assertThrows } from '$std/assert/mod.ts';
+import { assertEquals, assertRejects } from '$std/assert/mod.ts';
 
 import { stub } from '$std/testing/mock.ts';
 

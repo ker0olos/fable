@@ -4,11 +4,9 @@ import { assert, assertEquals } from '$std/assert/mod.ts';
 
 import { assertSpyCall, assertSpyCalls, stub } from '$std/testing/mock.ts';
 
-import utils, { ImageSize } from '~/src/utils.ts';
+import utils from '~/src/utils.ts';
 
 import * as discord from '~/src/discord.ts';
-
-import config from '~/src/config.ts';
 
 Deno.test('interactions', async (test) => {
   await test.step('command', () => {
