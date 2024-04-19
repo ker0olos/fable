@@ -164,12 +164,12 @@ Deno.test('/party view', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -191,6 +191,14 @@ Deno.test('/party view', async (test) => {
           ) as any,
         ),
         {
+          components: [],
+          attachments: [
+            { filename: 'default.webp', id: '0' },
+            { filename: 'default.webp', id: '1' },
+            { filename: 'default.webp', id: '2' },
+            { filename: 'default.webp', id: '3' },
+            { filename: 'default.webp', id: '4' },
+          ],
           embeds: [
             {
               type: 'rich',
@@ -201,7 +209,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -216,7 +224,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 2' },
               description:
@@ -231,7 +239,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 3' },
               description:
@@ -246,7 +254,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 4' },
               description:
@@ -261,15 +269,13 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 5' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
           ],
-          components: [],
-          attachments: [],
         },
       );
     } finally {
@@ -429,12 +435,12 @@ Deno.test('/party view', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -456,6 +462,14 @@ Deno.test('/party view', async (test) => {
           ) as any,
         ),
         {
+          components: [],
+          attachments: [
+            { filename: 'image%201', id: '0' },
+            { filename: 'image%202', id: '1' },
+            { filename: 'image%203', id: '2' },
+            { filename: 'image%204', id: '3' },
+            { filename: 'image%205', id: '4' },
+          ],
           embeds: [
             {
               type: 'rich',
@@ -466,7 +480,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%201?size=thumbnail',
+                url: 'attachment://image%201',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -481,7 +495,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%202?size=thumbnail',
+                url: 'attachment://image%202',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -496,7 +510,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%203?size=thumbnail',
+                url: 'attachment://image%203',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -511,7 +525,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%204?size=thumbnail',
+                url: 'attachment://image%204',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -526,15 +540,13 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%205?size=thumbnail',
+                url: 'attachment://image%205',
               },
               footer: { text: 'LVL 1' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
           ],
-          components: [],
-          attachments: [],
         },
       );
     } finally {
@@ -680,12 +692,12 @@ Deno.test('/party view', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -707,6 +719,12 @@ Deno.test('/party view', async (test) => {
           ) as any,
         ),
         {
+          components: [],
+          attachments: [
+            { filename: 'default.webp', id: '0' },
+            { filename: 'default.webp', id: '1' },
+            { filename: 'default.webp', id: '2' },
+          ],
           embeds: [
             {
               type: 'rich',
@@ -717,7 +735,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -732,7 +750,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -755,15 +773,13 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
           ],
-          components: [],
-          attachments: [],
         },
       );
     } finally {
@@ -921,12 +937,12 @@ Deno.test('/party view', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1068,12 +1084,12 @@ Deno.test('/party assign', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1109,7 +1125,7 @@ Deno.test('/party assign', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1132,7 +1148,7 @@ Deno.test('/party assign', async (test) => {
               },
             ],
           }],
-          attachments: [],
+          attachments: [{ filename: 'default.webp', id: '0' }],
         },
       );
     } finally {
@@ -1229,12 +1245,12 @@ Deno.test('/party assign', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1270,7 +1286,7 @@ Deno.test('/party assign', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image?size=thumbnail',
+                url: 'attachment://image',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1293,7 +1309,7 @@ Deno.test('/party assign', async (test) => {
               },
             ],
           }],
-          attachments: [],
+          attachments: [{ filename: 'image', id: '0' }],
         },
       );
     } finally {
@@ -1385,12 +1401,12 @@ Deno.test('/party assign', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1589,12 +1605,12 @@ Deno.test('/party swap', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1616,6 +1632,14 @@ Deno.test('/party swap', async (test) => {
           ) as any,
         ),
         {
+          components: [],
+          attachments: [
+            { filename: 'default.webp', id: '0' },
+            { filename: 'default.webp', id: '1' },
+            { filename: 'default.webp', id: '2' },
+            { filename: 'default.webp', id: '3' },
+            { filename: 'default.webp', id: '4' },
+          ],
           embeds: [
             {
               type: 'rich',
@@ -1626,7 +1650,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1641,7 +1665,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1656,7 +1680,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1671,7 +1695,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1686,15 +1710,13 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               footer: { text: 'LVL 1' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
           ],
-          components: [],
-          attachments: [],
         },
       );
     } finally {
@@ -1862,12 +1884,12 @@ Deno.test('/party swap', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1889,6 +1911,14 @@ Deno.test('/party swap', async (test) => {
           ) as any,
         ),
         {
+          components: [],
+          attachments: [
+            { filename: 'image%201', id: '0' },
+            { filename: 'image%202', id: '1' },
+            { filename: 'image%203', id: '2' },
+            { filename: 'image%204', id: '3' },
+            { filename: 'image%205', id: '4' },
+          ],
           embeds: [
             {
               type: 'rich',
@@ -1899,7 +1929,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%201?size=thumbnail',
+                url: 'attachment://image%201',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1914,7 +1944,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%202?size=thumbnail',
+                url: 'attachment://image%202',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1929,7 +1959,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%203?size=thumbnail',
+                url: 'attachment://image%203',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1944,7 +1974,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%204?size=thumbnail',
+                url: 'attachment://image%204',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1959,15 +1989,13 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image%205?size=thumbnail',
+                url: 'attachment://image%205',
               },
               footer: { text: 'LVL 1' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
           ],
-          components: [],
-          attachments: [],
         },
       );
     } finally {
@@ -2067,12 +2095,12 @@ Deno.test('/party remove', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -2108,7 +2136,7 @@ Deno.test('/party remove', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/?size=thumbnail',
+                url: 'attachment://default.webp',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -2125,7 +2153,7 @@ Deno.test('/party remove', async (test) => {
               },
             ],
           }],
-          attachments: [],
+          attachments: [{ filename: 'default.webp', id: '0' }],
         },
       );
     } finally {
@@ -2225,12 +2253,12 @@ Deno.test('/party remove', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -2266,7 +2294,7 @@ Deno.test('/party remove', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image?size=thumbnail',
+                url: 'attachment://image',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -2283,7 +2311,7 @@ Deno.test('/party remove', async (test) => {
               },
             ],
           }],
-          attachments: [],
+          attachments: [{ filename: 'image', id: '0' }],
         },
       );
     } finally {
@@ -2372,12 +2400,12 @@ Deno.test('/party remove', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
           components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },

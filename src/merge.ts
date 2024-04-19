@@ -7,7 +7,7 @@ import user from '~/src/user.ts';
 import gacha from '~/src/gacha.ts';
 
 import i18n from '~/src/i18n.ts';
-import utils from '~/src/utils.ts';
+import utils, { ImageSize } from '~/src/utils.ts';
 
 import db from '~/db/mod.ts';
 
@@ -166,10 +166,11 @@ function getSacrifices(
   };
 }
 
-function characterPreview(
+async function characterPreview(
+  message: discord.Message,
   character: Character,
   existing: Partial<CharacterWithId>,
-): discord.Embed {
+): Promise<discord.Embed> {
   const image = existing?.image
     ? { url: existing?.image }
     : character.images?.[0];
@@ -180,11 +181,15 @@ function characterPreview(
     utils.wrap(existing?.nickname ?? packs.aliasToArray(character.name)[0])
   }`;
 
-  const embed = new discord.Embed()
-    .setThumbnail({
-      preview: true,
+  const embed = new discord.Embed();
+
+  const attachment = await embed
+    .setThumbnailWithProxy({
+      size: ImageSize.Preview,
       url: image?.url,
     });
+
+  message.addAttachment(attachment);
 
   if (media) {
     embed.addField({
@@ -198,42 +203,43 @@ function characterPreview(
   return embed;
 }
 
-async function synthesize({ token, userId, guildId, mode, target }: {
+function synthesize({ token, userId, guildId, mode, target }: {
   token: string;
   userId: string;
   guildId: string;
   mode: 'target' | 'min' | 'max';
   target?: number;
-}): Promise<discord.Message> {
+}): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
 
   if (!config.synthesis) {
     throw new NonFetalError(i18n.get('maintenance-merge', locale));
   }
 
-  const message = new discord.Message();
+  // const message = new discord.Message();
+  synthesis.getFilteredCharacters({ userId, guildId })
+    .then(async (characters) => {
+      const message = new discord.Message();
 
-  const characters = await synthesis.getFilteredCharacters({ userId, guildId });
+      let { sacrifices, target: _target } = getSacrifices(
+        characters,
+        mode,
+        target,
+        locale,
+      );
 
-  let { sacrifices, target: _target } = getSacrifices(
-    characters,
-    mode,
-    target,
-    locale,
-  );
+      sacrifices = sacrifices
+        .sort((a, b) => b.rating - a.rating);
 
-  sacrifices = sacrifices
-    .sort((a, b) => b.rating - a.rating);
+      // highlight the top characters
+      const highlights = sacrifices
+        .slice(0, 5);
 
-  // highlight the top characters
-  const highlights = sacrifices
-    .slice(0, 5);
+      const highlightedCharacters = await packs.characters({
+        ids: highlights.map((char) => char.characterId),
+        guildId,
+      });
 
-  packs.characters({
-    ids: highlights.map((char) => char.characterId),
-    guildId,
-  })
-    .then(async (highlightedCharacters) => {
       message.addEmbed(
         new discord.Embed().setDescription(
           i18n.get('merge-sacrifice', locale, sacrifices.length),
@@ -256,15 +262,20 @@ async function synthesize({ token, userId, guildId, mode, target }: {
 
           if (
             (packs.isDisabled(existing.mediaId, guildId)) ||
-            (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
+            (media &&
+              packs.isDisabled(`${media.packId}:${media.id}`, guildId))
           ) {
             highlightedCharacters.splice(index, 1);
             continue;
           }
 
-          message.addEmbed(
-            synthesis.characterPreview(character, existing),
+          const embed = await synthesis.characterPreview(
+            message,
+            character,
+            existing,
           );
+
+          message.addEmbed(embed);
         }
       }
 
@@ -300,14 +311,7 @@ async function synthesize({ token, userId, guildId, mode, target }: {
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 function confirmed({
@@ -376,14 +380,7 @@ function confirmed({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const spinner = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return spinner;
+  return discord.Message.spinner();
 }
 
 const synthesis = {

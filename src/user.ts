@@ -257,6 +257,23 @@ function nick({
 
         const name = packs.aliasToArray(character.name)[0];
 
+        const embed = await srch.characterEmbed(
+          message,
+          character,
+          {
+            footer: true,
+            rating: false,
+            mode: 'thumbnail',
+            description: false,
+            media: { title: true },
+            existing: {
+              ...response,
+              rating: undefined,
+              nickname: nick,
+            },
+          },
+        );
+
         message
           .addEmbed(
             new discord.Embed().setDescription(
@@ -268,21 +285,7 @@ function nick({
               ),
             ),
           )
-          .addEmbed(srch.characterEmbed(
-            character,
-            {
-              footer: true,
-              rating: false,
-              mode: 'thumbnail',
-              description: false,
-              media: { title: true },
-              existing: {
-                ...response,
-                rating: undefined,
-                nickname: nick,
-              },
-            },
-          ));
+          .addEmbed(embed);
 
         return message.patch(token);
       } catch (err) {
@@ -342,14 +345,7 @@ function nick({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 function image({
@@ -403,6 +399,22 @@ function image({
 
         const name = packs.aliasToArray(character.name)[0];
 
+        const embed = await srch.characterEmbed(
+          message,
+          character,
+          {
+            footer: true,
+            rating: false,
+            description: false,
+            media: { title: true },
+            existing: {
+              ...response,
+              rating: undefined,
+              image,
+            },
+          },
+        );
+
         message
           .addEmbed(
             new discord.Embed().setDescription(
@@ -415,20 +427,7 @@ function image({
               ),
             ),
           )
-          .addEmbed(srch.characterEmbed(
-            character,
-            {
-              footer: true,
-              rating: false,
-              description: false,
-              media: { title: true },
-              existing: {
-                ...response,
-                rating: undefined,
-                image,
-              },
-            },
-          ));
+          .addEmbed(embed);
 
         return message.patch(token);
       } catch (err) {
@@ -488,14 +487,7 @@ function image({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 function like({
@@ -563,17 +555,19 @@ function like({
             .setPing();
         }
 
-        message
-          .addEmbed(srch.characterEmbed(
-            character,
-            {
-              footer: true,
-              description: false,
-              mode: 'thumbnail',
-              media: { title: true },
-              rating: true,
-            },
-          ));
+        const embed = await srch.characterEmbed(
+          message,
+          character,
+          {
+            footer: true,
+            description: false,
+            mode: 'thumbnail',
+            media: { title: true },
+            rating: true,
+          },
+        );
+
+        message.addEmbed(embed);
 
         if (!undo) {
           message.addComponents([
@@ -607,14 +601,7 @@ function like({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 function likeall({
@@ -667,8 +654,11 @@ function likeall({
           media: results[0],
         });
 
-        message
-          .addEmbed(srch.mediaEmbed(media, { mode: 'thumbnail' }));
+        const embed = await srch.mediaEmbed(message, media, {
+          mode: 'thumbnail',
+        });
+
+        message.addEmbed(embed);
 
         if (!undo) {
           message.addComponents([
@@ -702,14 +692,7 @@ function likeall({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 function list({
@@ -927,14 +910,7 @@ function list({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 function likeslist({
@@ -1105,14 +1081,7 @@ function likeslist({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 function sum({
@@ -1211,14 +1180,7 @@ function sum({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 function showcase({
@@ -1426,14 +1388,7 @@ function showcase({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 function logs({
@@ -1511,14 +1466,7 @@ function logs({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 const user = {

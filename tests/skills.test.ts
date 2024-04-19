@@ -143,12 +143,12 @@ Deno.test('/skills acquire', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -170,7 +170,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           components: [
             {
               type: 1,
@@ -202,7 +202,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
             {
@@ -310,12 +310,12 @@ Deno.test('/skills acquire', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -337,7 +337,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           components: [
             {
               type: 1,
@@ -369,7 +369,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
             {
@@ -477,12 +477,12 @@ Deno.test('/skills acquire', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -504,7 +504,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           components: [],
           embeds: [
             {
@@ -518,7 +518,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
             {
@@ -617,12 +617,12 @@ Deno.test('/skills acquire', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -644,7 +644,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           components: [],
           embeds: [
             {
@@ -661,7 +661,7 @@ Deno.test('/skills acquire', async (test) => {
                 text: "Character is yet to be found and isn't combat ready",
               },
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
           ],
@@ -752,12 +752,12 @@ Deno.test('/skills acquire', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -779,7 +779,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           components: [],
           embeds: [
             {
@@ -797,7 +797,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
           ],
@@ -852,12 +852,12 @@ Deno.test('/skills acquire', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
