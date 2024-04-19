@@ -834,12 +834,6 @@ export const commands = [
     description: 'community packs management commands',
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
-      // Option({
-      //   name: 'popular',
-      //   description: '/community popular',
-      //   type: Type.SUB_COMMAND,
-      //   optional: true,
-      // }),
       Option({
         name: 'disable',
         description: 'community packs disable commands',

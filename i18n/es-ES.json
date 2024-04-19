@@ -176,7 +176,7 @@
   "help-page8-title": "Otros Comandos",
   "help-page9-title": "Comandos de Administrador",
 
-  "community-packs-permission": "_> `/community` requiere el permiso `Administrar Servidor` por defecto, pero esto se puede cambiar en la sección `Integraciones` de tu servidor, aunque no lo recomendamos._",
+  "community-packs-permission": "_> `/packs` requiere el permiso `Administrar Servidor` por defecto, pero esto se puede cambiar en la sección `Integraciones` de tu servidor, aunque no lo recomendamos._",
   "make-your-own-pack": "> Para crear tu propio pack de la comunidad visita <https://packs.deno.dev>",
 
   "/gacha": "realiza una tirada de gacha",

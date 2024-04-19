@@ -312,15 +312,17 @@ async function pullAnimation(
 
   const mediaImage = pull.media.images?.[0];
 
+  const embed = new discord.Embed()
+    .setTitle(utils.wrap(mediaTitles[0]));
+
+  const mediaImageAttachment = await embed.setImageWithProxy({
+    size: ImageSize.Medium,
+    url: mediaImage?.url,
+  });
+
   let message = new discord.Message()
-    .addEmbed(
-      new discord.Embed()
-        .setTitle(utils.wrap(mediaTitles[0]))
-        .setImage({
-          size: ImageSize.Medium,
-          url: mediaImage?.url,
-        }),
-    );
+    .addEmbed(embed)
+    .addAttachment(mediaImageAttachment);
 
   if (mention && userId) {
     message
@@ -335,13 +337,15 @@ async function pullAnimation(
 
     await utils.sleep(4);
 
+    const embed = new discord.Embed();
+
+    const image = embed.setImageFile(
+      `assets/public/stars/${pull.rating.stars}.gif`,
+    );
+
     message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setImage({
-            url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
-          }),
-      );
+      .addEmbed(embed)
+      .addAttachment(image);
 
     if (mention && userId) {
       message
@@ -355,7 +359,7 @@ async function pullAnimation(
   }
   //
 
-  message = search.characterMessage(pull.character, {
+  message = await search.characterMessage(pull.character, {
     relations: false,
     rating: pull.rating,
     description: false,
@@ -415,7 +419,9 @@ async function pullAnimation(
     });
 
     if (pings.size > 0) {
-      const embed = search.characterEmbed(pull.character, {
+      const message = new discord.Message();
+
+      const embed = await search.characterEmbed(message, pull.character, {
         userId,
         mode: 'thumbnail',
         rating: true,
@@ -427,7 +433,7 @@ async function pullAnimation(
         },
       });
 
-      await new discord.Message()
+      await message
         .addEmbed(embed)
         .setContent(Array.from(pings).join(' '))
         .followup(token);
@@ -461,14 +467,7 @@ function start(
 
   gacha.rngPull({ userId, guildId, guarantee })
     .then((pull) => {
-      return pullAnimation({
-        token,
-        userId,
-        guildId,
-        mention,
-        quiet,
-        pull,
-      });
+      return pullAnimation({ token, userId, guildId, mention, quiet, pull });
     })
     .catch(async (err) => {
       if (err instanceof NoPullsError) {
@@ -530,20 +529,15 @@ function start(
       await discord.Message.internal(refId).patch(token);
     });
 
-  const spinner = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
+  const loading = discord.Message.spinner();
 
   if (mention) {
-    spinner
+    loading
       .setContent(`<@${userId}>`)
       .setPing();
   }
 
-  return spinner;
+  return loading;
 }
 
 const gacha = {

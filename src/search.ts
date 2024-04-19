@@ -32,6 +32,24 @@ const musicUrlRegex = /youtube|spotify/;
 const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|netflix\\.com|crunchyroll\.com|tapas\.io|webtoons\.com|amazon\.com)[\S]*$/;
 
+type CharacterEmbed = {
+  userId?: string;
+  existing?: {
+    image?: string;
+    nickname?: string;
+    rating?: number;
+    mediaId?: string;
+  };
+  suffix?: string;
+  rating?: Rating | boolean;
+  media?: {
+    title?: boolean | string;
+  };
+  mode?: 'thumbnail' | 'full';
+  description?: boolean;
+  footer?: boolean;
+};
+
 function media(
   { token, id, search, debug, guildId }: {
     token: string;
@@ -61,12 +79,12 @@ function media(
     })
     .then(async (media) => {
       if (debug) {
-        return await mediaDebugMessage(media)
-          .patch(token);
+        const message = await mediaDebugMessage(media);
+        return await message.patch(token);
       }
 
-      return await mediaMessage(media)
-        .patch(token);
+      const message = await mediaMessage(media);
+      return await message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -87,17 +105,10 @@ function media(
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
-function mediaMessage(media: Media): discord.Message {
+async function mediaMessage(media: Media): Promise<discord.Message> {
   const titles = packs.aliasToArray(media.title);
 
   if (!titles?.length) {
@@ -107,21 +118,26 @@ function mediaMessage(media: Media): discord.Message {
   const linksGroup: discord.Component[] = [];
   const musicGroup: discord.Component[] = [];
 
-  const message = new discord.Message()
-    .addEmbed(mediaEmbed(media));
+  const message = new discord.Message();
+
+  const embed = await mediaEmbed(message, media);
+
+  message.addEmbed(embed);
 
   // character embeds
   // sort characters by popularity
-  media.characters?.edges
-    ?.slice(0, 2)
-    .forEach((edge) => {
-      const embed = characterEmbed(edge.node, {
-        mode: 'thumbnail',
-        rating: false,
-      });
+  await Promise.all(
+    media.characters?.edges
+      ?.slice(0, 2)
+      .map(async (edge) => {
+        const embed = await characterEmbed(message, edge.node, {
+          mode: 'thumbnail',
+          rating: false,
+        });
 
-      message.addEmbed(embed);
-    });
+        message.addEmbed(embed);
+      }) ?? [],
+  );
 
   if (media.trailer?.site === 'youtube') {
     const component = new discord.Component()
@@ -192,17 +208,20 @@ function mediaMessage(media: Media): discord.Message {
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
-function mediaEmbed(
+async function mediaEmbed(
+  message: discord.Message,
   media: Media | DisaggregatedMedia,
   options?: {
     mode?: 'thumbnail' | 'full';
   },
-): discord.Embed {
+): Promise<discord.Embed> {
   options ??= {
     mode: 'full',
   };
 
   const title = packs.aliasToArray(media.title)[0];
+
+  const image = media.images?.[0]?.url;
 
   const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
     ? 25
@@ -213,9 +232,11 @@ function mediaEmbed(
   const embed = new discord.Embed();
 
   if (options.mode === 'full') {
-    embed.setImage({ url: media.images?.[0]?.url });
+    const attachment = await embed.setImageWithProxy({ url: image });
+    message.addAttachment(attachment);
   } else {
-    embed.setThumbnail({ url: media.images?.[0]?.url });
+    const attachment = await embed.setThumbnailWithProxy({ url: image });
+    message.addAttachment(attachment);
   }
 
   const description = options.mode === 'thumbnail'
@@ -229,19 +250,20 @@ function mediaEmbed(
     .setDescription(description);
 }
 
-function mediaDebugMessage(
+async function mediaDebugMessage(
   media: Media | DisaggregatedMedia,
-): discord.Message | discord.Message {
+): Promise<discord.Message> {
   const titles = packs.aliasToArray(media.title);
 
   if (!titles?.length) {
     throw new Error('404');
   }
 
+  const message = new discord.Message();
+
   const embed = new discord.Embed()
     .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
-    .setThumbnail({ url: media.images?.[0]?.url })
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
       name: 'Type',
@@ -259,7 +281,13 @@ function mediaDebugMessage(
       inline: true,
     });
 
-  return new discord.Message().addEmbed(embed);
+  const image = await embed.setThumbnailWithProxy({
+    url: media.images?.[0]?.url,
+  });
+
+  return message
+    .addEmbed(embed)
+    .addAttachment(image);
 }
 
 function character(
@@ -309,11 +337,11 @@ function character(
       }
 
       if (debug) {
-        return await characterDebugMessage(character)
-          .patch(token);
+        const message = await characterDebugMessage(character);
+        return await message.patch(token);
       }
 
-      const message = characterMessage(character, {
+      const message = await characterMessage(character, {
         existing: existing ?? undefined,
         userId: existing?.userId,
       });
@@ -353,33 +381,25 @@ function character(
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
-function characterMessage(
+async function characterMessage(
   character: Character | DisaggregatedCharacter,
-  options?: Parameters<typeof characterEmbed>[1] & {
+  options?: CharacterEmbed & {
     externalLinks?: boolean;
     relations?: boolean | DisaggregatedMedia[];
   },
-): discord.Message {
+): Promise<discord.Message> {
   options = {
-    ...{
-      externalLinks: true,
-      relations: true,
-    },
+    externalLinks: true,
+    relations: true,
     ...options,
   };
 
-  const message = new discord.Message()
-    .addEmbed(characterEmbed(character, options));
+  const message = new discord.Message();
+
+  message.addEmbed(await characterEmbed(message, character, options));
 
   const group: discord.Component[] = [];
 
@@ -399,6 +419,7 @@ function characterMessage(
 
   // relation components
   // sort media by popularity
+
   if (Array.isArray(options.relations)) {
     relations = options.relations.slice(0, 1);
   } else if (
@@ -423,7 +444,8 @@ function characterMessage(
   return message.addComponents(group);
 }
 
-function characterEmbed(
+async function characterEmbed(
+  message: discord.Message,
   character: Character | DisaggregatedCharacter,
   options?: {
     userId?: string;
@@ -442,7 +464,7 @@ function characterEmbed(
     description?: boolean;
     footer?: boolean;
   },
-): discord.Embed {
+): Promise<discord.Embed> {
   options = {
     ...{
       mode: 'full',
@@ -469,9 +491,11 @@ function characterEmbed(
   const aliasWrapped = utils.wrap(alias, wrapWidth);
 
   if (options.mode === 'full') {
-    embed.setImage({ url: image?.url });
+    const attachment = await embed.setImageWithProxy({ url: image?.url });
+    message.addAttachment(attachment);
   } else {
-    embed.setThumbnail({ url: image?.url });
+    const attachment = await embed.setThumbnailWithProxy({ url: image?.url });
+    message.addAttachment(attachment);
   }
 
   if (options?.existing?.rating) {
@@ -549,7 +573,9 @@ function characterEmbed(
   return embed;
 }
 
-function characterDebugMessage(character: Character): discord.Message {
+async function characterDebugMessage(
+  character: Character,
+): Promise<discord.Message> {
   const media = character.media?.edges?.[0];
 
   const role = media?.role;
@@ -562,10 +588,11 @@ function characterDebugMessage(character: Character): discord.Message {
 
   const titles = packs.aliasToArray(character.name);
 
+  const message = new discord.Message();
+
   const embed = new discord.Embed()
     .setTitle(titles.splice(0, 1)[0])
     .setDescription(titles.join('\n'))
-    .setThumbnail({ url: character.images?.[0]?.url })
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
       name: 'Rating',
@@ -593,6 +620,10 @@ function characterDebugMessage(character: Character): discord.Message {
       inline: true,
     });
 
+  const image = await embed.setThumbnailWithProxy({
+    url: character.images?.[0]?.url,
+  });
+
   if (!media) {
     embed.addField({
       name: '**WARN**',
@@ -601,7 +632,7 @@ function characterDebugMessage(character: Character): discord.Message {
     });
   }
 
-  return new discord.Message().addEmbed(embed);
+  return message.addEmbed(embed).addAttachment(image);
 }
 
 function mediaCharacters(
@@ -654,7 +685,7 @@ function mediaCharacters(
       //   db.findCharacter(guildId, `${character.packId}:${character.id}`),
       // ]);
 
-      const message = characterMessage(character, {
+      const message = await characterMessage(character, {
         rating: new Rating({ role, popularity: media.popularity }),
         relations: false,
         description: true,
@@ -662,7 +693,9 @@ function mediaCharacters(
         footer: true,
         existing: existing ?? undefined,
         userId: existing?.userId,
-      }).addComponents([
+      });
+
+      message.addComponents([
         new discord.Component()
           .setId('media', `${media.packId}:${media.id}`)
           .setLabel(`/${media.type.toLowerCase()}`),
@@ -709,14 +742,7 @@ function mediaCharacters(
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 function mediaFound(
@@ -863,14 +889,7 @@ function mediaFound(
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner();
 }
 
 const search = {

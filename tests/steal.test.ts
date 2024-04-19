@@ -18,7 +18,7 @@ import steal from '~/src/steal.ts';
 
 import config from '~/src/config.ts';
 
-import db from '~/db/mod.ts';
+import db, { ObjectId } from '~/db/mod.ts';
 
 import { Character, CharacterRole, MediaType } from '~/src/types.ts';
 
@@ -514,12 +514,12 @@ Deno.test('/steal', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -552,7 +552,7 @@ Deno.test('/steal', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
             {
@@ -577,7 +577,7 @@ Deno.test('/steal', async (test) => {
             ],
             type: 1,
           }],
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
         },
       );
     } finally {
@@ -670,12 +670,12 @@ Deno.test('/steal', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -810,12 +810,12 @@ Deno.test('/steal', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -848,7 +848,7 @@ Deno.test('/steal', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
             {
@@ -873,7 +873,7 @@ Deno.test('/steal', async (test) => {
             ],
             type: 1,
           }],
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
         },
       );
     } finally {
@@ -892,6 +892,8 @@ Deno.test('/steal', async (test) => {
   });
 
   await test.step('stealing from party (active user)', async () => {
+    const id = new ObjectId();
+
     const character: Character = {
       id: '1',
       packId: 'id',
@@ -956,13 +958,14 @@ Deno.test('/steal', async (test) => {
       'findCharacter',
       () =>
         ({
+          _id: id,
           rating: 2,
           characterId: 'id:1',
           userId: 'another_user_id',
           inventory: {
             lastPull: new Date(),
             party: {
-              member1: { characterId: 'id:1' },
+              member1Id: id,
             },
           },
         }) as any,
@@ -983,12 +986,12 @@ Deno.test('/steal', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1011,7 +1014,7 @@ Deno.test('/steal', async (test) => {
         ),
         {
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           embeds: [
             {
               type: 'rich',
@@ -1029,7 +1032,7 @@ Deno.test('/steal', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
           ],
@@ -1137,12 +1140,12 @@ Deno.test('/steal', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1226,12 +1229,12 @@ Deno.test('/steal', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1366,12 +1369,12 @@ Deno.test('/steal', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1393,6 +1396,8 @@ Deno.test('/steal', async (test) => {
           ) as any,
         ),
         {
+          components: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           embeds: [
             {
               type: 'rich',
@@ -1409,12 +1414,10 @@ Deno.test('/steal', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
           ],
-          components: [],
-          attachments: [],
         },
       );
     } finally {
@@ -1548,12 +1551,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'steal.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/steal.gif',
+              url: 'attachment://steal.gif',
             },
           }],
         },
@@ -1581,7 +1584,7 @@ Deno.test('attempt', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           components: [
             {
               type: 1,
@@ -1621,7 +1624,7 @@ Deno.test('attempt', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
           ],
@@ -1643,7 +1646,7 @@ Deno.test('attempt', async (test) => {
         ),
         {
           content: '<@another_user_id>',
-          attachments: [],
+          attachments: [{ filename: 'image_url', id: '0' }],
           components: [
             {
               components: [
@@ -1677,7 +1680,7 @@ Deno.test('attempt', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url',
               },
             },
           ],
@@ -1795,12 +1798,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'steal.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/steal.gif',
+              url: 'attachment://steal.gif',
             },
           }],
         },
@@ -1938,12 +1941,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'steal.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/steal.gif',
+              url: 'attachment://steal.gif',
             },
           }],
         },
@@ -2071,12 +2074,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'steal.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/steal.gif',
+              url: 'attachment://steal.gif',
             },
           }],
         },
@@ -2201,12 +2204,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'steal.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/steal.gif',
+              url: 'attachment://steal.gif',
             },
           }],
         },
@@ -2346,12 +2349,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'steal.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/steal.gif',
+              url: 'attachment://steal.gif',
             },
           }],
         },
@@ -2489,12 +2492,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'steal.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/steal.gif',
+              url: 'attachment://steal.gif',
             },
           }],
         },

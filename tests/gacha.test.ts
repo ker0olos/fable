@@ -772,12 +772,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -805,11 +805,11 @@ Deno.test('/gacha', async (test) => {
             type: 'rich',
             title: 'title',
             image: {
-              url: 'http://localhost:8000/external/media_image_url?size=medium',
+              url: 'attachment://media_image_url',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'media_image_url', id: '0' }],
         },
       );
 
@@ -834,17 +834,16 @@ Deno.test('/gacha', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/stars/1.gif',
+              url: 'attachment://1.gif',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: '1.gif', id: '0' }],
         },
       );
 
       await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 3);
+      await timeStub.nextAsync();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -860,7 +859,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -869,7 +868,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'http://localhost:8000/external/character_image_url',
+              url: 'attachment://character_image_url',
             },
           }],
           components: [{
@@ -1001,12 +1000,12 @@ Deno.test('/gacha', async (test) => {
         data: {
           content: '<@user_id>',
           allowed_mentions: { parse: [] },
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -1033,12 +1032,12 @@ Deno.test('/gacha', async (test) => {
           content: '<@user_id>',
           allowed_mentions: { parse: [] },
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'media_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             title: 'title',
             image: {
-              url: 'http://localhost:8000/external/media_image_url?size=medium',
+              url: 'attachment://media_image_url',
             },
           }],
         },
@@ -1065,19 +1064,18 @@ Deno.test('/gacha', async (test) => {
           content: '<@user_id>',
           allowed_mentions: { parse: [] },
           components: [],
-          attachments: [],
+          attachments: [{ filename: '1.gif', id: '0' }],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/stars/1.gif',
+              url: 'attachment://1.gif',
             },
           }],
         },
       );
 
       await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 3);
+      await timeStub.nextAsync();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -1095,7 +1093,7 @@ Deno.test('/gacha', async (test) => {
         {
           content: '<@user_id>',
           allowed_mentions: { parse: [] },
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -1104,7 +1102,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'http://localhost:8000/external/character_image_url',
+              url: 'attachment://character_image_url',
             },
           }],
           components: [{
@@ -1227,12 +1225,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -1256,7 +1254,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -1265,7 +1263,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'http://localhost:8000/external/character_image_url',
+              url: 'attachment://character_image_url',
             },
           }],
           components: [{
@@ -1387,12 +1385,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -1420,11 +1418,11 @@ Deno.test('/gacha', async (test) => {
             type: 'rich',
             title: 'title',
             image: {
-              url: 'http://localhost:8000/external/media_image_url?size=medium',
+              url: 'attachment://media_image_url',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'media_image_url', id: '0' }],
         },
       );
 
@@ -1449,17 +1447,16 @@ Deno.test('/gacha', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/stars/1.gif',
+              url: 'attachment://1.gif',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: '1.gif', id: '0' }],
         },
       );
 
       await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 3);
+      await timeStub.nextAsync();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -1475,7 +1472,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -1484,7 +1481,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'http://localhost:8000/external/character_image_url',
+              url: 'attachment://character_image_url',
             },
           }],
           components: [{
@@ -1532,7 +1529,7 @@ Deno.test('/gacha', async (test) => {
         ),
         {
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           content: '<@another_user_id>',
           embeds: [
             {
@@ -1546,8 +1543,7 @@ Deno.test('/gacha', async (test) => {
                 },
               ],
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/character_image_url?size=thumbnail',
+                url: 'attachment://character_image_url',
               },
             },
           ],
@@ -1645,12 +1641,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -1678,11 +1674,11 @@ Deno.test('/gacha', async (test) => {
             type: 'rich',
             title: 'title',
             image: {
-              url: 'http://localhost:8000/external/media_image_url?size=medium',
+              url: 'attachment://media_image_url',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'media_image_url', id: '0' }],
         },
       );
 
@@ -1707,17 +1703,16 @@ Deno.test('/gacha', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/stars/1.gif',
+              url: 'attachment://1.gif',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: '1.gif', id: '0' }],
         },
       );
 
       await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 3);
+      await timeStub.nextAsync();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -1733,7 +1728,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -1742,7 +1737,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'http://localhost:8000/external/character_image_url',
+              url: 'attachment://character_image_url',
             },
           }],
           components: [{
@@ -1790,7 +1785,7 @@ Deno.test('/gacha', async (test) => {
         ),
         {
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           content: '<@another_user_id>',
           embeds: [
             {
@@ -1804,8 +1799,7 @@ Deno.test('/gacha', async (test) => {
                 },
               ],
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/character_image_url?size=thumbnail',
+                url: 'attachment://character_image_url',
               },
             },
           ],
@@ -1916,12 +1910,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -1949,11 +1943,11 @@ Deno.test('/gacha', async (test) => {
             type: 'rich',
             title: 'title',
             image: {
-              url: 'http://localhost:8000/external/media_image_url?size=medium',
+              url: 'attachment://media_image_url',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'media_image_url', id: '0' }],
         },
       );
 
@@ -1978,17 +1972,16 @@ Deno.test('/gacha', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/stars/1.gif',
+              url: 'attachment://1.gif',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: '1.gif', id: '0' }],
         },
       );
 
       await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 3);
+      await timeStub.nextAsync();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -2004,7 +1997,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -2013,7 +2006,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'http://localhost:8000/external/character_image_url',
+              url: 'attachment://character_image_url',
             },
           }],
           components: [{
@@ -2061,7 +2054,7 @@ Deno.test('/gacha', async (test) => {
         ),
         {
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           content: '<@another_user_id>',
           embeds: [
             {
@@ -2075,8 +2068,7 @@ Deno.test('/gacha', async (test) => {
                 },
               ],
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/character_image_url?size=thumbnail',
+                url: 'attachment://character_image_url',
               },
             },
           ],
@@ -2127,12 +2119,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -2209,12 +2201,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -2297,12 +2289,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -2377,12 +2369,12 @@ Deno.test('/gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },

@@ -7,13 +7,9 @@ import {
   init as _initSentry,
 } from 'sentry';
 
-// import { LRU } from 'lru';
-
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
 import { distance as levenshtein } from 'levenshtein';
-
-import { proxy } from 'images-proxy';
 
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
@@ -21,10 +17,6 @@ import {
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
-
-// const TEN_MIB = 1024 * 1024 * 10;
-
-// const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
 
 export enum ImageSize {
   Preview = 'preview',
@@ -116,26 +108,30 @@ function sleep(secs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
-function fetchWithRetry(
+async function fetchWithRetry(
   input: RequestInfo | URL,
   init: RequestInit,
   n = 0,
 ): Promise<Response> {
-  return new Promise((resolve, reject) => {
-    fetch(input, init)
-      .then((result) => resolve(result))
-      .catch(async (err) => {
-        if (n > 3) {
-          return reject(err);
-        }
+  try {
+    const response = await fetch(input, init);
 
-        await sleep(0.5 * n);
+    if (response.status >= 400) {
+      throw new Error(`${response.status}:${response.statusText}`);
+    }
 
-        fetchWithRetry(input, init, n + 1)
-          .then(resolve)
-          .catch(reject);
-      });
-  });
+    return response;
+  } catch (err) {
+    if (n > 5) {
+      throw err;
+    }
+
+    console.error(`retry ${n}`, err);
+
+    await sleep(0.5);
+
+    return fetchWithRetry(input, init, n + 1);
+  }
 }
 
 function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
@@ -388,55 +384,10 @@ function captureException(err: Error, opts?: {
 }): string {
   return _captureException(err, {
     extra: {
-      ...err.cause ?? {},
-      ...opts?.extra ?? {},
+      ...(err.cause ?? {}),
+      ...(opts?.extra ?? {}),
     },
   });
-}
-
-async function handleProxy(r: Request): Promise<Response> {
-  const url = new URL(r.url);
-
-  // const key = (url.pathname + url.search)
-  //   .substring(1);
-
-  // const hit = lru.get(key);
-
-  // if (hit) {
-  //   console.log(`cache hit: ${key}`);
-
-  //   return new Response(hit.body, { headers: hit.headers });
-  // }
-
-  const imageUrl = decodeURIComponent(
-    url.pathname
-      .replace('/external/', ''),
-  );
-
-  const { format, image } = await proxy(
-    imageUrl,
-    // deno-lint-ignore no-explicit-any
-    url.searchParams.get('size') as any,
-  );
-
-  const response = new Response(image.buffer, {
-    headers: {
-      'content-type': format,
-      'content-length': `${image.byteLength}`,
-      'cache-control': `max-age=${86400 * 12}`,
-    },
-  });
-
-  // if (image.byteLength <= TEN_MIB) {
-  //   const v = {
-  //     body: image.buffer,
-  //     headers: response.headers,
-  //   };
-
-  //   lru.set(key, v);
-  // }
-
-  return response;
 }
 
 function nonNullable<T>(value: T): value is NonNullable<T> {
@@ -507,7 +458,6 @@ const utils = {
   distance,
   fetchWithRetry,
   getRandomFloat,
-  handleProxy,
   hexToInt,
   initSentry,
   json,

@@ -124,12 +124,11 @@ function packEmbed(pack: Pack): discord.Embed {
   const embed = new discord.Embed()
     .setFooter({ text: pack.manifest.author })
     .setDescription(pack.manifest.description)
-    .setThumbnail({
-      url: pack.manifest.image,
-      default: false,
-      proxy: false,
-    })
     .setTitle(pack.manifest.title ?? pack.manifest.id);
+
+  if (pack.manifest.image) {
+    embed.setThumbnailUrl(pack.manifest.image);
+  }
 
   return embed;
 }
@@ -415,7 +414,7 @@ async function searchOneCharacter(
 
   return Object.values(
     await packs.findById<Character | DisaggregatedCharacter>({
-      ids: [results[0].id],
+      ids: [results[0]?.id],
       key: 'characters',
       guildId,
     }),
@@ -464,7 +463,7 @@ async function searchOneMedia(
 
   return Object.values(
     await packs.findById<Media | DisaggregatedMedia>({
-      ids: [results[0].id],
+      ids: [results[0]?.id],
       key: 'media',
       guildId,
     }),

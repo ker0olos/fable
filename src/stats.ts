@@ -53,7 +53,7 @@ function view({ token, character, userId, guildId }: {
       if (!existing) {
         const message = new discord.Message();
 
-        const embed = search.characterEmbed(character, {
+        const embed = await search.characterEmbed(message, character, {
           mode: 'thumbnail',
           media: { title: false },
           description: false,
@@ -87,7 +87,7 @@ function view({ token, character, userId, guildId }: {
 
       const _skills = Object.entries(existing.combat?.skills ?? {});
 
-      const embed = search.characterEmbed(character, {
+      const embed = await search.characterEmbed(message, character, {
         footer: false,
         existing: {
           image: existing.image,
@@ -179,14 +179,7 @@ function view({ token, character, userId, guildId }: {
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 const stats = { view };

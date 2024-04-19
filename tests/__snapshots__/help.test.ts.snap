@@ -430,7 +430,7 @@ snapshot[`/help 9`] = `
         "author": {
           "name": "Admin Commands"
         },
-        "description": "_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._\\n- \`/packs install\`: _install a community pack_\\n- \`/packs uninstall\`: _uninstall a community pack_\\n- \`/packs disable builtins\`: _permanently disable the builtin packs_\\n\\n> To create your own community pack visit <https://packs.deno.dev>"
+        "description": "_> \`/packs\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._\\n- \`/packs install\`: _install a community pack_\\n- \`/packs uninstall\`: _uninstall a community pack_\\n- \`/packs disable builtins\`: _permanently disable the builtin packs_\\n\\n> To create your own community pack visit <https://packs.deno.dev>"
       }
     ],
     "attachments": [],
