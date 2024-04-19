@@ -391,9 +391,10 @@ async function characterMessage(
     relations?: boolean | DisaggregatedMedia[];
   },
 ): Promise<discord.Message> {
-  options ??= {
+  options = {
     externalLinks: true,
     relations: true,
+    ...options,
   };
 
   const message = new discord.Message();
@@ -418,6 +419,7 @@ async function characterMessage(
 
   // relation components
   // sort media by popularity
+
   if (Array.isArray(options.relations)) {
     relations = options.relations.slice(0, 1);
   } else if (

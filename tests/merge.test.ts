@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals, assertRejects } from '$std/assert/mod.ts';
+import { assertEquals, assertThrows } from '$std/assert/mod.ts';
 
 import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
@@ -668,12 +668,12 @@ Deno.test('synthesis confirmed', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -695,15 +695,15 @@ Deno.test('synthesis confirmed', async (test) => {
           ) as any,
         ),
         {
+          attachments: [{ filename: 'media_image_url', id: '0' }],
+          components: [],
           embeds: [{
             type: 'rich',
             title: 'title',
             image: {
-              url: 'http://localhost:8000/external/media_image_url?size=medium',
+              url: 'attachment://media_image_url',
             },
           }],
-          components: [],
-          attachments: [],
         },
       );
 
@@ -726,15 +726,15 @@ Deno.test('synthesis confirmed', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/stars/2.gif',
+              url: 'attachment://2.gif',
             },
           }],
           components: [],
-          attachments: [],
+          attachments: [{ filename: '2.gif', id: '0' }],
         },
       );
 
-      await timeStub.nextAsync();
+      await timeStub.runAllAsync();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -750,7 +750,7 @@ Deno.test('synthesis confirmed', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ stars: 2 }).emotes,
@@ -759,7 +759,7 @@ Deno.test('synthesis confirmed', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'http://localhost:8000/external/character_image_url',
+              url: 'attachment://character_image_url',
             },
           }],
           components: [{
@@ -925,12 +925,12 @@ Deno.test('synthesis confirmed', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -952,15 +952,15 @@ Deno.test('synthesis confirmed', async (test) => {
           ) as any,
         ),
         {
+          components: [],
+          attachments: [{ filename: 'media_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             title: 'title',
             image: {
-              url: 'http://localhost:8000/external/media_image_url?size=medium',
+              url: 'attachment://media_image_url',
             },
           }],
-          components: [],
-          attachments: [],
         },
       );
 
@@ -980,18 +980,18 @@ Deno.test('synthesis confirmed', async (test) => {
           ) as any,
         ),
         {
+          attachments: [{ filename: '2.gif', id: '0' }],
+          components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/stars/2.gif',
+              url: 'attachment://2.gif',
             },
           }],
-          components: [],
-          attachments: [],
         },
       );
 
-      await timeStub.nextAsync();
+      await timeStub.runAllAsync();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -1007,7 +1007,7 @@ Deno.test('synthesis confirmed', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ stars: 2 }).emotes,
@@ -1016,7 +1016,7 @@ Deno.test('synthesis confirmed', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'http://localhost:8000/external/character_image_url',
+              url: 'attachment://character_image_url',
             },
           }],
           components: [{
@@ -1056,7 +1056,7 @@ Deno.test('synthesis confirmed', async (test) => {
         ),
         {
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'character_image_url', id: '0' }],
           content: '<@another_user_id>',
           embeds: [
             {
@@ -1070,8 +1070,7 @@ Deno.test('synthesis confirmed', async (test) => {
                 },
               ],
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/character_image_url?size=thumbnail',
+                url: 'attachment://character_image_url',
               },
             },
           ],
@@ -1138,12 +1137,12 @@ Deno.test('synthesis confirmed', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -1247,12 +1246,12 @@ Deno.test('synthesis confirmed', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
+              url: 'attachment://spinner.gif',
             },
           }],
         },
@@ -1455,12 +1454,12 @@ Deno.test('/merge', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1482,7 +1481,28 @@ Deno.test('/merge', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [
+            {
+              filename: 'image_url',
+              id: '0',
+            },
+            {
+              filename: 'image_url',
+              id: '1',
+            },
+            {
+              filename: 'image_url',
+              id: '2',
+            },
+            {
+              filename: 'image_url',
+              id: '3',
+            },
+            {
+              filename: 'image_url',
+              id: '4',
+            },
+          ],
           components: [{
             type: 1,
             components: [
@@ -1514,7 +1534,7 @@ Deno.test('/merge', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
+                url: 'attachment://image_url',
               },
             },
             {
@@ -1526,7 +1546,7 @@ Deno.test('/merge', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
+                url: 'attachment://image_url',
               },
             },
             {
@@ -1538,21 +1558,21 @@ Deno.test('/merge', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
+                url: 'attachment://image_url',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 4',
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
+                url: 'attachment://image_url',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 5',
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
+                url: 'attachment://image_url',
               },
             },
           ],
@@ -1707,12 +1727,12 @@ Deno.test('/merge', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1734,7 +1754,28 @@ Deno.test('/merge', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [
+            {
+              filename: 'custom_image_url',
+              id: '0',
+            },
+            {
+              filename: 'custom_image_url',
+              id: '1',
+            },
+            {
+              filename: 'custom_image_url',
+              id: '2',
+            },
+            {
+              filename: 'custom_image_url',
+              id: '3',
+            },
+            {
+              filename: 'custom_image_url',
+              id: '4',
+            },
+          ],
           components: [{
             type: 1,
             components: [
@@ -1761,40 +1802,35 @@ Deno.test('/merge', async (test) => {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 1',
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/custom_image_url?size=preview',
+                url: 'attachment://custom_image_url',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 2',
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/custom_image_url?size=preview',
+                url: 'attachment://custom_image_url',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 3',
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/custom_image_url?size=preview',
+                url: 'attachment://custom_image_url',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 4',
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/custom_image_url?size=preview',
+                url: 'attachment://custom_image_url',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 5',
               thumbnail: {
-                url:
-                  'http://localhost:8000/external/custom_image_url?size=preview',
+                url: 'attachment://custom_image_url',
               },
             },
           ],
@@ -1945,12 +1981,12 @@ Deno.test('/merge', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -1972,7 +2008,20 @@ Deno.test('/merge', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
+          attachments: [
+            {
+              filename: 'image_url',
+              id: '0',
+            },
+            {
+              filename: 'image_url',
+              id: '1',
+            },
+            {
+              filename: 'image_url',
+              id: '2',
+            },
+          ],
           components: [{
             type: 1,
             components: [
@@ -1999,21 +2048,21 @@ Deno.test('/merge', async (test) => {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 3',
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
+                url: 'attachment://image_url',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 4',
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
+                url: 'attachment://image_url',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 5',
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
+                url: 'attachment://image_url',
               },
             },
             {
@@ -2141,27 +2190,71 @@ Deno.test('/merge', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
     try {
-      await assertRejects(
-        () =>
-          merge.synthesize({
-            token: 'test_token',
-            userId: 'user_id',
-            guildId: 'guild_id',
-            mode: 'target',
-            target: 2,
-          }),
-        NonFetalError,
-        'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+      const message = await merge.synthesize({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        mode: 'target',
+        target: 2,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
       delete config.synthesis;
 
       fetchStub.restore();
       listStub.restore();
 
+      timeStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
 
@@ -2261,26 +2354,72 @@ Deno.test('/merge', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
+    config.synthesis = true;
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
     try {
-      await assertRejects(
-        () =>
-          merge.synthesize({
-            token: 'test_token',
-            userId: 'user_id',
-            guildId: 'guild_id',
-            mode: 'target',
-            target: 2,
-          }),
-        NonFetalError,
-        'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+      const message = await merge.synthesize({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        mode: 'target',
+        target: 2,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
       delete config.synthesis;
 
       fetchStub.restore();
       listStub.restore();
+      timeStub.restore();
 
       getGuildStub.restore();
       getInventoryStub.restore();
@@ -2375,27 +2514,71 @@ Deno.test('/merge', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
     try {
-      await assertRejects(
-        () =>
-          merge.synthesize({
-            token: 'test_token',
-            userId: 'user_id',
-            guildId: 'guild_id',
-            mode: 'target',
-            target: 2,
-          }),
-        NonFetalError,
-        'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+      const message = await merge.synthesize({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        mode: 'target',
+        target: 2,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
       delete config.synthesis;
 
       fetchStub.restore();
       listStub.restore();
 
+      timeStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
 
@@ -2448,27 +2631,73 @@ Deno.test('/merge', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
+    config.synthesis = true;
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
     try {
-      await assertRejects(
-        () =>
-          merge.synthesize({
-            token: 'test_token',
-            userId: 'user_id',
-            guildId: 'guild_id',
-            mode: 'target',
-            target: 5,
-          }),
-        NonFetalError,
-        'You only have **0 out the 5** sacrifices needed for 5<:smolstar:1107503653956374638>',
+      const message = await merge.synthesize({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        mode: 'target',
+        target: 2,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You only have **0 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
       delete config.synthesis;
 
       fetchStub.restore();
       listStub.restore();
 
+      timeStub.restore();
       getGuildStub.restore();
       getInventoryStub.restore();
 
@@ -2480,7 +2709,7 @@ Deno.test('/merge', async (test) => {
     config.synthesis = false;
 
     try {
-      await assertRejects(
+      await assertThrows(
         () =>
           merge.synthesize({
             token: 'test_token',
