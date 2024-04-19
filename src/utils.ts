@@ -7,13 +7,9 @@ import {
   init as _initSentry,
 } from 'sentry';
 
-import { LRU } from 'lru';
-
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
 import { distance as levenshtein } from 'levenshtein';
-
-import { proxy } from 'images-proxy';
 
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
@@ -21,10 +17,6 @@ import {
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
-
-const TEN_MIB = 1024 * 1024 * 10;
-
-const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
 
 export enum ImageSize {
   Preview = 'preview',
@@ -398,51 +390,6 @@ function captureException(err: Error, opts?: {
   });
 }
 
-async function handleProxy(r: Request): Promise<Response> {
-  const url = new URL(r.url);
-
-  const key = (url.pathname + url.search)
-    .substring(1);
-
-  const hit = lru.get(key);
-
-  if (hit) {
-    console.log(`cache hit: ${key}`);
-
-    return new Response(hit.body, { headers: hit.headers });
-  }
-
-  const imageUrl = decodeURIComponent(
-    url.pathname
-      .replace('/external/', ''),
-  );
-
-  const { format, image } = await proxy(
-    imageUrl,
-    // deno-lint-ignore no-explicit-any
-    url.searchParams.get('size') as any,
-  );
-
-  const response = new Response(image.buffer, {
-    headers: {
-      'content-type': format,
-      'content-length': `${image.byteLength}`,
-      'cache-control': `max-age=${86400 * 12}`,
-    },
-  });
-
-  if (image.byteLength <= TEN_MIB) {
-    const v = {
-      body: image.buffer,
-      headers: response.headers,
-    };
-
-    lru.set(key, v);
-  }
-
-  return response;
-}
-
 function nonNullable<T>(value: T): value is NonNullable<T> {
   return Boolean(value);
 }
@@ -511,7 +458,6 @@ const utils = {
   distance,
   fetchWithRetry,
   getRandomFloat,
-  handleProxy,
   hexToInt,
   initSentry,
   json,

@@ -194,14 +194,7 @@ function challengeTower({ token, guildId, user }: {
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 async function startCombat(
@@ -610,7 +603,7 @@ function actionRound(
   embeds.forEach(addEmbed);
 }
 
-const addEmbed = ({
+const addEmbed = async ({
   message,
   subtitle,
   character,
@@ -668,9 +661,7 @@ const addEmbed = ({
   });
 
   embed
-    .setThumbnail({
-      url: character.existing?.image ?? character.character.images?.[0]?.url,
-    })
+    .setImageUrl(`attachment://${uuid}.png`)
     .setDescription(
       [
         `## ${
@@ -681,21 +672,33 @@ const addEmbed = ({
         subtitle?.length ? `*${subtitle?.join(' ')}*` : undefined,
       ].filter(utils.nonNullable).join('\n'),
     )
-    .setImage({ url: `attachment://${uuid}.png` })
     .setFooter({
       text: `${character.hp}/${character.maxHP}`,
+    });
+
+  const thumbnail = await embed
+    .setImageWithProxy({
+      url: character.existing?.image ?? character.character.images?.[0]?.url,
     });
 
   const left = Math.round((character.hp / character.maxHP) * 100);
   const _diff = Math.round((Math.abs(diff) / character.maxHP) * 100);
 
-  message.addAttachment({
-    type: 'image/png',
-    filename: `${uuid}.png`,
-    arrayBuffer: dynImages.hp(left, diff < 0 ? -_diff : _diff).buffer,
-  });
+  if (thumbnail) {
+    message.addAttachment({
+      type: thumbnail.type,
+      filename: thumbnail.filename,
+      arrayBuffer: thumbnail.arrayBuffer,
+    });
+  }
 
-  message.addEmbed(embed);
+  message
+    .addEmbed(embed)
+    .addAttachment({
+      type: 'image/png',
+      filename: `${uuid}.png`,
+      arrayBuffer: dynImages.hp(left, diff < 0 ? -_diff : _diff).buffer,
+    });
 };
 
 const battle = { challengeTower, skipBattle };

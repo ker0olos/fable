@@ -112,7 +112,7 @@ function pre({ token, userId, guildId, search, id }: {
         ),
       ]);
     })
-    .then(([character, existing]) => {
+    .then(async ([character, existing]) => {
       const message = new discord.Message();
 
       const characterId = `${character.packId}:${character.id}`;
@@ -128,12 +128,14 @@ function pre({ token, userId, guildId, search, id }: {
           ),
         );
 
-        message.addEmbed(srch.characterEmbed(character, {
+        const embed = await srch.characterEmbed(message, character, {
           footer: false,
           mode: 'thumbnail',
           description: false,
           media: { title: true },
-        }));
+        });
+
+        message.addEmbed(embed);
 
         return message.patch(token);
       }
@@ -162,9 +164,11 @@ function pre({ token, userId, guildId, search, id }: {
         targetInventory.party.member5Id,
       ];
 
+      console.log(party, existing._id);
+
       const inactiveDays = getInactiveDays(targetInventory);
 
-      if (party.includes(existing._id)) {
+      if (party.some((id) => id?.equals(existing._id))) {
         if (inactiveDays <= PARTY_PROTECTION_PERIOD) {
           message.addEmbed(
             new discord.Embed().setDescription(
@@ -177,32 +181,35 @@ function pre({ token, userId, guildId, search, id }: {
             ),
           );
 
-          message.addEmbed(srch.characterEmbed(character, {
+          const embed = await srch.characterEmbed(message, character, {
             footer: true,
             mode: 'thumbnail',
             description: false,
             media: { title: true },
             existing: { rating: existing.rating },
-          }));
+          });
+
+          message.addEmbed(embed);
 
           return message.patch(token);
         }
       }
 
-      message.addEmbed(
-        srch.characterEmbed(character, {
-          footer: true,
-          rating: false,
-          mode: 'thumbnail',
-          description: false,
-          media: { title: true },
-          existing: {
-            rating: existing.rating,
-            mediaId: existing.mediaId,
-          },
-        })
-          .setDescription(`<@${existing.userId}>`),
-      );
+      const embed = await srch.characterEmbed(message, character, {
+        footer: true,
+        rating: false,
+        mode: 'thumbnail',
+        description: false,
+        media: { title: true },
+        existing: {
+          rating: existing.rating,
+          mediaId: existing.mediaId,
+        },
+      });
+
+      embed.setDescription(`<@${existing.userId}>`);
+
+      message.addEmbed(embed);
 
       const chance = getChances(existing, inactiveDays);
 
@@ -252,14 +259,7 @@ function pre({ token, userId, guildId, search, id }: {
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 function attempt({
@@ -360,14 +360,51 @@ function attempt({
       try {
         await db.stealCharacter(userId, guildId, characterId);
 
-        message.addEmbed(
-          new discord.Embed().setDescription(
-            i18n.get('you-succeeded', locale),
-          ),
-        );
+        const embed = await srch.characterEmbed(message, character, {
+          footer: false,
+          mode: 'thumbnail',
+          description: false,
+          media: { title: true },
+          existing: {
+            rating: existing.rating,
+            mediaId: existing.mediaId,
+          },
+        });
 
-        message.addEmbed(
-          srch.characterEmbed(character, {
+        embed.addField({
+          value: `${discord.emotes.add}`,
+        });
+
+        message
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('you-succeeded', locale),
+            ),
+          )
+          .addEmbed(embed)
+          .addComponents([
+            new discord.Component()
+              .setLabel('/character')
+              .setId(`character`, characterId, '1'),
+            new discord.Component()
+              .setLabel('/like')
+              .setId(`like`, characterId),
+          ]);
+
+        await message.patch(token);
+
+        const followupMessage = new discord.Message()
+          .setContent(`<@${existing.userId}>`)
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('stolen-from-you', locale, characterName),
+            ),
+          );
+
+        const followupEmbed = await srch.characterEmbed(
+          followupMessage,
+          character,
+          {
             footer: false,
             mode: 'thumbnail',
             description: false,
@@ -376,43 +413,15 @@ function attempt({
               rating: existing.rating,
               mediaId: existing.mediaId,
             },
-          }).addField({
-            value: `${discord.emotes.add}`,
-          }),
+          },
         );
 
-        message.addComponents([
-          new discord.Component()
-            .setLabel('/character')
-            .setId(`character`, characterId, '1'),
-          new discord.Component()
-            .setLabel('/like')
-            .setId(`like`, characterId),
-        ]);
+        followupEmbed.addField({
+          value: `${discord.emotes.remove}`,
+        });
 
-        message.patch(token);
-
-        return new discord.Message()
-          .setContent(`<@${existing.userId}>`)
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('stolen-from-you', locale, characterName),
-            ),
-          )
-          .addEmbed(
-            srch.characterEmbed(character, {
-              footer: false,
-              mode: 'thumbnail',
-              description: false,
-              media: { title: true },
-              existing: {
-                rating: existing.rating,
-                mediaId: existing.mediaId,
-              },
-            }).addField({
-              value: `${discord.emotes.remove}`,
-            }),
-          )
+        await followupMessage
+          .addEmbed(followupEmbed)
           .addComponents([
             new discord.Component()
               .setLabel('/character')
@@ -457,14 +466,14 @@ function attempt({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/steal.gif` },
-      ),
-    );
+  const embed = new discord.Embed();
+  const loading = new discord.Message();
 
-  return loading;
+  const image = embed.setImageFile('assets/public/steal.gif');
+
+  return loading
+    .addEmbed(embed)
+    .addAttachment(image);
 }
 
 const steal = {

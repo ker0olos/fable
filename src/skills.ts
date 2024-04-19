@@ -334,7 +334,7 @@ function preAcquire(
       if (!existing) {
         const message = new discord.Message();
 
-        const embed = search.characterEmbed(character, {
+        const embed = await search.characterEmbed(message, character, {
           mode: 'thumbnail',
           media: { title: false },
           description: false,
@@ -353,7 +353,7 @@ function preAcquire(
       if (existing.userId !== userId) {
         const message = new discord.Message();
 
-        const embed = search.characterEmbed(character, {
+        const embed = await search.characterEmbed(message, character, {
           mode: 'thumbnail',
           media: { title: false },
           description: false,
@@ -380,7 +380,7 @@ function preAcquire(
 
       const charId = `${character.packId}:${character.id}`;
 
-      const embed = search.characterEmbed(character, {
+      const embed = await search.characterEmbed(message, character, {
         mode: 'thumbnail',
         media: { title: false },
         description: false,
@@ -470,14 +470,7 @@ function preAcquire(
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 async function acquire(

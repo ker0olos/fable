@@ -54,7 +54,7 @@ async function embed({ guildId, party, locale }: {
     packs.characters({ ids: ids.filter(utils.nonNullable), guildId }),
   ]);
 
-  ids.forEach((characterId, i) => {
+  await Promise.all(ids.map(async (characterId, i) => {
     if (!characterId) {
       message.addEmbed(new discord.Embed()
         .setDescription(i18n.get('unassigned', locale)));
@@ -84,7 +84,7 @@ async function embed({ guildId, party, locale }: {
       );
     }
 
-    const embed = srch.characterEmbed(character, {
+    const embed = await srch.characterEmbed(message, character, {
       mode: 'thumbnail',
       media: { title: packs.aliasToArray(media[mediaIndex].title)[0] },
       rating: new Rating({ stars: members[i]?.rating }),
@@ -101,7 +101,7 @@ async function embed({ guildId, party, locale }: {
     });
 
     message.addEmbed(embed);
-  });
+  }));
 
   return message;
 }
@@ -132,14 +132,7 @@ function view({ token, userId, guildId }: {
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 function assign({
@@ -190,19 +183,21 @@ function assign({
           spot,
         );
 
+        const embed = await srch.characterEmbed(message, results[0], {
+          mode: 'thumbnail',
+          rating: new Rating({ stars: response.rating }),
+          description: true,
+          footer: false,
+          existing: {
+            image: response.image,
+            nickname: response.nickname,
+          },
+        });
+
         return message
           .addEmbed(new discord.Embed()
             .setDescription(i18n.get('assigned', locale)))
-          .addEmbed(srch.characterEmbed(results[0], {
-            mode: 'thumbnail',
-            rating: new Rating({ stars: response.rating }),
-            description: true,
-            footer: false,
-            existing: {
-              image: response.image,
-              nickname: response.nickname,
-            },
-          }))
+          .addEmbed(embed)
           .addComponents([
             new discord.Component()
               .setLabel('/character')
@@ -244,14 +239,7 @@ function assign({
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 function swap({ token, a, b, userId, guildId }: {
@@ -288,14 +276,7 @@ function swap({ token, a, b, userId, guildId }: {
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 function remove({ token, spot, userId, guildId }: {
@@ -343,18 +324,20 @@ function remove({ token, spot, userId, guildId }: {
           ).patch(token);
       }
 
+      const embed = await srch.characterEmbed(message, characters[0], {
+        mode: 'thumbnail',
+        rating: new Rating({ stars: character.rating }),
+        description: true,
+        footer: false,
+        existing: {
+          image: character.image,
+          nickname: character.nickname,
+        },
+      });
+
       return message
         .addEmbed(new discord.Embed().setDescription('Removed'))
-        .addEmbed(srch.characterEmbed(characters[0], {
-          mode: 'thumbnail',
-          rating: new Rating({ stars: character.rating }),
-          description: true,
-          footer: false,
-          existing: {
-            image: character.image,
-            nickname: character.nickname,
-          },
-        }))
+        .addEmbed(embed)
         .addComponents([
           new discord.Component()
             .setLabel('/character')
@@ -371,14 +354,7 @@ function remove({ token, spot, userId, guildId }: {
       await discord.Message.internal(refId).patch(token);
     });
 
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
+  return discord.Message.spinner(true);
 }
 
 const party = {
