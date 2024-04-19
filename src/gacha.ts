@@ -419,6 +419,8 @@ async function pullAnimation(
     });
 
     if (pings.size > 0) {
+      const message = new discord.Message();
+
       const embed = await search.characterEmbed(message, pull.character, {
         userId,
         mode: 'thumbnail',
@@ -431,7 +433,7 @@ async function pullAnimation(
         },
       });
 
-      await new discord.Message()
+      await message
         .addEmbed(embed)
         .setContent(Array.from(pings).join(' '))
         .followup(token);

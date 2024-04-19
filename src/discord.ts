@@ -597,7 +597,7 @@ export class Embed {
   }
 
   setImageFile(path: string): Attachment {
-    const filename = basename(path);
+    const filename = encodeURIComponent(basename(path));
 
     const arrayBuffer = Deno.readFileSync(path);
 
@@ -622,7 +622,9 @@ export class Embed {
       // deno-lint-ignore no-non-null-assertion
       this.#data.image = { url: image.url! };
     } else {
-      const filename = image.url ? basename(image.url) : 'default.webp';
+      const filename = image.url
+        ? encodeURIComponent(basename(image.url))
+        : 'default.webp';
 
       const file = await proxy(image.url ?? '', image.size);
 
@@ -647,7 +649,9 @@ export class Embed {
       // deno-lint-ignore no-non-null-assertion
       this.#data.thumbnail = { url: image.url! };
     } else {
-      const filename = image.url ? basename(image.url) : 'default.webp';
+      const filename = image.url
+        ? encodeURIComponent(basename(image.url))
+        : 'default.webp';
       const file = await proxy(image.url ?? '', image.size);
 
       this.#data.thumbnail = { url: `attachment://${filename}` };
