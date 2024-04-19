@@ -54,12 +54,10 @@ async function embed({ guildId, party, locale }: {
     packs.characters({ ids: ids.filter(utils.nonNullable), guildId }),
   ]);
 
-  await Promise.all(ids.map(async (characterId, i) => {
+  const embeds = await Promise.all(ids.map(async (characterId, i) => {
     if (!characterId) {
-      message.addEmbed(new discord.Embed()
-        .setDescription(i18n.get('unassigned', locale)));
-
-      return;
+      return new discord.Embed()
+        .setDescription(i18n.get('unassigned', locale));
     }
 
     const character = characters.find(({ packId, id }) =>
@@ -77,10 +75,8 @@ async function embed({ guildId, party, locale }: {
       // deno-lint-ignore no-non-null-assertion
       packs.isDisabled(mediaIds[i]!, guildId)
     ) {
-      return message.addEmbed(
-        new discord.Embed().setDescription(
-          i18n.get('character-disabled', locale),
-        ),
+      return new discord.Embed().setDescription(
+        i18n.get('character-disabled', locale),
       );
     }
 
@@ -100,8 +96,10 @@ async function embed({ guildId, party, locale }: {
       text: `${i18n.get('lvl', locale)} ${members[i]?.combat?.level ?? 1}`,
     });
 
-    message.addEmbed(embed);
+    return embed;
   }));
+
+  embeds.forEach((embed) => message.addEmbed(embed));
 
   return message;
 }
