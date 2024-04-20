@@ -962,15 +962,18 @@ export class Message {
     let response: Response;
 
     try {
-      response = await utils.fetchWithRetry(url, {
-        method,
-        body: formData,
-        headers: {
-          'User-Agent': `Fable (https://github.com/ker0olos/fable, ${
-            Deno.env.get('DENO_DEPLOYMENT_ID') ?? 'localhost'
-          })`,
+      response = await utils.fetchWithRetry(
+        url,
+        {
+          method,
+          body: formData,
+          headers: {
+            'User-Agent': `Fable (https://github.com/ker0olos/fable, ${
+              Deno.env.get('DENO_DEPLOYMENT_ID') ?? 'localhost'
+            })`,
+          },
         },
-      });
+      );
     } catch (err) {
       if (!config.sentry) {
         throw err;
@@ -979,7 +982,9 @@ export class Message {
       utils.captureException(err, {
         extra: {
           url,
-          payload: this.json().data,
+          payload: JSON.stringify(this.json()),
+          // deno-lint-ignore no-non-null-assertion
+          response: await response!.text(),
         },
       });
     }
