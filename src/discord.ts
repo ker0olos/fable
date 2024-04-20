@@ -1,5 +1,7 @@
 import { basename, extname } from '$std/path/mod.ts';
 
+import { contentType, extensionsByType } from '$std/media_types/mod.ts';
+
 import { json } from 'sift';
 
 import i18n from '~/src/i18n.ts';
@@ -603,11 +605,12 @@ export class Embed {
 
     this.#data.image = { url: `attachment://${filename}` };
 
-    switch (extname(path)) {
-      case '.gif':
-        return { arrayBuffer, filename, type: 'image/gif' };
-      default:
-        throw new Error(`${extname(path)}: unsupported`);
+    const type = contentType(extname(path));
+
+    if (type) {
+      return { type, arrayBuffer, filename };
+    } else {
+      throw new Error(`${extname(path)}: unsupported`);
     }
   }
 
@@ -622,11 +625,19 @@ export class Embed {
       // deno-lint-ignore no-non-null-assertion
       this.#data.image = { url: image.url! };
     } else {
-      const filename = image.url
+      let filename = image.url
         ? encodeURIComponent(basename(image.url))
         : 'default.webp';
 
       const file = await proxy(image.url ?? '', image.size);
+
+      if (extname(filename) === '') {
+        const ext = extensionsByType(file.format);
+
+        if (ext?.length) {
+          filename = `${filename}.${ext[0]}`;
+        }
+      }
 
       this.#data.image = { url: `attachment://${filename}` };
 
@@ -649,10 +660,19 @@ export class Embed {
       // deno-lint-ignore no-non-null-assertion
       this.#data.thumbnail = { url: image.url! };
     } else {
-      const filename = image.url
+      let filename = image.url
         ? encodeURIComponent(basename(image.url))
         : 'default.webp';
+
       const file = await proxy(image.url ?? '', image.size);
+
+      if (extname(filename) === '') {
+        const ext = extensionsByType(file.format);
+
+        if (ext?.length) {
+          filename = `${filename}.${ext[0]}`;
+        }
+      }
 
       this.#data.thumbnail = { url: `attachment://${filename}` };
 
