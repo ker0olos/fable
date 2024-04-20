@@ -695,13 +695,13 @@ Deno.test('synthesis confirmed', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'media_image_url', id: '0' }],
+          attachments: [{ filename: 'media_image_url.webp', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             title: 'title',
             image: {
-              url: 'attachment://media_image_url',
+              url: 'attachment://media_image_url.webp',
             },
           }],
         },
@@ -750,7 +750,7 @@ Deno.test('synthesis confirmed', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'character_image_url', id: '0' }],
+          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ stars: 2 }).emotes,
@@ -759,7 +759,7 @@ Deno.test('synthesis confirmed', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'attachment://character_image_url',
+              url: 'attachment://character_image_url.webp',
             },
           }],
           components: [{
@@ -953,12 +953,12 @@ Deno.test('synthesis confirmed', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'media_image_url', id: '0' }],
+          attachments: [{ filename: 'media_image_url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             title: 'title',
             image: {
-              url: 'attachment://media_image_url',
+              url: 'attachment://media_image_url.webp',
             },
           }],
         },
@@ -1007,7 +1007,7 @@ Deno.test('synthesis confirmed', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'character_image_url', id: '0' }],
+          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ stars: 2 }).emotes,
@@ -1016,7 +1016,7 @@ Deno.test('synthesis confirmed', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'attachment://character_image_url',
+              url: 'attachment://character_image_url.webp',
             },
           }],
           components: [{
@@ -1056,7 +1056,7 @@ Deno.test('synthesis confirmed', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'character_image_url', id: '0' }],
+          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
           content: '<@another_user_id>',
           embeds: [
             {
@@ -1070,7 +1070,7 @@ Deno.test('synthesis confirmed', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://character_image_url',
+                url: 'attachment://character_image_url.webp',
               },
             },
           ],
@@ -1483,23 +1483,23 @@ Deno.test('/merge', async (test) => {
         {
           attachments: [
             {
-              filename: 'image_url',
+              filename: 'image_url.webp',
               id: '0',
             },
             {
-              filename: 'image_url',
+              filename: 'image_url.webp',
               id: '1',
             },
             {
-              filename: 'image_url',
+              filename: 'image_url.webp',
               id: '2',
             },
             {
-              filename: 'image_url',
+              filename: 'image_url.webp',
               id: '3',
             },
             {
-              filename: 'image_url',
+              filename: 'image_url.webp',
               id: '4',
             },
           ],
@@ -1534,7 +1534,7 @@ Deno.test('/merge', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
@@ -1546,7 +1546,7 @@ Deno.test('/merge', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
@@ -1558,21 +1558,21 @@ Deno.test('/merge', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 4',
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 5',
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
           ],
@@ -1756,23 +1756,23 @@ Deno.test('/merge', async (test) => {
         {
           attachments: [
             {
-              filename: 'custom_image_url',
+              filename: 'custom_image_url.webp',
               id: '0',
             },
             {
-              filename: 'custom_image_url',
+              filename: 'custom_image_url.webp',
               id: '1',
             },
             {
-              filename: 'custom_image_url',
+              filename: 'custom_image_url.webp',
               id: '2',
             },
             {
-              filename: 'custom_image_url',
+              filename: 'custom_image_url.webp',
               id: '3',
             },
             {
-              filename: 'custom_image_url',
+              filename: 'custom_image_url.webp',
               id: '4',
             },
           ],
@@ -1802,35 +1802,35 @@ Deno.test('/merge', async (test) => {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 1',
               thumbnail: {
-                url: 'attachment://custom_image_url',
+                url: 'attachment://custom_image_url.webp',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 2',
               thumbnail: {
-                url: 'attachment://custom_image_url',
+                url: 'attachment://custom_image_url.webp',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 3',
               thumbnail: {
-                url: 'attachment://custom_image_url',
+                url: 'attachment://custom_image_url.webp',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 4',
               thumbnail: {
-                url: 'attachment://custom_image_url',
+                url: 'attachment://custom_image_url.webp',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>nickname 5',
               thumbnail: {
-                url: 'attachment://custom_image_url',
+                url: 'attachment://custom_image_url.webp',
               },
             },
           ],
@@ -2010,15 +2010,15 @@ Deno.test('/merge', async (test) => {
         {
           attachments: [
             {
-              filename: 'image_url',
+              filename: 'image_url.webp',
               id: '0',
             },
             {
-              filename: 'image_url',
+              filename: 'image_url.webp',
               id: '1',
             },
             {
-              filename: 'image_url',
+              filename: 'image_url.webp',
               id: '2',
             },
           ],
@@ -2048,21 +2048,21 @@ Deno.test('/merge', async (test) => {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 3',
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 4',
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
               type: 'rich',
               description: '1<:smolstar:1107503653956374638>character 5',
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
