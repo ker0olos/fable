@@ -1,5 +1,7 @@
 import { basename, extname } from '$std/path/mod.ts';
 
+import { contentType, extensionsByType } from '$std/media_types/mod.ts';
+
 import { json } from 'sift';
 
 import i18n from '~/src/i18n.ts';
@@ -603,11 +605,12 @@ export class Embed {
 
     this.#data.image = { url: `attachment://${filename}` };
 
-    switch (extname(path)) {
-      case '.gif':
-        return { arrayBuffer, filename, type: 'image/gif' };
-      default:
-        throw new Error(`${extname(path)}: unsupported`);
+    const type = contentType(extname(path));
+
+    if (type) {
+      return { type, arrayBuffer, filename };
+    } else {
+      throw new Error(`${extname(path)}: unsupported`);
     }
   }
 
@@ -622,11 +625,19 @@ export class Embed {
       // deno-lint-ignore no-non-null-assertion
       this.#data.image = { url: image.url! };
     } else {
-      const filename = image.url
+      let filename = image.url
         ? encodeURIComponent(basename(image.url))
         : 'default.webp';
 
       const file = await proxy(image.url ?? '', image.size);
+
+      if (extname(filename) === '') {
+        const ext = extensionsByType(file.format);
+
+        if (ext?.length) {
+          filename = `${filename}.${ext[0]}`;
+        }
+      }
 
       this.#data.image = { url: `attachment://${filename}` };
 
@@ -649,10 +660,19 @@ export class Embed {
       // deno-lint-ignore no-non-null-assertion
       this.#data.thumbnail = { url: image.url! };
     } else {
-      const filename = image.url
+      let filename = image.url
         ? encodeURIComponent(basename(image.url))
         : 'default.webp';
+
       const file = await proxy(image.url ?? '', image.size);
+
+      if (extname(filename) === '') {
+        const ext = extensionsByType(file.format);
+
+        if (ext?.length) {
+          filename = `${filename}.${ext[0]}`;
+        }
+      }
 
       this.#data.thumbnail = { url: `attachment://${filename}` };
 
@@ -939,69 +959,43 @@ export class Message {
       formData.append(`files[${index}]`, blob, name);
     });
 
-    const response = await utils.fetchWithRetry(url, {
-      method,
-      body: formData,
-      headers: {
-        'User-Agent': `Fable (https://github.com/ker0olos/fable, ${
-          Deno.env.get('DENO_DEPLOYMENT_ID') ?? 'localhost'
-        })`,
-      },
-    });
+    let response: Response;
 
-    console.log(method, response?.status, response?.statusText);
-
-    if (response?.status === 429) {
-      const extra = {
-        ...(await response.json()),
+    try {
+      response = await utils.fetchWithRetry(url, {
+        method,
+        body: formData,
         headers: {
-          'X-RateLimit-Limit': response.headers.get('X-RateLimit-Limit'),
-          'X-RateLimit-Remaining': response.headers.get(
-            'X-RateLimit-Remaining',
-          ),
-          'X-RateLimit-Reset': response.headers.get('X-RateLimit-Reset'),
-          'X-RateLimit-Reset-After': response.headers.get(
-            'X-RateLimit-Reset-After',
-          ),
-          'X-RateLimit-Bucket': response.headers.get('X-RateLimit-Bucket'),
-          'X-RateLimit-Scope': response.headers.get('X-RateLimit-Scope'),
+          'User-Agent': `Fable (https://github.com/ker0olos/fable, ${
+            Deno.env.get('DENO_DEPLOYMENT_ID') ?? 'localhost'
+          })`,
         },
-      };
+      });
+    } catch (err) {
+      if (!config.sentry) {
+        throw err;
+      }
 
-      utils.captureException(new Error('429: Too Many Requests'), {
-        extra,
+      utils.captureException(err, {
+        extra: {
+          url,
+          payload: this.json().data,
+        },
       });
     }
 
-    return response;
+    // deno-lint-ignore no-non-null-assertion
+    return response!;
   }
 
-  async patch(token: string): Promise<Response> {
-    // discord doesn't wait for the initial message to apply patches
-    // causing a race condition where any delay to the initial message
-    // will cause the patch to apply first
-    // then applying the initial message overriding the patch
-    // this can be easily fixed on there size by invalidating late initial messages
-    // but discord never fixes things after they release them
-
-    // delaying patches means our users are the ones to suffer
-    // and it won't work if the initial message doesn't apply in those "100ms"
-    // but it's the only workaround I can think of
-    if (config.deploy) {
-      await utils.sleep(100 / 1000);
-    }
-
+  patch(token: string): Promise<Response> {
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
       'PATCH',
     );
   }
 
-  async followup(token: string): Promise<Response> {
-    if (config.deploy) {
-      await utils.sleep(50 / 1000);
-    }
-
+  followup(token: string): Promise<Response> {
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}`,
       'POST',
@@ -1009,9 +1003,7 @@ export class Message {
   }
 
   static pong(): Response {
-    return json({
-      type: MessageType.Pong,
-    });
+    return json({ type: MessageType.Pong });
   }
 
   static spinner(landscape?: boolean): Message {
