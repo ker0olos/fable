@@ -108,14 +108,14 @@ Deno.test('/stats', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
               description:
                 '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -284,14 +284,14 @@ Deno.test('/stats', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
               description:
                 '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -463,14 +463,14 @@ Deno.test('/stats', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
               description:
                 '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -615,7 +615,7 @@ Deno.test('/stats', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           components: [],
           embeds: [
             {
@@ -623,7 +623,7 @@ Deno.test('/stats', async (test) => {
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {

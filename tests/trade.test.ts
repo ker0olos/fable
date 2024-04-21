@@ -1411,8 +1411,8 @@ Deno.test('/give', async (test) => {
         ),
         {
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
-            { filename: 'image_url2.webp', id: '1' },
+            { filename: 'image-url.webp', id: '0' },
+            { filename: 'image-url2.webp', id: '1' },
           ],
           embeds: [
             {
@@ -1420,7 +1420,7 @@ Deno.test('/give', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -1438,7 +1438,7 @@ Deno.test('/give', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url2.webp',
+                url: 'attachment://image-url2.webp',
               },
               fields: [
                 {
@@ -1628,8 +1628,8 @@ Deno.test('/give', async (test) => {
         ),
         {
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
-            { filename: 'image_url2.webp', id: '1' },
+            { filename: 'image-url.webp', id: '0' },
+            { filename: 'image-url2.webp', id: '1' },
           ],
           components: [],
           embeds: [
@@ -1642,7 +1642,7 @@ Deno.test('/give', async (test) => {
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -1660,7 +1660,7 @@ Deno.test('/give', async (test) => {
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url2.webp',
+                url: 'attachment://image-url2.webp',
               },
               fields: [
                 {
@@ -1814,8 +1814,8 @@ Deno.test('/give', async (test) => {
         ),
         {
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
-            { filename: 'image_url2.webp', id: '1' },
+            { filename: 'image-url.webp', id: '0' },
+            { filename: 'image-url2.webp', id: '1' },
           ],
           components: [],
           embeds: [
@@ -1828,7 +1828,7 @@ Deno.test('/give', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -1846,7 +1846,7 @@ Deno.test('/give', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url2.webp',
+                url: 'attachment://image-url2.webp',
               },
               fields: [
                 {
@@ -1987,8 +1987,8 @@ Deno.test('/trade', async (test) => {
         {
           content: '<@another_user_id>',
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
-            { filename: 'image_url.webp', id: '1' },
+            { filename: 'image-url.webp', id: '0' },
+            { filename: 'image-url.webp', id: '1' },
           ],
           embeds: [
             {
@@ -1996,7 +1996,7 @@ Deno.test('/trade', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -2014,7 +2014,7 @@ Deno.test('/trade', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -2203,8 +2203,8 @@ Deno.test('/trade', async (test) => {
         {
           content: '<@another_user_id>',
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
-            { filename: 'image_url.webp', id: '1' },
+            { filename: 'image-url.webp', id: '0' },
+            { filename: 'image-url.webp', id: '1' },
           ],
           embeds: [
             {
@@ -2212,7 +2212,7 @@ Deno.test('/trade', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -2230,7 +2230,7 @@ Deno.test('/trade', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -2412,8 +2412,8 @@ Deno.test('/trade', async (test) => {
         ),
         {
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
-            { filename: 'image_url.webp', id: '1' },
+            { filename: 'image-url.webp', id: '0' },
+            { filename: 'image-url.webp', id: '1' },
           ],
           components: [],
           embeds: [
@@ -2426,7 +2426,7 @@ Deno.test('/trade', async (test) => {
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -2570,8 +2570,8 @@ Deno.test('/trade', async (test) => {
         {
           components: [],
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
-            { filename: 'image_url.webp', id: '1' },
+            { filename: 'image-url.webp', id: '0' },
+            { filename: 'image-url.webp', id: '1' },
           ],
           embeds: [
             {
@@ -2584,7 +2584,7 @@ Deno.test('/trade', async (test) => {
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {

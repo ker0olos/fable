@@ -122,7 +122,7 @@ Deno.test('/chat', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           components: [
             // {
             //   type: 1,
@@ -152,7 +152,7 @@ Deno.test('/chat', async (test) => {
             {
               type: 'rich',
               author: {
-                icon_url: 'attachment://image_url.webp',
+                icon_url: 'attachment://image-url.webp',
                 name: 'full name',
               },
               description: 't',
@@ -404,7 +404,7 @@ Deno.test('/chat', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
@@ -420,7 +420,7 @@ Deno.test('/chat', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               footer: {
                 text: 'Male, 420',

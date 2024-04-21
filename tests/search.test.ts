@@ -122,11 +122,11 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -234,11 +234,11 @@ Deno.test('/media', async (test) => {
             title: 'native title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -346,11 +346,11 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -465,7 +465,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [
@@ -493,7 +493,7 @@ Deno.test('/media', async (test) => {
               ],
             },
           ],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -711,7 +711,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [
@@ -727,7 +727,7 @@ Deno.test('/media', async (test) => {
               ],
             },
           ],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -879,7 +879,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }, {
             type: 'rich',
@@ -913,7 +913,7 @@ Deno.test('/media', async (test) => {
             }],
           }],
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
+            { filename: 'image-url.webp', id: '0' },
             { filename: 'main%20character%20url.webp', id: '1' },
             { filename: 'supporting%20character%20url.webp', id: '2' },
           ],
@@ -1093,7 +1093,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [
@@ -1127,7 +1127,7 @@ Deno.test('/media', async (test) => {
               ],
             },
           ],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -1278,7 +1278,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [
@@ -1312,7 +1312,7 @@ Deno.test('/media', async (test) => {
               ],
             },
           ],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -1426,7 +1426,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [
@@ -1442,7 +1442,7 @@ Deno.test('/media', async (test) => {
               ],
             },
           ],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -1581,7 +1581,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [
@@ -1603,7 +1603,7 @@ Deno.test('/media', async (test) => {
               ],
             },
           ],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -1742,7 +1742,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [
@@ -1770,7 +1770,7 @@ Deno.test('/media', async (test) => {
               ],
             },
           ],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -1900,7 +1900,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }, {
             type: 'rich',
@@ -1931,7 +1931,7 @@ Deno.test('/media', async (test) => {
             }],
           }],
           attachments: [
-            { filename: 'image_url.webp', id: '0' },
+            { filename: 'image-url.webp', id: '0' },
             { filename: 'default.webp', id: '1' },
             { filename: 'default.webp', id: '2' },
           ],
@@ -2155,12 +2155,12 @@ Deno.test('/media debug', async (test) => {
               },
             ],
             thumbnail: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
             title: 'english title',
           }],
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -2426,7 +2426,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
             footer: {
               text: 'Male, 420',
@@ -2443,7 +2443,7 @@ Deno.test('/character', async (test) => {
               },
             ],
           }],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -2565,7 +2565,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [{
@@ -2585,7 +2585,7 @@ Deno.test('/character', async (test) => {
               },
             ],
           }],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -2703,7 +2703,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
             footer: {
               text: 'Female',
@@ -2720,7 +2720,7 @@ Deno.test('/character', async (test) => {
               },
             ],
           }],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -2838,7 +2838,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
             footer: {
               text: '18+',
@@ -2855,7 +2855,7 @@ Deno.test('/character', async (test) => {
               },
             ],
           }],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -2975,7 +2975,7 @@ Deno.test('/character', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description:
@@ -2987,7 +2987,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'attachment://image_url.webp',
+              url: 'attachment://image-url.webp',
             },
           }],
           components: [{
@@ -3279,7 +3279,7 @@ Deno.test('media embed', async (test) => {
         title: 'full title',
         description: 'long description',
         image: {
-          url: 'attachment://image_url.webp',
+          url: 'attachment://image-url.webp',
         },
         author: {
           name: 'Anime',
@@ -3321,7 +3321,7 @@ Deno.test('media embed', async (test) => {
         title: 'full title',
         description: 'long description',
         thumbnail: {
-          url: 'attachment://image_url.webp',
+          url: 'attachment://image-url.webp',
         },
         author: {
           name: 'Anime',
@@ -3409,7 +3409,7 @@ Deno.test('character embed', async (test) => {
           },
         ],
         image: {
-          url: 'attachment://image_url.webp',
+          url: 'attachment://image-url.webp',
         },
         footer: {
           text: 'Male, 420',
@@ -3473,7 +3473,7 @@ Deno.test('character embed', async (test) => {
           },
         ],
         thumbnail: {
-          url: 'attachment://image_url.webp',
+          url: 'attachment://image-url.webp',
         },
         footer: {
           text: 'Male, 420',
@@ -3521,7 +3521,7 @@ Deno.test('character embed', async (test) => {
           },
         ],
         thumbnail: {
-          url: 'attachment://image_url.webp',
+          url: 'attachment://image-url.webp',
         },
         type: 'rich',
       });
@@ -3571,7 +3571,7 @@ Deno.test('character embed', async (test) => {
           },
         ],
         thumbnail: {
-          url: 'attachment://custom_image_url.webp',
+          url: 'attachment://custom-image-url.webp',
         },
         type: 'rich',
       });
@@ -3717,14 +3717,14 @@ Deno.test('/character debug', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           components: [],
           embeds: [
             {
               type: 'rich',
               title: 'full name',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -3877,13 +3877,13 @@ Deno.test('/character debug', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
               title: 'full name',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {
@@ -4044,14 +4044,14 @@ Deno.test('/character debug', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           components: [],
           embeds: [
             {
               type: 'rich',
               title: 'full name',
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
               fields: [
                 {

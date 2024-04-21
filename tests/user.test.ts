@@ -1147,7 +1147,7 @@ Deno.test('/nick', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
@@ -1162,7 +1162,7 @@ Deno.test('/nick', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
             },
           ],
@@ -1630,7 +1630,7 @@ Deno.test('/image', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'new_image.webp', id: '0' }],
+          attachments: [{ filename: 'new-image.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
@@ -1645,7 +1645,7 @@ Deno.test('/image', async (test) => {
                 },
               ],
               image: {
-                url: 'attachment://new_image.webp',
+                url: 'attachment://new-image.webp',
               },
             },
           ],
