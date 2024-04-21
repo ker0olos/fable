@@ -462,6 +462,8 @@ async function proxy(
     }
   }
 
+  filename = filename.replaceAll('_', '-');
+
   return {
     filename,
     arrayBuffer: file.image,
