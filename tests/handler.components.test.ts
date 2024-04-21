@@ -4884,7 +4884,7 @@ Deno.test('reply modal submit component', async (test) => {
       send: () => true,
     }));
 
-    const chatStub = stub(chat, 'process', () =>
+    const chatStub = stub(chat, 'run', () =>
       ({
         setType: setTypeSpy,
       }) as any);

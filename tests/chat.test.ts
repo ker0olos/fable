@@ -66,6 +66,11 @@ Deno.test('/chat', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const chatStub = stub(chat, 'runLLM', (_, __, callback) => {
+      callback('t', true);
+      return Promise.resolve();
+    });
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     config.chat = true;
@@ -73,7 +78,7 @@ Deno.test('/chat', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = chat.process({
+      const message = chat.run({
         token: 'test_token',
         member: {
           user: {
@@ -90,12 +95,12 @@ Deno.test('/chat', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -117,16 +122,18 @@ Deno.test('/chat', async (test) => {
           ) as any,
         ),
         {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [{
-              custom_id: 'reply=user_id=pack-id:1=full name',
-              label: 'Reply',
-              style: 2,
-              type: 2,
-            }],
-          }],
+          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          components: [
+            // {
+            //   type: 1,
+            //   components: [{
+            //     custom_id: 'reply=user_id=pack-id:1=full name',
+            //     label: 'Reply',
+            //     style: 2,
+            //     type: 2,
+            //   }],
+            // },
+          ],
           embeds: [
             {
               type: 'rich',
@@ -140,12 +147,10 @@ Deno.test('/chat', async (test) => {
             {
               type: 'rich',
               author: {
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+                icon_url: 'attachment://image_url.webp',
                 name: 'full name',
               },
-              description:
-                "Hello, just a reminder that sharks aren't real, just like the moon landing it sharks are also faked by the US government.",
+              description: 't',
             },
           ],
         },
@@ -160,6 +165,7 @@ Deno.test('/chat', async (test) => {
       isDisabledStub.restore();
       timeStub.restore();
       listStub.restore();
+      chatStub.restore();
 
       getGuildStub.restore();
 
@@ -221,7 +227,7 @@ Deno.test('/chat', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = chat.process({
+      const message = chat.run({
         token: 'test_token',
         member: {
           user: {
@@ -238,12 +244,12 @@ Deno.test('/chat', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -348,7 +354,7 @@ Deno.test('/chat', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = chat.process({
+      const message = chat.run({
         token: 'test_token',
         member: {
           user: {
@@ -365,12 +371,12 @@ Deno.test('/chat', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -393,7 +399,7 @@ Deno.test('/chat', async (test) => {
         ),
         {
           components: [],
-          attachments: [],
+          attachments: [{ filename: 'image_url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
@@ -409,7 +415,7 @@ Deno.test('/chat', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+                url: 'attachment://image_url.webp',
               },
               footer: {
                 text: 'Male, 420',
@@ -474,7 +480,7 @@ Deno.test('/chat', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = chat.process({
+      const message = chat.run({
         token: 'test_token',
         member: {
           user: {
@@ -491,12 +497,12 @@ Deno.test('/chat', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'attachment://spinner3.gif',
             },
           }],
         },
@@ -548,7 +554,7 @@ Deno.test('/chat', async (test) => {
     try {
       assertThrows(
         () =>
-          chat.process({
+          chat.run({
             token: 'test_token',
             member: {
               user: {

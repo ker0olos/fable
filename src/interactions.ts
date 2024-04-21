@@ -700,7 +700,7 @@ export const handler = async (r: Request) => {
             const name = options['name'] as string;
             const message = options['message'] as string;
 
-            return chat.process({
+            return chat.run({
               token,
               message,
               guildId,
@@ -1392,7 +1392,7 @@ export const handler = async (r: Request) => {
             const message = options['message'] as string;
 
             if (userId === member.user.id) {
-              return chat.process({
+              return chat.run({
                 token,
                 message,
                 guildId,

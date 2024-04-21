@@ -7774,7 +7774,7 @@ Deno.test('chat command handlers', async (test) => {
       body,
     } as any));
 
-    const chatStub = stub(chat, 'process', () => ({
+    const chatStub = stub(chat, 'run', () => ({
       send: () => true,
     } as any));
 
@@ -7866,7 +7866,7 @@ Deno.test('chat command handlers', async (test) => {
       body,
     } as any));
 
-    const chatStub = stub(chat, 'process', () => ({
+    const chatStub = stub(chat, 'run', () => ({
       send: () => true,
     } as any));
 
@@ -7958,7 +7958,7 @@ Deno.test('chat command handlers', async (test) => {
       body,
     } as any));
 
-    const chatStub = stub(chat, 'process', () => ({
+    const chatStub = stub(chat, 'run', () => ({
       send: () => true,
     } as any));
 

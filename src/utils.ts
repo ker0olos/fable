@@ -2,6 +2,9 @@ import nacl from 'tweetnacl';
 
 import { chunk } from '$std/collections/chunk.ts';
 
+import { basename, extname } from '$std/path/mod.ts';
+import { extensionsByType } from '$std/media_types/mod.ts';
+
 import {
   captureException as _captureException,
   init as _initSentry,
@@ -11,12 +14,16 @@ import { json, serve, serveStatic, validateRequest } from 'sift';
 
 import { distance as levenshtein } from 'levenshtein';
 
+import { proxy as _proxy } from 'images-proxy';
+
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
 } from '~/db/mod.ts';
+
+import type { Attachment } from '~/src/discord.ts';
 
 export enum ImageSize {
   Preview = 'preview',
@@ -439,7 +446,31 @@ function initSentry(dsn?: string): void {
   }
 }
 
+async function proxy(
+  url?: string,
+  size?: ImageSize,
+): Promise<Attachment> {
+  let filename = url ? encodeURIComponent(basename(url)) : 'default.webp';
+
+  const file = await _proxy(url ?? '', size);
+
+  if (extname(filename) === '') {
+    const ext = extensionsByType(file.format);
+
+    if (ext?.length) {
+      filename = `${filename}.${ext[0]}`;
+    }
+  }
+
+  return {
+    filename,
+    arrayBuffer: file.image,
+    type: file.format,
+  };
+}
+
 const utils = {
+  proxy,
   LehmerRNG,
   isWithin14Days,
   capitalize,

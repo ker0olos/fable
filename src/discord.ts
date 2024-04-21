@@ -1,6 +1,6 @@
 import { basename, extname } from '$std/path/mod.ts';
 
-import { contentType, extensionsByType } from '$std/media_types/mod.ts';
+import { contentType } from '$std/media_types/mod.ts';
 
 import { json } from 'sift';
 
@@ -10,8 +10,6 @@ import utils, { ImageSize } from '~/src/utils.ts';
 
 import config from '~/src/config.ts';
 
-import { proxy } from 'images-proxy';
-
 const splitter = '=';
 
 enum CommandType {
@@ -19,7 +17,7 @@ enum CommandType {
   USER = 2,
 }
 
-type Attachment = {
+export type Attachment = {
   arrayBuffer: ArrayBuffer;
   filename: string;
   type: string;
@@ -66,7 +64,6 @@ export const colors = {
 };
 
 export const emotes = {
-  fable: '<:fable:1083677739313274915>',
   star: '<:star:1061016362832642098>',
   noStar: '<:no_star:1109377526662434906>',
   smolStar: '<:smolstar:1107503653956374638>',
@@ -83,6 +80,7 @@ export const emotes = {
   stunned: '<:STUNNED:1214576287415541814>',
   slowed: '<:SLOWED:1215255510706683905>',
   sneaky: '<:sneaky:1215575668490764288>',
+  skeleton: '<:loading:1227290168688508959>',
 };
 
 export const join = (...args: string[]): string => {
@@ -563,14 +561,6 @@ export class Embed {
     author: { name?: string; url?: string; icon_url?: string; proxy?: boolean },
   ): Embed {
     if (author.name) {
-      if (author.proxy && author.icon_url) {
-        author.icon_url = `${config.origin}/external/${
-          encodeURIComponent(author.icon_url ?? '')
-        }?size=preview`;
-      }
-
-      delete author.proxy;
-
       this.#data.author = {
         ...author,
         // author name is limited to 256
@@ -644,27 +634,11 @@ export class Embed {
       // deno-lint-ignore no-non-null-assertion
       this.#data.image = { url: image.url! };
     } else {
-      let filename = image.url
-        ? encodeURIComponent(basename(image.url))
-        : 'default.webp';
+      const attachment = await utils.proxy(image.url, image.size);
 
-      const file = await proxy(image.url ?? '', image.size);
+      this.#data.image = { url: `attachment://${attachment.filename}` };
 
-      if (extname(filename) === '') {
-        const ext = extensionsByType(file.format);
-
-        if (ext?.length) {
-          filename = `${filename}.${ext[0]}`;
-        }
-      }
-
-      this.#data.image = { url: `attachment://${filename}` };
-
-      return {
-        filename,
-        arrayBuffer: file.image,
-        type: file.format,
-      };
+      return attachment;
     }
   }
 
@@ -679,27 +653,11 @@ export class Embed {
       // deno-lint-ignore no-non-null-assertion
       this.#data.thumbnail = { url: image.url! };
     } else {
-      let filename = image.url
-        ? encodeURIComponent(basename(image.url))
-        : 'default.webp';
+      const attachment = await utils.proxy(image.url, image.size);
 
-      const file = await proxy(image.url ?? '', image.size);
+      this.#data.thumbnail = { url: `attachment://${attachment.filename}` };
 
-      if (extname(filename) === '') {
-        const ext = extensionsByType(file.format);
-
-        if (ext?.length) {
-          filename = `${filename}.${ext[0]}`;
-        }
-      }
-
-      this.#data.thumbnail = { url: `attachment://${filename}` };
-
-      return {
-        filename,
-        arrayBuffer: file.image,
-        type: file.format,
-      };
+      return attachment;
     }
   }
 
@@ -828,6 +786,11 @@ export class Message {
 
   clearComponents(): Message {
     this.#data.components = [];
+    return this;
+  }
+
+  clearEmbeds(): Message {
+    this.#data.embeds = [];
     return this;
   }
 
