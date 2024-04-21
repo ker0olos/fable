@@ -552,7 +552,7 @@ Deno.test('/steal', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
             },
             {
@@ -577,7 +577,7 @@ Deno.test('/steal', async (test) => {
             ],
             type: 1,
           }],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -848,7 +848,7 @@ Deno.test('/steal', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
             },
             {
@@ -873,7 +873,7 @@ Deno.test('/steal', async (test) => {
             ],
             type: 1,
           }],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
         },
       );
     } finally {
@@ -1014,7 +1014,7 @@ Deno.test('/steal', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
@@ -1032,7 +1032,7 @@ Deno.test('/steal', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
             },
           ],
@@ -1397,7 +1397,7 @@ Deno.test('/steal', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           embeds: [
             {
               type: 'rich',
@@ -1414,7 +1414,7 @@ Deno.test('/steal', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
             },
           ],
@@ -1584,7 +1584,7 @@ Deno.test('attempt', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           components: [
             {
               type: 1,
@@ -1624,7 +1624,7 @@ Deno.test('attempt', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
             },
           ],
@@ -1646,7 +1646,7 @@ Deno.test('attempt', async (test) => {
         ),
         {
           content: '<@another_user_id>',
-          attachments: [{ filename: 'image_url.webp', id: '0' }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
           components: [
             {
               components: [
@@ -1680,7 +1680,7 @@ Deno.test('attempt', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url.webp',
+                url: 'attachment://image-url.webp',
               },
             },
           ],

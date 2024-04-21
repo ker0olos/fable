@@ -805,11 +805,11 @@ Deno.test('/gacha', async (test) => {
             type: 'rich',
             title: 'title',
             image: {
-              url: 'attachment://media_image_url.webp',
+              url: 'attachment://media-image-url.webp',
             },
           }],
           components: [],
-          attachments: [{ filename: 'media_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'media-image-url.webp', id: '0' }],
         },
       );
 
@@ -859,7 +859,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -868,7 +868,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'attachment://character_image_url.webp',
+              url: 'attachment://character-image-url.webp',
             },
           }],
           components: [{
@@ -1032,12 +1032,12 @@ Deno.test('/gacha', async (test) => {
           content: '<@user_id>',
           allowed_mentions: { parse: [] },
           components: [],
-          attachments: [{ filename: 'media_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'media-image-url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             title: 'title',
             image: {
-              url: 'attachment://media_image_url.webp',
+              url: 'attachment://media-image-url.webp',
             },
           }],
         },
@@ -1093,7 +1093,7 @@ Deno.test('/gacha', async (test) => {
         {
           content: '<@user_id>',
           allowed_mentions: { parse: [] },
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -1102,7 +1102,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'attachment://character_image_url.webp',
+              url: 'attachment://character-image-url.webp',
             },
           }],
           components: [{
@@ -1254,7 +1254,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -1263,7 +1263,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'attachment://character_image_url.webp',
+              url: 'attachment://character-image-url.webp',
             },
           }],
           components: [{
@@ -1418,11 +1418,11 @@ Deno.test('/gacha', async (test) => {
             type: 'rich',
             title: 'title',
             image: {
-              url: 'attachment://media_image_url.webp',
+              url: 'attachment://media-image-url.webp',
             },
           }],
           components: [],
-          attachments: [{ filename: 'media_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'media-image-url.webp', id: '0' }],
         },
       );
 
@@ -1472,7 +1472,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -1481,7 +1481,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'attachment://character_image_url.webp',
+              url: 'attachment://character-image-url.webp',
             },
           }],
           components: [{
@@ -1529,7 +1529,7 @@ Deno.test('/gacha', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           content: '<@another_user_id>',
           embeds: [
             {
@@ -1543,7 +1543,7 @@ Deno.test('/gacha', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://character_image_url.webp',
+                url: 'attachment://character-image-url.webp',
               },
             },
           ],
@@ -1674,11 +1674,11 @@ Deno.test('/gacha', async (test) => {
             type: 'rich',
             title: 'title',
             image: {
-              url: 'attachment://media_image_url.webp',
+              url: 'attachment://media-image-url.webp',
             },
           }],
           components: [],
-          attachments: [{ filename: 'media_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'media-image-url.webp', id: '0' }],
         },
       );
 
@@ -1728,7 +1728,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -1737,7 +1737,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'attachment://character_image_url.webp',
+              url: 'attachment://character-image-url.webp',
             },
           }],
           components: [{
@@ -1785,7 +1785,7 @@ Deno.test('/gacha', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           content: '<@another_user_id>',
           embeds: [
             {
@@ -1799,7 +1799,7 @@ Deno.test('/gacha', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://character_image_url.webp',
+                url: 'attachment://character-image-url.webp',
               },
             },
           ],
@@ -1943,11 +1943,11 @@ Deno.test('/gacha', async (test) => {
             type: 'rich',
             title: 'title',
             image: {
-              url: 'attachment://media_image_url.webp',
+              url: 'attachment://media-image-url.webp',
             },
           }],
           components: [],
-          attachments: [{ filename: 'media_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'media-image-url.webp', id: '0' }],
         },
       );
 
@@ -1997,7 +1997,7 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           embeds: [{
             type: 'rich',
             description: new Rating({ popularity: 100 }).emotes,
@@ -2006,7 +2006,7 @@ Deno.test('/gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url: 'attachment://character_image_url.webp',
+              url: 'attachment://character-image-url.webp',
             },
           }],
           components: [{
@@ -2054,7 +2054,7 @@ Deno.test('/gacha', async (test) => {
         ),
         {
           components: [],
-          attachments: [{ filename: 'character_image_url.webp', id: '0' }],
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
           content: '<@another_user_id>',
           embeds: [
             {
@@ -2068,7 +2068,7 @@ Deno.test('/gacha', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://character_image_url.webp',
+                url: 'attachment://character-image-url.webp',
               },
             },
           ],
