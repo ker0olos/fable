@@ -116,19 +116,17 @@ async function fetchWithRetry(
   try {
     const response = await fetch(input, init);
 
-    if (response.status >= 400) {
+    if (response.status > 400) {
       throw new Error(`${response.status}:${response.statusText}`);
     }
 
     return response;
   } catch (err) {
-    if (n > 5) {
+    if (n >= 8) {
       throw err;
     }
 
-    console.error(`retry ${n}`, err);
-
-    await sleep(0.5);
+    await sleep(0.5 * n);
 
     return fetchWithRetry(input, init, n + 1);
   }

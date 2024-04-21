@@ -170,7 +170,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url', id: '0' }],
+          attachments: [{ filename: 'image_url.webp', id: '0' }],
           components: [
             {
               type: 1,
@@ -202,7 +202,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
@@ -337,7 +337,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url', id: '0' }],
+          attachments: [{ filename: 'image_url.webp', id: '0' }],
           components: [
             {
               type: 1,
@@ -369,7 +369,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
@@ -504,7 +504,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url', id: '0' }],
+          attachments: [{ filename: 'image_url.webp', id: '0' }],
           components: [],
           embeds: [
             {
@@ -518,7 +518,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
             {
@@ -644,7 +644,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url', id: '0' }],
+          attachments: [{ filename: 'image_url.webp', id: '0' }],
           components: [],
           embeds: [
             {
@@ -661,7 +661,7 @@ Deno.test('/skills acquire', async (test) => {
                 text: "Character is yet to be found and isn't combat ready",
               },
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
           ],
@@ -779,7 +779,7 @@ Deno.test('/skills acquire', async (test) => {
           ) as any,
         ),
         {
-          attachments: [{ filename: 'image_url', id: '0' }],
+          attachments: [{ filename: 'image_url.webp', id: '0' }],
           components: [],
           embeds: [
             {
@@ -797,7 +797,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image_url',
+                url: 'attachment://image_url.webp',
               },
             },
           ],
