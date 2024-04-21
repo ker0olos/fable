@@ -34,6 +34,7 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
         //
         false,
         false,
@@ -75,6 +76,7 @@ Deno.test('init', async (test) => {
         communityPacksMaintainerAPI: true,
         communityPacksBrowseAPI: true,
         combat: true,
+        chat: true,
         origin: undefined,
         //
         xmas: false,
@@ -116,6 +118,7 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
         //
         true,
         true,
@@ -132,6 +135,7 @@ Deno.test('init', async (test) => {
         'public_key',
         'mongo_uri',
         'notice_message',
+        '0',
         '0',
         '0',
         '0',
@@ -167,6 +171,7 @@ Deno.test('init', async (test) => {
         communityPacksMaintainerAPI: false,
         communityPacksBrowseAPI: false,
         combat: false,
+        chat: false,
         origin: undefined,
         //
         xmas: true,

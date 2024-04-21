@@ -16,6 +16,7 @@ const config: {
   communityPacksMaintainerAPI?: boolean;
   communityPacksBrowseAPI?: boolean;
   combat?: boolean;
+  chat?: boolean;
   //
   disableImagesProxy?: boolean;
   //
@@ -39,6 +40,7 @@ const config: {
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
   combat: undefined,
+  chat: undefined,
   //
   disableImagesProxy: undefined,
   //
@@ -95,6 +97,8 @@ export async function initConfig(): Promise<void> {
     config.combat = !Deno.env.has('COMBAT') ||
       Deno.env.get('COMBAT') === '1';
 
+    config.chat = !Deno.env.has('CHAT') ||
+      Deno.env.get('CHAT') === '1';
     //
     config.disableImagesProxy = Deno.env.get('DISABLE_IMAGES_PROXY') === '1';
 

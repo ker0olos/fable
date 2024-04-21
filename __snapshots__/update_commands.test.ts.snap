@@ -694,6 +694,54 @@ snapshot[`commands 1`] = `
     ]
   },
   {
+    "name": "chat",
+    "description": "chat with one of your characters",
+    "description_localizations": {},
+    "options": [
+      {
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      },
+      {
+        "name": "message",
+        "description": "your next message",
+        "type": 3,
+        "required": true,
+        "description_localizations": {}
+      }
+    ]
+  },
+  {
+    "name": "talk",
+    "description": "chat with one of your characters",
+    "description_localizations": {},
+    "options": [
+      {
+        "name": "name",
+        "description": "the name of the character",
+        "autocomplete": true,
+        "type": 3,
+        "required": true,
+        "description_localizations": {
+          "es-ES": "el nombre del personaje"
+        }
+      },
+      {
+        "name": "message",
+        "description": "your next message",
+        "type": 3,
+        "required": true,
+        "description_localizations": {}
+      }
+    ]
+  },
+  {
     "name": "help",
     "description": "need more information? we got you",
     "description_localizations": {

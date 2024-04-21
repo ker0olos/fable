@@ -391,6 +391,24 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'chat',
+    description: '/chat',
+    aliases: ['talk'],
+    options: [
+      Option({
+        name: 'name',
+        description: '$character-name',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+      Option({
+        name: 'message',
+        description: '$message',
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'help',
     description: '/help',
     aliases: ['start', 'guide', 'wiki', 'tuto'],

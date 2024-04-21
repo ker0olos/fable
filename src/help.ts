@@ -280,6 +280,8 @@ function pages(
             `- \`/trade\` \`/offer\`: _${i18n.get('/trade', locale)}_`,
             `- \`/give\` \`/gift\`: _${i18n.get('/give', locale)}_`,
             '',
+            `- \`/chat\` \`/talk\`: _${i18n.get('/chat', locale)}_`,
+            '',
             `- \`/battle tower\`: _${i18n.get('/battle tower', locale)}_`,
             `- \`/battle challenge\`: _${
               i18n.get('/battle challenge', locale)

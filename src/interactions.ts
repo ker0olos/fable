@@ -15,6 +15,7 @@ import stats from '~/src/stats.ts';
 import battle from '~/src/battle.ts';
 import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
+import chat from '~/src/chat.ts';
 
 import _skills, { skills } from '~/src/skills.ts';
 
@@ -200,6 +201,8 @@ export const handler = async (r: Request) => {
             'like',
             'unlike',
             'stats',
+            'chat',
+            'talk',
           ].includes(name) || (
             // deno-lint-ignore no-non-null-assertion
             name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
@@ -692,6 +695,22 @@ export const handler = async (r: Request) => {
             }
             break;
           }
+          case 'chat':
+          case 'talk': {
+            const name = options['name'] as string;
+            const message = options['message'] as string;
+
+            return chat.run({
+              token,
+              message,
+              guildId,
+              search: name,
+              member,
+              id: name.startsWith(idPrefix)
+                ? name.substring(idPrefix.length)
+                : undefined,
+            }).send();
+          }
           case 'installed':
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
@@ -1153,6 +1172,33 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
+          case 'reply': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterName = customValues![2];
+
+            if (userId === member.user.id) {
+              return new discord.Message(discord.MessageType.Modal)
+                .setId('reply', userId, characterId)
+                .setTitle(i18n.get('reply-to', locale, characterName))
+                .addComponents([
+                  new discord.Component(discord.ComponentType.TextInput)
+                    .setId('message')
+                    .setLabel(i18n.get('message', locale))
+                    .setMinLength(1)
+                    .setMaxLength(2048)
+                    .setStyle(2),
+                ])
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
           case 'stats': {
             // deno-lint-ignore no-non-null-assertion
             const characterId = customValues![0];
@@ -1329,6 +1375,36 @@ export const handler = async (r: Request) => {
               ))
               .setType(discord.MessageType.Update)
               .send();
+          }
+          default:
+            break;
+        }
+        break;
+      case discord.InteractionType.Modal:
+        switch (customType) {
+          case 'reply': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![1];
+
+            const message = options['message'] as string;
+
+            if (userId === member.user.id) {
+              return chat.run({
+                token,
+                message,
+                guildId,
+                member,
+                id: characterId,
+                continue: true,
+              })
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
           }
           default:
             break;
