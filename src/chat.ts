@@ -234,6 +234,12 @@ function run(
 
         message.clearEmbeds();
 
+        message.addEmbed(
+          new discord.Embed().setDescription(
+            "This feature is experimental and limited to **one** message, characters won't remember past messages!",
+          ),
+        );
+
         const bubbles: Bubble[] = [{
           user: true,
           name: userName,

@@ -137,6 +137,11 @@ Deno.test('/chat', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description:
+                "This feature is experimental and limited to **one** message, characters won't remember past messages!",
+            },
+            {
+              type: 'rich',
               author: {
                 icon_url:
                   'https://cdn.discordapp.com/avatars/user_id/avatar_id.png',
