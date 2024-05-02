@@ -221,7 +221,10 @@ export async function gainExp(
 
     await session.commitTransaction();
   } catch (err) {
-    await session.abortTransaction();
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
     await session.endSession();
     await db.close();
 

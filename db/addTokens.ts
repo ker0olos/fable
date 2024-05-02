@@ -54,7 +54,10 @@ export async function addPulls(
 
     await session.commitTransaction();
   } catch (err) {
-    await session.abortTransaction();
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
     await session.endSession();
     await db.close();
 
@@ -126,7 +129,10 @@ export async function addKeys(
 
     await session.commitTransaction();
   } catch (err) {
-    await session.abortTransaction();
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
     await session.endSession();
     await db.close();
 
