@@ -29,7 +29,7 @@ const searchMedia = async (
 ): Promise<IndexedMedia[]> => {
   const list = await packs.all({ guildId });
 
-  const builtin = list[0].manifest.id === 'anilist';
+  const builtin = list[0]?.manifest.id === 'anilist';
 
   const extra = (await Promise.all(
     list.map(async ({ manifest }) => {
@@ -70,7 +70,7 @@ const searchCharacters = async (
 ): Promise<IndexedCharacter[]> => {
   const list = await packs.all({ guildId });
 
-  const builtin = list[0].manifest.id === 'anilist';
+  const builtin = list[0]?.manifest.id === 'anilist';
 
   const extra = (await Promise.all(
     list.map(async ({ manifest }) => {
@@ -126,7 +126,7 @@ const pool = async (
 ): Promise<IndexedCharacter[]> => {
   const list = await packs.all({ guildId });
 
-  const builtin = list[0].manifest.id === 'anilist';
+  const builtin = list[0]?.manifest.id === 'anilist';
 
   const extra = (await Promise.all(
     list.map(async ({ manifest }) => {

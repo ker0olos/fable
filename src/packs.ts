@@ -357,7 +357,7 @@ async function findById<T>(
 
   // if anilist pack is enabled
   // request the ids from anilist
-  if (list.length && list[0].manifest.id === 'anilist') {
+  if (list.length && list[0]?.manifest.id === 'anilist') {
     const anilistResults = await _anilist[key](anilistIds);
 
     anilistIds.forEach((n) => {
