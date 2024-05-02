@@ -72,10 +72,10 @@ Deno.test('chances', async (test) => {
       assertEquals(26, chance);
     });
 
-    await test.step('14 inactive day', () => {
+    await test.step('15 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 14);
+      date.setDate(date.getDate() - 15);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -88,10 +88,10 @@ Deno.test('chances', async (test) => {
       assertEquals(51, chance);
     });
 
-    await test.step('31 inactive day', () => {
+    await test.step('32 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 31);
+      date.setDate(date.getDate() - 32);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -136,10 +136,10 @@ Deno.test('chances', async (test) => {
       assertEquals(3, chance);
     });
 
-    await test.step('7 inactive day', () => {
+    await test.step('6 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 7);
+      date.setDate(date.getDate() - 8);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -152,10 +152,10 @@ Deno.test('chances', async (test) => {
       assertEquals(28, chance);
     });
 
-    await test.step('14 inactive day', () => {
+    await test.step('15 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 14);
+      date.setDate(date.getDate() - 15);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -168,10 +168,10 @@ Deno.test('chances', async (test) => {
       assertEquals(53, chance);
     });
 
-    await test.step('31 inactive day', () => {
+    await test.step('32 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 31);
+      date.setDate(date.getDate() - 32);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -232,10 +232,10 @@ Deno.test('chances', async (test) => {
       assertEquals(40, chance);
     });
 
-    await test.step('14 inactive day', () => {
+    await test.step('15 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 14);
+      date.setDate(date.getDate() - 15);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -248,10 +248,10 @@ Deno.test('chances', async (test) => {
       assertEquals(65, chance);
     });
 
-    await test.step('31 inactive day', () => {
+    await test.step('32 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 31);
+      date.setDate(date.getDate() - 32);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -312,10 +312,10 @@ Deno.test('chances', async (test) => {
       assertEquals(50, chance);
     });
 
-    await test.step('14 inactive day', () => {
+    await test.step('15 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 14);
+      date.setDate(date.getDate() - 15);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -328,10 +328,10 @@ Deno.test('chances', async (test) => {
       assertEquals(75, chance);
     });
 
-    await test.step('31 inactive day', () => {
+    await test.step('32 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 31);
+      date.setDate(date.getDate() - 32);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -392,10 +392,10 @@ Deno.test('chances', async (test) => {
       assertEquals(75, chance);
     });
 
-    await test.step('14 inactive day', () => {
+    await test.step('15 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 14);
+      date.setDate(date.getDate() - 15);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
@@ -408,10 +408,10 @@ Deno.test('chances', async (test) => {
       assertEquals(90, chance);
     });
 
-    await test.step('31 inactive day', () => {
+    await test.step('32 inactive day', () => {
       const date = new Date();
 
-      date.setDate(date.getDate() - 31);
+      date.setDate(date.getDate() - 32);
 
       const inactiveDays = steal.getInactiveDays({
         lastPull: date,
