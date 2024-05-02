@@ -948,7 +948,7 @@ export class Message {
       formData.append(`files[${index}]`, blob, name);
     });
 
-    let response: Response;
+    let response: Response | undefined = undefined;
 
     try {
       response = await utils.fetchWithRetry(
@@ -972,8 +972,7 @@ export class Message {
         extra: {
           url,
           payload: JSON.stringify(this.json()),
-          // deno-lint-ignore no-non-null-assertion
-          response: await response!.text(),
+          response: await response?.text(),
         },
       });
     }

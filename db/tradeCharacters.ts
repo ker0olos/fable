@@ -83,7 +83,10 @@ export async function giveCharacters(
 
     await session.commitTransaction();
   } catch (err) {
-    await session.abortTransaction();
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
     await session.endSession();
     await db.close();
 
@@ -233,7 +236,10 @@ export async function tradeCharacters(
 
     await session.commitTransaction();
   } catch (err) {
-    await session.abortTransaction();
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
     await session.endSession();
     await db.close();
 
@@ -315,7 +321,10 @@ export async function stealCharacter(
 
     await session.commitTransaction();
   } catch (err) {
-    await session.abortTransaction();
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
     await session.endSession();
     await db.close();
 

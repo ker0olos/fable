@@ -202,7 +202,10 @@ export async function addCharacter(
 
     await session.commitTransaction();
   } catch (err) {
-    await session.abortTransaction();
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
     await session.endSession();
     await mongo.close();
 
