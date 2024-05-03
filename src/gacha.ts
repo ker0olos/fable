@@ -239,7 +239,7 @@ async function rngPull(
 
       rating = Rating.fromCharacter(candidate);
 
-      if (rating.stars < 1) {
+      if (!rating.stars) {
         continue;
       }
 
@@ -279,7 +279,7 @@ async function rngPull(
     clearTimeout(timeoutId);
   }
 
-  if (!character || !media || !rating) {
+  if (!character || !media || !rating?.stars) {
     throw new PoolError();
   }
 
