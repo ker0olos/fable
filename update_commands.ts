@@ -63,6 +63,8 @@ type Option = {
   optional?: boolean;
   min_value?: number;
   max_value?: number;
+  min_length?: number;
+  max_length?: number;
 };
 
 type Choice = {
@@ -93,6 +95,8 @@ const Command = ({
     required: !option.optional,
     min_value: option.min_value,
     max_value: option.max_value,
+    min_length: option.min_length,
+    max_length: option.max_length,
     description_localizations: {
       'es-ES': option.description && option.description in ES
         ? ES[option.description as keyof typeof ES]
@@ -405,6 +409,7 @@ export const commands = [
         name: 'message',
         description: '$message',
         type: Type.STRING,
+        max_length: 1024,
       }),
     ],
   }),

@@ -713,6 +713,7 @@ snapshot[`commands 1`] = `
         "description": "your next message",
         "type": 3,
         "required": true,
+        "max_length": 1024,
         "description_localizations": {}
       }
     ]
@@ -737,6 +738,7 @@ snapshot[`commands 1`] = `
         "description": "your next message",
         "type": 3,
         "required": true,
+        "max_length": 1024,
         "description_localizations": {}
       }
     ]
