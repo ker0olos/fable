@@ -6,7 +6,7 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 import { start } from '~/src/interactions.ts';
 
-import { ensureIndexes } from '~/db/ensureIndexes.ts';
+import { ensureIndexes } from '~/db/_ensureIndexes.ts';
 
 let mongod: MongoMemoryReplSet;
 

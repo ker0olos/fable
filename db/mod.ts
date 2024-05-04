@@ -73,6 +73,8 @@ import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
 import { disableBuiltins } from '~/db/manageGuild.ts';
 
+import { addChatMessage } from '~/db/getChatHistory.ts';
+
 import type * as Schema from '~/db/schema.ts';
 
 import type {
@@ -125,6 +127,10 @@ export class Mongo {
 
   battles(): Collection<Schema.BattleData> {
     return this.#client.db('default').collection('battles');
+  }
+
+  chat(): Collection<Schema.Chat> {
+    return this.#client.db('default').collection('chat');
   }
 
   // deno-lint-ignore explicit-function-return-type
@@ -193,6 +199,8 @@ const db = {
   removePack,
   //
   disableBuiltins,
+  //
+  addChatMessage,
 };
 
 export {
