@@ -317,7 +317,7 @@ export async function stealCharacter(
 
     await db.characters().updateOne({ _id: character._id }, {
       $set: { userId, inventoryId: inventory._id },
-    });
+    }, { session });
 
     await session.commitTransaction();
   } catch (err) {
