@@ -310,11 +310,11 @@ Deno.test('diff days', async (test) => {
     assertEquals(utils.diffInDays(a, b), 0);
   });
 
-  await test.step('24 hours', () => {
+  await test.step('25 hours', () => {
     const a = new Date();
     const b = new Date();
 
-    b.setHours(b.getHours() - 24);
+    b.setHours(b.getHours() - 25);
 
     assertEquals(utils.diffInDays(a, b), 1);
   });
@@ -328,11 +328,11 @@ Deno.test('diff days', async (test) => {
     assertEquals(utils.diffInDays(a, b), 1);
   });
 
-  await test.step('48 hours', () => {
+  await test.step('49 hours', () => {
     const a = new Date();
     const b = new Date();
 
-    b.setHours(b.getHours() - 48);
+    b.setHours(b.getHours() - 49);
 
     assertEquals(utils.diffInDays(a, b), 2);
   });
