@@ -136,6 +136,12 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
   return { pool, validate };
 }
 
+async function rangeFallbackPool(
+  { guildId }: { guildId: string },
+): Promise<import('search-index').Character[]> {
+  return await searchIndex.pool({}, guildId);
+}
+
 export async function guaranteedPool(
   { guildId, guarantee }: {
     guildId: string;
@@ -194,7 +200,7 @@ async function rngPull(
     sacrifices?: ObjectId[];
   },
 ): Promise<Pull> {
-  const { pool, validate } = typeof guarantee === 'number'
+  let { pool, validate } = typeof guarantee === 'number'
     ? await gacha.guaranteedPool({ guildId, guarantee })
     : await gacha.rangePool({ guildId });
 
@@ -207,6 +213,11 @@ async function rngPull(
   const { signal } = controller;
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
+
+  if (!pool.length && !guarantee) {
+    pool = await gacha.rangeFallbackPool({ guildId });
+    validate = () => true;
+  }
 
   if (!pool.length) {
     throw new PoolError();
@@ -547,6 +558,7 @@ const gacha = {
   rngPull,
   pullAnimation,
   guaranteedPool,
+  rangeFallbackPool,
   rangePool,
   start,
 };
