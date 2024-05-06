@@ -32,7 +32,7 @@ import {
   MediaType,
 } from '~/src/types.ts';
 
-import { NoPullsError, PoolError } from '~/src/errors.ts';
+import { NoPullsError } from '~/src/errors.ts';
 
 Deno.test('adding character to inventory', async (test) => {
   await test.step('normal', async () => {
@@ -915,6 +915,256 @@ Deno.test('/gacha', async (test) => {
       fetchStub.restore();
 
       getGuildStub.restore();
+      getInstanceInventoriesStub.restore();
+    }
+  });
+
+  await test.step('fallback', async () => {
+    const media: Media = {
+      id: '1',
+      packId: 'pack-id',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      popularity: 100,
+      title: {
+        english: 'title',
+      },
+      images: [{
+        url: 'media_image_url',
+      }],
+      relations: {
+        edges: [],
+      },
+    };
+
+    const character: Character = {
+      id: '2',
+      packId: 'pack-id-2',
+      name: {
+        english: 'name',
+      },
+      images: [{
+        url: 'character_image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceInventoriesStub = stub(
+      db,
+      'getActiveUsersIfLiked',
+      () => [] as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rangePool',
+      // deno-lint-ignore require-await
+      async () =>
+        Promise.resolve({
+          pool: [],
+          validate: () => false,
+        }),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => [character] as any,
+    );
+
+    const pullFallbackStub = stub(
+      gacha,
+      'rangeFallbackPool',
+      // deno-lint-ignore require-await
+      async () => Promise.resolve([character]) as any,
+    );
+
+    const addCharacterStub = stub(
+      db,
+      'addCharacter',
+      // deno-lint-ignore require-await
+      async () => undefined,
+    );
+
+    config.gacha = true;
+    config.combat = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = gacha.start({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            title: 'title',
+            image: {
+              url: 'attachment://media-image-url.webp',
+            },
+          }],
+          components: [],
+          attachments: [{ filename: 'media-image-url.webp', id: '0' }],
+        },
+      );
+
+      await timeStub.nextAsync();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://1.gif',
+            },
+          }],
+          components: [],
+          attachments: [{ filename: '1.gif', id: '0' }],
+        },
+      );
+
+      await timeStub.nextAsync();
+      await timeStub.nextAsync();
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [{ filename: 'character-image-url.webp', id: '0' }],
+          embeds: [{
+            type: 'rich',
+            description: new Rating({ popularity: 100 }).emotes,
+            fields: [{
+              name: 'title',
+              value: '**name**',
+            }],
+            image: {
+              url: 'attachment://character-image-url.webp',
+            },
+          }],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'character=pack-id-2:2=1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'stats=pack-id-2:2',
+                label: '/stats',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'like=pack-id-2:2',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+        },
+      );
+
+      await timeStub.runMicrotasks();
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.gacha;
+      delete config.combat;
+
+      timeStub.restore();
+      pullStub.restore();
+      pullFallbackStub.restore();
+      fetchStub.restore();
+      charactersStub.restore();
+      getGuildStub.restore();
+      addCharacterStub.restore();
       getInstanceInventoriesStub.restore();
     }
   });
@@ -2269,11 +2519,20 @@ Deno.test('/gacha', async (test) => {
 
     const pullStub = stub(
       gacha,
-      'rngPull',
+      'rangePool',
       // deno-lint-ignore require-await
-      async () => {
-        throw new PoolError();
-      },
+      async () =>
+        Promise.resolve({
+          pool: [],
+          validate: () => false,
+        }),
+    );
+
+    const pullFallbackStub = stub(
+      gacha,
+      'rangeFallbackPool',
+      // deno-lint-ignore require-await
+      async () => Promise.resolve([]),
     );
 
     config.gacha = true;
@@ -2333,6 +2592,7 @@ Deno.test('/gacha', async (test) => {
 
       timeStub.restore();
       pullStub.restore();
+      pullFallbackStub.restore();
       fetchStub.restore();
     }
   });
@@ -2348,11 +2608,13 @@ Deno.test('/gacha', async (test) => {
 
     const pullStub = stub(
       gacha,
-      'rngPull',
+      'guaranteedPool',
       // deno-lint-ignore require-await
-      async () => {
-        throw new PoolError();
-      },
+      async () =>
+        Promise.resolve({
+          pool: [],
+          validate: () => false,
+        }),
     );
 
     config.gacha = true;
