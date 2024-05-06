@@ -208,9 +208,9 @@ function run(
           : `You are ${characterName}`,
         character.gender ? `You gender is ${character.gender}` : undefined,
         character.age ? `You age is ${character.age}` : undefined,
-        // character.description
-        //   ? `Here is a small description about ${characterName}: ${character.description}`
-        //   : undefined,
+        character.description
+          ? `Here is a small description about ${characterName}: ${character.description}`
+          : undefined,
       ]
         .filter(utils.nonNullable)
         .join(' - ');
