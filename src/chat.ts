@@ -174,11 +174,9 @@ function run(
         });
 
         return await message
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('chat-not-owned', locale),
-            ),
-          )
+          .addEmbed(new discord.Embed().setDescription(
+            i18n.get('chat-not-owned', locale),
+          ))
           .addEmbed(embed)
           .patch(token);
       }
