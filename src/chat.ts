@@ -174,11 +174,9 @@ function run(
         });
 
         return await message
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('chat-not-owned', locale),
-            ),
-          )
+          .addEmbed(new discord.Embed().setDescription(
+            i18n.get('chat-not-owned', locale),
+          ))
           .addEmbed(embed)
           .patch(token);
       }
@@ -210,14 +208,24 @@ function run(
           : `You are ${characterName}`,
         character.gender ? `You gender is ${character.gender}` : undefined,
         character.age ? `You age is ${character.age}` : undefined,
-        // character.description
-        //   ? `Here is a small description about ${characterName}: ${character.description}`
-        //   : undefined,
-      ].filter(utils.nonNullable).join(' - ');
+        character.description
+          ? `Here is a small description about ${characterName}: ${character.description}`
+          : undefined,
+      ]
+        .filter(utils.nonNullable)
+        .join(' - ');
 
       const message = new discord.Message();
 
       message.addAttachment(characterImage);
+
+      const history = (await db.addChatMessage({
+        guildId,
+        userId: member.user.id,
+        characterId: existing.characterId,
+        role: 'user',
+        content: userMessage,
+      }))?.messages.slice(-10) ?? [];
 
       await chat.runLLM(LLM_MODEL.LLAMA3, {
         messages: [
@@ -226,6 +234,7 @@ function run(
             content:
               `[INST]${characterData}; You are having a conversation with ${userName}, who is a stranger to you. Stay in your character as ${characterName}. Don't use emojis in your responses[/INST]`,
           },
+          ...history,
           { role: 'user', content: userMessage },
         ],
       }, async (s, finished) => {
@@ -234,25 +243,30 @@ function run(
 
         message.clearEmbeds();
 
-        message.addEmbed(
-          new discord.Embed().setDescription(
-            "This feature is experimental and limited to **one** message, characters won't remember past messages!",
-          ),
-        );
+        const bubbles: Bubble[] = [
+          ...history.map(({ role, content }) => ({
+            user: role === 'user',
+            name: role === 'user' ? userName : characterName,
+            imageUrl: role === 'user'
+              ? userImage
+              : `attachment://${characterImage.filename}`,
+            message: content,
+          })),
+          {
+            user: true,
+            name: userName,
+            imageUrl: userImage,
+            message: userMessage,
+          },
+          {
+            user: false,
+            name: characterName,
+            imageUrl: `attachment://${characterImage.filename}`,
+            message: `${characterMessage}${finished ? '' : getSkeleton()}`,
+          },
+        ];
 
-        const bubbles: Bubble[] = [{
-          user: true,
-          name: userName,
-          imageUrl: userImage,
-          message: userMessage,
-        }, {
-          user: false,
-          name: characterName,
-          imageUrl: `attachment://${characterImage.filename}`,
-          message: `${characterMessage}${finished ? '' : getSkeleton()}`,
-        }];
-
-        for (const bubble of bubbles) {
+        for (const bubble of bubbles.slice(-5)) {
           const embed = new discord.Embed()
             .setAuthor({ name: bubble.name, icon_url: bubble.imageUrl })
             .setDescription(bubble.message);
@@ -260,18 +274,26 @@ function run(
           message.addEmbed(embed);
         }
 
-        // if (finished) {
-        //   message.addComponents([
-        //     new discord.Component()
-        //       .setId(
-        //         'reply',
-        //         user.id,
-        //         `${character.packId}:${character.id}`,
-        //         characterName,
-        //       )
-        //       .setLabel(i18n.get('reply', locale)),
-        //   ]);
-        // }
+        if (finished) {
+          await db.addChatMessage({
+            guildId,
+            userId: member.user.id,
+            characterId: existing.characterId,
+            role: 'assistant',
+            content: characterMessage,
+          });
+
+          message.addComponents([
+            new discord.Component()
+              .setId(
+                'reply',
+                user.id,
+                `${character.packId}:${character.id}`,
+                characterName,
+              )
+              .setLabel(i18n.get('reply', locale)),
+          ]);
+        }
 
         await message.patch(token);
       });

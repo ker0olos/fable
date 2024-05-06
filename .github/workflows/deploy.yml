@@ -55,7 +55,7 @@ jobs:
         with:
           deno-version: v1.42.0
 
-      - run: deno run -A db/ensureIndexes.ts
+      - run: deno run -A db/_ensureIndexes.ts
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
 

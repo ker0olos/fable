@@ -71,6 +71,12 @@ Deno.test('/chat', async (test) => {
       return Promise.resolve();
     });
 
+    const addChatMessageStub = stub(
+      db,
+      'addChatMessage',
+      () => Promise.resolve(null),
+    );
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     config.chat = true;
@@ -124,21 +130,200 @@ Deno.test('/chat', async (test) => {
         {
           attachments: [{ filename: 'image-url.webp', id: '0' }],
           components: [
-            // {
-            //   type: 1,
-            //   components: [{
-            //     custom_id: 'reply=user_id=pack-id:1=full name',
-            //     label: 'Reply',
-            //     style: 2,
-            //     type: 2,
-            //   }],
-            // },
+            {
+              type: 1,
+              components: [{
+                custom_id: 'reply=user_id=pack-id:1=full name',
+                label: 'Reply',
+                style: 2,
+                type: 2,
+              }],
+            },
           ],
           embeds: [
             {
               type: 'rich',
-              description:
-                "This feature is experimental and limited to **one** message, characters won't remember past messages!",
+              author: {
+                icon_url:
+                  'https://cdn.discordapp.com/avatars/user_id/avatar_id.png',
+                name: 'username',
+              },
+              description: 'test message',
+            },
+            {
+              type: 'rich',
+              author: {
+                icon_url: 'attachment://image-url.webp',
+                name: 'full name',
+              },
+              description: 't',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.chat;
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      searchStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+      listStub.restore();
+      chatStub.restore();
+
+      getGuildStub.restore();
+
+      findCharactersStub.restore();
+      addChatMessageStub.restore();
+    }
+  });
+
+  await test.step('with some history', async () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      packId: 'pack-id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      popularity: 1000,
+      age: '420',
+      gender: 'male',
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => (undefined as any),
+    );
+
+    const searchStub = stub(
+      packs,
+      'searchOneCharacter',
+      () => Promise.resolve(character),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacter',
+      () => Promise.resolve({ rating: 5, userId: 'user_id' } as any),
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const chatStub = stub(chat, 'runLLM', (_, __, callback) => {
+      callback('t', true);
+      return Promise.resolve();
+    });
+
+    const addChatMessageStub = stub(
+      db,
+      'addChatMessage',
+      () =>
+        Promise.resolve({
+          messages: [
+            { role: 'user', content: 'hello' },
+            { role: 'assistant', content: 'hi hello' },
+          ],
+        } as any),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.chat = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = chat.run({
+        token: 'test_token',
+        member: {
+          user: {
+            id: 'user_id',
+            avatar: 'avatar_id',
+            display_name: 'username',
+          },
+        } as any,
+        guildId: 'guild_id',
+        search: 'full name',
+        message: 'test message',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
+          components: [
+            {
+              type: 1,
+              components: [{
+                custom_id: 'reply=user_id=pack-id:1=full name',
+                label: 'Reply',
+                style: 2,
+                type: 2,
+              }],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              author: {
+                icon_url:
+                  'https://cdn.discordapp.com/avatars/user_id/avatar_id.png',
+                name: 'username',
+              },
+              description: 'hello',
+            },
+            {
+              type: 'rich',
+              author: {
+                icon_url: 'attachment://image-url.webp',
+                name: 'full name',
+              },
+              description: 'hi hello',
             },
             {
               type: 'rich',
@@ -175,6 +360,7 @@ Deno.test('/chat', async (test) => {
       getGuildStub.restore();
 
       findCharactersStub.restore();
+      addChatMessageStub.restore();
     }
   });
 
