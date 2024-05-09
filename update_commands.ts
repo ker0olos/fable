@@ -202,7 +202,6 @@ export const commands = [
   ...Command({
     name: 'character',
     description: '/character',
-    aliases: ['char'],
     options: [
       Option({
         name: 'name',
@@ -782,6 +781,12 @@ export const commands = [
             type: Type.USER,
             optional: true,
           }),
+          Option({
+            name: 'picture',
+            description: '$picture',
+            type: Type.BOOLEAN,
+            optional: true,
+          }),
         ],
       }),
       Option({
@@ -800,6 +805,12 @@ export const commands = [
             name: 'user',
             description: '$user-list',
             type: Type.USER,
+            optional: true,
+          }),
+          Option({
+            name: 'picture',
+            description: '$picture',
+            type: Type.BOOLEAN,
             optional: true,
           }),
         ],
