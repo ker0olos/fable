@@ -143,9 +143,7 @@ const pool = async (
 
         if (!media) return undefined;
 
-        const popularity = char.popularity ?? media.node.popularity;
-
-        if (!popularity) return undefined;
+        const popularity = char.popularity ?? media.node.popularity ?? 1000;
 
         const role = media.role;
 
