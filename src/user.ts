@@ -704,6 +704,7 @@ function list({
   id,
   index,
   nick,
+  picture,
 }: {
   token: string;
   index: number;
@@ -713,17 +714,27 @@ function list({
   search?: string;
   id?: string;
   nick?: boolean;
+  picture?: boolean;
 }): discord.Message {
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
   Promise.resolve()
     .then(async () => {
-      const { user, ...inventory } = await db.getInventory(guildId, userId);
+      const mongo = await db.newMongo().connect();
 
-      let characters = await db.getUserCharacters(userId, guildId);
+      const { user, ...inventory } = await db.getInventory(
+        guildId,
+        userId,
+        mongo,
+        true,
+      );
 
-      const embed = new discord.Embed();
+      let characters = await db.getUserCharacters(userId, guildId, mongo, true);
+
+      let length = 0;
+
+      let embed = new discord.Embed();
 
       const message = new discord.Message();
 
@@ -782,68 +793,18 @@ function list({
           .sort((a, b) => b.rating - a.rating);
       }
 
-      const chunks = utils.chunks(characters, 5);
+      if (picture) {
+        length = characters.length;
 
-      if (!chunks.length) {
-        message.addEmbed(embed.setDescription(
-          nick
-            ? (media.length
-              ? i18n.get(
-                'user-empty-media-collection',
-                locale,
-                `<@${userId}>`,
-                packs.aliasToArray(media[0].title)[0],
-              )
-              : i18n.get(
-                'user-empty-collection',
-                locale,
-                `<@${userId}>`,
-                rating ? `${rating}${discord.emotes.smolStar}` : '',
-              ))
-            : (media.length
-              ? i18n.get(
-                'you-empty-media-collection',
-                locale,
-                packs.aliasToArray(media[0].title)[0],
-              )
-              : i18n.get(
-                'you-empty-collection',
-                locale,
-                rating ? `${rating}${discord.emotes.smolStar}` : '',
-              )),
-        ));
+        const character = characters[index];
 
-        if (!nick) {
-          message.addComponents([
-            // `/gacha` shortcut
-            new discord.Component()
-              .setId('gacha', userId)
-              .setLabel('/gacha'),
-          ]);
-        }
-
-        return message.patch(token);
-      }
-
-      const _characters = await packs.characters({
-        ids: chunks[index]?.map(({ characterId }) => characterId),
-        guildId,
-      });
-
-      await Promise.all(chunks[index].map(async (existing) => {
-        // deno-lint-ignore no-non-null-assertion
-        const char = _characters.find((
-          { packId, id },
-        ) => (
-          existing.characterId === `${packId}:${id}`
-        ))!;
-
-        if (!char) {
-          return;
-        }
+        const _character = await packs.characters({
+          ids: [character.characterId],
+          guildId,
+        });
 
         const media = (await packs.aggregate<Character>({
-          character: char,
+          character: _character[0],
           guildId,
         })).media?.edges?.[0]?.node;
 
@@ -853,29 +814,126 @@ function list({
           )
           : undefined;
 
-        const name = `${existing.rating}${discord.emotes.smolStar}${
-          members.some((member) => Boolean(member) && member === existing._id)
-            ? discord.emotes.member
-            : user.likes?.some((like) =>
-                like.characterId === existing.characterId
-              )
-            ? `${discord.emotes.liked}`
-            : ''
-        } ${existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])}`;
-
         if (
-          media &&
-          packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+          !_character[0] || (
+            media &&
+            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+          )
         ) {
-          return;
+          embed.setDescription(
+            i18n.get(
+              'character-disabled',
+              locale,
+            ),
+          );
+        } else {
+          embed = await srch.characterEmbed(message, _character[0], {
+            media: { title: mediaTitle },
+            existing: character,
+          });
+        }
+      } else {
+        const chunks = utils.chunks(characters, 5);
+
+        if (!chunks.length) {
+          message.addEmbed(embed.setDescription(
+            nick
+              ? (media.length
+                ? i18n.get(
+                  'user-empty-media-collection',
+                  locale,
+                  `<@${userId}>`,
+                  packs.aliasToArray(media[0].title)[0],
+                )
+                : i18n.get(
+                  'user-empty-collection',
+                  locale,
+                  `<@${userId}>`,
+                  rating ? `${rating}${discord.emotes.smolStar}` : '',
+                ))
+              : (media.length
+                ? i18n.get(
+                  'you-empty-media-collection',
+                  locale,
+                  packs.aliasToArray(media[0].title)[0],
+                )
+                : i18n.get(
+                  'you-empty-collection',
+                  locale,
+                  rating ? `${rating}${discord.emotes.smolStar}` : '',
+                )),
+          ));
+
+          if (!nick) {
+            message.addComponents([
+              // `/gacha` shortcut
+              new discord.Component()
+                .setId('gacha', userId)
+                .setLabel('/gacha'),
+            ]);
+          }
+
+          return message.patch(token);
         }
 
-        embed.addField({
-          inline: false,
-          name: mediaTitle ? mediaTitle : name,
-          value: mediaTitle ? name : undefined,
+        length = chunks.length;
+
+        const _characters = await packs.characters({
+          ids: chunks[index]?.map(({ characterId }) => characterId),
+          guildId,
         });
-      }));
+
+        await Promise.all(chunks[index].map(async (existing) => {
+          // deno-lint-ignore no-non-null-assertion
+          const char = _characters.find((
+            { packId, id },
+          ) => (
+            existing.characterId === `${packId}:${id}`
+          ))!;
+
+          if (!char) {
+            return;
+          }
+
+          const media = (await packs.aggregate<Character>({
+            character: char,
+            guildId,
+          })).media?.edges?.[0]?.node;
+
+          const mediaTitle = media?.title
+            ? utils.wrap(
+              packs.aliasToArray(media.title)[0],
+            )
+            : undefined;
+
+          const name = `${existing.rating}${discord.emotes.smolStar}${
+            members.some((member) => Boolean(member) && member === existing._id)
+              ? discord.emotes.member
+              : user.likes?.some((like) =>
+                  like.characterId === existing.characterId
+                )
+              ? `${discord.emotes.liked}`
+              : ''
+          } ${
+            existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
+          }`;
+
+          if (
+            media &&
+            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+          ) {
+            return;
+          }
+
+          embed.addField({
+            inline: false,
+            name: mediaTitle ? mediaTitle : name,
+            value: mediaTitle ? name : undefined,
+          });
+        }));
+      }
+
+      await mongo.close();
 
       return discord.Message.page({
         index,
@@ -884,10 +942,11 @@ function list({
           userId,
           media.length ? `${media[0].packId}:${media[0].id}` : '',
           `${rating ?? ''}`,
+          picture ? '1' : '',
         ),
-        total: chunks.length,
+        total: length,
         message: message.addEmbed(embed),
-        next: index + 1 < chunks.length,
+        next: index + 1 < length,
         locale,
       }).patch(token);
     })
@@ -1099,7 +1158,14 @@ function sum({
 
   Promise.resolve()
     .then(async () => {
-      const { user, ...inventory } = await db.getInventory(guildId, userId);
+      const mongo = await db.newMongo().connect();
+
+      const { user, ...inventory } = await db.getInventory(
+        guildId,
+        userId,
+        mongo,
+        true,
+      );
 
       const likesCharactersIds = (user.likes ?? [])
         .map(({ characterId }) => characterId);
@@ -1107,7 +1173,12 @@ function sum({
       const likesMediaIds = (user.likes ?? [])
         .map(({ mediaId }) => mediaId);
 
-      const characters = await db.getUserCharacters(userId, guildId);
+      const characters = await db.getUserCharacters(
+        userId,
+        guildId,
+        mongo,
+        true,
+      );
 
       const partyIds = [
         inventory.party.member1Id,
@@ -1166,6 +1237,8 @@ function sum({
       );
 
       embed.setDescription(description.join('\n'));
+
+      await mongo.close();
 
       new discord.Message()
         .addEmbed(embed).patch(token);

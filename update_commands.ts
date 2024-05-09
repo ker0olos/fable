@@ -781,6 +781,12 @@ export const commands = [
             type: Type.USER,
             optional: true,
           }),
+          Option({
+            name: 'picture',
+            description: '$picture',
+            type: Type.BOOLEAN,
+            optional: true,
+          }),
         ],
       }),
       Option({
@@ -799,6 +805,12 @@ export const commands = [
             name: 'user',
             description: '$user-list',
             type: Type.USER,
+            optional: true,
+          }),
+          Option({
+            name: 'picture',
+            description: '$picture',
+            type: Type.BOOLEAN,
             optional: true,
           }),
         ],

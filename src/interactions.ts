@@ -442,6 +442,7 @@ export const handler = async (r: Request) => {
               case 'media': {
                 const title = options['title'] as string;
                 const rating = options['rating'] as number;
+                const picture = options['picture'] as boolean;
 
                 return user.list({
                   token,
@@ -454,6 +455,7 @@ export const handler = async (r: Request) => {
                     ? title?.substring(idPrefix.length)
                     : undefined,
                   nick: userId !== member.user.id,
+                  picture,
                 }).send();
               }
               case 'sum': {
@@ -912,7 +914,10 @@ export const handler = async (r: Request) => {
             const rating = parseInt(customValues![2]);
 
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![3]);
+            const picture = customValues![3] === '1';
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![4]);
 
             return user.list({
               token,
@@ -921,6 +926,7 @@ export const handler = async (r: Request) => {
               userId,
               rating,
               id: mediaId,
+              picture,
             })
               .setType(discord.MessageType.Update)
               .send();

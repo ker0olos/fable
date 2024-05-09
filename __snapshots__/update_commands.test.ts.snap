@@ -216,34 +216,6 @@ snapshot[`commands 1`] = `
     ]
   },
   {
-    "name": "char",
-    "description": "search for a specific character",
-    "description_localizations": {
-      "es-ES": "busca un personaje específico"
-    },
-    "options": [
-      {
-        "name": "name",
-        "description": "the name of the character",
-        "autocomplete": true,
-        "type": 3,
-        "required": true,
-        "description_localizations": {
-          "es-ES": "el nombre del personaje"
-        }
-      },
-      {
-        "name": "debug",
-        "description": "display the nerdy stuff",
-        "type": 5,
-        "required": false,
-        "description_localizations": {
-          "es-ES": "muestra los datos para nerds"
-        }
-      }
-    ]
-  },
-  {
     "name": "found",
     "description": "list all characters found from a specific series",
     "description_localizations": {
@@ -2284,6 +2256,13 @@ snapshot[`commands 1`] = `
             "description_localizations": {
               "es-ES": "el usuario de la lista"
             }
+          },
+          {
+            "name": "picture",
+            "description": "Show the picture of the character (but can only view one character at a time)",
+            "type": 5,
+            "required": false,
+            "description_localizations": {}
           }
         ]
       },
@@ -2314,6 +2293,13 @@ snapshot[`commands 1`] = `
             "description_localizations": {
               "es-ES": "el usuario de la lista"
             }
+          },
+          {
+            "name": "picture",
+            "description": "Show the picture of the character (but can only view one character at a time)",
+            "type": 5,
+            "required": false,
+            "description_localizations": {}
           }
         ]
       },
@@ -2410,6 +2396,13 @@ snapshot[`commands 1`] = `
             "description_localizations": {
               "es-ES": "el usuario de la lista"
             }
+          },
+          {
+            "name": "picture",
+            "description": "Show the picture of the character (but can only view one character at a time)",
+            "type": 5,
+            "required": false,
+            "description_localizations": {}
           }
         ]
       },
@@ -2440,6 +2433,13 @@ snapshot[`commands 1`] = `
             "description_localizations": {
               "es-ES": "el usuario de la lista"
             }
+          },
+          {
+            "name": "picture",
+            "description": "Show the picture of the character (but can only view one character at a time)",
+            "type": 5,
+            "required": false,
+            "description_localizations": {}
           }
         ]
       },
@@ -2536,6 +2536,13 @@ snapshot[`commands 1`] = `
             "description_localizations": {
               "es-ES": "el usuario de la lista"
             }
+          },
+          {
+            "name": "picture",
+            "description": "Show the picture of the character (but can only view one character at a time)",
+            "type": 5,
+            "required": false,
+            "description_localizations": {}
           }
         ]
       },
@@ -2566,6 +2573,13 @@ snapshot[`commands 1`] = `
             "description_localizations": {
               "es-ES": "el usuario de la lista"
             }
+          },
+          {
+            "name": "picture",
+            "description": "Show the picture of the character (but can only view one character at a time)",
+            "type": 5,
+            "required": false,
+            "description_localizations": {}
           }
         ]
       },

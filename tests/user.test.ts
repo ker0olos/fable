@@ -2293,6 +2293,17 @@ Deno.test('/collection stars', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getInventoryStub = stub(
       db,
       'getInventory',
@@ -2404,7 +2415,7 @@ Deno.test('/collection stars', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'list=user_id==1=0=prev',
+                  custom_id: 'list=user_id==1==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -2417,7 +2428,7 @@ Deno.test('/collection stars', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'list=user_id==1=0=next',
+                  custom_id: 'list=user_id==1==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -2454,6 +2465,8 @@ Deno.test('/collection stars', async (test) => {
       isDisabledStub.restore();
       mediaStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getInventoryStub.restore();
       getUserCharactersStub.restore();
     }
@@ -2600,6 +2613,17 @@ Deno.test('/collection stars', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getInventoryStub = stub(
       db,
       'getInventory',
@@ -2711,7 +2735,7 @@ Deno.test('/collection stars', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'list=user_id==1=0=prev',
+                  custom_id: 'list=user_id==1==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -2724,7 +2748,7 @@ Deno.test('/collection stars', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'list=user_id==1=0=next',
+                  custom_id: 'list=user_id==1==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -2759,6 +2783,8 @@ Deno.test('/collection stars', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mongoClientStub.restore();
+
       characterStub.restore();
       getInventoryStub.restore();
       getUserCharactersStub.restore();
@@ -2906,6 +2932,17 @@ Deno.test('/collection stars', async (test) => {
       () => undefined as any,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const getInventoryStub = stub(
       db,
       'getInventory',
@@ -3020,7 +3057,7 @@ Deno.test('/collection stars', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'list=user_id==1=0=prev',
+                  custom_id: 'list=user_id==1==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -3033,7 +3070,7 @@ Deno.test('/collection stars', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'list=user_id==1=0=next',
+                  custom_id: 'list=user_id==1==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -3070,6 +3107,8 @@ Deno.test('/collection stars', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getInventoryStub.restore();
       getUserCharactersStub.restore();
     }
@@ -3122,6 +3161,17 @@ Deno.test('/collection stars', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getUserStub = stub(
@@ -3238,7 +3288,7 @@ Deno.test('/collection stars', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'list=user_id==1=0=prev',
+                  custom_id: 'list=user_id==1==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -3251,7 +3301,7 @@ Deno.test('/collection stars', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'list=user_id==1=0=next',
+                  custom_id: 'list=user_id==1==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -3289,6 +3339,8 @@ Deno.test('/collection stars', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getUserStub.restore();
       getGuildStub.restore();
 
@@ -3351,6 +3403,17 @@ Deno.test('/collection stars', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -3441,7 +3504,7 @@ Deno.test('/collection stars', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'list=user_id===0=prev',
+                  custom_id: 'list=user_id====0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -3454,7 +3517,7 @@ Deno.test('/collection stars', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'list=user_id===0=next',
+                  custom_id: 'list=user_id====0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -3485,6 +3548,8 @@ Deno.test('/collection stars', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getInventoryStub.restore();
       getUserCharactersStub.restore();
     }
@@ -3497,6 +3562,17 @@ Deno.test('/collection stars', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -3578,6 +3654,7 @@ Deno.test('/collection stars', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mongoClientStub.restore();
 
       getInventoryStub.restore();
       getUserCharactersStub.restore();
@@ -3591,6 +3668,17 @@ Deno.test('/collection stars', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getUserStub = stub(
@@ -3694,6 +3782,7 @@ Deno.test('/collection stars', async (test) => {
 
       getUserStub.restore();
       getGuildStub.restore();
+      mongoClientStub.restore();
 
       getInventoryStub.restore();
       getUserCharactersStub.restore();
@@ -3757,6 +3846,17 @@ Deno.test('/collection media', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -3850,7 +3950,7 @@ Deno.test('/collection media', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'list=user_id=anilist:2==0=prev',
+                  custom_id: 'list=user_id=anilist:2===0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -3863,7 +3963,7 @@ Deno.test('/collection media', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'list=user_id=anilist:2==0=next',
+                  custom_id: 'list=user_id=anilist:2===0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -3895,6 +3995,8 @@ Deno.test('/collection media', async (test) => {
       isDisabledStub.restore();
       mediaStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getUserCharactersStub.restore();
       getInventoryStub.restore();
     }
@@ -3954,6 +4056,17 @@ Deno.test('/collection media', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -4049,7 +4162,7 @@ Deno.test('/collection media', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'list=user_id=anilist:2==0=prev',
+                  custom_id: 'list=user_id=anilist:2===0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -4062,7 +4175,7 @@ Deno.test('/collection media', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'list=user_id=anilist:2==0=next',
+                  custom_id: 'list=user_id=anilist:2===0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -4094,6 +4207,8 @@ Deno.test('/collection media', async (test) => {
       isDisabledStub.restore();
       mediaStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getInventoryStub.restore();
       getUserCharactersStub.restore();
     }
@@ -4175,6 +4290,17 @@ Deno.test('/collection media', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -4273,7 +4399,7 @@ Deno.test('/collection media', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'list=user_id=anilist:4==0=prev',
+                  custom_id: 'list=user_id=anilist:4===0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -4286,7 +4412,7 @@ Deno.test('/collection media', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'list=user_id=anilist:4==0=next',
+                  custom_id: 'list=user_id=anilist:4===0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -4328,6 +4454,8 @@ Deno.test('/collection media', async (test) => {
       isDisabledStub.restore();
       mediaStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getInventoryStub.restore();
       getUserCharactersStub.restore();
     }
@@ -4386,6 +4514,17 @@ Deno.test('/collection media', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getUserStub = stub(
@@ -4508,6 +4647,7 @@ Deno.test('/collection media', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
 
+      mongoClientStub.restore();
       getUserStub.restore();
       getGuildStub.restore();
       mediaStub.restore();
@@ -4558,6 +4698,17 @@ Deno.test('/collection media', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getUserStub = stub(
@@ -4667,6 +4818,8 @@ Deno.test('/collection media', async (test) => {
       isDisabledStub.restore();
       mediaStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getUserStub.restore();
       getGuildStub.restore();
 
@@ -4716,6 +4869,17 @@ Deno.test('/collection media', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -4823,6 +4987,8 @@ Deno.test('/collection media', async (test) => {
       isDisabledStub.restore();
       mediaStub.restore();
       characterStub.restore();
+      mongoClientStub.restore();
+
       getInventoryStub.restore();
       getUserCharactersStub.restore();
     }
@@ -4837,6 +5003,17 @@ Deno.test('/collection sum', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getUserStub = stub(
@@ -4946,6 +5123,7 @@ Deno.test('/collection sum', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mongoClientStub.restore();
 
       getUserStub.restore();
       getGuildStub.restore();
@@ -4962,6 +5140,17 @@ Deno.test('/collection sum', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -5067,6 +5256,7 @@ Deno.test('/collection sum', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mongoClientStub.restore();
 
       getInventoryStub.restore();
       getUserCharactersStub.restore();
@@ -5080,6 +5270,17 @@ Deno.test('/collection sum', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -5185,6 +5386,7 @@ Deno.test('/collection sum', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mongoClientStub.restore();
 
       getInventoryStub.restore();
       getUserCharactersStub.restore();
@@ -5198,6 +5400,17 @@ Deno.test('/collection sum', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getInventoryStub = stub(
@@ -5303,6 +5516,7 @@ Deno.test('/collection sum', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      mongoClientStub.restore();
 
       getInventoryStub.restore();
       getUserCharactersStub.restore();

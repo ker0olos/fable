@@ -352,6 +352,8 @@
   "$new-image": "new image url",
   "$new-nick": "new nickname",
 
+  "$picture": "Show the picture of the character (but can only view one character at a time)",
+
   "$buy-normal-amount": "the amount of pulls you want to buy",
   "$buy-keys-amount": "the amount of keys you want to buy",
   "$buy-guaranteed-stars": "the star rating you want to buy",
