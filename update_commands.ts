@@ -202,7 +202,6 @@ export const commands = [
   ...Command({
     name: 'character',
     description: '/character',
-    aliases: ['char'],
     options: [
       Option({
         name: 'name',
