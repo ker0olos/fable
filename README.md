@@ -20,7 +20,7 @@
 <details><summary>List of features and how Fable compares to other bots</summary>
 
 <p>
-  <img align="left" src="https://i.imgur.com/IO91qt1.png" alt="100% FREE">
+  <img align="left" src="https://i.imgur.com/IO91qt1.png" alt="100% FREE"> 
   <h4>100% FREE</h4>
   No more users paying to get ahead of you.
 
