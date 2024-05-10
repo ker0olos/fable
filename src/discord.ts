@@ -983,14 +983,14 @@ export class Message {
 
   patch(token: string): Promise<Response> {
     return this.#http(
-      `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
+      `https://discord.com/api/v6/webhooks/${config.appId}/${token}/messages/@original`,
       'PATCH',
     );
   }
 
   followup(token: string): Promise<Response> {
     return this.#http(
-      `https://discord.com/api/v10/webhooks/${config.appId}/${token}`,
+      `https://discord.com/api/v6/webhooks/${config.appId}/${token}`,
       'POST',
     );
   }
