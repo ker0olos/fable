@@ -817,7 +817,7 @@ Deno.test('patch messages', async () => {
 
     assertSpyCall(fetchStub, 0, {
       args: [
-        'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
+        'https://discord.com/api/v6/webhooks/undefined/token/messages/@original',
         {
           method: 'PATCH',
           body: form,
@@ -861,7 +861,7 @@ Deno.test('followup messages', async () => {
 
     assertSpyCall(fetchStub, 0, {
       args: [
-        'https://discord.com/api/v10/webhooks/undefined/token',
+        'https://discord.com/api/v6/webhooks/undefined/token',
         {
           method: 'POST',
           body: form,

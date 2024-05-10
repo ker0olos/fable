@@ -529,7 +529,7 @@ Deno.test('/steal', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -685,7 +685,7 @@ Deno.test('/steal', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -825,7 +825,7 @@ Deno.test('/steal', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -1001,7 +1001,7 @@ Deno.test('/steal', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -1155,7 +1155,7 @@ Deno.test('/steal', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -1246,7 +1246,7 @@ Deno.test('/steal', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -1384,7 +1384,7 @@ Deno.test('/steal', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -1572,7 +1572,7 @@ Deno.test('attempt', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -1633,7 +1633,7 @@ Deno.test('attempt', async (test) => {
 
       assertEquals(
         fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token',
+        'https://discord.com/api/v6/webhooks/app_id/test_token',
       );
 
       assertEquals(fetchStub.calls[1].args[1]?.method, 'POST');
@@ -1819,7 +1819,7 @@ Deno.test('attempt', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -1956,7 +1956,7 @@ Deno.test('attempt', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -2089,7 +2089,7 @@ Deno.test('attempt', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -2219,7 +2219,7 @@ Deno.test('attempt', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -2368,7 +2368,7 @@ Deno.test('attempt', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
@@ -2507,7 +2507,7 @@ Deno.test('attempt', async (test) => {
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        'https://discord.com/api/v6/webhooks/app_id/test_token/messages/@original',
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');

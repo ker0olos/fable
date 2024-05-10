@@ -29,7 +29,7 @@ async function uploadEmote(
     emotePath: string;
   },
 ): Promise<{ id: string; name: string }> {
-  const url = `https://discord.com/api/v10/guilds/${GUILD_ID}/emojis`;
+  const url = `https://discord.com/api/v6/guilds/${GUILD_ID}/emojis`;
 
   const imageData = await Deno.readFile(emotePath);
 
@@ -70,8 +70,7 @@ async function deleteEmote(
     emoteId: string;
   },
 ): Promise<void> {
-  const url =
-    `https://discord.com/api/v10/guilds/${GUILD_ID}/emojis/${emoteId}`;
+  const url = `https://discord.com/api/v6/guilds/${GUILD_ID}/emojis/${emoteId}`;
 
   const response = await fetch(url, {
     method: 'DELETE',

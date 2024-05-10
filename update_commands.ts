@@ -152,8 +152,8 @@ async function put(commands: Command[], {
   }
 
   const url = GUILD_ID
-    ? `https://discord.com/api/v10/applications/${APP_ID}/guilds/${GUILD_ID}/commands`
-    : `https://discord.com/api/v10/applications/${APP_ID}/commands`;
+    ? `https://discord.com/api/v6/applications/${APP_ID}/guilds/${GUILD_ID}/commands`
+    : `https://discord.com/api/v6/applications/${APP_ID}/commands`;
 
   const response = await fetch(url, {
     method: 'PUT',
