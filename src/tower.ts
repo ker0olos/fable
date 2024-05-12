@@ -175,6 +175,10 @@ export async function getEnemyCharacter(
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
+  if (!pool.length) {
+    throw new PoolError();
+  }
+
   try {
     while (!signal.aborted) {
       const i = Math.floor(random.nextFloat() * pool.length);

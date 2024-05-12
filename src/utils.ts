@@ -129,11 +129,11 @@ async function fetchWithRetry(
 
     return response;
   } catch (err) {
-    if (n >= 8) {
+    if (n > 5) {
       throw err;
     }
 
-    await sleep(0.5 * n);
+    await sleep(0.250 * n);
 
     return fetchWithRetry(input, init, n + 1);
   }

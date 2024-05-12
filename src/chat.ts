@@ -57,7 +57,7 @@ async function runLLM(
   input: Prompt,
   callback: (chunk: string, finished: boolean) => Promise<void>,
 ): Promise<void> {
-  const response = await fetch(
+  const response = await utils.fetchWithRetry(
     `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/${model}`,
     {
       method: 'POST',
