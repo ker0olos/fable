@@ -45,17 +45,19 @@ Deno.test('adding character to inventory', async (test) => {
       searchIndex,
       'pool',
       () =>
-        Promise.resolve([
-          new IndexedCharacter(
-            'anilist:1',
-            '',
-            [],
-            [],
-            2000,
-            1,
-            CharacterRole.Main,
-          ),
-        ]),
+        Promise.resolve(
+          new Map([['', [
+            new IndexedCharacter(
+              'anilist:1',
+              '',
+              [],
+              [],
+              2000,
+              1,
+              CharacterRole.Main,
+            ),
+          ]]]),
+        ),
     );
 
     const rngStub = stub(
@@ -181,17 +183,19 @@ Deno.test('adding character to inventory', async (test) => {
       searchIndex,
       'pool',
       () =>
-        Promise.resolve([
-          new IndexedCharacter(
-            'anilist:1',
-            '',
-            [],
-            [],
-            2000,
-            1,
-            CharacterRole.Main,
-          ),
-        ]),
+        Promise.resolve(
+          new Map([['', [
+            new IndexedCharacter(
+              'anilist:1',
+              '',
+              [],
+              [],
+              2000,
+              1,
+              CharacterRole.Main,
+            ),
+          ]]]),
+        ),
     );
 
     const rngStub = stub(
@@ -296,17 +300,19 @@ Deno.test('adding character to inventory', async (test) => {
       searchIndex,
       'pool',
       () =>
-        Promise.resolve([
-          new IndexedCharacter(
-            'anilist:1',
-            '',
-            [],
-            [],
-            2000,
-            1,
-            CharacterRole.Main,
-          ),
-        ]),
+        Promise.resolve(
+          new Map([['', [
+            new IndexedCharacter(
+              'anilist:1',
+              '',
+              [],
+              [],
+              2000,
+              1,
+              CharacterRole.Main,
+            ),
+          ]]]),
+        ),
     );
 
     const rngStub = stub(
@@ -411,17 +417,19 @@ Deno.test('adding character to inventory', async (test) => {
       searchIndex,
       'pool',
       () =>
-        Promise.resolve([
-          new IndexedCharacter(
-            'anilist:1',
-            '',
-            [],
-            [],
-            2000,
-            1,
-            CharacterRole.Main,
-          ),
-        ]),
+        Promise.resolve(
+          new Map([['', [
+            new IndexedCharacter(
+              'anilist:1',
+              '',
+              [],
+              [],
+              2000,
+              1,
+              CharacterRole.Main,
+            ),
+          ]]]),
+        ),
     );
 
     const rngStub = stub(
@@ -980,7 +988,7 @@ Deno.test('/gacha', async (test) => {
       // deno-lint-ignore require-await
       async () =>
         Promise.resolve({
-          pool: [],
+          pool: new Map(),
           validate: () => false,
         }),
     );
@@ -995,7 +1003,7 @@ Deno.test('/gacha', async (test) => {
       gacha,
       'rangeFallbackPool',
       // deno-lint-ignore require-await
-      async () => Promise.resolve([character]) as any,
+      async () => Promise.resolve(new Map([['', [character]]])) as any,
     );
 
     const addCharacterStub = stub(
@@ -2523,7 +2531,7 @@ Deno.test('/gacha', async (test) => {
       // deno-lint-ignore require-await
       async () =>
         Promise.resolve({
-          pool: [],
+          pool: new Map(),
           validate: () => false,
         }),
     );
@@ -2532,7 +2540,7 @@ Deno.test('/gacha', async (test) => {
       gacha,
       'rangeFallbackPool',
       // deno-lint-ignore require-await
-      async () => Promise.resolve([]),
+      async () => Promise.resolve(new Map()),
     );
 
     config.gacha = true;
@@ -2612,7 +2620,7 @@ Deno.test('/gacha', async (test) => {
       // deno-lint-ignore require-await
       async () =>
         Promise.resolve({
-          pool: [],
+          pool: new Map(),
           validate: () => false,
         }),
     );

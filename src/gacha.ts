@@ -74,7 +74,7 @@ const boostedVariables: Variables = {
 };
 
 async function rangePool({ guildId }: { guildId: string }): Promise<{
-  pool: import('search-index').Character[];
+  pool: Map<string, import('search-index').Character[]>;
   validate: (character: Character) => boolean;
 }> {
   let variables: Variables = gacha.variables;
@@ -138,7 +138,7 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
 
 async function rangeFallbackPool(
   { guildId }: { guildId: string },
-): Promise<import('search-index').Character[]> {
+): Promise<Map<string, import('search-index').Character[]>> {
   return await searchIndex.pool({}, guildId);
 }
 
@@ -148,7 +148,7 @@ export async function guaranteedPool(
     guarantee: number;
   },
 ): Promise<{
-  pool: import('search-index').Character[];
+  pool: Map<string, import('search-index').Character[]>;
   validate: (character: Character) => boolean;
   role?: CharacterRole;
   range?: [number, number];
@@ -204,6 +204,8 @@ async function rngPull(
     ? await gacha.guaranteedPool({ guildId, guarantee })
     : await gacha.rangePool({ guildId });
 
+  let poolKeys = Array.from(pool.keys());
+
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
@@ -214,20 +216,29 @@ async function rngPull(
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
-  if (!pool.length && !guarantee) {
+  if (!poolKeys.length && !guarantee) {
     pool = await gacha.rangeFallbackPool({ guildId });
+    poolKeys = Array.from(pool.keys());
     validate = () => true;
   }
 
-  if (!pool.length) {
+  if (!poolKeys.length) {
     throw new PoolError();
   }
 
   try {
     while (!signal.aborted) {
-      const i = Math.floor(Math.random() * pool.length);
+      const mediaIndex = Math.floor(Math.random() * poolKeys.length);
 
-      const characterId = pool[i].id;
+      const mediaCharacters = pool.get(poolKeys[mediaIndex]);
+
+      if (!mediaCharacters) {
+        continue;
+      }
+
+      const i = Math.floor(Math.random() * mediaCharacters.length);
+
+      const characterId = mediaCharacters[i].id;
 
       const results = await packs.characters({ guildId, ids: [characterId] });
 
