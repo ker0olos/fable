@@ -613,17 +613,19 @@ Deno.test('synthesis confirmed', async (test) => {
       searchIndex,
       'pool',
       () =>
-        Promise.resolve([
-          new IndexedCharacter(
-            'anilist:1',
-            '',
-            [],
-            [],
-            0,
-            2,
-            CharacterRole.Main,
-          ),
-        ]),
+        Promise.resolve(
+          new Map([['', [
+            new IndexedCharacter(
+              'anilist:1',
+              '',
+              [],
+              [],
+              0,
+              2,
+              CharacterRole.Main,
+            ),
+          ]]]),
+        ),
     );
 
     const synthesisStub = stub(
@@ -865,17 +867,19 @@ Deno.test('synthesis confirmed', async (test) => {
       searchIndex,
       'pool',
       () =>
-        Promise.resolve([
-          new IndexedCharacter(
-            'anilist:1',
-            '',
-            [],
-            [],
-            0,
-            2,
-            CharacterRole.Main,
-          ),
-        ]),
+        Promise.resolve(
+          new Map([['', [
+            new IndexedCharacter(
+              'anilist:1',
+              '',
+              [],
+              [],
+              0,
+              2,
+              CharacterRole.Main,
+            ),
+          ]]]),
+        ),
     );
 
     const synthesisStub = stub(

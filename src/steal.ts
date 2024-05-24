@@ -164,8 +164,6 @@ function pre({ token, userId, guildId, search, id }: {
         targetInventory.party.member5Id,
       ];
 
-      console.log(party, existing._id);
-
       const inactiveDays = getInactiveDays(targetInventory);
 
       if (party.some((id) => id?.equals(existing._id))) {
