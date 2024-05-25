@@ -162,6 +162,7 @@ export async function popular(req: Request): Promise<Response> {
         characters: pack.manifest.characters?.new?.length ?? 0,
         createdAt: pack.createdAt,
         updatedAt: pack.updatedAt,
+        approved: pack.approved,
         // deno-lint-ignore no-explicit-any
       } as any,
     })),
@@ -206,6 +207,7 @@ export async function lastUpdated(req: Request): Promise<Response> {
         characters: pack.manifest.characters?.new?.length ?? 0,
         createdAt: pack.createdAt,
         updatedAt: pack.updatedAt,
+        approved: pack.approved,
         // deno-lint-ignore no-explicit-any
       } as any,
     })),
