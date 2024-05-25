@@ -182,6 +182,56 @@ Deno.test('/popular', async (test) => {
   });
 });
 
+Deno.test('/updated', async (test) => {
+  await test.step('normal', async () => {
+    const getAllPublicPacksStub = stub(
+      db,
+      'getLastUpdatedPacks',
+      () =>
+        [
+          { manifest: { id: 'pack-1' } },
+          { manifest: { id: 'pack-2' } },
+          { manifest: { id: 'pack-3' } },
+        ] as any,
+    );
+
+    config.communityPacksBrowseAPI = true;
+
+    try {
+      const request = new Request('http://localhost:8000', { method: 'GET' });
+
+      const response = await communityAPI.lastUpdated(request);
+
+      assertEquals(response.ok, true);
+      assertEquals(response.status, 200);
+      assertEquals(response.statusText, 'OK');
+
+      const data = await response.json();
+
+      assertEquals(data.limit, 20);
+      assertEquals(data.offset, 0);
+
+      assertEquals(data.packs[0].manifest.id, 'pack-1');
+      assertEquals(data.packs[1].manifest.id, 'pack-2');
+      assertEquals(data.packs[2].manifest.id, 'pack-3');
+    } finally {
+      delete config.communityPacksBrowseAPI;
+
+      getAllPublicPacksStub.restore();
+    }
+  });
+
+  await test.step('under maintenance', async () => {
+    const request = new Request('http://localhost:8000', { method: 'GET' });
+
+    const response = await communityAPI.lastUpdated(request);
+
+    assertEquals(response.ok, false);
+    assertEquals(response.status, 503);
+    assertEquals(response.statusText, 'Under Maintenance');
+  });
+});
+
 Deno.test('/publish', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(utils, 'fetchWithRetry', () =>
