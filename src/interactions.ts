@@ -1480,6 +1480,7 @@ export async function start(): Promise<void> {
     '/api/user': communityAPI.user,
     '/api/publish': communityAPI.publish,
     '/api/popular': communityAPI.popular,
+    '/api/updated': communityAPI.lastUpdated,
     '/api/pack/:packId+': communityAPI.pack,
     '/invite': () =>
       Response.redirect(

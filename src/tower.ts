@@ -167,6 +167,8 @@ export async function getEnemyCharacter(
     guarantee: getEnemyRating(floor),
   });
 
+  const poolKeys = Array.from(pool.keys());
+
   let character: Character | undefined = undefined;
 
   const controller = new AbortController();
@@ -175,12 +177,23 @@ export async function getEnemyCharacter(
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
+  if (!poolKeys.length) {
+    throw new PoolError();
+  }
+
   try {
     while (!signal.aborted) {
-      const i = Math.floor(random.nextFloat() * pool.length);
+      const mediaIndex = Math.floor(random.nextFloat() * poolKeys.length);
 
-      const characterId = pool[i].id;
+      const mediaCharacters = pool.get(poolKeys[mediaIndex]);
 
+      if (!mediaCharacters) {
+        continue;
+      }
+
+      const i = Math.floor(random.nextFloat() * mediaCharacters.length);
+
+      const characterId = mediaCharacters[i].id;
       const results = await packs.aggregatedCharacters({
         guildId,
         ids: [characterId],

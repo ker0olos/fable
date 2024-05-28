@@ -60,10 +60,50 @@ export async function getPopularPacks(
   return packs;
 }
 
-export async function getPacksByMaintainerId(
-  userId: string,
+export async function getLastUpdatedPacks(
   offset = 0,
   limit = 20,
+): Promise<Schema.Pack[]> {
+  const db = new Mongo();
+
+  let packs: Schema.Pack[];
+
+  try {
+    await db.connect();
+
+    packs = await db.packs().aggregate()
+      .match({
+        $and: [
+          { 'hidden': false },
+          {
+            $or: [
+              { 'manifest.nsfw': false },
+              { 'manifest.nsfw': null },
+            ],
+          },
+          {
+            $or: [
+              { 'manifest.private': false },
+              { 'manifest.private': null },
+            ],
+          },
+        ],
+      })
+      .sort({ updatedAt: -1 })
+      .skip(offset)
+      .limit(limit)
+      .toArray() as Schema.Pack[];
+  } finally {
+    await db.close();
+  }
+
+  return packs;
+}
+
+export async function getPacksByMaintainerId(
+  userId: string,
+  // offset = 0,
+  // limit = 20,
 ): Promise<Schema.Pack[]> {
   const db = new Mongo();
 
@@ -80,8 +120,8 @@ export async function getPacksByMaintainerId(
         ],
       })
       .sort({ updatedAt: -1 })
-      .skip(offset)
-      .limit(limit)
+      // .skip(offset)
+      // .limit(limit)
       .toArray();
   } finally {
     await db.close();

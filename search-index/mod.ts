@@ -121,7 +121,7 @@ const pool = async (
     role?: CharacterRole;
   },
   guildId: string,
-): Promise<IndexedCharacter[]> => {
+): Promise<Map<string, IndexedCharacter[]>> => {
   const list = await packs.all({ guildId });
 
   const builtin = list[0]?.manifest.id === 'anilist';
@@ -172,17 +172,6 @@ const pool = async (
     filter.popularity?.between?.[1],
     filter.rating,
   );
-
-  // // attempt to speed pulls by pre-removing existing characters on smaller pools
-  // // avoids checking if db.addCharacter() will fail with no-unique error
-  // if (
-  //   (filter.popularity && filter.popularity.between[0] > 200_000) ||
-  //   filter.rating && filter.rating > 3
-  // ) {
-  //   const existing = await db.getGuildCharacters(guildId);
-
-  //   pool = pool.filter(({ id }) => !existing.includes(id));
-  // }
 
   return pool;
 };

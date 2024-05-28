@@ -64,6 +64,7 @@ import { distributeNewStats, gainExp, MAX_LEVEL } from '~/db/gainExp.ts';
 import { clearFloor, consumeKey } from '~/db/consumeKey.ts';
 
 import {
+  getLastUpdatedPacks,
   getPack,
   getPacksByMaintainerId,
   getPopularPacks,
@@ -195,6 +196,7 @@ const db = {
   addPack,
   getPacksByMaintainerId,
   getPopularPacks,
+  getLastUpdatedPacks,
   publishPack,
   removePack,
   //
