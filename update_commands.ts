@@ -8,6 +8,7 @@ import { skillCategories } from '~/src/types.ts';
 
 import EN from '~/i18n/en-US.json' with { type: 'json' };
 import ES from '~/i18n/es-ES.json' with { type: 'json' };
+import BR from '~/i18n/pt-BR.json' with { type: 'json' };
 
 enum CommandType {
   'CHAT' = 1,
@@ -100,6 +101,9 @@ const Command = ({
     description_localizations: {
       'es-ES': option.description && option.description in ES
         ? ES[option.description as keyof typeof ES]
+        : undefined,
+      'pt-BR': option.description && option.description in BR
+        ? BR[option.description as keyof typeof BR]
         : undefined,
     },
     options: option.options?.map((option) => transformOption(option)),
