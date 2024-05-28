@@ -65,6 +65,8 @@ async function likedPool(
   pool: Map<string, import('search-index').Character[]>;
   validate: (character: Character) => boolean;
 }> {
+  // TODO include liked all media characters
+
   const pool: Awaited<ReturnType<typeof searchIndex.pool>> = new Map();
 
   const user = await db.getUser(userId);

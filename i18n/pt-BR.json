@@ -207,7 +207,7 @@
   "help-page1-you-get-n-every-t": "__Você terá uma tirada grátis a cada {0} minutos (máximo de {1} tiradas)__. Use `/now` para checar quantas tiradas você tem e quanto tempo restante até a sua próxima tirada gratuita.",
   "help-page1-characters-are-exclusive": "__Personagens são exclusivos__, após um jogador no servidor achar um personagem, ninguém mais conseguirá achar esse mesmo no gacha novamente.",
   "help-page1-characters-vary": "__Personagens variam de ranks em 1{0}até 5{0}__ A classificação de um personagem é baseada na popularidade dele (a popularidade de um personagem não pode ser aumentada).",
-  "help-page1-gacha-rates": "__Probabilidades de gacha dependem em diversas variaveis__, mas geralmente falando em chances de 5{0}aparecer é igual ou menor que 1%.",
+  "help-page1-gacha-rates": "__Probabilidades de gacha dependem em diversas variaveis__, mas geralmente falando em chances de 5{0}aparecer é igual ou menor que 5%.",
   "help-page1-footer": "> *`/q` permite tiradas de gacha sem animações*",
 
   "help-page2-sacrifice-characters": "Sacrifique personagens para tirar um novo personagem com uma classificação mais alta.",
