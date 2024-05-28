@@ -28,6 +28,7 @@ import { NonFetalError, NoPullsError, PoolError } from '~/src/errors.ts';
 
 type Variables = {
   roles: { [chance: number]: CharacterRole };
+  liked: { [chance: number]: boolean };
   ranges: { [chance: number]: [number, number] };
 };
 
@@ -42,46 +43,99 @@ const lowest = 1000;
 
 const variables: Variables = {
   roles: {
-    10: CharacterRole.Main, // 10% for Main
-    70: CharacterRole.Supporting, // 70% for Supporting
-    20: CharacterRole.Background, // 20% for Background
+    20: CharacterRole.Main, // 20% for Main
+    55: CharacterRole.Supporting, // 55% for Supporting
+    25: CharacterRole.Background, // 25% for Background
   },
+  liked: { 5: true, 95: false },
   ranges: {
     // whether you get from the far end or the near end
     // of those ranges is random
-    65: [lowest, 50_000], // 65% for 1K -> 50K
-    22: [50_000, 100_000], // 22% for 50K -> 100K
-    9: [100_000, 200_000], // 9% for 100K -> 200K
-    3: [200_000, 400_000], // 3% for 200K -> 400K
-    1: [400_000, Infinity], // 1% for 400K -> inf
+    40: [lowest, 50_000], // 40% for 1K -> 50K
+    25: [50_000, 100_000], // 25% for 50K -> 100K
+    20: [100_000, 200_000], // 20% for 100K -> 200K
+    10: [200_000, 400_000], // 10% for 200K -> 400K
+    5: [400_000, Infinity], // 5% for 400K -> inf
   },
 };
 
-// for special events like christmas
-const boostedVariables: Variables = {
-  roles: {
-    35: CharacterRole.Main,
-    65: CharacterRole.Supporting,
-    0: CharacterRole.Background,
-  },
-  ranges: {
-    20: [lowest, 50_000],
-    40: [50_000, 100_000],
-    25: [100_000, 200_000],
-    10: [200_000, 400_000],
-    5: [400_000, NaN],
-  },
-};
-
-async function rangePool({ guildId }: { guildId: string }): Promise<{
+async function likedPool(
+  { userId, guildId }: { userId: string; guildId: string },
+): Promise<{
   pool: Map<string, import('search-index').Character[]>;
   validate: (character: Character) => boolean;
 }> {
-  let variables: Variables = gacha.variables;
+  const user = await db.getUser(userId);
 
-  if (config.xmas) {
-    variables = gacha.boostedVariables;
+  let likes = user.likes ?? [];
+
+  const results = await db.findCharacters(
+    guildId,
+    likes.map(({ characterId }) => characterId)
+      .filter(utils.nonNullable),
+  );
+
+  likes = likes.filter((like, i) => {
+    return like.mediaId || (like.characterId && results[i] === undefined);
+  });
+
+  // fallback to normal pool
+  if (!likes.length) {
+    return gacha.rangePool({ guildId });
   }
+
+  const [mediaPool, charPool] = await Promise.all([
+    searchIndex.pool({}, guildId),
+    searchIndex.charIdPool(guildId),
+  ]);
+
+  const finalPool: Awaited<ReturnType<typeof searchIndex.pool>> = new Map();
+
+  likes.forEach(({ characterId, mediaId }) => {
+    if (typeof characterId === 'string') {
+      const char = charPool.get(characterId);
+
+      if (!char || !char.mediaId) return;
+
+      if (!finalPool.has(char.mediaId)) {
+        finalPool.set(char.mediaId, []);
+      }
+
+      // deno-lint-ignore no-non-null-assertion
+      finalPool.get(char.mediaId)!.push(char);
+    } else if (typeof mediaId === 'string') {
+      const characters = mediaPool.get(mediaId);
+
+      if (!characters?.length) return;
+
+      if (!finalPool.has(mediaId)) {
+        finalPool.set(mediaId, []);
+      }
+
+      // deno-lint-ignore no-non-null-assertion
+      finalPool.get(mediaId)!.push(...characters);
+    }
+  });
+
+  const validate = (): boolean => {
+    return true;
+  };
+
+  // fallback to normal pool
+  if (!finalPool.size) {
+    return gacha.rangePool({ guildId });
+  }
+
+  return { pool: finalPool, validate };
+}
+
+async function rangePool(
+  { guildId }: { guildId: string },
+): Promise<{
+  pool: Map<string, import('search-index').Character[]>;
+  validate: (character: Character) => boolean;
+}> {
+  const variables: Variables = gacha.variables;
 
   const { value: range } = utils.rng(variables.ranges);
 
@@ -202,6 +256,8 @@ async function rngPull(
 ): Promise<Pull> {
   let { pool, validate } = typeof guarantee === 'number'
     ? await gacha.guaranteedPool({ guildId, guarantee })
+    : utils.rng(variables.liked).value && userId
+    ? await gacha.likedPool({ guildId, userId })
     : await gacha.rangePool({ guildId });
 
   let poolKeys = Array.from(pool.keys());
@@ -565,11 +621,11 @@ function start(
 const gacha = {
   lowest,
   variables,
-  boostedVariables,
   rngPull,
   pullAnimation,
   guaranteedPool,
   rangeFallbackPool,
+  likedPool,
   rangePool,
   start,
 };
