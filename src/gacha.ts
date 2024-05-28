@@ -65,10 +65,6 @@ async function likedPool(
   pool: Map<string, import('search-index').Character[]>;
   validate: (character: Character) => boolean;
 }> {
-  // TODO include liked all media characters
-
-  const pool: Awaited<ReturnType<typeof searchIndex.pool>> = new Map();
-
   const user = await db.getUser(userId);
 
   let likes = user.likes ?? [];
@@ -80,7 +76,7 @@ async function likedPool(
   );
 
   likes = likes.filter((like, i) => {
-    return like.characterId && results[i] === undefined;
+    return like.mediaId || (like.characterId && results[i] === undefined);
   });
 
   // fallback to normal pool
@@ -88,40 +84,49 @@ async function likedPool(
     return gacha.rangePool({ guildId });
   }
 
-  let length = 0;
+  const [mediaPool, charPool] = await Promise.all([
+    searchIndex.pool({}, guildId),
+    searchIndex.charIdPool(guildId),
+  ]);
 
-  const _pool = await searchIndex.charIdPool(guildId);
+  const finalPool: Awaited<ReturnType<typeof searchIndex.pool>> = new Map();
 
-  likes.forEach(({ characterId }) => {
-    // deno-lint-ignore no-non-null-assertion
-    const char = _pool.get(characterId!);
+  likes.forEach(({ characterId, mediaId }) => {
+    if (typeof characterId === 'string') {
+      const char = charPool.get(characterId);
 
-    if (char) {
-      pool.set(char.id, [char]);
-      length += 1;
+      if (!char || !char.mediaId) return;
+
+      if (!finalPool.has(char.mediaId)) {
+        finalPool.set(char.mediaId, []);
+      }
+
+      // deno-lint-ignore no-non-null-assertion
+      finalPool.get(char.mediaId)!.push(char);
+    } else if (typeof mediaId === 'string') {
+      const characters = mediaPool.get(mediaId);
+
+      if (!characters?.length) return;
+
+      if (!finalPool.has(mediaId)) {
+        finalPool.set(mediaId, []);
+      }
+
+      // deno-lint-ignore no-non-null-assertion
+      finalPool.get(mediaId)!.push(...characters);
     }
   });
 
-  const validate = (
-    character: Character | DisaggregatedCharacter,
-  ): boolean => {
-    // deno-lint-ignore no-non-null-assertion
-    const edge = character.media && 'edges' in character.media! &&
-      character.media.edges[0];
-
-    if (edge) {
-      return true;
-    }
-
-    return false;
+  const validate = (): boolean => {
+    return true;
   };
 
   // fallback to normal pool
-  if (!length) {
+  if (!finalPool.size) {
     return gacha.rangePool({ guildId });
   }
 
-  return { pool, validate };
+  return { pool: finalPool, validate };
 }
 
 async function rangePool(

@@ -448,8 +448,14 @@ Deno.test('adding character to inventory', async (test) => {
     }
   });
 
-  await test.step('liked pool', async () => {
-    const poolStub = stub(
+  await test.step('liked pool (one liked character)', async () => {
+    const mediaPoolStub = stub(
+      searchIndex,
+      'pool',
+      () => Promise.resolve(new Map()),
+    );
+
+    const charPoolStub = stub(
       searchIndex,
       'charIdPool',
       () =>
@@ -458,7 +464,7 @@ Deno.test('adding character to inventory', async (test) => {
             'anilist:1',
             new IndexedCharacter(
               'anilist:1',
-              '',
+              'anilist:media_id',
               [],
               [],
               10000000,
@@ -580,9 +586,168 @@ Deno.test('adding character to inventory', async (test) => {
         },
       );
 
-      assertSpyCalls(poolStub, 1);
+      assertSpyCalls(mediaPoolStub, 1);
+      assertSpyCalls(charPoolStub, 1);
     } finally {
-      poolStub.restore();
+      mediaPoolStub.restore();
+      charPoolStub.restore();
+      rngStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      charactersStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceInventoriesStub.restore();
+      findCharacterStub.restore();
+      addCharacterStub.restore();
+    }
+  });
+
+  await test.step('liked pool (one media)', async () => {
+    const mediaPoolStub = stub(
+      searchIndex,
+      'pool',
+      () =>
+        Promise.resolve(
+          new Map([[
+            'anilist:media_id',
+            [
+              new IndexedCharacter(
+                'anilist:1',
+                'anilist:media_id',
+                [],
+                [],
+                10000000,
+                5,
+                CharacterRole.Main,
+              ),
+            ],
+          ]]),
+        ),
+    );
+
+    const charPoolStub = stub(
+      searchIndex,
+      'charIdPool',
+      () => Promise.resolve(new Map()),
+    );
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([
+        { value: true, chance: NaN },
+      ]),
+    );
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({ likes: [{ mediaId: 'anilist:media_id' }] }) as any,
+    );
+
+    const getInstanceInventoriesStub = stub(
+      db,
+      'getActiveUsersIfLiked',
+      () => [] as any,
+    );
+
+    const findCharacterStub = stub(
+      db,
+      'findCharacters',
+      () => [undefined] as any,
+    );
+
+    const addCharacterStub = stub(
+      db,
+      'addCharacter',
+      () => ({ ok: true }) as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () =>
+        Promise.resolve([{
+          id: '1',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 10000000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+              },
+            }],
+          },
+        }]),
+    );
+
+    try {
+      assertObjectMatch(
+        await gacha.rngPull({
+          userId: 'user_id',
+          guildId: 'guild_id',
+        }),
+        {
+          character: {
+            id: '1',
+            packId: 'anilist',
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: 'anime',
+                    packId: 'anilist',
+                    popularity: 10000000,
+                    title: {
+                      english: 'title',
+                    },
+                    type: MediaType.Anime,
+                  },
+                  role: CharacterRole.Main,
+                },
+              ],
+            },
+            name: {
+              english: 'name',
+            },
+          },
+        },
+      );
+
+      assertSpyCalls(mediaPoolStub, 1);
+      assertSpyCalls(charPoolStub, 1);
+    } finally {
+      mediaPoolStub.restore();
+      charPoolStub.restore();
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
