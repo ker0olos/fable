@@ -2,12 +2,14 @@ import { AvailableLocales } from '~/src/discord.ts';
 
 import EN from '~/i18n/en-US.json' with { type: 'json' };
 import ES from '~/i18n/es-ES.json' with { type: 'json' };
+import BR from '~/i18n/pt-BR.json' with { type: 'json' };
 
 export type Keys = keyof typeof EN;
 
 const dict = {
   'en-US': EN,
   'es-ES': ES,
+  'pt-BR': BR,
 };
 
 function get(
@@ -21,6 +23,11 @@ function get(
     case 'es-ES':
       value = key in i18n.dict[locale]
         ? i18n.dict[locale][key as keyof typeof ES]
+        : i18n.dict['en-US'][key];
+      break;
+    case 'pt-BR':
+      value = key in i18n.dict[locale]
+        ? i18n.dict[locale][key as keyof typeof BR]
         : i18n.dict['en-US'][key];
       break;
     default:
