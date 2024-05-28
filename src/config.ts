@@ -19,9 +19,6 @@ const config: {
   chat?: boolean;
   //
   disableImagesProxy?: boolean;
-  //
-  xmas?: boolean;
-  fools?: boolean;
 } = {
   deploy: false,
   appId: undefined,
@@ -43,9 +40,6 @@ const config: {
   chat: undefined,
   //
   disableImagesProxy: undefined,
-  //
-  xmas: undefined,
-  fools: undefined,
 };
 
 export async function initConfig(): Promise<void> {
@@ -101,10 +95,6 @@ export async function initConfig(): Promise<void> {
       Deno.env.get('CHAT') === '1';
     //
     config.disableImagesProxy = Deno.env.get('DISABLE_IMAGES_PROXY') === '1';
-
-    // holidays flags
-    config.xmas = Deno.env.has('XMAS');
-    config.fools = Deno.env.has('FOOLS');
 
     config.origin = undefined;
   }

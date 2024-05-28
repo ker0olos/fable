@@ -35,9 +35,6 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
-        //
-        false,
-        false,
       ]),
     );
 
@@ -78,9 +75,6 @@ Deno.test('init', async (test) => {
         combat: true,
         chat: true,
         origin: undefined,
-        //
-        xmas: false,
-        fools: false,
       });
     } finally {
       clearConfig();
@@ -117,9 +111,6 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
-        true,
-        true,
-        //
         true,
         true,
       ]),
@@ -173,9 +164,6 @@ Deno.test('init', async (test) => {
         combat: false,
         chat: false,
         origin: undefined,
-        //
-        xmas: true,
-        fools: true,
       });
     } finally {
       clearConfig();
