@@ -42,34 +42,18 @@ const lowest = 1000;
 
 const variables: Variables = {
   roles: {
-    10: CharacterRole.Main, // 10% for Main
-    70: CharacterRole.Supporting, // 70% for Supporting
-    20: CharacterRole.Background, // 20% for Background
+    20: CharacterRole.Main, // 20% for Main
+    55: CharacterRole.Supporting, // 55% for Supporting
+    25: CharacterRole.Background, // 25% for Background
   },
   ranges: {
     // whether you get from the far end or the near end
     // of those ranges is random
-    65: [lowest, 50_000], // 65% for 1K -> 50K
-    22: [50_000, 100_000], // 22% for 50K -> 100K
-    9: [100_000, 200_000], // 9% for 100K -> 200K
-    3: [200_000, 400_000], // 3% for 200K -> 400K
-    1: [400_000, Infinity], // 1% for 400K -> inf
-  },
-};
-
-// for special events like christmas
-const boostedVariables: Variables = {
-  roles: {
-    35: CharacterRole.Main,
-    65: CharacterRole.Supporting,
-    0: CharacterRole.Background,
-  },
-  ranges: {
-    20: [lowest, 50_000],
-    40: [50_000, 100_000],
-    25: [100_000, 200_000],
-    10: [200_000, 400_000],
-    5: [400_000, NaN],
+    40: [lowest, 50_000], // 40% for 1K -> 50K
+    25: [50_000, 100_000], // 25% for 50K -> 100K
+    20: [100_000, 200_000], // 20% for 100K -> 200K
+    10: [200_000, 400_000], // 10% for 200K -> 400K
+    5: [400_000, Infinity], // 5% for 400K -> inf
   },
 };
 
