@@ -2,8 +2,9 @@ import { join } from '$std/path/mod.ts';
 
 import {
   Character as IndexedCharacter,
-  filter_characters,
+  id_mapped_filter_characters,
   Media as IndexedMedia,
+  media_mapped_filter_characters,
   search_characters,
   search_media,
 } from 'search-index';
@@ -164,7 +165,7 @@ const pool = async (
     }),
   )).flat();
 
-  const pool = filter_characters(
+  const pool = media_mapped_filter_characters(
     builtin ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
     filter.role,
@@ -176,10 +177,64 @@ const pool = async (
   return pool;
 };
 
+const charIdPool = async (
+  guildId: string,
+): Promise<Map<string, IndexedCharacter>> => {
+  const list = await packs.all({ guildId });
+
+  const builtin = list[0]?.manifest.id === 'anilist';
+
+  const extra = (await Promise.all(
+    list.map(async ({ manifest }) => {
+      const characters = await Promise.all(
+        (manifest.characters?.new ?? [])
+          .map((character) => (character.packId = manifest.id, character))
+          .map(
+            (character) => packs.aggregate<Character>({ character, guildId }),
+          ),
+      );
+
+      return characters.map((char) => {
+        const name = packs.aliasToArray(char.name);
+
+        const media = char.media?.edges[0];
+
+        if (!media) return undefined;
+
+        const popularity = char.popularity ?? media.node.popularity ?? 1000;
+
+        const role = media.role;
+
+        if (!role) return undefined;
+
+        const rating = new Rating({ role, popularity }).stars;
+
+        return new IndexedCharacter(
+          `${char.packId}:${char.id}`,
+          `${media.node.packId}:${media.node.id}`,
+          name,
+          packs.aliasToArray(media.node.title),
+          popularity,
+          rating,
+          role,
+        );
+      }).filter(utils.nonNullable);
+    }),
+  )).flat();
+
+  const pool = id_mapped_filter_characters(
+    builtin ? await Deno.readFile(charactersIndexPath) : undefined,
+    extra,
+  );
+
+  return pool;
+};
+
 const searchIndex = {
   searchMedia,
   searchCharacters,
   pool,
+  charIdPool,
 };
 
 export default searchIndex;

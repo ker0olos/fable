@@ -28,6 +28,7 @@ import { NonFetalError, NoPullsError, PoolError } from '~/src/errors.ts';
 
 type Variables = {
   roles: { [chance: number]: CharacterRole };
+  liked: { [chance: number]: boolean };
   ranges: { [chance: number]: [number, number] };
 };
 
@@ -46,6 +47,7 @@ const variables: Variables = {
     55: CharacterRole.Supporting, // 55% for Supporting
     25: CharacterRole.Background, // 25% for Background
   },
+  liked: { 5: true, 95: false },
   ranges: {
     // whether you get from the far end or the near end
     // of those ranges is random
@@ -57,15 +59,76 @@ const variables: Variables = {
   },
 };
 
-async function rangePool({ guildId }: { guildId: string }): Promise<{
+async function likedPool(
+  { userId, guildId }: { userId: string; guildId: string },
+): Promise<{
   pool: Map<string, import('search-index').Character[]>;
   validate: (character: Character) => boolean;
 }> {
-  let variables: Variables = gacha.variables;
+  const pool: Awaited<ReturnType<typeof searchIndex.pool>> = new Map();
 
-  if (config.xmas) {
-    variables = gacha.boostedVariables;
+  const user = await db.getUser(userId);
+
+  let likes = user.likes ?? [];
+
+  const results = await db.findCharacters(
+    guildId,
+    likes.map(({ characterId }) => characterId)
+      .filter(utils.nonNullable),
+  );
+
+  likes = likes.filter((like, i) => {
+    return like.characterId && results[i] === undefined;
+  });
+
+  // fallback to normal pool
+  if (!likes.length) {
+    return gacha.rangePool({ guildId });
   }
+
+  let length = 0;
+
+  const _pool = await searchIndex.charIdPool(guildId);
+
+  likes.forEach(({ characterId }) => {
+    // deno-lint-ignore no-non-null-assertion
+    const char = _pool.get(characterId!);
+
+    if (char) {
+      pool.set(char.id, [char]);
+      length += 1;
+    }
+  });
+
+  const validate = (
+    character: Character | DisaggregatedCharacter,
+  ): boolean => {
+    // deno-lint-ignore no-non-null-assertion
+    const edge = character.media && 'edges' in character.media! &&
+      character.media.edges[0];
+
+    if (edge) {
+      return true;
+    }
+
+    return false;
+  };
+
+  // fallback to normal pool
+  if (!length) {
+    return gacha.rangePool({ guildId });
+  }
+
+  return { pool, validate };
+}
+
+async function rangePool(
+  { guildId }: { guildId: string },
+): Promise<{
+  pool: Map<string, import('search-index').Character[]>;
+  validate: (character: Character) => boolean;
+}> {
+  const variables: Variables = gacha.variables;
 
   const { value: range } = utils.rng(variables.ranges);
 
@@ -184,7 +247,11 @@ async function rngPull(
     sacrifices?: ObjectId[];
   },
 ): Promise<Pull> {
-  let { pool, validate } = typeof guarantee === 'number'
+  const { value: liked } = utils.rng(variables.liked);
+
+  let { pool, validate } = liked && userId
+    ? await gacha.likedPool({ guildId, userId })
+    : typeof guarantee === 'number'
     ? await gacha.guaranteedPool({ guildId, guarantee })
     : await gacha.rangePool({ guildId });
 
@@ -549,11 +616,11 @@ function start(
 const gacha = {
   lowest,
   variables,
-  boostedVariables,
   rngPull,
   pullAnimation,
   guaranteedPool,
   rangeFallbackPool,
+  likedPool,
   rangePool,
   start,
 };
