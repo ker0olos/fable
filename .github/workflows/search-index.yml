@@ -17,6 +17,8 @@ jobs:
           deno-version: v1.x
 
       - run: deno run -A search-index/index.ts
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
