@@ -35,7 +35,7 @@ import {
 import { NoPullsError } from '~/src/errors.ts';
 
 Deno.test('adding character to inventory', async (test) => {
-  await test.step('normal', async () => {
+  await test.step('range pool', async () => {
     const variables = {
       range: [2000, 3000],
       role: CharacterRole.Main,
@@ -64,6 +64,7 @@ Deno.test('adding character to inventory', async (test) => {
       utils,
       'rng',
       returnsNext([
+        { value: false, chance: NaN },
         { value: variables.range, chance: NaN },
         { value: variables.role, chance: NaN },
       ]),
@@ -173,6 +174,280 @@ Deno.test('adding character to inventory', async (test) => {
     }
   });
 
+  await test.step('fallback pool', async () => {
+    const variables = {
+      range: [2000, 3000],
+      role: CharacterRole.Main,
+    };
+
+    const poolStub = stub(
+      searchIndex,
+      'pool',
+      returnsNext([
+        Promise.resolve(
+          new Map(),
+        ),
+        Promise.resolve(
+          new Map([['', [
+            new IndexedCharacter(
+              'anilist:1',
+              '',
+              [],
+              [],
+              2000,
+              1,
+              CharacterRole.Main,
+            ),
+          ]]]),
+        ),
+      ]),
+    );
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([
+        { value: false, chance: NaN },
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
+    );
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceInventoriesStub = stub(
+      db,
+      'getActiveUsersIfLiked',
+      () => [] as any,
+    );
+
+    const addCharacterStub = stub(
+      db,
+      'addCharacter',
+      () => ({ ok: true }) as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () =>
+        Promise.resolve([{
+          id: '1',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+              },
+            }],
+          },
+        }]),
+    );
+
+    try {
+      assertObjectMatch(
+        await gacha.rngPull({
+          userId: 'user_id',
+          guildId: 'guild_id',
+        }),
+        {
+          character: {
+            id: '1',
+            packId: 'anilist',
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: 'anime',
+                    packId: 'anilist',
+                    popularity: 2500,
+                    title: {
+                      english: 'title',
+                    },
+                    type: MediaType.Anime,
+                  },
+                  role: CharacterRole.Main,
+                },
+              ],
+            },
+            name: {
+              english: 'name',
+            },
+          },
+        },
+      );
+
+      assertSpyCalls(poolStub, 2);
+    } finally {
+      poolStub.restore();
+      rngStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      charactersStub.restore();
+      getGuildStub.restore();
+      getInstanceInventoriesStub.restore();
+      addCharacterStub.restore();
+    }
+  });
+
+  await test.step('guarantee pool', async () => {
+    const poolStub = stub(
+      searchIndex,
+      'pool',
+      () =>
+        Promise.resolve(
+          new Map([['', [
+            new IndexedCharacter(
+              'anilist:1',
+              '',
+              [],
+              [],
+              10000000,
+              5,
+              CharacterRole.Main,
+            ),
+          ]]]),
+        ),
+    );
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([]),
+    );
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceInventoriesStub = stub(
+      db,
+      'getActiveUsersIfLiked',
+      () => [] as any,
+    );
+
+    const addCharacterStub = stub(
+      db,
+      'addCharacter',
+      () => ({ ok: true }) as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () =>
+        Promise.resolve([{
+          id: '1',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 10000000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+              },
+            }],
+          },
+        }]),
+    );
+
+    try {
+      assertObjectMatch(
+        await gacha.rngPull({
+          userId: 'user_id',
+          guildId: 'guild_id',
+          guarantee: 5,
+        }),
+        {
+          character: {
+            id: '1',
+            packId: 'anilist',
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: 'anime',
+                    packId: 'anilist',
+                    popularity: 10000000,
+                    title: {
+                      english: 'title',
+                    },
+                    type: MediaType.Anime,
+                  },
+                  role: CharacterRole.Main,
+                },
+              ],
+            },
+            name: {
+              english: 'name',
+            },
+          },
+        },
+      );
+
+      assertSpyCalls(poolStub, 1);
+    } finally {
+      poolStub.restore();
+      rngStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      charactersStub.restore();
+      getGuildStub.restore();
+      getInstanceInventoriesStub.restore();
+      addCharacterStub.restore();
+    }
+  });
+
   await test.step('character exists', async () => {
     const variables = {
       range: [2000, 3000],
@@ -202,6 +477,7 @@ Deno.test('adding character to inventory', async (test) => {
       utils,
       'rng',
       returnsNext([
+        { value: false, chance: NaN },
         { value: variables.range, chance: NaN },
         { value: variables.role, chance: NaN },
       ]),
@@ -319,6 +595,7 @@ Deno.test('adding character to inventory', async (test) => {
       utils,
       'rng',
       returnsNext([
+        { value: false, chance: NaN },
         { value: variables.range, chance: NaN },
         { value: variables.role, chance: NaN },
       ]),
@@ -436,6 +713,7 @@ Deno.test('adding character to inventory', async (test) => {
       utils,
       'rng',
       returnsNext([
+        { value: false, chance: NaN },
         { value: variables.range, chance: NaN },
         { value: variables.role, chance: NaN },
       ]),
@@ -529,18 +807,23 @@ Deno.test('adding character to inventory', async (test) => {
 Deno.test('variables', () => {
   assertEquals(gacha.lowest, 1000);
 
+  assertEquals(gacha.variables.liked, {
+    5: true,
+    95: false,
+  });
+
   assertEquals(gacha.variables.roles, {
-    10: CharacterRole.Main,
-    70: CharacterRole.Supporting,
-    20: CharacterRole.Background,
+    '20': CharacterRole.Main,
+    '55': CharacterRole.Supporting,
+    '25': CharacterRole.Background,
   });
 
   assertEquals(gacha.variables.ranges, {
-    65: [1000, 50_000],
-    22: [50_000, 100_000],
-    9: [100_000, 200_000],
-    3: [200_000, 400_000],
-    1: [400_000, Infinity],
+    40: [1000, 50_000],
+    25: [50_000, 100_000],
+    20: [100_000, 200_000],
+    10: [200_000, 400_000],
+    5: [400_000, Infinity],
   });
 });
 
