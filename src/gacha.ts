@@ -247,12 +247,10 @@ async function rngPull(
     sacrifices?: ObjectId[];
   },
 ): Promise<Pull> {
-  const { value: liked } = utils.rng(variables.liked);
-
-  let { pool, validate } = liked && userId
-    ? await gacha.likedPool({ guildId, userId })
-    : typeof guarantee === 'number'
+  let { pool, validate } = typeof guarantee === 'number'
     ? await gacha.guaranteedPool({ guildId, guarantee })
+    : utils.rng(variables.liked).value && userId
+    ? await gacha.likedPool({ guildId, userId })
     : await gacha.rangePool({ guildId });
 
   let poolKeys = Array.from(pool.keys());
