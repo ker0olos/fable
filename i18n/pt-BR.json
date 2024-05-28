@@ -1,0 +1,435 @@
+{
+  "aliases": "aliases",
+  "declined": "Rejeitado",
+  "cancelled": "Cancelado",
+  "unimplemented": "Não implementado ou removido.",
+  "invalid-permission": "Você não tem permissão para completar essa interação!",
+  "found-nothing": "Resultados não encontrados!",
+  "support-server": "Servidor do Discord para suporte.",
+  "donate": "Doar",
+  "prev": "Anterior",
+  "next": "Próximo",
+  "danger": "PERIGO",
+  "confirm": "Confirmar",
+  "cancel": "Cancelar",
+  "accept": "Aceitar",
+  "decline": "Rejeitar",
+  "failed": "Falha",
+
+  "reply": "Responder",
+  "message": "Mensager",
+  "reply-to": "Responder para {0}",
+
+  "homepage": "Início",
+
+  "assigned": "Atribuído",
+  "unassigned": "Não atribuído",
+
+  "installed": "Instalado",
+  "uninstalled": "Desinstalado",
+
+  "+1-pull": "_+1 tirada de cartas {0}_",
+  "+1-token": "_+1 token diário {0}_",
+  "+1-key": "_+1 chave {0}_",
+  "available-pull": "Tirada disponível",
+  "available-pulls": "Tiradas disponíveis",
+  "available-key": "Chave disponível",
+  "available-keys": "Chaves disponíveis",
+  "daily-token": "Token diário",
+  "daily-tokens": "Token diário disponível",
+  "steal-cooldown-ends": "_Cooldown de roubo termina em {0}_",
+
+  "token": "token",
+  "tokens": "tokens",
+  "pull": "tirada",
+  "pulls": "tiradas",
+  "character": "personagem",
+  "characters": "personagens",
+
+  "skip": "Pular",
+  "attacking": "Atacar",
+  "attacking-again": "de novo",
+  "won": "Ganhou",
+
+  "key": "Chave",
+  "keys": "Chaves",
+  "reclear": "Reclear",
+  "floor": "Piso",
+  "next-floor": "Próximo piso",
+  "try-again": "Tente novamente",
+  "challenge": "Desafio",
+
+  "undiscovered": "Não descoberto",
+  "cleared": "Livre",
+  "current": "Atual",
+
+  "spent-tokens-normal": "Você quer gastar **{0} {1}** {2}?",
+  "spent-tokens-guaranteed": "Você quer gastar **{0} tokens** {1} por um **{2}**{3}?",
+  "you-need-more-tokens": "Você precisa de **{0} a mais {1}** se você quiser fazer isso.",
+  "you-bought-pulls": "Você comprou **{0}** {1} {2}",
+  "you-bought-guarantee": "Você comprou uma **{0}**{1}tirada {2}",
+
+  "you-empty-collection": "Você não tem {0}personagens.",
+  "you-empty-media-collection": "Você não tem nenhum personagem de {0}",
+
+  "character-disabled": "Esse personagem foi removido ou desativado.",
+  "some-characters-disabled": "Alguns desses personagens não existem ou foram desativados",
+
+  "no-assigned-in-spot": "Nenhum personagem foi atribuído a este lugar do time",
+
+  "user-empty-collection": "{0} não tem {1}personagens",
+  "user-empty-media-collection": "{0} não tem personagens de {1}",
+
+  "you-empty-likeslist": "Você não tem nenhum like",
+  "user-empty-likeslist": "{0} não tem nenhum like",
+
+  "character-no-longer-owned": "Alguns desses personagens mudaram de time",
+  "character-hasnt-been-found": "{0} não foi encontrado ainda",
+  "character-not-owned-by-you": "{0} não pertence a você",
+
+  "merge-sacrifice": "Sacrificar **{0}** personagens?",
+  "merge-insufficient": "Você só tem **{0} dos 5** sacrificios precisos para {1}",
+  "merge-not-possible": "Você não tem personagens o suficiente para fazer uma mesclagem",
+
+  "nickname-reset": "{0}'s nickname foi resetado",
+  "nickname-changed": "{0}'s nickname mudou para **{1}**",
+  "image-reset": "{0}'s imagem foi resetado",
+  "image-changed": "{0}'s imagem foi **mudado**",
+
+  "trade-with-yourself": "Você não pode fazer trocas com si mesmo!",
+  "gift-with-yourself": "Você não pode dar presentes para si mesmo!",
+
+  "trade-you-not-owned": "Você não tem {0}",
+  "trade-you-party-member": "{0} está no seu time e não pode ser trocado",
+  "trade-user-not-owned": "{0} não tem {1}",
+  "trade-user-party-member": "{0} está no time de {1} e não pode ser trocado",
+
+  "give-you-party-members": "Alguns desses personagens estão no seu time no momento",
+  "trade-party-members": "Alguns dos personagens estão em um time no momento",
+
+  "trade-offer": "{0} está oferecendo que você perca **{1}** {2} e receba **{3}** {4}",
+  "give": "Tem certeza que quer dar **{0}** {1} para {2} de graça?",
+
+  "trade-received-offer": "{0} você recebeu uma oferta!",
+  "trade-offer-accepted": "{0} sua oferta foi aceita!",
+  "trade-offer-accepted2": "{0} aceitou sua oferta",
+
+  "give-sent-to": "Presente mandado para {0}!",
+  "give-received": "{0} te mandou um presente",
+
+  "attempt": "Tentativa",
+  "stealing-from-yourself": "Você não pode roubar de si mesmo!",
+  "stealing-party-member": "Como parte do time de {0}, **{1}** não pode ser roubado enquanto {0} ainda está ativo",
+  "steal-chance": "A sua chance de sucesso é de **{0}%**",
+  "stolen-from-you": "**{0}** foi roubado de você!",
+  "you-succeeded": "**Você conseguiu**",
+  "you-failed": "**Você falhou**",
+  "steal-cooldown": "Roubo está em cooldown, tente novamente {0}",
+  "steal-try-again": "Você pode tentar novamente {0}",
+  "steal-unexpected": "Algo aconteceu e afetou suas chances de roubar **{0}**, Por favor, tente novamente!",
+
+  "owned-by-others": "_{0} pertence à outro usuário!_",
+
+  "global-maintenance": "Fable está em manutenção, cheque de novo em algumas horas!",
+  "maintenance-gacha": "Gacha está em manutenção, cheque de novo em algumas horas!",
+  "maintenance-merge": "Fusão está em manutenção, cheque de novo em algumas horas!",
+  "maintenance-trade": "Troca está em manutenção, cheque de novo em algumas horas!",
+  "maintenance-steal": "Roubo está em manutenção, cheque de novo em algumas horas!",
+  "maintenance-combat": "Combate está em manutenção, cheque de novo em algumas horas!",
+  "maintenance-packs": "Pacotes de Comunidade estão em manutenção, cheque de novo em algumas horas!",
+  "maintenance-shop": "Loja está em manutenção, cheque de novo em algumas horas!",
+  "maintenance-chat": "Chat está em manutenção, cheque de novo em algumas horas!",
+
+  "gacha-no-more-pulls": "Você não tem outras tiradas",
+  "gacha-no-guarantees": "Você não tem {0}tiradas",
+  "gacha-no-more-characters-left": "Não tem mais {0}personagens sobrando.",
+  "gacha-no-more-in-range": "Não tem mais personagens nessa escala",
+
+  "combat-no-more-keys": "Você não tem mais chaves!",
+
+  "no-packs-installed": "Servidor não tem nenhum pacote instalado.",
+
+  "uninstall-pack-confirmation": "**Tem certeza que quer desinstalar esse pacote?**\n\nDesinstalar o pacote irá desativar qualquer personagem que os membros do seu servidor tenham do pacote, o que pode ter reações negativas.",
+  "disable-builtins-confirmation": "**Quando você desativa pacotes builtin, você nunca mais poderá instalá-lo.**\n\n1. __Desativar pacotes builtin podem impactar negativamente nas suas tiradas gacha, __ possivelmente resultando em várias tiradas vazias que não dão nenhum personagem. \n2. __Seu servidor será permanentemente excluído de atividades e eventos entre servidores.__",
+  "disable-builtins-confirmed": "**Pacotes builtin foram desabilitados, essa ação é irreversível.**\n\n __Esse servidor foi permanentemente excluído de atividades e eventos entre servidores.__",
+
+  "pack-doesnt-exist": "Esse pacote não existe",
+  "pack-is-private": "Esse pacote é privado e não pode nem ser instalado por você",
+  "pack-characters-disabled": "**Todos os personagens desse pacote foram desativados**",
+
+  "your-party-empty": "Seu time está vazio",
+  "user-party-empty": "O time de {0} está vazio",
+
+  "not-fit-for-combat": "Personagem ainda não foi encontrado e não pronto para o combate",
+  "not-enough-unclaimed": "Personagem não tem pontos não reivindicados o suficiente restante",
+
+  "battle-yourself": "Você não pode batalhar com si mesmo",
+
+  "atk": "ATQ",
+  "def": "DEF",
+  "spd": "VLC",
+
+  "stats": "Stats",
+  "skills": "Habilidades",
+  "skill-point": "Ponto de habilidade",
+  "skill-points": "Pontos de habilidades",
+  "stat-points": "Pontos de estátistica",
+
+  "attack": "Ataque",
+  "defense": "Defesa",
+  "speed": "Velocidade",
+  "hp": "HP",
+
+  "lvl": "LVL",
+  "level": "Level",
+  "max": "MAX",
+
+  "acquire-skill": "Adquir habilidade",
+  "skill-acquired": "Habilidade adquirida",
+
+  "upgrade-skill": "Melhorar habilidade",
+  "skill-upgraded": "Habilidade melhorada",
+
+  "character-not-enough-skill-points": "Personagem não tem muitos pontos de habilidade restantes",
+  "skill-is-maxed": "Habilidade está no máximo",
+  "maxed-skill-slots": "Esse personagem já tem o máximo número de habilidades possível, e não pode adquirir novas habilidades.",
+
+  "no-cleared-floors": "Limpe pelo menos uma rodada da  `/torre de batalha` primeiro",
+  "max-floor-cleared": "Você já limpou o andar mais alto da torre",
+  "tower-fail": "`/limparnovamente` o último andar da torre para dar level up no seu time e tentar novamente!",
+  "leveled-up": "**{0}** subiu de nível {1}e ganhou {2} {3} e {4} {5}.",
+  "exp-gained": "**{0}** {1}(+{2})/{3} EXP",
+  "exp": "Experiência",
+
+  "chat-not-owned": "**Você não pode conversar com um personagem que você não tem!**",
+
+  "help-page1-before-anything": "Antes de tudo: Você precisará de personagens.",
+  "help-page1-you-get-n-every-t": "__Você terá uma tirada grátis a cada {0} minutos (máximo de {1} tiradas)__. Use `/now` para checar quantas tiradas você tem e quanto tempo restante até a sua próxima tirada gratuita.",
+  "help-page1-characters-are-exclusive": "__Personagens são exclusivos__, após um jogador no servidor achar um personagem, ninguém mais conseguirá achar esse mesmo no gacha novamente.",
+  "help-page1-characters-vary": "__Personagens variam de ranks em 1{0}até 5{0}__ A classificação de um personagem é baseada na popularidade dele (a popularidade de um personagem não pode ser aumentada).",
+  "help-page1-gacha-rates": "__Probabilidades de gacha dependem em diversas variaveis__, mas geralmente falando em chances de 5{0}aparecer é igual ou menor que 1%.",
+  "help-page1-footer": "> *`/q` permite tiradas de gacha sem animações*",
+
+  "help-page2-sacrifice-characters": "Sacrifique personagens para tirar um novo personagem com uma classificação mais alta.",
+  "help-page2-merge-protect": "__Os membros do seu time e seus likes nunca serão sacrificados.__ Para proteger personagens de serem mesclados, adicione eles na sua lista de likes com `/like` ou `/likeall`",
+  "help-page2-merging": "__É preciso de 5 personagens com classificação menor__ para tirar um personagem",
+  "help-page2-auto-merging": "__Fable sempre irá mesclar automáticamente seus personagens com classificação mais baixa primeiro.__",
+  "help-page2-merge-example-1": "Exemplo: `/mesclar alvo: 3` serão sacrificados __25 de 1{0} de seus personagens__",
+  "help-page2-merge-example-2": "ou __5 de seus 2{0}personagens.__",
+  "help-page2-footer": "> *Personagens sacrificados voltarão a ficar disponíveis em  `/gacha`*",
+
+  "help-page3-party-required": "Você precisará de um time para usar ferramentas de combate",
+  "help-page3-party-presets-disclaimer": "__Você não pode ter mais de um 1 time__ ou salvar seu time atual em um preset e trocar presets.",
+  "help-page3-party-view": "`/party view` para ver seu time atual.",
+  "help-page3-party-assign-1": "`/party assign name: spot:` parar atribuir um personagem que você tem para o seu time,",
+  "help-page3-party-assign-2": "deixar o `espaço:` em branco irá atribuir o personagem pro primeiro espaço ou substituir o último.",
+  "help-page3-footer": "> *`/collection` pode ser usado para navegar por seus personagens e selecionar membros do time em potencial*",
+
+  "help-page4-title": "Roubar",
+  "help-page4-negotiations": "Quando todas as negociações falharem, tudo bem pegar algo a força, certo?",
+  "help-page4-party-is-protected": "__Você não pode roubar personagens atribuídos como membros de time__, significando que você pode proteger seus personagens mais preciosos colocando eles no seu time.",
+  "help-page4-inactive-users": "__Usuários inativos são mais fáceis de roubar.__ Se mantenha ativo usando `/gacha` ou `/q` uma vez por dia.",
+  "help-page4-losing-protection": "__Usuários inativos perdem proteção de seu time__ depois de **{0}** dias.",
+  "help-page4-steal-chance": "__Quanto mais alta a classificação do personagem, mais difícil de roubar.__ Personagens 5{0} tem uma base de sucesso de 1%.",
+  "help-page4-cooldown": "__Roubar tem um cooldown de **{0}** dias__ independente do resultado da tentativa.",
+  "help-page4-footer": "> Se manter ativo é a melhor defesa contra roubos.",
+
+  "help-page10-title": "Combate",
+  "help-page10-starting-points": "__Todo personagem recebe uma quuantidade inicial de estatísticas e habilidades__ baseados na classificação de estrelas.",
+  "help-page10-stats-rng": "__Estátisticas e habilidades são generadas aleatoriamente para cada personagem novo que você acha __, use `/stats` para checar.",
+
+  "help-page10-attack": "__Ataque é o dano__, que você pode eventualmente causar no seu inimigo.",
+  "help-page10-defense": "__Defesa é o dano reduzido__, minimizando o dano que um inimigo pode causar em você.",
+  "help-page10-speed": "__Velocidade é a sua ordem de vez__, quanto mais rápido você e seu inimigo recebe a primeira jogada, uma grande diferença de velocidade irá permitir que você ataque mais de uma vez na mesma jogada.",
+
+  "help-page10-tower": "Use `/battle tower` para escalar, todo servidor tem uma torre única e inimigos únicos.",
+  "help-page10-reclear": "Suba seus personagens de nível e ganhe estatíscas extras por de pontos usando `/reclear` no mesmo piso algumas vezes.",
+  "help-page10-distribution": "> Pontos de estatística ganhados por subir de nível são distribuídos aleatoriamnete baseados na proporção de suas estatísticas iniciais,  gained from leveling up is random distributed based on the ratio of your starting stats, Pontos de habilidades podem ser usados para serem obtios or melhorar `/skills`",
+  "help-page10-keys": "> Desafiando e limpando novamente pisos precisam de chaves, você ganha uma chave a cada {0} minutos, você também pode obter mais chaves em `/Shop`",
+
+  "help-page5-title": "Loja",
+  "help-page5-shop": "A loja é um jeito de comprar tiradas extras e tiradas garantidas.",
+  "help-page5-daily-tokens": "__Você tem 1 token diário a cada {0} horas__, tokens são adicionados automaticamente. \n\nVocê recebe 2 tokens diários em fins de semana.",
+  "help-page5-buy-normal": "`/buy normal` te dá tiradas extras, essas são as mesmas que você ganha a cada {0} minutos.",
+  "help-page5-buy-guaranteed": "`/buy guaranteed` guarante que você ganhe um personagem de uma classificação de estrela específica.",
+  "help-page5-example": "Example: `/buy guaranteed 5` garantirá que você ganhe um personagem 5{0}estrelas aleatório.",
+
+  "help-page5-buy-3s": "3{0}custa **{1}** tokens",
+  "help-page5-buy-4s": "4{0}custa **{1}** tokens",
+  "help-page5-buy-5s": "5{0}custa **{1}** tokens",
+
+  "help-page5-footer": "> Use as tiradas garantidas que você comprou digitando `/pull stars:`",
+
+  "help-page6-title": "Roadmap",
+  "help-page6-release": "__**Lançando no futuro próximo (~3 meses)**__",
+
+  "help-page7-title": "Comandos essenciais",
+  "help-page8-title": "Outros comandos",
+  "help-page9-title": "Comandos de Admin",
+
+  "community-packs-permission": "_> `/packs` requer permissão de `Manage Server` por definição, mas isso pode ser mudad na sessão `Integrations` do seu servidor, porém nunca recomendamos isso._",
+  "make-your-own-pack": "> Para criar um pacote de comunidade, entre em <https://packs.deno.dev>",
+
+  "/gacha": "comece uma tirada nova de gacha",
+  "/q": "comece uma tirada de gacha, mas sem animações",
+  "/pull": "use uma tirada garantida que você tem",
+  "/now": "cheque o que você pode fazer agora",
+  "/search": "pesquise uma série específica",
+  "/character": "pesquise um personagem específico",
+  "/chat": "converse com um de seus personagens",
+
+  "/merge": "sacrifique personagens para receber um ou mais personagem brilhante.",
+
+  "/automerge": "criar uma mescla mais baixa ou mais alta possível automaticamente",
+  "/automerge max": "mesclar seus personagens juntos para tirar a maior classificação possível",
+  "/automerge min": "mesclar seus personagens juntos para tirar a menor classificação possível",
+
+  "/party view": "veja seu time atual",
+  "/party assign": "atribua um personagem para o seu time",
+  "/party swap": "mude personagens de lugar entre eles",
+  "/party remove": "remover um personagem do seu time",
+
+  "/coll show": "cheque e veja quão completa é uma coleção de um usuário",
+  "/coll stars": "visualize as estrelas de um usuário",
+  "/coll media": "visualize personagens de uma série específica",
+  "/coll sum": "veja a soma de númeeros da coleção de um usuário",
+
+  "/steal": "roube um personagem de outro usuário",
+  "/trade": "troque personagens com outro usuário",
+  "/give": "dê um personagem à outro usuário ",
+
+  "/nick": "mude o nickname de um personagem",
+  "/image": "mude a imagem de um personagem",
+  "/found": "liste todos os personagens achados de uma série específica",
+
+  "/likeslist": "mostre todos os likes de um usuário",
+  "/like": "dê like em um personagem para ser notificado se alguém o achar",
+  "/unlike": "remover personagem de seus likes",
+  "/likeall": "dê like em uma série para ser notificado se alguém achar um personagem dela",
+  "/unlikeall": "remove uma série de seus likes",
+
+  "/buy normal": "use tokens para comprar tiradas normais",
+  "/buy guaranteed": "use tokens para comprar tiradas com um ranking específico",
+  "/buy keys": "use tokens para comprar chaves de torres",
+
+  "/installed packs": "lista todos os pacotes instalados em um servidor",
+  "/logs": "lista últimos personagens achados de certo usuário",
+
+  "/packs install": "instala um pacote da comunidade",
+  "/packs uninstall": "desinstala um pacote da comunidade",
+  "/packs disable builtins": "permanentemente desabilita pacotes integrados",
+
+  "/stats": "gerencie os pontos de estátisticas e habilidades de seus personagens",
+
+  "/battle tower": "Escale a torre até a glória e se torne um fable",
+  "/battle challenge": "Desafie o próximo andar da torre",
+
+  "/reclear": "Desafie novamente o andar atual da torre para ganhar experiência",
+
+  "/skills showall": "Mostre todas as habilidades disponíveis e seus detalhes",
+  "/skills acquire": "Ensine uma habilidade para um personagem",
+  "/skills upgrade": "Melhore uma habilidade de um personagem",
+
+  "/help": "precisa de mais informações? nós te ajudamos",
+
+  "$debug": "mostra a parte nerd",
+  "$media-title": "o título de uma série",
+  "$character-name": "o nome de um personagem",
+  "$skill-name": "o nome da habilidade necessária",
+  "$media-characters": "veja personagens de uma série",
+  "$user-list": "lista de um usuário",
+  "$user-party": "time de um usuário",
+  "$user-likes-list": "lista de likes do usuário",
+  "$user-likes-filter": "filtra os likes já achados pelo usuário",
+  "$trade-user": "o usuário que você quer fazer uma troca",
+  "$trade-give-character": "o personagem que você quer dar",
+  "$trade-take-character": "o personagem que você quer ganhar",
+  "$steal-sacrifices-boost": "o tanto de estrelas para sacrificar por um impulso",
+
+  "$stars": "classificação de estrelas",
+  "$merge-star-target": "o alvo de classificação de estrelas da fusão",
+
+  "$new-image": "novo url de imagem",
+  "$new-nick": "novo nickname",
+
+  "$picture": "Mostre a foto do personagem (mas você só pode ver um personagem por vez)",
+
+  "$buy-normal-amount": "quantidade de tiradas que você quer comprar",
+  "$buy-keys-amount": "quantidade de chaves que você quer comprar",
+  "$buy-guaranteed-stars": "a classificação de estrela que você quer comprar",
+
+  "$party-spot": "o lugar que você quer este personagem",
+  "$party-swap-1": "o primeiro alvo da troca",
+  "$party-swap-2": "o segundo alvo da troca",
+  "$party-remove-spot": "o lugar a esvaziar",
+
+  "$pack-id": "o id do pacote",
+
+  "$message": "sua próxima mensagem",
+
+  "page": "página",
+  "category": "categoria",
+
+  "$help-page": "especifique uma página para mostrar",
+  "$help-page-gacha": "Gacha",
+  "$help-page-merging": "Fusão",
+  "$help-page-party": "Time",
+  "$help-page-stealing": "Roubar",
+  "$help-page-combat": "Combate",
+  "$help-page-shop": "Loja",
+  "$help-page-roadmap": "Roadmap",
+  "$help-page-essential-commands": "Comandos essenciais",
+  "$help-page-other-commands": "Outros comandos",
+  "$help-page-admin-commands": "Comandos de Admin",
+
+  "$skill-categories": "especifique uma página para mostrar",
+
+  "buff": "Buff",
+  "debuff": "Debuff",
+  "offensive": "Ofensiva",
+  "support": "Suporte",
+  "heal": "Cura",
+
+  "stunned": "Paralisado",
+  "chained": "Acorrentado",
+  "crit": "Critíco",
+
+  "~crit": "Hit Critíco",
+  "~crit-desc": "A arte de performar o hit crítico tradicional.",
+  "~crit-chance": "Chances de crítico",
+  "~crit-damage": "Dano do Critíco",
+
+  "~boost": "Boost por",
+
+  "~speed-boost": "Boost de velocidade",
+  "~speed-boost-desc": "Impulsione a velocidade de todos os membros do time (Não acúmulavel)",
+  "~defense-boost": "Boost de defesa",
+  "~defense-boost-desc": "Impulsione a defesa de todos os membros do time (Não acúmulavel)",
+
+  "~slow-debuff": "Penalidade de lentidão",
+  "~slow-debuff-desc": "Atrase a velocidade do time do seu inimigo (Não acúmulavel)",
+
+  "~enrage": "Enfurecido",
+  "~enrage-desc": "Se sua saúde abaixar para n% aumente todos os seus status por n%",
+  "~hp-remaining": "HP restante",
+
+  "~heal": "Cura de Emergência",
+  "~heal-desc": "Uma vez por batalha, depois que a saúde de um membro do time abaixar mais que 25%, cure eles por n% do máximo de saúde do conjurador (Não acúmulavel)",
+  "~heal-amount": "Cura por",
+
+  "~lifesteal": "Roubo de vida",
+  "~lifesteal-desc": "Sempre que você der dano em um inimigo, se cure em parte do dano que você deu",
+  "~lifesteal-amount": "Cura por dano",
+
+  "~stun": "Paralisar",
+  "~stun-desc": "Adiciona chance de paralisar o inimigo, pulando a próxima vez dele",
+  "~stun-chance": "Chance de paralisar",
+
+  "~chain": "Ataque em corrente",
+  "~chain-desc": "Aumenta o dano em ataques em correntes",
+  "~chain-2-boost": "x2 Boost de Ataque",
+  "~chain-3-boost": "x3 Boost de Ataque",
+
+  "~sneak": "Ataque Surpresa",
+  "~sneak-desc": "Sempre mire e ataque de surpresa a retaguarda do time do inimigo"
+}
