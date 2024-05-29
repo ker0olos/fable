@@ -35,10 +35,9 @@ import {
 import { NoPullsError } from '~/src/errors.ts';
 
 Deno.test('adding character to inventory', async (test) => {
-  await test.step('range pool', async () => {
+  await test.step('rng pool', async () => {
     const variables = {
-      range: [2000, 3000],
-      role: CharacterRole.Main,
+      rating: 1,
     };
 
     const poolStub = stub(
@@ -65,8 +64,7 @@ Deno.test('adding character to inventory', async (test) => {
       'rng',
       returnsNext([
         { value: false, chance: NaN },
-        { value: variables.range, chance: NaN },
-        { value: variables.role, chance: NaN },
+        { value: variables.rating, chance: NaN },
       ]),
     );
 
@@ -176,8 +174,7 @@ Deno.test('adding character to inventory', async (test) => {
 
   await test.step('fallback pool', async () => {
     const variables = {
-      range: [2000, 3000],
-      role: CharacterRole.Main,
+      rating: 1,
     };
 
     const poolStub = stub(
@@ -208,8 +205,7 @@ Deno.test('adding character to inventory', async (test) => {
       'rng',
       returnsNext([
         { value: false, chance: NaN },
-        { value: variables.range, chance: NaN },
-        { value: variables.role, chance: NaN },
+        { value: variables.rating, chance: NaN },
       ]),
     );
 
@@ -762,8 +758,7 @@ Deno.test('adding character to inventory', async (test) => {
 
   await test.step('character exists', async () => {
     const variables = {
-      range: [2000, 3000],
-      role: CharacterRole.Main,
+      rating: 1,
     };
 
     const poolStub = stub(
@@ -790,8 +785,7 @@ Deno.test('adding character to inventory', async (test) => {
       'rng',
       returnsNext([
         { value: false, chance: NaN },
-        { value: variables.range, chance: NaN },
-        { value: variables.role, chance: NaN },
+        { value: variables.rating, chance: NaN },
       ]),
     );
 
@@ -880,8 +874,7 @@ Deno.test('adding character to inventory', async (test) => {
 
   await test.step('no pulls available', async () => {
     const variables = {
-      range: [2000, 3000],
-      role: CharacterRole.Main,
+      rating: 1,
     };
 
     const poolStub = stub(
@@ -908,8 +901,7 @@ Deno.test('adding character to inventory', async (test) => {
       'rng',
       returnsNext([
         { value: false, chance: NaN },
-        { value: variables.range, chance: NaN },
-        { value: variables.role, chance: NaN },
+        { value: variables.rating, chance: NaN },
       ]),
     );
 
@@ -998,8 +990,7 @@ Deno.test('adding character to inventory', async (test) => {
 
   await test.step('no guarantees', async () => {
     const variables = {
-      range: [2000, 3000],
-      role: CharacterRole.Main,
+      rating: 1,
     };
 
     const poolStub = stub(
@@ -1026,8 +1017,7 @@ Deno.test('adding character to inventory', async (test) => {
       'rng',
       returnsNext([
         { value: false, chance: NaN },
-        { value: variables.range, chance: NaN },
-        { value: variables.role, chance: NaN },
+        { value: variables.rating, chance: NaN },
       ]),
     );
 
@@ -1124,18 +1114,12 @@ Deno.test('variables', () => {
     95: false,
   });
 
-  assertEquals(gacha.variables.roles, {
-    '20': CharacterRole.Main,
-    '55': CharacterRole.Supporting,
-    '25': CharacterRole.Background,
-  });
-
-  assertEquals(gacha.variables.ranges, {
-    40: [1000, 50_000],
-    25: [50_000, 100_000],
-    20: [100_000, 200_000],
-    10: [200_000, 400_000],
-    5: [400_000, Infinity],
+  assertEquals(gacha.variables.rating, {
+    50: 1,
+    20: 2,
+    15: 3,
+    10: 4,
+    5: 5,
   });
 });
 
@@ -1579,7 +1563,7 @@ Deno.test('/gacha', async (test) => {
 
     const pullStub = stub(
       gacha,
-      'rangePool',
+      'rngPool',
       // deno-lint-ignore require-await
       async () =>
         Promise.resolve({
@@ -3122,7 +3106,7 @@ Deno.test('/gacha', async (test) => {
 
     const pullStub = stub(
       gacha,
-      'rangePool',
+      'rngPool',
       // deno-lint-ignore require-await
       async () =>
         Promise.resolve({

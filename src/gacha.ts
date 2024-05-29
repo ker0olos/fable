@@ -27,9 +27,8 @@ import {
 import { NonFetalError, NoPullsError, PoolError } from '~/src/errors.ts';
 
 type Variables = {
-  roles: { [chance: number]: CharacterRole };
   liked: { [chance: number]: boolean };
-  ranges: { [chance: number]: [number, number] };
+  rating: { [chance: number]: number };
 };
 
 export type Pull = {
@@ -42,20 +41,13 @@ export type Pull = {
 const lowest = 1000;
 
 const variables: Variables = {
-  roles: {
-    20: CharacterRole.Main, // 20% for Main
-    55: CharacterRole.Supporting, // 55% for Supporting
-    25: CharacterRole.Background, // 25% for Background
-  },
   liked: { 5: true, 95: false },
-  ranges: {
-    // whether you get from the far end or the near end
-    // of those ranges is random
-    40: [lowest, 50_000], // 40% for 1K -> 50K
-    25: [50_000, 100_000], // 25% for 50K -> 100K
-    20: [100_000, 200_000], // 20% for 100K -> 200K
-    10: [200_000, 400_000], // 10% for 200K -> 400K
-    5: [400_000, Infinity], // 5% for 400K -> inf
+  rating: {
+    50: 1,
+    20: 2,
+    15: 3,
+    10: 4,
+    5: 5,
   },
 };
 
@@ -81,7 +73,7 @@ async function likedPool(
 
   // fallback to normal pool
   if (!likes.length) {
-    return gacha.rangePool({ guildId });
+    return gacha.rngPool({ guildId });
   }
 
   const [mediaPool, charPool] = await Promise.all([
@@ -123,13 +115,13 @@ async function likedPool(
 
   // fallback to normal pool
   if (!finalPool.size) {
-    return gacha.rangePool({ guildId });
+    return gacha.rngPool({ guildId });
   }
 
   return { pool: finalPool, validate };
 }
 
-async function rangePool(
+async function rngPool(
   { guildId }: { guildId: string },
 ): Promise<{
   pool: Map<string, import('search-index').Character[]>;
@@ -137,31 +129,14 @@ async function rangePool(
 }> {
   const variables: Variables = gacha.variables;
 
-  const { value: range } = utils.rng(variables.ranges);
+  const { value: rating } = utils.rng(variables.rating);
 
-  const { value: role } = range[0] <= lowest
-    // include all roles in the pool
-    ? { value: undefined }
-    // one specific role for the whole pool
-    : utils.rng(variables.roles);
-
-  const pool = await searchIndex.pool(
-    { role, popularity: { between: range } },
-    guildId,
-  );
+  const pool = await searchIndex.pool({ rating }, guildId);
 
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
     if (
       typeof character.popularity === 'number' &&
-      !(character.popularity >= range[0] && character.popularity <= range[1])
-    ) {
-      return false;
-    }
-
-    if (
-      role &&
-      Array.isArray(character.media) &&
-      (character.media.length <= 0 || character.media[0].role !== role)
+      new Rating({ popularity: character.popularity }).stars !== rating
     ) {
       return false;
     }
@@ -173,13 +148,7 @@ async function rangePool(
     if (edge) {
       const popularity = character.popularity || edge.node.popularity || lowest;
 
-      if (
-        !(popularity >= range[0] && popularity <= range[1])
-      ) {
-        return false;
-      }
-
-      if (role && edge.role !== role) {
+      if (new Rating({ popularity, role: edge.role }).stars !== rating) {
         return false;
       }
     }
@@ -258,7 +227,7 @@ async function rngPull(
     ? await gacha.guaranteedPool({ guildId, guarantee })
     : utils.rng(variables.liked).value && userId
     ? await gacha.likedPool({ guildId, userId })
-    : await gacha.rangePool({ guildId });
+    : await gacha.rngPool({ guildId });
 
   let poolKeys = Array.from(pool.keys());
 
@@ -626,7 +595,7 @@ const gacha = {
   guaranteedPool,
   rangeFallbackPool,
   likedPool,
-  rangePool,
+  rngPool,
   start,
 };
 
