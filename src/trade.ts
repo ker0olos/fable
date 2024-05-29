@@ -67,22 +67,13 @@ function pre({ token, userId, guildId, targetId, give, take }: {
     .then(async (results) => {
       const message = new discord.Message();
 
-      if (
-        results.length !== (give.length + take.length) ||
-        results.some((char) =>
-          packs.isDisabled(`${char.packId}:${char.id}`, guildId)
-        )
-      ) {
+      if (results.length !== (give.length + take.length)) {
         throw new Error('404');
       }
 
       results = await Promise.all(
         results.map((character) =>
-          packs.aggregate<Character>({
-            guildId,
-            character,
-            end: 1,
-          })
+          packs.aggregate<Character>({ guildId, character, end: 1 })
         ),
       );
 
@@ -108,20 +99,20 @@ function pre({ token, userId, guildId, targetId, give, take }: {
         results.slice(give.length),
       ];
 
-      let t: Record<string, (typeof giveCharacters[0])> = {};
+      let _filter: Record<string, (typeof giveCharacters[0])> = {};
 
       // filter repeated characters
       giveCharacters = (giveCharacters.forEach((char) => {
-        t[`${char.packId}:${char.id}`] = char;
+        _filter[`${char.packId}:${char.id}`] = char;
       }),
-        Object.values(t));
+        Object.values(_filter));
 
       // filter repeated character
-      takeCharacters = (t = {},
+      takeCharacters = (_filter = {},
         takeCharacters.forEach((char) => {
-          t[`${char.packId}:${char.id}`] = char;
+          _filter[`${char.packId}:${char.id}`] = char;
         }),
-        Object.values(t));
+        Object.values(_filter));
 
       const [giveIds, takeIds] = [
         giveCharacters.map(({ packId, id }) => `${packId}:${id}`),
@@ -144,25 +135,6 @@ function pre({ token, userId, guildId, targetId, give, take }: {
         ? (await db.getUserCharacters(targetId, guildId))
         : undefined;
 
-      const giveEmbeds = await Promise.all(giveCharacters.map((character) => {
-        const i = giveCollection.findIndex(({ characterId }) =>
-          `${character.packId}:${character.id}` === characterId
-        );
-
-        return search.characterEmbed(message, character, {
-          footer: false,
-          description: false,
-          media: { title: true },
-          mode: 'thumbnail',
-          existing: i > -1
-            ? {
-              rating: giveCollection[i].rating,
-              mediaId: giveCollection[i].mediaId,
-            }
-            : undefined,
-        });
-      }));
-
       const giveParty = ([
         userInventory.party.member1?.characterId,
         userInventory.party.member2?.characterId,
@@ -181,44 +153,51 @@ function pre({ token, userId, guildId, targetId, give, take }: {
 
       // not owned
       if (giveFilter.length) {
-        giveFilter.forEach((characterId) => {
-          const i = giveCharacters.findIndex(({ packId, id }) =>
-            `${packId}:${id}` === characterId
-          );
+        const message = new discord.Message();
 
-          message.addEmbed(
-            new discord.Embed()
-              .setDescription(
-                giveParty.length
-                  ? i18n.get('trade-you-party-member', locale, giveNames[i])
-                  : i18n.get('trade-you-not-owned', locale, giveNames[i]),
-              ),
-          ).addEmbed(giveEmbeds[i]);
-        });
+        const embeds =
+          (await Promise.all(giveFilter.map(async (characterId) => {
+            // deno-lint-ignore no-non-null-assertion
+            const character = giveCharacters.find(({ packId, id }) =>
+              `${packId}:${id}` === characterId
+            )!;
+
+            const i = giveCollection.findIndex(({ characterId }) =>
+              `${character.packId}:${character.id}` === characterId
+            );
+
+            const characterName = packs.aliasToArray(character.name)[0];
+
+            const embed = await search.characterEmbed(message, character, {
+              footer: false,
+              description: false,
+              media: { title: true },
+              mode: 'thumbnail',
+              existing: i > -1
+                ? {
+                  rating: giveCollection[i].rating,
+                  mediaId: giveCollection[i].mediaId,
+                }
+                : undefined,
+            });
+
+            return [
+              new discord.Embed()
+                .setDescription(
+                  giveParty.length
+                    ? i18n.get('trade-you-party-member', locale, characterName)
+                    : i18n.get('trade-you-not-owned', locale, characterName),
+                ),
+              embed,
+            ];
+          }))).flat();
+
+        embeds.forEach((embed) => message.addEmbed(embed));
 
         return await message.patch(token);
       }
 
       if (takeCollection) {
-        const takeEmbeds = await Promise.all(takeCharacters.map((character) => {
-          const i = takeCollection.findIndex(({ characterId }) =>
-            `${character.packId}:${character.id}` === characterId
-          );
-
-          return search.characterEmbed(message, character, {
-            footer: false,
-            description: false,
-            media: { title: true },
-            mode: 'thumbnail',
-            existing: i > -1
-              ? {
-                rating: takeCollection[i].rating,
-                mediaId: takeCollection[i].mediaId,
-              }
-              : {},
-          });
-        }));
-
         const _takeParty = targetInventory.party;
 
         const takeParty = ([
@@ -239,33 +218,79 @@ function pre({ token, userId, guildId, targetId, give, take }: {
 
         // not owned
         if (takeFilter.length) {
-          takeFilter.forEach((characterId) => {
-            const i = takeCharacters.findIndex(({ packId, id }) =>
-              `${packId}:${id}` === characterId
-            );
+          const message = new discord.Message();
 
-            message.addEmbed(
-              new discord.Embed()
-                .setDescription(
-                  takeParty.length
-                    ? i18n.get(
-                      'trade-user-party-member',
-                      locale,
-                      takeNames[i],
-                      `<@${targetId}>`,
-                    )
-                    : i18n.get(
-                      'trade-user-not-owned',
-                      locale,
-                      `<@${targetId}>`,
-                      takeNames[i],
-                    ),
-                ),
-            ).addEmbed(takeEmbeds[i]);
-          });
+          const embeds = (await Promise.all(
+            takeFilter.map(async (characterId) => {
+              // deno-lint-ignore no-non-null-assertion
+              const character = takeCharacters.find(({ packId, id }) =>
+                `${packId}:${id}` === characterId
+              )!;
+
+              const i = takeCollection.findIndex(({ characterId }) =>
+                `${character.packId}:${character.id}` === characterId
+              );
+
+              const characterName = packs.aliasToArray(character.name)[0];
+
+              const embed = await search.characterEmbed(message, character, {
+                footer: false,
+                description: false,
+                media: { title: true },
+                mode: 'thumbnail',
+                existing: i > -1
+                  ? {
+                    rating: giveCollection[i].rating,
+                    mediaId: giveCollection[i].mediaId,
+                  }
+                  : undefined,
+              });
+
+              return [
+                new discord.Embed()
+                  .setDescription(
+                    takeParty.length
+                      ? i18n.get(
+                        'trade-user-party-member',
+                        locale,
+                        characterName,
+                        `<@${targetId}>`,
+                      )
+                      : i18n.get(
+                        'trade-user-not-owned',
+                        locale,
+                        `<@${targetId}>`,
+                        characterName,
+                      ),
+                  ),
+                embed,
+              ];
+            }),
+          )).flat();
+
+          embeds.forEach((embed) => message.addEmbed(embed));
 
           return await message.patch(token);
         }
+
+        const takeEmbeds = await Promise.all(takeCharacters.map((character) => {
+          const i = takeCollection.findIndex(({ characterId }) =>
+            `${character.packId}:${character.id}` === characterId
+          );
+
+          return search.characterEmbed(message, character, {
+            footer: false,
+            description: false,
+            media: { title: true },
+            mode: 'thumbnail',
+            existing: i > -1
+              ? {
+                rating: takeCollection[i].rating,
+                mediaId: takeCollection[i].mediaId,
+              }
+              : {},
+          });
+        }));
 
         takeEmbeds.forEach((embed) => {
           message.addEmbed(
@@ -273,6 +298,25 @@ function pre({ token, userId, guildId, targetId, give, take }: {
           );
         });
       }
+
+      const giveEmbeds = await Promise.all(giveCharacters.map((character) => {
+        const i = giveCollection.findIndex(({ characterId }) =>
+          `${character.packId}:${character.id}` === characterId
+        );
+
+        return search.characterEmbed(message, character, {
+          footer: false,
+          description: false,
+          media: { title: true },
+          mode: 'thumbnail',
+          existing: i > -1
+            ? {
+              rating: giveCollection[i].rating,
+              mediaId: giveCollection[i].mediaId,
+            }
+            : undefined,
+        });
+      }));
 
       giveEmbeds.forEach((embed) => {
         message.addEmbed(embed.addField({
