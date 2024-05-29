@@ -2413,7 +2413,6 @@ Deno.test('/trade', async (test) => {
         {
           attachments: [
             { filename: 'image-url.webp', id: '0' },
-            { filename: 'image-url.webp', id: '1' },
           ],
           components: [],
           embeds: [
@@ -2571,7 +2570,6 @@ Deno.test('/trade', async (test) => {
           components: [],
           attachments: [
             { filename: 'image-url.webp', id: '0' },
-            { filename: 'image-url.webp', id: '1' },
           ],
           embeds: [
             {
