@@ -8702,7 +8702,7 @@ Deno.test('/likeslist', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'likes=user_id=0=1=prev',
+                  custom_id: 'likes=user_id=0==1=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -8715,7 +8715,7 @@ Deno.test('/likeslist', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'likes=user_id=0=1=next',
+                  custom_id: 'likes=user_id=0==1=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -8891,7 +8891,7 @@ Deno.test('/likeslist', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'likes=user_id=0=0=prev',
+                  custom_id: 'likes=user_id=0==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -8904,7 +8904,7 @@ Deno.test('/likeslist', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'likes=user_id=0=0=next',
+                  custom_id: 'likes=user_id=0==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -9106,7 +9106,7 @@ Deno.test('/likeslist', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'likes=user_id=1=0=prev',
+                  custom_id: 'likes=user_id=1==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -9119,7 +9119,7 @@ Deno.test('/likeslist', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'likes=user_id=1=0=next',
+                  custom_id: 'likes=user_id=1==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -9141,6 +9141,221 @@ Deno.test('/likeslist', async (test) => {
                   inline: false,
                   name: 'title 3',
                   value: '1<:smolstar:1107503653956374638> character 3',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      characterStub.restore();
+      getUserStub.restore();
+
+      findCharactersStub.restore();
+    }
+  });
+
+  await test.step('normal (owned by)', async () => {
+    const characters: Character[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'character 1',
+        },
+        media: {
+          edges: [{
+            role: CharacterRole.Main,
+            node: {
+              id: '1',
+              packId: 'anilist',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 1',
+              },
+            },
+          }],
+        },
+      },
+      {
+        id: '2',
+        packId: 'anilist',
+        name: {
+          english: 'character 2',
+        },
+        media: {
+          edges: [{
+            role: CharacterRole.Main,
+            node: {
+              id: '2',
+              packId: 'anilist',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 2',
+              },
+            },
+          }],
+        },
+      },
+      {
+        id: '3',
+        packId: 'anilist',
+        name: {
+          english: 'character 3',
+        },
+        media: {
+          edges: [{
+            role: CharacterRole.Main,
+            node: {
+              id: '3',
+              packId: 'anilist',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 3',
+              },
+            },
+          }],
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({
+        likes: [
+          { characterId: 'anilist:1' },
+          { characterId: 'anilist:2' },
+          { characterId: 'anilist:3' },
+        ],
+      } as any),
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
+      () =>
+        [
+          {
+            characterId: 'anilist:1',
+            rating: 3,
+            userId: 'user_id',
+          },
+          {
+            characterId: 'anilist:2',
+            rating: 3,
+            userId: 'another_user_id',
+          },
+        ] as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.likeslist({
+        index: 0,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        filter: true,
+        ownedBy: 'another_user_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'likes=user_id=1=another_user_id=0=prev',
+                  label: 'Prev',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1/1',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'likes=user_id=1=another_user_id=0=next',
+                  label: 'Next',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title 2',
+                  value:
+                    '3<:smolstar:1107503653956374638> <@another_user_id> character 2',
                 },
               ],
             },
