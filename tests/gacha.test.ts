@@ -1116,10 +1116,10 @@ Deno.test('variables', () => {
 
   assertEquals(gacha.variables.rating, {
     50: 1,
-    20: 2,
+    30: 2,
     15: 3,
-    10: 4,
-    5: 5,
+    4: 4,
+    1: 5,
   });
 });
 
