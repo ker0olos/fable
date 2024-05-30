@@ -294,9 +294,15 @@ export const commands = [
         optional: true,
       }),
       Option({
-        name: 'filter',
-        description: '$user-likes-filter',
+        name: 'filter-owned',
+        description: '$user-likes-filter-owned',
         type: Type.BOOLEAN,
+        optional: true,
+      }),
+      Option({
+        name: 'owned-by',
+        description: '$user-likes-owned-by',
+        type: Type.USER,
         optional: true,
       }),
     ],
@@ -431,6 +437,7 @@ export const commands = [
             name: EN['$help-page-gacha'],
             name_localizations: {
               'es-ES': ES['$help-page-gacha'],
+              'pt-BR': BR['$help-page-gacha'],
             },
             value: 0,
           },
@@ -438,6 +445,7 @@ export const commands = [
             name: EN['$help-page-merging'],
             name_localizations: {
               'es-ES': ES['$help-page-merging'],
+              'pt-BR': BR['$help-page-merging'],
             },
             value: 1,
           },
@@ -445,6 +453,7 @@ export const commands = [
             name: EN['$help-page-party'],
             name_localizations: {
               'es-ES': ES['$help-page-party'],
+              'pt-BR': BR['$help-page-party'],
             },
             value: 2,
           },
@@ -452,6 +461,7 @@ export const commands = [
             name: EN['$help-page-stealing'],
             name_localizations: {
               'es-ES': ES['$help-page-stealing'],
+              'pt-BR': BR['$help-page-stealing'],
             },
             value: 3,
           },
@@ -466,6 +476,7 @@ export const commands = [
             name: EN['$help-page-shop'],
             name_localizations: {
               'es-ES': ES['$help-page-shop'],
+              'pt-BR': BR['$help-page-shop'],
             },
             value: 5,
           },
@@ -473,6 +484,7 @@ export const commands = [
             name: EN['$help-page-essential-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-essential-commands'],
+              'pt-BR': BR['$help-page-essential-commands'],
             },
             value: 6,
           },
@@ -480,6 +492,7 @@ export const commands = [
             name: EN['$help-page-other-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-other-commands'],
+              'pt-BR': BR['$help-page-other-commands'],
             },
             value: 7,
           },
@@ -487,6 +500,7 @@ export const commands = [
             name: EN['$help-page-admin-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-admin-commands'],
+              'pt-BR': BR['$help-page-admin-commands'],
             },
             value: 8,
           },
@@ -934,7 +948,10 @@ export const commands = [
               value: category,
               name: EN[category],
               name_localizations: {
-                'es-ES': (ES as typeof EN)[category],
+                // deno-lint-ignore no-explicit-any
+                'es-ES': (ES as any as typeof EN)[category],
+                // deno-lint-ignore no-explicit-any
+                'pt-BR': (BR as any as typeof EN)[category],
               },
             })),
           }),

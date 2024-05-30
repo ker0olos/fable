@@ -60,8 +60,6 @@ function pages(
               discord.emotes.smolStar,
             ),
             '',
-            i18n.get('help-page1-gacha-rates', locale, discord.emotes.smolStar),
-            '',
             i18n.get('help-page1-footer', locale),
             discord.empty,
           ].join('\n'))

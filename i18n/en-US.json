@@ -207,7 +207,6 @@
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
   "help-page1-characters-are-exclusive": "__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.",
   "help-page1-characters-vary": "__Characters vary in ranks from 1{0}to 5{0}__ A character rating is based on their popularity (a character rating cannot be raised).",
-  "help-page1-gacha-rates": "__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5{0}appearing is about 5%.",
   "help-page1-footer": "> *`/q` allows you to do gacha pulls with no animations*",
 
   "help-page2-sacrifice-characters": "Sacrifice characters to pull a new character with a higher rating.",
@@ -340,7 +339,8 @@
   "$user-list": "the user of the list",
   "$user-party": "the user of the party",
   "$user-likes-list": "the user of the likes list",
-  "$user-likes-filter": "filter out the likes already found by the user",
+  "$user-likes-filter-owned": "filter out all the characters already owned by you",
+  "$user-likes-owned-by": "show only the characters owned by this users",
   "$trade-user": "the user you want to trade with",
   "$trade-give-character": "a character to give away",
   "$trade-take-character": "a character to take for yourself",

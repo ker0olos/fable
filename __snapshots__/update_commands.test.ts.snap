@@ -410,14 +410,18 @@ snapshot[`commands 1`] = `
         }
       },
       {
-        "name": "filter",
-        "description": "filter out the likes already found by the user",
+        "name": "filter-owned",
+        "description": "filter out all the characters already owned by you",
         "type": 5,
         "required": false,
-        "description_localizations": {
-          "es-ES": "no mostrar los likes que ya poseas",
-          "pt-BR": "filtra os likes já achados pelo usuário"
-        }
+        "description_localizations": {}
+      },
+      {
+        "name": "owned-by",
+        "description": "show only the characters owned by this users",
+        "type": 6,
+        "required": false,
+        "description_localizations": {}
       }
     ]
   },
@@ -786,28 +790,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Gacha",
             "name_localizations": {
-              "es-ES": "Gacha"
+              "es-ES": "Gacha",
+              "pt-BR": "Gacha"
             },
             "value": 0
           },
           {
             "name": "Merging",
             "name_localizations": {
-              "es-ES": "Combinar (merge)"
+              "es-ES": "Combinar (merge)",
+              "pt-BR": "Fusão"
             },
             "value": 1
           },
           {
             "name": "Party",
             "name_localizations": {
-              "es-ES": "Equipo (party)"
+              "es-ES": "Equipo (party)",
+              "pt-BR": "Time"
             },
             "value": 2
           },
           {
             "name": "Stealing",
             "name_localizations": {
-              "es-ES": "Robar"
+              "es-ES": "Robar",
+              "pt-BR": "Roubar"
             },
             "value": 3
           },
@@ -819,28 +827,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Shop",
             "name_localizations": {
-              "es-ES": "Tienda"
+              "es-ES": "Tienda",
+              "pt-BR": "Loja"
             },
             "value": 5
           },
           {
             "name": "Essential Commands",
             "name_localizations": {
-              "es-ES": "Comandos Esenciales"
+              "es-ES": "Comandos Esenciales",
+              "pt-BR": "Comandos essenciais"
             },
             "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
-              "es-ES": "Otros Comandos"
+              "es-ES": "Otros Comandos",
+              "pt-BR": "Outros comandos"
             },
             "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
-              "es-ES": "Comandos de Administrador"
+              "es-ES": "Comandos de Administrador",
+              "pt-BR": "Comandos de Admin"
             },
             "value": 8
           }
@@ -868,28 +880,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Gacha",
             "name_localizations": {
-              "es-ES": "Gacha"
+              "es-ES": "Gacha",
+              "pt-BR": "Gacha"
             },
             "value": 0
           },
           {
             "name": "Merging",
             "name_localizations": {
-              "es-ES": "Combinar (merge)"
+              "es-ES": "Combinar (merge)",
+              "pt-BR": "Fusão"
             },
             "value": 1
           },
           {
             "name": "Party",
             "name_localizations": {
-              "es-ES": "Equipo (party)"
+              "es-ES": "Equipo (party)",
+              "pt-BR": "Time"
             },
             "value": 2
           },
           {
             "name": "Stealing",
             "name_localizations": {
-              "es-ES": "Robar"
+              "es-ES": "Robar",
+              "pt-BR": "Roubar"
             },
             "value": 3
           },
@@ -901,28 +917,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Shop",
             "name_localizations": {
-              "es-ES": "Tienda"
+              "es-ES": "Tienda",
+              "pt-BR": "Loja"
             },
             "value": 5
           },
           {
             "name": "Essential Commands",
             "name_localizations": {
-              "es-ES": "Comandos Esenciales"
+              "es-ES": "Comandos Esenciales",
+              "pt-BR": "Comandos essenciais"
             },
             "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
-              "es-ES": "Otros Comandos"
+              "es-ES": "Otros Comandos",
+              "pt-BR": "Outros comandos"
             },
             "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
-              "es-ES": "Comandos de Administrador"
+              "es-ES": "Comandos de Administrador",
+              "pt-BR": "Comandos de Admin"
             },
             "value": 8
           }
@@ -950,28 +970,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Gacha",
             "name_localizations": {
-              "es-ES": "Gacha"
+              "es-ES": "Gacha",
+              "pt-BR": "Gacha"
             },
             "value": 0
           },
           {
             "name": "Merging",
             "name_localizations": {
-              "es-ES": "Combinar (merge)"
+              "es-ES": "Combinar (merge)",
+              "pt-BR": "Fusão"
             },
             "value": 1
           },
           {
             "name": "Party",
             "name_localizations": {
-              "es-ES": "Equipo (party)"
+              "es-ES": "Equipo (party)",
+              "pt-BR": "Time"
             },
             "value": 2
           },
           {
             "name": "Stealing",
             "name_localizations": {
-              "es-ES": "Robar"
+              "es-ES": "Robar",
+              "pt-BR": "Roubar"
             },
             "value": 3
           },
@@ -983,28 +1007,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Shop",
             "name_localizations": {
-              "es-ES": "Tienda"
+              "es-ES": "Tienda",
+              "pt-BR": "Loja"
             },
             "value": 5
           },
           {
             "name": "Essential Commands",
             "name_localizations": {
-              "es-ES": "Comandos Esenciales"
+              "es-ES": "Comandos Esenciales",
+              "pt-BR": "Comandos essenciais"
             },
             "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
-              "es-ES": "Otros Comandos"
+              "es-ES": "Otros Comandos",
+              "pt-BR": "Outros comandos"
             },
             "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
-              "es-ES": "Comandos de Administrador"
+              "es-ES": "Comandos de Administrador",
+              "pt-BR": "Comandos de Admin"
             },
             "value": 8
           }
@@ -1032,28 +1060,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Gacha",
             "name_localizations": {
-              "es-ES": "Gacha"
+              "es-ES": "Gacha",
+              "pt-BR": "Gacha"
             },
             "value": 0
           },
           {
             "name": "Merging",
             "name_localizations": {
-              "es-ES": "Combinar (merge)"
+              "es-ES": "Combinar (merge)",
+              "pt-BR": "Fusão"
             },
             "value": 1
           },
           {
             "name": "Party",
             "name_localizations": {
-              "es-ES": "Equipo (party)"
+              "es-ES": "Equipo (party)",
+              "pt-BR": "Time"
             },
             "value": 2
           },
           {
             "name": "Stealing",
             "name_localizations": {
-              "es-ES": "Robar"
+              "es-ES": "Robar",
+              "pt-BR": "Roubar"
             },
             "value": 3
           },
@@ -1065,28 +1097,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Shop",
             "name_localizations": {
-              "es-ES": "Tienda"
+              "es-ES": "Tienda",
+              "pt-BR": "Loja"
             },
             "value": 5
           },
           {
             "name": "Essential Commands",
             "name_localizations": {
-              "es-ES": "Comandos Esenciales"
+              "es-ES": "Comandos Esenciales",
+              "pt-BR": "Comandos essenciais"
             },
             "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
-              "es-ES": "Otros Comandos"
+              "es-ES": "Otros Comandos",
+              "pt-BR": "Outros comandos"
             },
             "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
-              "es-ES": "Comandos de Administrador"
+              "es-ES": "Comandos de Administrador",
+              "pt-BR": "Comandos de Admin"
             },
             "value": 8
           }
@@ -1114,28 +1150,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Gacha",
             "name_localizations": {
-              "es-ES": "Gacha"
+              "es-ES": "Gacha",
+              "pt-BR": "Gacha"
             },
             "value": 0
           },
           {
             "name": "Merging",
             "name_localizations": {
-              "es-ES": "Combinar (merge)"
+              "es-ES": "Combinar (merge)",
+              "pt-BR": "Fusão"
             },
             "value": 1
           },
           {
             "name": "Party",
             "name_localizations": {
-              "es-ES": "Equipo (party)"
+              "es-ES": "Equipo (party)",
+              "pt-BR": "Time"
             },
             "value": 2
           },
           {
             "name": "Stealing",
             "name_localizations": {
-              "es-ES": "Robar"
+              "es-ES": "Robar",
+              "pt-BR": "Roubar"
             },
             "value": 3
           },
@@ -1147,28 +1187,32 @@ snapshot[`commands 1`] = `
           {
             "name": "Shop",
             "name_localizations": {
-              "es-ES": "Tienda"
+              "es-ES": "Tienda",
+              "pt-BR": "Loja"
             },
             "value": 5
           },
           {
             "name": "Essential Commands",
             "name_localizations": {
-              "es-ES": "Comandos Esenciales"
+              "es-ES": "Comandos Esenciales",
+              "pt-BR": "Comandos essenciais"
             },
             "value": 6
           },
           {
             "name": "Other Commands",
             "name_localizations": {
-              "es-ES": "Otros Comandos"
+              "es-ES": "Otros Comandos",
+              "pt-BR": "Outros comandos"
             },
             "value": 7
           },
           {
             "name": "Admin Commands",
             "name_localizations": {
-              "es-ES": "Comandos de Administrador"
+              "es-ES": "Comandos de Administrador",
+              "pt-BR": "Comandos de Admin"
             },
             "value": 8
           }
@@ -2911,27 +2955,37 @@ snapshot[`commands 1`] = `
               {
                 "value": "buff",
                 "name": "Buff",
-                "name_localizations": {}
+                "name_localizations": {
+                  "pt-BR": "Buff"
+                }
               },
               {
                 "value": "debuff",
                 "name": "Debuff",
-                "name_localizations": {}
+                "name_localizations": {
+                  "pt-BR": "Debuff"
+                }
               },
               {
                 "value": "support",
                 "name": "Support",
-                "name_localizations": {}
+                "name_localizations": {
+                  "pt-BR": "Suporte"
+                }
               },
               {
                 "value": "offensive",
                 "name": "Offensive",
-                "name_localizations": {}
+                "name_localizations": {
+                  "pt-BR": "Ofensiva"
+                }
               },
               {
                 "value": "heal",
                 "name": "Heal",
-                "name_localizations": {}
+                "name_localizations": {
+                  "pt-BR": "Cura"
+                }
               }
             ],
             "required": false,

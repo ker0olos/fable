@@ -11,7 +11,7 @@ snapshot[`/help 1`] = `
           "name": "1."
         },
         "title": "\`/gacha\`",
-        "description": "Before anything: You will need characters.\\n\\n__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.\\n\\n__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.\\n\\n__Characters vary in ranks from 1<:smolstar:1107503653956374638>to 5<:smolstar:1107503653956374638>__ A character rating is based on their popularity (a character rating cannot be raised).\\n\\n__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smolstar:1107503653956374638>appearing is about 5%.\\n\\n> *\`/q\` allows you to do gacha pulls with no animations*\\n​",
+        "description": "Before anything: You will need characters.\\n\\n__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.\\n\\n__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.\\n\\n__Characters vary in ranks from 1<:smolstar:1107503653956374638>to 5<:smolstar:1107503653956374638>__ A character rating is based on their popularity (a character rating cannot be raised).\\n\\n> *\`/q\` allows you to do gacha pulls with no animations*\\n​",
         "footer": {
           "text": "aliases: /w, /q"
         }
