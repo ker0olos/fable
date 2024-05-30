@@ -511,7 +511,8 @@ export const handler = async (r: Request) => {
           case 'likeslist': {
             const userId = options['user'] as string ?? member.user.id;
 
-            const filter = options['filter'] as boolean | undefined;
+            const filter = options['filter-owned'] as boolean | undefined;
+            const ownedBy = options['owned-by'] as string | undefined;
 
             return user.likeslist({
               token,
@@ -520,6 +521,7 @@ export const handler = async (r: Request) => {
               index: 0,
               nick: userId !== member.user.id,
               filter,
+              ownedBy,
             }).send();
           }
           case 'found':
@@ -969,7 +971,10 @@ export const handler = async (r: Request) => {
             const filter = customValues![1] === '1';
 
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![2]);
+            const ownedBy = customValues![2];
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![3]);
 
             return user.likeslist({
               index,
@@ -977,6 +982,7 @@ export const handler = async (r: Request) => {
               userId,
               guildId,
               filter,
+              ownedBy,
             })
               .setType(discord.MessageType.Update)
               .send();

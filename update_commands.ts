@@ -294,9 +294,15 @@ export const commands = [
         optional: true,
       }),
       Option({
-        name: 'filter',
-        description: '$user-likes-filter',
+        name: 'filter-owned',
+        description: '$user-likes-filter-owned',
         type: Type.BOOLEAN,
+        optional: true,
+      }),
+      Option({
+        name: 'owned-by',
+        description: '$user-likes-owned-by',
+        type: Type.USER,
         optional: true,
       }),
     ],

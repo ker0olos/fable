@@ -979,6 +979,7 @@ function likeslist({
   index,
   nick,
   filter,
+  ownedBy,
 }: {
   token: string;
   index: number;
@@ -986,6 +987,7 @@ function likeslist({
   guildId: string;
   nick?: boolean;
   filter?: boolean;
+  ownedBy?: string;
 }): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
 
@@ -1019,8 +1021,13 @@ function likeslist({
           .filter(utils.nonNullable),
       );
 
-      // filter out characters that are owned by the user
-      if (filter) {
+      // show only characters that are owned by specific user
+      if (ownedBy) {
+        likes = likes.filter((like, i) => {
+          return like.characterId && results[i]?.userId === ownedBy;
+        });
+        // filter out characters that are owned by the user
+      } else if (filter) {
         likes = likes.filter((like, i) => {
           return like.characterId && results[i]?.userId !== userId;
         });
@@ -1123,7 +1130,7 @@ function likeslist({
       return discord.Message.page({
         index,
         type: 'likes',
-        target: discord.join(userId, filter ? '1' : '0'),
+        target: discord.join(userId, filter ? '1' : '0', ownedBy ?? ''),
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,
