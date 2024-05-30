@@ -985,19 +985,19 @@ export class Message {
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
       'PATCH',
-    );
-    // .finally(() => {
-    //   // WORKAROUND double patch messages
-    //   if (config.deploy) {
-    //     utils.sleep(0.250)
-    //       .then(() => {
-    //         return this.#http(
-    //           `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
-    //           'PATCH',
-    //         );
-    //       });
-    //   }
-    // });
+    )
+      .finally(() => {
+        // WORKAROUND double patch messages
+        if (config.deploy) {
+          utils.sleep(0.250)
+            .then(() => {
+              return this.#http(
+                `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
+                'PATCH',
+              );
+            });
+        }
+      });
   }
 
   followup(token: string): Promise<Response> {
