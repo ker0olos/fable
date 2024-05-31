@@ -828,6 +828,8 @@ function list({
           );
         } else {
           embed = await srch.characterEmbed(message, _character[0], {
+            footer: false,
+            description: false,
             media: { title: mediaTitle },
             existing: character,
           });
