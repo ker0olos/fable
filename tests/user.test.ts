@@ -2771,10 +2771,6 @@ Deno.test('/collection stars', async (test) => {
                   name: 'title 1',
                   value: '**character 1**',
                 },
-                {
-                  name: '\u200b',
-                  value: 'small description',
-                },
               ],
               image: {
                 url: 'attachment://default.webp',
@@ -4983,10 +4979,6 @@ Deno.test('/collection media', async (test) => {
                 {
                   name: 'title 1',
                   value: '**character 1**',
-                },
-                {
-                  name: '\u200b',
-                  value: 'small description',
                 },
               ],
               image: {
