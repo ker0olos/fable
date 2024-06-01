@@ -36,7 +36,7 @@ function pages(
           .setUrl('https://discord.gg/H69RVBxeYY'),
         new discord.Component()
           .setLabel(i18n.get('donate', locale))
-          .setUrl('https://ko-fi.com/ker0olos'),
+          .setUrl('https://www.buymeacoffee.com/ker0olos'),
       ])
       .addEmbed(
         new discord.Embed()
