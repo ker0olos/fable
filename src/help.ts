@@ -36,7 +36,7 @@ function pages(
           .setUrl('https://discord.gg/H69RVBxeYY'),
         new discord.Component()
           .setLabel(i18n.get('donate', locale))
-          .setUrl('https://ko-fi.com/ker0olos'),
+          .setUrl('https://www.buymeacoffee.com/ker0olos'),
       ])
       .addEmbed(
         new discord.Embed()
@@ -330,9 +330,6 @@ function pages(
             i18n.get('community-packs-permission', locale),
             `- \`/packs install\`: _${i18n.get('/packs install', locale)}_`,
             `- \`/packs uninstall\`: _${i18n.get('/packs uninstall', locale)}_`,
-            `- \`/packs disable builtins\`: _${
-              i18n.get('/packs disable builtins', locale)
-            }_`,
             '',
             i18n.get('make-your-own-pack', locale),
           ].join('\n')),

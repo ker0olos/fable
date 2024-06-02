@@ -33,10 +33,6 @@
     {
       "url": "http://json-schema.org/schema",
       "fileMatch": ["json/*.json"]
-    },
-    {
-      "url": "./json/schema.json",
-      "fileMatch": ["packs/*/manifest.json"]
     }
   ]
 }

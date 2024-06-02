@@ -92,7 +92,6 @@ describe('db.getGuild()', () => {
     assertEquals(Object.keys(guild), [
       '_id',
       'discordId',
-      'builtinsDisabled',
       'excluded',
       'packIds',
       'packs',
@@ -102,9 +101,8 @@ describe('db.getGuild()', () => {
 
     assertObjectMatch(guild, {
       excluded: false,
-      builtinsDisabled: false,
       discordId: 'guild-id',
-      packIds: ['vtubers'],
+      packIds: ['anilist', 'vtubers'],
     });
   });
 

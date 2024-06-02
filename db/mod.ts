@@ -72,8 +72,6 @@ import {
 
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
-import { disableBuiltins } from '~/db/manageGuild.ts';
-
 import { addChatMessage } from '~/db/getChatHistory.ts';
 
 import type * as Schema from '~/db/schema.ts';
@@ -199,8 +197,6 @@ const db = {
   getLastUpdatedPacks,
   publishPack,
   removePack,
-  //
-  disableBuiltins,
   //
   addChatMessage,
 };
