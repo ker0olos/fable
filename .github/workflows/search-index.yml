@@ -32,4 +32,4 @@ jobs:
           body: |
 
             > [!NOTE]
-            > This PR is auto-generated every Sunday!
+            > This PR is auto-generated!
