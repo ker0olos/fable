@@ -869,20 +869,6 @@ export const commands = [
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({
-        name: 'disable',
-        description: 'community packs disable commands',
-        type: Type.SUB_COMMAND_GROUP,
-        optional: true,
-        options: [
-          Option({
-            name: 'builtins',
-            description: '/packs disable builtins',
-            type: Type.SUB_COMMAND,
-            optional: true,
-          }),
-        ],
-      }),
-      Option({
         name: 'installed',
         description: '/installed packs',
         type: Type.SUB_COMMAND,

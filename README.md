@@ -12,7 +12,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deploy.yml?branch=main&label=tests&logo=github)
 [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC&label=codecov&logo=codecov)](https://app.codecov.io/github/ker0olos/fable)
 
-[![Kofi](https://img.shields.io/badge/Support%20us%20on%20Ko--fi-orange?logo=ko-fi&logoColor=white)][kofi]
+[![Buy me a coffee](https://img.shields.io/badge/-buy%20me%20a%20coffee-yellow?logo=buymeacoffee&logoColor=white&color=yellow)][buymeacoffee]
 
 </i>
 
@@ -113,7 +113,7 @@ Fable to install, wanna start creating your own pack? Visit
 - [How to Contribute](https://github.com/ker0olos/fable/wiki)
 - [How to Create Packs](https://packs.deno.dev)
 - [Discord Support Server][discord]
-- [Dontate (Ko-fi)](https://ko-fi.com/ker0olos)
+- [Donate](https://www.buymeacoffee.com/ker0olos)
 
 <br/>
 
@@ -183,4 +183,4 @@ single dollar, it will help a lot.
 [discord]: https://discord.gg/ceKyEfhyPQ
 [topgg]: https://top.gg/bot/1041970851559522304
 [invite]: https://fable.deno.dev/invite
-[kofi]: https://ko-fi.com/ker0olos
+[kofi]: https://www.buymeacoffee.com/ker0olos

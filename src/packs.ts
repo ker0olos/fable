@@ -1,7 +1,3 @@
-import _anilistManifest from '~/packs/anilist/manifest.json' with {
-  type: 'json',
-};
-
 import * as _anilist from '~/packs/anilist/mod.ts';
 
 import * as discord from '~/src/discord.ts';
@@ -23,7 +19,6 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Manifest,
   Media,
   MediaFormat,
   MediaRelation,
@@ -33,12 +28,9 @@ import { NonFetalError } from '~/src/errors.ts';
 
 import type { Pack } from '~/db/schema.ts';
 
-const anilistManifest = _anilistManifest as Manifest;
-
 const cachedGuilds: Record<string, {
   packs: Pack[];
   disables: Map<string, boolean>;
-  builtinsDisabled?: boolean;
   excluded?: boolean;
 }> = {};
 
@@ -48,11 +40,9 @@ const packs = {
   aliasToArray,
   all,
   findById,
-  confirmDisableBuiltins,
   cachedGuilds,
   characters,
   aggregatedCharacters,
-  disableBuiltins,
   formatToString,
   install,
   isDisabled,
@@ -74,9 +64,6 @@ const packs = {
 async function all(
   { guildId, filter }: { guildId: string; filter?: boolean },
 ): Promise<(Pack[])> {
-  // deno-lint-ignore no-explicit-any
-  const animePack = { manifest: anilistManifest, _id: '_' } as any as Pack;
-
   let cachedGuild = packs.cachedGuilds[guildId];
 
   if (!cachedGuild) {
@@ -86,7 +73,6 @@ async function all(
 
     cachedGuild = packs.cachedGuilds[guildId] = {
       packs: _packs,
-      builtinsDisabled: guild.builtinsDisabled,
       excluded: guild.excluded,
       disables: new Map(),
     };
@@ -102,18 +88,18 @@ async function all(
   const _packs = cachedGuild.packs;
 
   if (!config.communityPacks) {
-    if (filter || cachedGuild.builtinsDisabled) {
+    const anilistPack = _packs.find(({ manifest }) =>
+      manifest.id === 'anilist'
+    );
+
+    if (filter || !anilistPack) {
       return [];
     }
 
-    return [animePack];
+    return [anilistPack];
   }
 
-  if (filter || cachedGuild.builtinsDisabled) {
-    return _packs;
-  }
-
-  return [animePack, ..._packs];
+  return _packs;
 }
 
 function isDisabled(id: string, guildId: string): boolean {
@@ -181,50 +167,6 @@ async function pages(
   } else {
     embed.setDescription(i18n.get('no-packs-installed', locale));
   }
-
-  return new discord.Message().addEmbed(embed);
-}
-
-async function disableBuiltins(
-  { userId, guildId }: { userId: string; guildId: string },
-): Promise<discord.Message> {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
-
-  const embed = new discord.Embed();
-
-  const guild = await db.getGuild(guildId);
-
-  if (guild.builtinsDisabled) {
-    embed
-      .setDescription(i18n.get('disable-builtins-confirmed', locale));
-    return new discord.Message().addEmbed(embed);
-  }
-
-  embed
-    .setTitle(i18n.get('danger', locale))
-    .setDescription(i18n.get('disable-builtins-confirmation', locale));
-
-  return discord.Message.dialog({
-    userId,
-    message: new discord.Message().addEmbed(embed),
-    confirm: ['disable-builtins', userId],
-    locale,
-  });
-}
-
-async function confirmDisableBuiltins(
-  { userId, guildId }: { userId: string; guildId: string },
-): Promise<discord.Message> {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
-
-  const embed = new discord.Embed();
-
-  await db.disableBuiltins(guildId);
-
-  embed
-    .setDescription(i18n.get('disable-builtins-confirmed', locale));
 
   return new discord.Message().addEmbed(embed);
 }
@@ -332,6 +274,8 @@ async function findById<T>(
 
   const list = await packs.all({ guildId });
 
+  const anilistEnabled = list.some(({ manifest }) => manifest.id === 'anilist');
+
   for (const literal of [...new Set(ids)]) {
     const [packId, id] = parseId(literal, defaultPackId);
 
@@ -357,7 +301,7 @@ async function findById<T>(
 
   // if anilist pack is enabled
   // request the ids from anilist
-  if (list.length && list[0]?.manifest.id === 'anilist') {
+  if (list.length && anilistEnabled) {
     const anilistResults = await _anilist[key](anilistIds);
 
     anilistIds.forEach((n) => {

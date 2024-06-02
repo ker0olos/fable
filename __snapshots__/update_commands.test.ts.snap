@@ -2839,24 +2839,6 @@ snapshot[`commands 1`] = `
     "description_localizations": {},
     "options": [
       {
-        "name": "disable",
-        "description": "community packs disable commands",
-        "type": 2,
-        "required": false,
-        "description_localizations": {},
-        "options": [
-          {
-            "name": "builtins",
-            "description": "permanently disable the builtin packs",
-            "type": 1,
-            "required": false,
-            "description_localizations": {
-              "pt-BR": "permanentemente desabilita pacotes integrados"
-            }
-          }
-        ]
-      },
-      {
         "name": "installed",
         "description": "list all the installed packs on a server",
         "type": 1,

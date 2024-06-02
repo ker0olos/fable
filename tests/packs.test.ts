@@ -3,9 +3,8 @@
 import { assert, assertEquals, assertRejects } from '$std/assert/mod.ts';
 
 import { assertSpyCalls, stub } from '$std/testing/mock.ts';
-import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
 
-import validate, { assertValidManifest } from '~/src/validate.ts';
+import validate from '~/src/validate.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -31,53 +30,11 @@ import {
 import { NonFetalError } from '~/src/errors.ts';
 
 Deno.test('list', async (test) => {
-  await test.step('anilist', async (test) => {
+  await test.step('normal', async () => {
     const getGuildStub = stub(
       db,
       'getGuild',
       () => ({ packs: [] }) as any,
-    );
-
-    try {
-      const list = await packs.all({ guildId: '0' });
-
-      const pack = list[0];
-
-      assertEquals(list.length, 1);
-
-      assertValidManifest(pack.manifest);
-
-      await assertMonochromeSnapshot(test, pack);
-    } finally {
-      getGuildStub.restore();
-
-      delete packs.cachedGuilds['0'];
-    }
-  });
-
-  await test.step('filter builtins (only community)', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => ({ packs: [] }) as any,
-    );
-
-    try {
-      const list = await packs.all({ guildId: '0', filter: true });
-
-      assertEquals(list.length, 0);
-    } finally {
-      getGuildStub.restore();
-
-      delete packs.cachedGuilds['0'];
-    }
-  });
-
-  await test.step('disable builtins (only community)', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => ({ packs: [], builtinsDisabled: true }) as any,
     );
 
     try {
@@ -2529,152 +2486,6 @@ Deno.test('/packs uninstall', async (test) => {
 
       getGuildStub.restore();
       removePackStub.restore();
-    }
-  });
-});
-
-Deno.test('/packs disable builtins', async (test) => {
-  await test.step('normal', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = await packs.disableBuiltins({
-        userId: 'user_id',
-        guildId: 'guild_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'disable-builtins=user_id',
-                  label: 'Confirm',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'cancel=user_id',
-                  label: 'Cancel',
-                  style: 4,
-                  type: 2,
-                },
-              ],
-            },
-          ],
-          embeds: [
-            {
-              type: 'rich',
-              title: 'DANGER',
-              description:
-                `**Once you disable builtin packs, you can never enable them again.**\n
-1. __Disabling builtin packs might negatively impact your gacha pulls,__ possibly resulting in a lot of empty pulls that don't give any characters.
-2. __Your server will be permanently excluded from across-servers activities and events.__`,
-            },
-          ],
-        },
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      getGuildStub.restore();
-    }
-  });
-
-  await test.step('already disabled', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => ({ builtinsDisabled: true }) as any,
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = await packs.disableBuiltins({
-        userId: 'user_id',
-        guildId: 'guild_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                `**Builtin packs have been disabled, this action is irreversible.**\n
- __Your server is permanently excluded from across-servers activities and events.__`,
-            },
-          ],
-        },
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      getGuildStub.restore();
-    }
-  });
-
-  await test.step('confirmed', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const disableBuiltinsStub = stub(
-      db,
-      'disableBuiltins',
-      () => 'instance' as any,
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = await packs.confirmDisableBuiltins({
-        guildId: 'guild_id',
-        userId: 'user_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                `**Builtin packs have been disabled, this action is irreversible.**\n
- __Your server is permanently excluded from across-servers activities and events.__`,
-            },
-          ],
-        },
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      getGuildStub.restore();
-      disableBuiltinsStub.restore();
     }
   });
 });
