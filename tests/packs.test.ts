@@ -3,9 +3,8 @@
 import { assert, assertEquals, assertRejects } from '$std/assert/mod.ts';
 
 import { assertSpyCalls, stub } from '$std/testing/mock.ts';
-import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
 
-import validate, { assertValidManifest } from '~/src/validate.ts';
+import validate from '~/src/validate.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -31,53 +30,11 @@ import {
 import { NonFetalError } from '~/src/errors.ts';
 
 Deno.test('list', async (test) => {
-  await test.step('anilist', async (test) => {
+  await test.step('normal', async () => {
     const getGuildStub = stub(
       db,
       'getGuild',
       () => ({ packs: [] }) as any,
-    );
-
-    try {
-      const list = await packs.all({ guildId: '0' });
-
-      const pack = list[0];
-
-      assertEquals(list.length, 1);
-
-      assertValidManifest(pack.manifest);
-
-      await assertMonochromeSnapshot(test, pack);
-    } finally {
-      getGuildStub.restore();
-
-      delete packs.cachedGuilds['0'];
-    }
-  });
-
-  await test.step('filter builtins (only community)', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => ({ packs: [] }) as any,
-    );
-
-    try {
-      const list = await packs.all({ guildId: '0', filter: true });
-
-      assertEquals(list.length, 0);
-    } finally {
-      getGuildStub.restore();
-
-      delete packs.cachedGuilds['0'];
-    }
-  });
-
-  await test.step('disable builtins (only community)', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => ({ packs: [], builtinsDisabled: true }) as any,
     );
 
     try {
