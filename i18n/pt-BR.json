@@ -150,8 +150,6 @@
   "no-packs-installed": "Servidor não tem nenhum pacote instalado.",
 
   "uninstall-pack-confirmation": "**Tem certeza que quer desinstalar esse pacote?**\n\nDesinstalar o pacote irá desativar qualquer personagem que os membros do seu servidor tenham do pacote, o que pode ter reações negativas.",
-  "disable-builtins-confirmation": "**Quando você desativa pacotes builtin, você nunca mais poderá instalá-lo.**\n\n1. __Desativar pacotes builtin podem impactar negativamente nas suas tiradas gacha, __ possivelmente resultando em várias tiradas vazias que não dão nenhum personagem. \n2. __Seu servidor será permanentemente excluído de atividades e eventos entre servidores.__",
-  "disable-builtins-confirmed": "**Pacotes builtin foram desabilitados, essa ação é irreversível.**\n\n __Esse servidor foi permanentemente excluído de atividades e eventos entre servidores.__",
 
   "pack-doesnt-exist": "Esse pacote não existe",
   "pack-is-private": "Esse pacote é privado e não pode nem ser instalado por você",
@@ -317,7 +315,6 @@
 
   "/packs install": "instala um pacote da comunidade",
   "/packs uninstall": "desinstala um pacote da comunidade",
-  "/packs disable builtins": "permanentemente desabilita pacotes integrados",
 
   "/stats": "gerencie os pontos de estátisticas e habilidades de seus personagens",
 

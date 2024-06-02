@@ -754,12 +754,6 @@ export const handler = async (r: Request) => {
                 })
                   .send();
               }
-              case 'disable builtins': {
-                return (await packs.disableBuiltins({
-                  userId: member.user.id,
-                  guildId,
-                })).send();
-              }
             }
             break;
           }
@@ -1324,21 +1318,6 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
             }))
               .send();
-          }
-          case 'disable-builtins': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-
-            if (userId === member.user.id) {
-              return (await packs.confirmDisableBuiltins({
-                guildId,
-                userId: member.user.id,
-              }))
-                .setType(discord.MessageType.Update)
-                .send();
-            }
-
-            throw new NoPermissionError();
           }
           case 'uninstall': {
             // deno-lint-ignore no-non-null-assertion

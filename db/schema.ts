@@ -5,7 +5,6 @@ import type { Manifest, SkillKey } from '~/src/types.ts';
 export interface Guild {
   discordId: string;
   excluded: boolean;
-  builtinsDisabled: boolean;
   packIds: string[];
 }
 export type PopulatedGuild = WithId<Guild> & {

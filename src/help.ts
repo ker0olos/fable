@@ -330,9 +330,6 @@ function pages(
             i18n.get('community-packs-permission', locale),
             `- \`/packs install\`: _${i18n.get('/packs install', locale)}_`,
             `- \`/packs uninstall\`: _${i18n.get('/packs uninstall', locale)}_`,
-            `- \`/packs disable builtins\`: _${
-              i18n.get('/packs disable builtins', locale)
-            }_`,
             '',
             i18n.get('make-your-own-pack', locale),
           ].join('\n')),

@@ -41,9 +41,9 @@ export const newGuild = (
 ): Schema.Guild => {
   const guild: Schema.Guild = {
     excluded: false,
-    builtinsDisabled: false,
     discordId: guildId,
     packIds: [
+      'anilist',
       'vtubers',
     ],
   };

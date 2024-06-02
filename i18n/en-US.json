@@ -150,8 +150,6 @@
   "no-packs-installed": "Server doesn't have any installed packs",
 
   "uninstall-pack-confirmation": "**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.",
-  "disable-builtins-confirmation": "**Once you disable builtin packs, you can never enable them again.**\n\n1. __Disabling builtin packs might negatively impact your gacha pulls,__ possibly resulting in a lot of empty pulls that don't give any characters.\n2. __Your server will be permanently excluded from across-servers activities and events.__",
-  "disable-builtins-confirmed": "**Builtin packs have been disabled, this action is irreversible.**\n\n __Your server is permanently excluded from across-servers activities and events.__",
 
   "pack-doesnt-exist": "This pack doesn't exist",
   "pack-is-private": "This pack is private and cannot be installed by you",
@@ -316,7 +314,6 @@
 
   "/packs install": "install a community pack",
   "/packs uninstall": "uninstall a community pack",
-  "/packs disable builtins": "permanently disable the builtin packs",
 
   "/stats": "manage your characters stat points and skills",
 

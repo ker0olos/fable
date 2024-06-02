@@ -28,7 +28,7 @@ const searchMedia = async (
 ): Promise<IndexedMedia[]> => {
   const list = await packs.all({ guildId });
 
-  const builtin = list[0]?.manifest.id === 'anilist';
+  const anilistEnabled = list.some(({ manifest }) => manifest.id === 'anilist');
 
   const extra = (await Promise.all(
     list.map(async ({ manifest }) => {
@@ -51,7 +51,7 @@ const searchMedia = async (
 
   return search_media(
     query,
-    builtin ? await Deno.readFile(mediaIndexPath) : undefined,
+    anilistEnabled ? await Deno.readFile(mediaIndexPath) : undefined,
     extra,
   )
     .filter(({ id }) => {
@@ -69,7 +69,7 @@ const searchCharacters = async (
 ): Promise<IndexedCharacter[]> => {
   const list = await packs.all({ guildId });
 
-  const builtin = list[0]?.manifest.id === 'anilist';
+  const anilistEnabled = list.some(({ manifest }) => manifest.id === 'anilist');
 
   const extra = (await Promise.all(
     list.map(async ({ manifest }) => {
@@ -103,7 +103,7 @@ const searchCharacters = async (
 
   return search_characters(
     query,
-    builtin ? await Deno.readFile(charactersIndexPath) : undefined,
+    anilistEnabled ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
   )
     .filter(({ mediaId }) => {
@@ -125,7 +125,7 @@ const pool = async (
 ): Promise<Map<string, IndexedCharacter[]>> => {
   const list = await packs.all({ guildId });
 
-  const builtin = list[0]?.manifest.id === 'anilist';
+  const anilistEnabled = list.some(({ manifest }) => manifest.id === 'anilist');
 
   const extra = (await Promise.all(
     list.map(async ({ manifest }) => {
@@ -166,7 +166,7 @@ const pool = async (
   )).flat();
 
   const pool = media_mapped_filter_characters(
-    builtin ? await Deno.readFile(charactersIndexPath) : undefined,
+    anilistEnabled ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
     filter.role,
     filter?.popularity?.between?.[0],
@@ -182,7 +182,7 @@ const charIdPool = async (
 ): Promise<Map<string, IndexedCharacter>> => {
   const list = await packs.all({ guildId });
 
-  const builtin = list[0]?.manifest.id === 'anilist';
+  const anilistEnabled = list.some(({ manifest }) => manifest.id === 'anilist');
 
   const extra = (await Promise.all(
     list.map(async ({ manifest }) => {
@@ -223,7 +223,7 @@ const charIdPool = async (
   )).flat();
 
   const pool = id_mapped_filter_characters(
-    builtin ? await Deno.readFile(charactersIndexPath) : undefined,
+    anilistEnabled ? await Deno.readFile(charactersIndexPath) : undefined,
     extra,
   );
 
