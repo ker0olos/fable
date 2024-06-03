@@ -74,6 +74,8 @@ import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
 import { addChatMessage } from '~/db/getChatHistory.ts';
 
+import { invertDupes } from '~/db/manageGuild.ts';
+
 import type * as Schema from '~/db/schema.ts';
 
 import type {
@@ -199,6 +201,8 @@ const db = {
   removePack,
   //
   addChatMessage,
+  //
+  invertDupes,
 };
 
 export {
