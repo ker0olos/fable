@@ -9238,15 +9238,15 @@ Deno.test('/likeslist', async (test) => {
       } as any),
     );
 
-    const findCharactersStub = stub(
+    const getUserCharactersStub = stub(
       db,
-      'findCharacters',
+      'getUserCharacters',
       () =>
         [
           {
             characterId: 'anilist:1',
             rating: 3,
-            userId: 'user_id',
+            userId: 'another_user_id',
           },
           {
             characterId: 'anilist:2',
@@ -9345,6 +9345,12 @@ Deno.test('/likeslist', async (test) => {
               fields: [
                 {
                   inline: false,
+                  name: 'title 1',
+                  value:
+                    '3<:smolstar:1107503653956374638> <@another_user_id> character 1',
+                },
+                {
+                  inline: false,
                   name: 'title 2',
                   value:
                     '3<:smolstar:1107503653956374638> <@another_user_id> character 2',
@@ -9365,7 +9371,7 @@ Deno.test('/likeslist', async (test) => {
       characterStub.restore();
       getUserStub.restore();
 
-      findCharactersStub.restore();
+      getUserCharactersStub.restore();
     }
   });
 
