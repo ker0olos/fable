@@ -49,6 +49,7 @@ Deno.test('init', async (test) => {
         'mongo_uri',
         'notice_message',
         '0',
+        '0',
       ]),
     );
 
@@ -68,13 +69,14 @@ Deno.test('init', async (test) => {
         stealing: true,
         synthesis: true,
         shop: true,
-        disableImagesProxy: false,
         communityPacks: true,
         communityPacksMaintainerAPI: true,
         communityPacksBrowseAPI: true,
         combat: true,
         chat: true,
         origin: undefined,
+        disableImagesProxy: false,
+        defaultServerDupes: false,
       });
     } finally {
       clearConfig();
@@ -138,6 +140,7 @@ Deno.test('init', async (test) => {
         '0',
         '0',
         '1',
+        '1',
       ]),
     );
 
@@ -157,13 +160,14 @@ Deno.test('init', async (test) => {
         stealing: false,
         synthesis: false,
         shop: false,
-        disableImagesProxy: true,
         communityPacks: false,
         communityPacksMaintainerAPI: false,
         communityPacksBrowseAPI: false,
         combat: false,
         chat: false,
         origin: undefined,
+        disableImagesProxy: true,
+        defaultServerDupes: true,
       });
     } finally {
       clearConfig();

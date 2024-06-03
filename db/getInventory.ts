@@ -1,5 +1,7 @@
 import { Mongo, STEAL_COOLDOWN_HOURS } from '~/db/mod.ts';
 
+import config from '~/src/config.ts';
+
 import utils from '~/src/utils.ts';
 
 import type * as Schema from './schema.ts';
@@ -42,10 +44,8 @@ export const newGuild = (
   const guild: Schema.Guild = {
     excluded: false,
     discordId: guildId,
-    packIds: [
-      'anilist',
-      'vtubers',
-    ],
+    options: { dupes: config.defaultServerDupes ?? true },
+    packIds: ['anilist', 'vtubers'],
   };
 
   omit?.forEach((key) => {

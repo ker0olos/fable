@@ -18,6 +18,7 @@ const config: {
   combat?: boolean;
   chat?: boolean;
   //
+  defaultServerDupes?: boolean;
   disableImagesProxy?: boolean;
 } = {
   deploy: false,
@@ -40,6 +41,7 @@ const config: {
   chat: undefined,
   //
   disableImagesProxy: undefined,
+  defaultServerDupes: undefined,
 };
 
 export async function initConfig(): Promise<void> {
@@ -95,6 +97,7 @@ export async function initConfig(): Promise<void> {
       Deno.env.get('CHAT') === '1';
     //
     config.disableImagesProxy = Deno.env.get('DISABLE_IMAGES_PROXY') === '1';
+    config.defaultServerDupes = Deno.env.get('DEFAULT_SERVER_DUPES') === '1';
 
     config.origin = undefined;
   }
