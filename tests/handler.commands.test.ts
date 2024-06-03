@@ -25,8 +25,8 @@ import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
 import skills from '~/src/skills.ts';
 import chat from '~/src/chat.ts';
-
 import merge from '~/src/merge.ts';
+import serverOptions from '~/src/serverOptions.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
@@ -8425,7 +8425,7 @@ Deno.test('installed packs', async () => {
 });
 
 Deno.test('community packs command handlers', async (test) => {
-  await test.step('test', async () => {
+  await test.step('packs installed', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -8822,6 +8822,94 @@ Deno.test('community packs command handlers', async (test) => {
       delete config.publicKey;
 
       listStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('server options command handlers', async (test) => {
+  await test.step('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'server',
+        options: [
+          {
+            type: 1,
+            name: 'options',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const packsStub = stub(serverOptions, 'view', () =>
+      ({
+        send: () => true,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          userId: 'user_id',
+          guildId: 'guild_id',
+          token: 'token',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      packsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }

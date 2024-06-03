@@ -16,6 +16,7 @@ import battle from '~/src/battle.ts';
 import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
 import chat from '~/src/chat.ts';
+import serverOptions from '~/src/serverOptions.ts';
 
 import _skills, { skills } from '~/src/skills.ts';
 
@@ -753,6 +754,20 @@ export const handler = async (r: Request) => {
                   pack,
                 })
                   .send();
+              }
+            }
+            break;
+          }
+          case 'server': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              default:
+              case 'options': {
+                return serverOptions.view({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                }).send();
               }
             }
             break;
