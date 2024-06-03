@@ -1017,17 +1017,27 @@ function likeslist({
         }
       });
 
-      const results = await db.findCharacters(
-        guildId,
-        likes.map(({ characterId }) => characterId)
-          .filter(utils.nonNullable),
-      );
+      const results = ownedBy
+        ? await db.getUserCharacters(ownedBy, guildId)
+        : await db.findCharacters(
+          guildId,
+          likes.map(({ characterId }) => characterId)
+            .filter(utils.nonNullable),
+        );
 
       // show only characters that are owned by specific user
       if (ownedBy) {
-        likes = likes.filter((like, i) => {
-          return like.characterId && results[i]?.userId === ownedBy;
-        });
+        likes = results.map((character) => {
+          if (
+            likes.find((t) =>
+              t.characterId === character?.characterId ||
+              t.mediaId === character?.mediaId
+            )
+          ) {
+            // deno-lint-ignore no-non-null-assertion
+            return { characterId: character!.characterId };
+          }
+        }).filter(Boolean) as { characterId: string }[];
         // filter out characters that are owned by the user
       } else if (filter) {
         likes = likes.filter((like, i) => {
