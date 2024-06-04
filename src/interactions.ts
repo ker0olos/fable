@@ -1353,6 +1353,24 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
+          case 'options': {
+            // deno-lint-ignore no-non-null-assertion
+            const type = customValues![0];
+
+            switch (type) {
+              case 'dupes':
+                return serverOptions.invertDupes({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                })
+                  .setType(discord.MessageType.Update)
+                  .send();
+              default:
+                break;
+            }
+            break;
+          }
           case 'cancel': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];

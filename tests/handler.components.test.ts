@@ -28,6 +28,7 @@ import stats from '~/src/stats.ts';
 import party from '~/src/party.ts';
 import tower from '~/src/tower.ts';
 import chat from '~/src/chat.ts';
+import serverOptions from '~/src/serverOptions.ts';
 
 config.global = true;
 
@@ -3467,6 +3468,91 @@ Deno.test('community packs uninstall', async (test) => {
       delete config.communityPacks;
 
       listStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('server options uninstall', async (test) => {
+  await test.step('dupes', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'options=dupes',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const invertDupesStub = stub(serverOptions, 'invertDupes', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+    config.communityPacks = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(invertDupesStub, 0, {
+        args: [{
+          userId: 'user_id',
+          guildId: 'guild_id',
+          token: 'token',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+      delete config.communityPacks;
+
+      invertDupesStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
