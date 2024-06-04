@@ -912,7 +912,8 @@ function list({
             members.some((member) => Boolean(member) && member === existing._id)
               ? discord.emotes.member
               : user.likes?.some((like) =>
-                  like.characterId === existing.characterId
+                  like.characterId === existing.characterId ||
+                  like.mediaId === existing.mediaId
                 )
               ? `${discord.emotes.liked}`
               : ''
