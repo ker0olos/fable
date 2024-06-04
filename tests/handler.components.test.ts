@@ -3474,7 +3474,7 @@ Deno.test('community packs uninstall', async (test) => {
   });
 });
 
-Deno.test('server options uninstall', async (test) => {
+Deno.test('server options', async (test) => {
   await test.step('dupes', async () => {
     const body = JSON.stringify({
       id: 'id',
