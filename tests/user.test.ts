@@ -3415,7 +3415,8 @@ Deno.test('/collection stars', async (test) => {
                 {
                   inline: false,
                   name: 'title 6',
-                  value: '1<:smolstar:1107503653956374638> character 6',
+                  value:
+                    '1<:smolstar:1107503653956374638><:liked:1110491720375873567> character 6',
                 },
               ],
             },
