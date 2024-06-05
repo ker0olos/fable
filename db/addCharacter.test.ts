@@ -13,7 +13,7 @@ import db, { Mongo, ObjectId } from '~/db/mod.ts';
 
 import config from '~/src/config.ts';
 
-import { NonFetalError } from '~/src/errors.ts';
+import { DupeError, NonFetalError } from '~/src/errors.ts';
 
 let mongod: MongoMemoryReplSet;
 let client: Mongo;
@@ -52,6 +52,7 @@ describe({
         guildId: 'guild-id',
         characterId: 'character-id',
         guaranteed: false,
+        mongo: client,
       });
 
       const character = await client.characters().findOne({
@@ -95,6 +96,31 @@ describe({
       assertEquals(inventory!.availablePulls, 9);
     });
 
+    it.only('duped pull (disallowed)', async () => {
+      await client.characters().insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+      } as any);
+
+      console.log(await client.characters().find({}).toArray());
+
+      await assertRejects(
+        () =>
+          db.addCharacter({
+            rating: 3,
+            mediaId: 'media-id',
+            userId: 'user-id',
+            guildId: 'guild-id',
+            characterId: 'character-id',
+            guaranteed: false,
+            mongo: client,
+          }),
+        DupeError,
+        'DUPLICATED',
+      );
+    });
+
     it('with sacrifices', async () => {
       const { insertedId } = await client.characters().insertOne({} as any);
 
@@ -106,6 +132,7 @@ describe({
         characterId: 'character-id',
         guaranteed: false,
         sacrifices: [insertedId],
+        mongo: client,
       });
 
       const character = await client.characters().findOne({
@@ -163,6 +190,7 @@ describe({
           characterId: 'character-id',
           guaranteed: false,
           sacrifices: [new ObjectId()],
+          mongo: client,
         })
       ),
         NonFetalError,
@@ -185,6 +213,7 @@ describe({
         guildId: 'guild-id',
         characterId: 'character-id',
         guaranteed: true,
+        mongo: client,
       });
 
       const character = await client.characters().findOne({
@@ -243,6 +272,7 @@ describe({
             guildId: 'guild-id',
             characterId: 'character-id',
             guaranteed: true,
+            mongo: client,
           });
         },
         Error,

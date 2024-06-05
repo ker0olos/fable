@@ -129,9 +129,9 @@ export async function addCharacter(
   try {
     session.startTransaction();
 
-    const [_guild, existing, { user, ...inventory }] = await Promise.all([
+    const [exists, _guild, { user, ...inventory }] = await Promise.all([
+      mongo.characters().findOne({ guildId, characterId }),
       db.getGuild(guildId, mongo, true),
-      db.findCharacter(guildId, characterId, mongo, true),
       db.rechargeConsumables(
         guildId,
         userId,
@@ -150,10 +150,8 @@ export async function addCharacter(
       throw new Error('403');
     }
 
-    console.log(existing);
-
     // TODO check guild options and allow dupes
-    if (existing) {
+    if (exists) {
       throw new DupeError();
     }
 

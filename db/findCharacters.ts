@@ -57,10 +57,14 @@ export async function findCharacter(
 export async function findCharacters(
   guildId: string,
   charactersIds: string[],
+  db?: Mongo,
+  manual?: boolean,
 ): Promise<(Schema.PopulatedCharacter | undefined)[]> {
   const result = await populateCharacters({
     characterId: { $in: charactersIds },
     guildId,
+    db,
+    manual,
   });
 
   const map = new Map(result.map((char) => [char.characterId, char]));
