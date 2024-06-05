@@ -9,7 +9,7 @@ import i18n from '~/src/i18n.ts';
 import user from '~/src/user.ts';
 import search from '~/src/search.ts';
 
-import db, { ObjectId } from '~/db/mod.ts';
+import db, { Mongo, ObjectId } from '~/db/mod.ts';
 
 import searchIndex from '~/search-index/mod.ts';
 
@@ -235,6 +235,8 @@ async function rngPull(
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
+  const mongo = new Mongo();
+
   const controller = new AbortController();
 
   const { signal } = controller;
@@ -250,6 +252,8 @@ async function rngPull(
   if (!poolKeys.length) {
     throw new PoolError();
   }
+
+  await mongo.connect();
 
   try {
     while (!signal.aborted) {
@@ -301,6 +305,7 @@ async function rngPull(
             guaranteed: typeof guarantee === 'number',
             rating: rating.stars,
             sacrifices,
+            mongo,
           });
         } catch (err) {
           // E11000 duplicate key error collection
@@ -324,6 +329,7 @@ async function rngPull(
     }
   } finally {
     clearTimeout(timeoutId);
+    await mongo.close();
   }
 
   if (!character || !media || !rating?.stars) {

@@ -1,4 +1,4 @@
-import db, { Mongo } from '~/db/mod.ts';
+import db, { type Mongo } from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -108,6 +108,7 @@ export async function addCharacter(
     userId,
     guildId,
     sacrifices,
+    mongo,
   }: {
     rating: number;
     mediaId: string;
@@ -116,18 +117,15 @@ export async function addCharacter(
     userId: string;
     guildId: string;
     sacrifices?: ObjectId[];
+    mongo: Mongo;
   },
 ): Promise<void> {
   const locale = user.cachedUsers[userId]?.locale ??
     user.cachedUsers[guildId]?.locale;
 
-  const mongo = new Mongo();
-
   const session = mongo.startSession();
 
   try {
-    await mongo.connect();
-
     session.startTransaction();
 
     const { user, ...inventory } = await db.rechargeConsumables(
@@ -207,11 +205,9 @@ export async function addCharacter(
     }
 
     await session.endSession();
-    await mongo.close();
 
     throw err;
   } finally {
     await session.endSession();
-    await mongo.close();
   }
 }
