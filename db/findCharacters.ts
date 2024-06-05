@@ -4,13 +4,15 @@ import type * as Schema from '~/db/schema.ts';
 
 async function populateCharacters(
   matchCondition: import('mongodb').Document,
+  db?: Mongo,
+  manual?: boolean,
 ): Promise<Schema.PopulatedCharacter[]> {
-  const db = new Mongo();
+  db ??= new Mongo();
 
   let results: Schema.PopulatedCharacter[];
 
   try {
-    await db.connect();
+    !manual && await db.connect();
 
     const _results = await db.characters().aggregate()
       .match(matchCondition)
@@ -32,7 +34,7 @@ async function populateCharacters(
       return char;
     });
   } finally {
-    await db.close();
+    !manual && await db.close();
   }
 
   return results;
@@ -41,10 +43,14 @@ async function populateCharacters(
 export async function findCharacter(
   guildId: string,
   characterId: string,
+  db?: Mongo,
+  manual?: boolean,
 ): Promise<Schema.PopulatedCharacter | null> {
   return (await populateCharacters({
     characterId,
     guildId,
+    db,
+    manual,
   }))[0];
 }
 

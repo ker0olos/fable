@@ -11,6 +11,8 @@ import search from '~/src/search.ts';
 
 import db, { Mongo, ObjectId } from '~/db/mod.ts';
 
+import { DupeError } from '~/src/errors.ts';
+
 import searchIndex from '~/search-index/mod.ts';
 
 import packs from '~/src/packs.ts';
@@ -308,13 +310,7 @@ async function rngPull(
             mongo,
           });
         } catch (err) {
-          // E11000 duplicate key error collection
-          // character already exists in guild
-          if (err.code === 11000) {
-            continue;
-          }
-
-          if (err.message.includes('Write conflict during plan execution')) {
+          if (err instanceof DupeError) {
             continue;
           }
 

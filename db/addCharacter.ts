@@ -1,18 +1,19 @@
 import db, { type Mongo } from '~/db/mod.ts';
 
+import i18n from '~/src/i18n.ts';
 import utils from '~/src/utils.ts';
+
+import user from '~/src/user.ts';
 
 import { skills } from '~/src/skills.ts';
 
-import { NonFetalError, NoPullsError } from '~/src/errors.ts';
+import { DupeError, NonFetalError, NoPullsError } from '~/src/errors.ts';
 
 import type { ObjectId } from '~/db/mod.ts';
 
 import type * as Schema from './schema.ts';
 
 import type { SkillKey } from '~/src/types.ts';
-import i18n from '~/src/i18n.ts';
-import user from '~/src/user.ts';
 
 const newSkills = (rating: number): number => {
   switch (rating) {
@@ -128,12 +129,16 @@ export async function addCharacter(
   try {
     session.startTransaction();
 
-    const { user, ...inventory } = await db.rechargeConsumables(
-      guildId,
-      userId,
-      mongo,
-      true,
-    );
+    const [_guild, existing, { user, ...inventory }] = await Promise.all([
+      db.getGuild(guildId, mongo, true),
+      db.findCharacter(guildId, characterId, mongo, true),
+      db.rechargeConsumables(
+        guildId,
+        userId,
+        mongo,
+        true,
+      ),
+    ]);
 
     if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
       throw new NoPullsError(inventory.rechargeTimestamp);
@@ -143,6 +148,13 @@ export async function addCharacter(
       guaranteed && !sacrifices?.length && !user?.guarantees?.includes(rating)
     ) {
       throw new Error('403');
+    }
+
+    console.log(existing);
+
+    // TODO check guild options and allow dupes
+    if (existing) {
+      throw new DupeError();
     }
 
     const newCharacter: Schema.Character = ensureCombat({

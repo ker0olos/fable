@@ -125,13 +125,15 @@ export async function forceNewUser(userId: string): Promise<Schema.User> {
 
 export async function getGuild(
   guildId: string,
+  db?: Mongo,
+  manual?: boolean,
 ): Promise<Schema.PopulatedGuild> {
-  const db = new Mongo();
+  db ??= new Mongo();
 
   let _result: Schema.PopulatedGuild;
 
   try {
-    await db.connect();
+    !manual && await db.connect();
 
     // deno-lint-ignore no-non-null-assertion
     const { _id } = (await db.guilds().findOneAndUpdate(
@@ -154,7 +156,7 @@ export async function getGuild(
 
     _result = result as Schema.PopulatedGuild;
   } finally {
-    await db.close();
+    !manual && await db.close();
   }
 
   return _result;
