@@ -237,8 +237,6 @@ async function rngPull(
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
-  const mongo = new Mongo();
-
   const controller = new AbortController();
 
   const { signal } = controller;
@@ -255,7 +253,7 @@ async function rngPull(
     throw new PoolError();
   }
 
-  await mongo.connect();
+  const mongo = await db.newMongo().connect();
 
   try {
     while (!signal.aborted) {

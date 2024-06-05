@@ -125,6 +125,17 @@ Deno.test('adding character to inventory', async (test) => {
         }]),
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     try {
       assertObjectMatch(
         await gacha.rngPull({
@@ -169,6 +180,7 @@ Deno.test('adding character to inventory', async (test) => {
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -266,6 +278,17 @@ Deno.test('adding character to inventory', async (test) => {
         }]),
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     try {
       assertObjectMatch(
         await gacha.rngPull({
@@ -310,6 +333,7 @@ Deno.test('adding character to inventory', async (test) => {
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -396,6 +420,17 @@ Deno.test('adding character to inventory', async (test) => {
         }]),
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     try {
       assertObjectMatch(
         await gacha.rngPull({
@@ -441,6 +476,7 @@ Deno.test('adding character to inventory', async (test) => {
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -548,6 +584,17 @@ Deno.test('adding character to inventory', async (test) => {
         }]),
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     try {
       assertObjectMatch(
         await gacha.rngPull({
@@ -596,6 +643,7 @@ Deno.test('adding character to inventory', async (test) => {
       getInstanceInventoriesStub.restore();
       findCharacterStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -705,6 +753,17 @@ Deno.test('adding character to inventory', async (test) => {
         }]),
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     try {
       assertObjectMatch(
         await gacha.rngPull({
@@ -753,6 +812,7 @@ Deno.test('adding character to inventory', async (test) => {
       getInstanceInventoriesStub.restore();
       findCharacterStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -848,6 +908,17 @@ Deno.test('adding character to inventory', async (test) => {
         }]),
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     try {
       await assertRejects(
         async () =>
@@ -869,6 +940,7 @@ Deno.test('adding character to inventory', async (test) => {
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -964,6 +1036,17 @@ Deno.test('adding character to inventory', async (test) => {
         }]),
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     try {
       await assertRejects(
         async () =>
@@ -985,6 +1068,7 @@ Deno.test('adding character to inventory', async (test) => {
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -1080,6 +1164,17 @@ Deno.test('adding character to inventory', async (test) => {
         { manifest: { id: 'anilist' } },
       ] as any));
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     try {
       await assertRejects(
         async () =>
@@ -1102,6 +1197,7 @@ Deno.test('adding character to inventory', async (test) => {
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 });
