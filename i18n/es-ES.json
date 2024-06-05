@@ -105,7 +105,7 @@
   "maintenance-merge": "Merge se encuentra en mantenimiento, reinténtalo más tarde",
   "maintenance-trade": "Los intercambios se encuentran en mantenimiento, reinténtalo más tarde",
   "maintenance-steal": "Los robos se encuentran en mantemiento, reinténtalo más tarde",
-  "maintenance-combat": "El combate se encuentra en mantenimiento, reinténtalo más tarde",
+  "maintenance-combat-!": "El combate se encuentra en mantenimiento, reinténtalo más tarde",
   "maintenance-packs": "Los packs de la comunidad se encuentran en mantenimiento, reinténtalo más tarde",
 
   "gacha-no-more-pulls": "¡No te quedan tiradas!",
