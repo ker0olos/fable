@@ -1551,12 +1551,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -1798,12 +1798,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -1941,12 +1941,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -2074,12 +2074,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -2204,12 +2204,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -2349,12 +2349,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -2492,12 +2492,12 @@ Deno.test('attempt', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },

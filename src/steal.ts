@@ -467,7 +467,7 @@ function attempt({
   const embed = new discord.Embed();
   const loading = new discord.Message();
 
-  const image = embed.setImageFile('assets/public/steal.gif');
+  const image = embed.setImageFile('assets/public/steal2.gif');
 
   return loading
     .addEmbed(embed)
