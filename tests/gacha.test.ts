@@ -1688,6 +1688,17 @@ Deno.test('/gacha', async (test) => {
       async () => undefined,
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     config.gacha = true;
     config.combat = true;
     config.appId = 'app_id';
@@ -1849,6 +1860,7 @@ Deno.test('/gacha', async (test) => {
       getGuildStub.restore();
       addCharacterStub.restore();
       getInstanceInventoriesStub.restore();
+      mongoClientStub.restore();
     }
   });
 

@@ -9,7 +9,7 @@ import i18n from '~/src/i18n.ts';
 import user from '~/src/user.ts';
 import search from '~/src/search.ts';
 
-import db, { Mongo, ObjectId } from '~/db/mod.ts';
+import db, { ObjectId } from '~/db/mod.ts';
 
 import { DupeError } from '~/src/errors.ts';
 

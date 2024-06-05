@@ -96,14 +96,12 @@ describe({
       assertEquals(inventory!.availablePulls, 9);
     });
 
-    it.only('duped pull (disallowed)', async () => {
+    it('duped pull (disallowed)', async () => {
       await client.characters().insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         characterId: 'character-id',
       } as any);
-
-      console.log(await client.characters().find({}).toArray());
 
       await assertRejects(
         () =>

@@ -656,6 +656,17 @@ Deno.test('synthesis confirmed', async (test) => {
         ] as any),
     );
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -798,6 +809,7 @@ Deno.test('synthesis confirmed', async (test) => {
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -914,6 +926,17 @@ Deno.test('synthesis confirmed', async (test) => {
       Promise.resolve([
         { manifest: { id: 'anilist' } },
       ] as any));
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -1094,6 +1117,7 @@ Deno.test('synthesis confirmed', async (test) => {
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
