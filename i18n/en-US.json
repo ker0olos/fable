@@ -201,8 +201,8 @@
 
   "chat-not-owned": "**You can't chat with a character you don't own!**",
 
-  "dupes-allowed": "Dupes is allowed",
-  "dupes-disallowed": "Dupes is disallowed",
+  "dupes-allowed": "Dupes are allowed (Experimental)",
+  "dupes-disallowed": "Dupes are disallowed",
   "allow-dupes": "Allow Dupes",
   "disallow-dupes": "Disallow Dupes",
   "server-dupes-allowed": "Multiple users can own the same character.",

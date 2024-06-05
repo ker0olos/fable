@@ -25,7 +25,7 @@ describe('db.invertDupes()', () => {
     await mongod.stop();
   });
 
-  it('dupes is disallowed', async () => {
+  it('dupes are disallowed', async () => {
     const { insertedId } = await client.guilds().insertOne({
       discordId: 'guild-id',
       options: { dupes: false },
@@ -42,7 +42,7 @@ describe('db.invertDupes()', () => {
     });
   });
 
-  it('dupes is allowed', async () => {
+  it('dupes are allowed', async () => {
     const { insertedId } = await client.guilds().insertOne({
       discordId: 'guild-id',
       options: { dupes: true },

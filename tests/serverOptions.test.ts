@@ -78,7 +78,7 @@ Deno.test('/server options', async (test) => {
           embeds: [{
             type: 'rich',
             fields: [{
-              name: 'Dupes is allowed',
+              name: 'Dupes are allowed (Experimental)',
               value: 'Multiple users can own the same character.',
             }],
           }],
@@ -156,7 +156,7 @@ Deno.test('/server options', async (test) => {
           embeds: [{
             type: 'rich',
             fields: [{
-              name: 'Dupes is disallowed',
+              name: 'Dupes are disallowed',
               value: 'Only one user can own a character.',
             }],
           }],
@@ -235,7 +235,7 @@ Deno.test('invert dupes', async (test) => {
           embeds: [{
             type: 'rich',
             fields: [{
-              name: 'Dupes is allowed',
+              name: 'Dupes are allowed (Experimental)',
               value: 'Multiple users can own the same character.',
             }],
           }],
