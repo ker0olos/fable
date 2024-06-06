@@ -590,19 +590,17 @@ describe('db.stealCharacter()', () => {
       },
     ] as any);
 
-    await client.characters().insertMany([
-      {
-        userId: 'user-2',
-        guildId: 'guild-id',
-        inventoryId: inventoryId[1],
-        characterId: 'character-id',
-      },
-    ] as any);
+    const { insertedId: characterOId } = await client.characters().insertOne({
+      userId: 'user-2',
+      guildId: 'guild-id',
+      inventoryId: inventoryId[1],
+      characterId: 'character-id',
+    } as any);
 
     await db.stealCharacter(
       'user-1',
       'guild-id',
-      'character-id',
+      characterOId,
     );
 
     const character = await client.characters().findOne({
@@ -635,20 +633,18 @@ describe('db.stealCharacter()', () => {
       },
     ] as any);
 
-    await client.characters().insertMany([
-      {
-        _id: characterInsertedId,
-        userId: 'user-2',
-        guildId: 'guild-id',
-        inventoryId: inventoryId[1],
-        characterId: 'character-id',
-      },
-    ] as any);
+    const { insertedId: characterOId } = await client.characters().insertOne({
+      _id: characterInsertedId,
+      userId: 'user-2',
+      guildId: 'guild-id',
+      inventoryId: inventoryId[1],
+      characterId: 'character-id',
+    } as any);
 
     await db.stealCharacter(
       'user-1',
       'guild-id',
-      'character-id',
+      characterOId,
     );
 
     const character = await client.characters().findOne({
@@ -673,7 +669,7 @@ describe('db.stealCharacter()', () => {
 
   it('character not found', async () => {
     await assertRejects(
-      () => db.stealCharacter('user-1', 'guild-id', 'character-id'),
+      () => db.stealCharacter('user-1', 'guild-id', new ObjectId()),
       Error,
       'NOT_FOUND',
     );

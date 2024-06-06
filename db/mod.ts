@@ -49,7 +49,11 @@ import {
   setCharacterNickname,
 } from '~/db/customizeCharacter.ts';
 
-import { findCharacter, findCharacters } from '~/db/findCharacters.ts';
+import {
+  findCharacter,
+  findCharacters,
+  findOneCharacter,
+} from '~/db/findCharacters.ts';
 
 import {
   assignCharacter,
@@ -173,6 +177,7 @@ const db = {
   setCharacterNickname,
   //
   findCharacter,
+  findOneCharacter,
   findCharacters,
   getMediaCharacters,
   //
@@ -207,7 +212,6 @@ const db = {
 
 export {
   COSTS,
-  findCharacter,
   MAX_KEYS,
   MAX_LEVEL,
   MAX_NEW_PULLS,

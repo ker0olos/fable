@@ -863,6 +863,7 @@ Deno.test('character command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          userId: 'user_id',
           search: 'name',
           debug: false,
           id: undefined,
@@ -952,6 +953,7 @@ Deno.test('character command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          userId: 'user_id',
           search: 'name',
           debug: true,
           id: undefined,
@@ -1038,6 +1040,7 @@ Deno.test('character command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          userId: 'user_id',
           search: 'id=uuid',
           debug: false,
           id: 'uuid',

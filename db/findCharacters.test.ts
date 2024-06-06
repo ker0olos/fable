@@ -91,6 +91,79 @@ describe('db.findCharacter()', () => {
   });
 });
 
+describe('db.findOneCharacter()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
+  });
+
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
+
+  it('exists', async () => {
+    const { insertedId: inventoryInsertedId } = await client.inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+      } as any);
+
+    const { insertedId: inventory2InsertedId } = await client.inventories()
+      .insertOne({
+        userId: 'another-user-id',
+        guildId: 'guild-id',
+      } as any);
+
+    const { insertedId: characterInsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        inventoryId: inventoryInsertedId,
+        characterId: 'character-id',
+      } as any);
+
+    const { insertedId: character2InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'another-user-id',
+        guildId: 'guild-id',
+        inventoryId: inventory2InsertedId,
+        characterId: 'character-id',
+      } as any);
+
+    const character = await db.findOneCharacter(
+      'guild-id',
+      'user-id',
+      'character-id',
+    );
+
+    assertEquals(character, {
+      _id: characterInsertedId,
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      inventory: {
+        _id: inventoryInsertedId,
+        userId: 'user-id',
+        guildId: 'guild-id',
+      },
+      characterId: 'character-id',
+    } as any);
+  });
+
+  it("doesn't exists", async () => {
+    const character = await db.findOneCharacter(
+      'guild-id',
+      'user-id',
+      'character-id',
+    );
+
+    assertEquals(character, undefined);
+  });
+});
+
 describe('db.findCharacters()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();

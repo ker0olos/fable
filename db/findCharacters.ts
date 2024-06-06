@@ -54,6 +54,22 @@ export async function findCharacter(
   }));
 }
 
+export async function findOneCharacter(
+  guildId: string,
+  userId: string,
+  characterId: string,
+  db?: Mongo,
+  manual?: boolean,
+): Promise<Schema.PopulatedCharacter | undefined> {
+  return (await populateCharacters({
+    characterId,
+    userId,
+    guildId,
+    db,
+    manual,
+  }))[0];
+}
+
 export async function findCharacters(
   guildId: string,
   charactersIds: string[],
