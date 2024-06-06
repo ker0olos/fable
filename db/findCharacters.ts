@@ -45,13 +45,13 @@ export async function findCharacter(
   characterId: string,
   db?: Mongo,
   manual?: boolean,
-): Promise<Schema.PopulatedCharacter | null> {
+): Promise<Schema.PopulatedCharacter[]> {
   return (await populateCharacters({
     characterId,
     guildId,
     db,
     manual,
-  }))[0];
+  }));
 }
 
 export async function findCharacters(

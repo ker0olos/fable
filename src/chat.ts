@@ -147,20 +147,9 @@ function run(
 
       const media = character.media?.edges?.[0]?.node;
 
-      if (
-        (
-          existing &&
-          packs.isDisabled(existing.mediaId, guildId)
-        ) ||
-        (
-          media &&
-          packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-        )
-      ) {
-        throw new Error('404');
-      }
+      const exists = existing.find((e) => e.userId === member.user.id);
 
-      if (!existing || existing.userId !== user.id) {
+      if (!exists) {
         const message = new discord.Message();
 
         const embed = await srch.characterEmbed(message, character, {
@@ -169,8 +158,6 @@ function run(
           rating: false,
           media: { title: true },
           mode: 'thumbnail',
-          userId: existing?.userId,
-          existing: { rating: existing?.rating },
         });
 
         return await message
@@ -181,6 +168,19 @@ function run(
           .patch(token);
       }
 
+      if (
+        (
+          existing &&
+          packs.isDisabled(exists.mediaId, guildId)
+        ) ||
+        (
+          media &&
+          packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+        )
+      ) {
+        throw new Error('404');
+      }
+
       const mediaTitle = media?.title
         ? packs.aliasToArray(media.title)[0]
         : undefined;
@@ -188,11 +188,11 @@ function run(
       const userName = user.display_name ?? user.global_name ?? user.username;
       const userImage = discord.getAvatar(member, guildId);
 
-      const characterName = existing?.nickname ??
+      const characterName = exists.nickname ??
         packs.aliasToArray(character.name)[0];
 
-      const characterImageUrl = existing?.image
-        ? existing?.image
+      const characterImageUrl = exists.image
+        ? exists.image
         : character.images?.[0]?.url;
 
       const characterImage = await utils.proxy(
@@ -222,7 +222,7 @@ function run(
       const history = (await db.addChatMessage({
         guildId,
         userId: member.user.id,
-        characterId: existing.characterId,
+        characterId: exists.characterId,
         role: 'user',
         content: userMessage,
       }))?.messages.slice(-10) ?? [];
@@ -278,7 +278,7 @@ function run(
           await db.addChatMessage({
             guildId,
             userId: member.user.id,
-            characterId: existing.characterId,
+            characterId: exists.characterId,
             role: 'assistant',
             content: characterMessage,
           });

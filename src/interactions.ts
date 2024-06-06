@@ -371,6 +371,7 @@ export const handler = async (r: Request) => {
             return search.character({
               token,
               guildId,
+              userId: member.user.id,
               search: name,
               debug: Boolean(options['debug']),
               id: name.startsWith(idPrefix)
@@ -890,6 +891,7 @@ export const handler = async (r: Request) => {
               id,
               token,
               guildId,
+              userId: member.user.id,
             })
               .setType(
                 type === '1'

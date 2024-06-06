@@ -471,13 +471,10 @@ async function pullAnimation(
       const embed = await search.characterEmbed(message, pull.character, {
         userId,
         mode: 'thumbnail',
-        rating: true,
         description: false,
         footer: true,
         media: { title: true },
-        existing: {
-          rating: pull.rating.stars,
-        },
+        rating: new Rating({ stars: pull.rating.stars }),
       });
 
       await message

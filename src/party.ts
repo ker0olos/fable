@@ -86,7 +86,7 @@ async function embed({ guildId, party, locale }: {
       rating: new Rating({ stars: members[i]?.rating }),
       description: false,
       footer: false,
-      existing: {
+      overwrite: {
         image: members[i]?.image,
         nickname: members[i]?.nickname,
       },
@@ -186,7 +186,7 @@ function assign({
           rating: new Rating({ stars: response.rating }),
           description: true,
           footer: false,
-          existing: {
+          overwrite: {
             image: response.image,
             nickname: response.nickname,
           },
@@ -327,7 +327,7 @@ function remove({ token, spot, userId, guildId }: {
         rating: new Rating({ stars: character.rating }),
         description: true,
         footer: false,
-        existing: {
+        overwrite: {
           image: character.image,
           nickname: character.nickname,
         },

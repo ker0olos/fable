@@ -8,6 +8,8 @@ import i18n from '~/src/i18n.ts';
 import user from '~/src/user.ts';
 import utils from '~/src/utils.ts';
 
+import Rating from '~/src/rating.ts';
+
 import db from '~/db/mod.ts';
 
 import * as discord from '~/src/discord.ts';
@@ -173,12 +175,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
               description: false,
               media: { title: true },
               mode: 'thumbnail',
-              existing: i > -1
-                ? {
-                  rating: giveCollection[i].rating,
-                  mediaId: giveCollection[i].mediaId,
-                }
-                : undefined,
+              rating: new Rating({ stars: giveCollection[i].rating }),
             });
 
             return [
@@ -238,12 +235,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
                 description: false,
                 media: { title: true },
                 mode: 'thumbnail',
-                existing: i > -1
-                  ? {
-                    rating: giveCollection[i].rating,
-                    mediaId: giveCollection[i].mediaId,
-                  }
-                  : undefined,
+                rating: new Rating({ stars: giveCollection[i].rating }),
               });
 
               return [
@@ -283,12 +275,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
             description: false,
             media: { title: true },
             mode: 'thumbnail',
-            existing: i > -1
-              ? {
-                rating: takeCollection[i].rating,
-                mediaId: takeCollection[i].mediaId,
-              }
-              : {},
+            rating: new Rating({ stars: takeCollection[i].rating }),
           });
         }));
 
@@ -309,12 +296,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
           description: false,
           media: { title: true },
           mode: 'thumbnail',
-          existing: i > -1
-            ? {
-              rating: giveCollection[i].rating,
-              mediaId: giveCollection[i].mediaId,
-            }
-            : undefined,
+          rating: new Rating({ stars: giveCollection[i].rating }),
         });
       }));
 

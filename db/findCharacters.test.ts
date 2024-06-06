@@ -32,6 +32,12 @@ describe('db.findCharacter()', () => {
         guildId: 'guild-id',
       } as any);
 
+    const { insertedId: inventory2InsertedId } = await client.inventories()
+      .insertOne({
+        userId: 'another-user-id',
+        guildId: 'guild-id',
+      } as any);
+
     const { insertedId: characterInsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
@@ -40,26 +46,48 @@ describe('db.findCharacter()', () => {
         characterId: 'character-id',
       } as any);
 
-    const character = await db.findCharacter('guild-id', 'character-id');
+    const { insertedId: character2InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'another-user-id',
+        guildId: 'guild-id',
+        inventoryId: inventory2InsertedId,
+        characterId: 'character-id',
+      } as any);
 
-    assertEquals(character!, {
-      _id: characterInsertedId,
-      userId: 'user-id',
-      guildId: 'guild-id',
-      inventoryId: inventoryInsertedId,
-      inventory: {
-        _id: inventoryInsertedId,
+    const characters = await db.findCharacter('guild-id', 'character-id');
+
+    assertEquals(characters, [
+      {
+        _id: characterInsertedId,
         userId: 'user-id',
         guildId: 'guild-id',
+        inventoryId: inventoryInsertedId,
+        inventory: {
+          _id: inventoryInsertedId,
+          userId: 'user-id',
+          guildId: 'guild-id',
+        },
+        characterId: 'character-id',
       },
-      characterId: 'character-id',
-    } as any);
+      {
+        _id: character2InsertedId,
+        userId: 'another-user-id',
+        guildId: 'guild-id',
+        inventoryId: inventory2InsertedId,
+        inventory: {
+          _id: inventory2InsertedId,
+          userId: 'another-user-id',
+          guildId: 'guild-id',
+        },
+        characterId: 'character-id',
+      },
+    ] as any);
   });
 
   it("doesn't exists", async () => {
-    const character = await db.findCharacter('guild-id', 'character-id');
+    const characters = await db.findCharacter('guild-id', 'character-id');
 
-    assertEquals(character, undefined);
+    assertEquals(characters.length, 0);
   });
 });
 

@@ -10,6 +10,8 @@ import * as discord from '~/src/discord.ts';
 
 import config from '~/src/config.ts';
 
+import i18n from '~/src/i18n.ts';
+
 import db from '~/db/mod.ts';
 
 import {
@@ -23,7 +25,7 @@ import {
 
 import { NonFetalError } from '~/src/errors.ts';
 
-import i18n from '~/src/i18n.ts';
+import type * as Schema from '~/db/schema.ts';
 
 export const idPrefix = 'id=';
 
@@ -34,12 +36,8 @@ const externalUrlRegex =
 
 type CharacterEmbed = {
   userId?: string;
-  existing?: {
-    image?: string;
-    nickname?: string;
-    rating?: number;
-    mediaId?: string;
-  };
+  existing?: Schema.Character[];
+  overwrite?: Partial<Schema.Character>;
   suffix?: string;
   rating?: Rating | boolean;
   media?: {
@@ -291,15 +289,17 @@ async function mediaDebugMessage(
 }
 
 function character(
-  { token, guildId, search, id, debug }: {
+  { token, guildId, userId, search, id, debug }: {
     token: string;
     guildId: string;
+    userId: string;
     id?: string;
     search?: string;
     debug?: boolean;
   },
 ): discord.Message {
-  const locale = user.cachedGuilds[guildId]?.locale;
+  const locale = user.cachedGuilds[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -324,14 +324,8 @@ function character(
       const media = character.media?.edges?.[0]?.node;
 
       if (
-        (
-          existing &&
-          packs.isDisabled(existing.mediaId, guildId)
-        ) ||
-        (
-          media &&
-          packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-        )
+        media &&
+        packs.isDisabled(`${media.packId}:${media.id}`, guildId)
       ) {
         throw new Error('404');
       }
@@ -342,8 +336,8 @@ function character(
       }
 
       const message = await characterMessage(character, {
-        existing: existing ?? undefined,
-        userId: existing?.userId,
+        existing,
+        userId,
       });
 
       if (existing) {
@@ -447,23 +441,7 @@ async function characterMessage(
 async function characterEmbed(
   message: discord.Message,
   character: Character | DisaggregatedCharacter,
-  options?: {
-    userId?: string;
-    existing?: {
-      image?: string;
-      nickname?: string;
-      rating?: number;
-      mediaId?: string;
-    };
-    suffix?: string;
-    rating?: Rating | boolean;
-    media?: {
-      title?: boolean | string;
-    };
-    mode?: 'thumbnail' | 'full';
-    description?: boolean;
-    footer?: boolean;
-  },
+  options?: CharacterEmbed,
 ): Promise<discord.Embed> {
   options = {
     ...{
@@ -477,11 +455,27 @@ async function characterEmbed(
 
   const embed = new discord.Embed();
 
-  const image = options.existing?.image
-    ? { url: options.existing?.image }
-    : character.images?.[0];
+  options.existing = options.existing?.sort((a, b) => {
+    if (
+      options.userId &&
+      a.userId === options.userId &&
+      b.userId !== options.userId
+    ) {
+      return -1;
+    }
 
-  const alias = options.existing?.nickname ??
+    if (a.rating !== b.rating) {
+      return b.rating - a.rating;
+    }
+
+    return a.createdAt.getTime() - b.createdAt.getTime();
+  });
+
+  const exists = options.overwrite ?? options.existing?.[0];
+
+  const image = exists?.image ? { url: exists?.image } : character.images?.[0];
+
+  const alias = exists?.nickname ??
     packs.aliasToArray(character.name)[0];
 
   const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
@@ -489,6 +483,10 @@ async function characterEmbed(
     : 32;
 
   const aliasWrapped = utils.wrap(alias, wrapWidth);
+
+  const userIds = options.overwrite?.userId
+    ? [`<@${options.overwrite.userId}>`]
+    : options.existing?.map(({ userId }) => `<@${userId}>`);
 
   if (options.mode === 'full') {
     const attachment = await embed.setImageWithProxy({ url: image?.url });
@@ -498,19 +496,17 @@ async function characterEmbed(
     message.addAttachment(attachment);
   }
 
-  if (options?.existing?.rating) {
+  if (exists?.rating) {
     // FIXME #63 Media Conflict
 
     if (options?.rating) {
-      const rating = new Rating({ stars: options.existing.rating });
+      const rating = new Rating({ stars: exists?.rating });
 
       embed.setDescription(
-        options.userId
-          ? `<@${options.userId}>\n\n${rating.emotes}`
-          : rating.emotes,
+        userIds ? `${userIds.join('')}\n\n${rating.emotes}` : rating.emotes,
       );
-    } else if (options.userId) {
-      embed.setDescription(`<@${options.userId}>`);
+    } else if (userIds) {
+      embed.setDescription(userIds.join(''));
     }
   } else if (options?.rating) {
     if (typeof options.rating === 'boolean' && options.rating) {
@@ -691,8 +687,8 @@ function mediaCharacters(
         description: true,
         externalLinks: true,
         footer: true,
-        existing: existing ?? undefined,
-        userId: existing?.userId,
+        existing,
+        userId: userId,
       });
 
       message.addComponents([
