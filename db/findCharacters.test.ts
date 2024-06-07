@@ -111,25 +111,11 @@ describe('db.findOneCharacter()', () => {
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: inventory2InsertedId } = await client.inventories()
-      .insertOne({
-        userId: 'another-user-id',
-        guildId: 'guild-id',
-      } as any);
-
     const { insertedId: characterInsertedId } = await client.characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         inventoryId: inventoryInsertedId,
-        characterId: 'character-id',
-      } as any);
-
-    const { insertedId: character2InsertedId } = await client.characters()
-      .insertOne({
-        userId: 'another-user-id',
-        guildId: 'guild-id',
-        inventoryId: inventory2InsertedId,
         characterId: 'character-id',
       } as any);
 

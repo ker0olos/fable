@@ -113,7 +113,7 @@ Deno.test('/skills acquire', async (test) => {
     const findCharactersStub = stub(
       db,
       'findCharacter',
-      () => ({ combat: { skills: {} }, userId: 'user_id' }) as any,
+      () => [{ combat: { skills: {} }, userId: 'user_id' }] as any,
     );
 
     const fetchStub = stub(
@@ -273,14 +273,14 @@ Deno.test('/skills acquire', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           combat: {
             skills: {
               'crit': { level: 1 },
             },
           },
           userId: 'user_id',
-        }) as any,
+        }] as any,
     );
 
     const fetchStub = stub(
@@ -440,14 +440,14 @@ Deno.test('/skills acquire', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           combat: {
             skills: {
               'crit': { level: 3 },
             },
           },
           userId: 'user_id',
-        }) as any,
+        }] as any,
     );
 
     const fetchStub = stub(
@@ -587,7 +587,7 @@ Deno.test('/skills acquire', async (test) => {
     const findCharactersStub = stub(
       db,
       'findCharacter',
-      () => undefined as any,
+      () => [] as any,
     );
 
     const fetchStub = stub(
@@ -718,11 +718,11 @@ Deno.test('/skills acquire', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           rating: 1,
           combat: { skills: {} },
           userId: 'another_user_id',
-        }) as any,
+        }] as any,
     );
 
     const fetchStub = stub(

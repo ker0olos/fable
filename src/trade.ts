@@ -8,8 +8,6 @@ import i18n from '~/src/i18n.ts';
 import user from '~/src/user.ts';
 import utils from '~/src/utils.ts';
 
-import Rating from '~/src/rating.ts';
-
 import db from '~/db/mod.ts';
 
 import * as discord from '~/src/discord.ts';

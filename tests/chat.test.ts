@@ -58,7 +58,7 @@ Deno.test('/chat', async (test) => {
     const findCharactersStub = stub(
       db,
       'findCharacter',
-      () => Promise.resolve({ rating: 5, userId: 'user_id' } as any),
+      () => Promise.resolve([{ rating: 5, userId: 'user_id' }] as any),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -219,7 +219,7 @@ Deno.test('/chat', async (test) => {
     const findCharactersStub = stub(
       db,
       'findCharacter',
-      () => Promise.resolve({ rating: 5, userId: 'user_id' } as any),
+      () => Promise.resolve([{ rating: 5, userId: 'user_id' } as any]),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -403,7 +403,7 @@ Deno.test('/chat', async (test) => {
     const findCharactersStub = stub(
       db,
       'findCharacter',
-      () => Promise.resolve({ rating: 5, userId: 'user_id' } as any),
+      () => Promise.resolve([{ rating: 5, userId: 'user_id' }] as any),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -527,10 +527,10 @@ Deno.test('/chat', async (test) => {
       db,
       'findCharacter',
       () =>
-        Promise.resolve({
+        Promise.resolve([{
           rating: 4,
           userId: 'another_user_id',
-        } as any),
+        }] as any),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -598,7 +598,6 @@ Deno.test('/chat', async (test) => {
             },
             {
               type: 'rich',
-              description: '<@another_user_id>',
               fields: [
                 {
                   name: 'full name',
@@ -644,7 +643,7 @@ Deno.test('/chat', async (test) => {
     const findCharactersStub = stub(
       db,
       'findCharacter',
-      () => undefined as any,
+      () => [] as any,
     );
 
     const fetchStub = stub(
