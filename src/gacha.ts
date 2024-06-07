@@ -474,7 +474,7 @@ async function pullAnimation(
         description: false,
         footer: true,
         media: { title: true },
-        rating: new Rating({ stars: pull.rating.stars }),
+        overwrite: { userId, rating: pull.rating.stars },
       });
 
       await message
