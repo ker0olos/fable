@@ -46,7 +46,7 @@ Deno.test('/stats', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           characterId: 'id:1',
           rating: 4,
           combat: {
@@ -61,7 +61,7 @@ Deno.test('/stats', async (test) => {
             },
           },
           userId: 'user_id',
-        }) as any,
+        }] as any,
     );
 
     config.combat = true;
@@ -222,7 +222,7 @@ Deno.test('/stats', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           characterId: 'id:1',
           rating: 4,
           combat: {
@@ -237,7 +237,7 @@ Deno.test('/stats', async (test) => {
             },
           },
           userId: 'user_id',
-        }) as any,
+        }] as any,
     );
 
     config.combat = true;
@@ -401,7 +401,7 @@ Deno.test('/stats', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           characterId: 'id:1',
           rating: 4,
           combat: {
@@ -416,7 +416,7 @@ Deno.test('/stats', async (test) => {
             },
           },
           userId: 'another_user_id',
-        }) as any,
+        }] as any,
     );
 
     config.combat = true;
@@ -570,7 +570,7 @@ Deno.test('/stats', async (test) => {
     const findCharacterStub = stub(
       db,
       'findCharacter',
-      () => undefined as any,
+      () => [] as any,
     );
 
     config.combat = true;

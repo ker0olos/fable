@@ -255,6 +255,10 @@ function nick({
           nick,
         );
 
+        if (!response) {
+          throw new Error('404');
+        }
+
         const name = packs.aliasToArray(character.name)[0];
 
         const embed = await srch.characterEmbed(
@@ -266,11 +270,7 @@ function nick({
             mode: 'thumbnail',
             description: false,
             media: { title: true },
-            existing: {
-              ...response,
-              rating: undefined,
-              nickname: nick,
-            },
+            overwrite: { ...response, nickname: nick },
           },
         );
 
@@ -397,6 +397,10 @@ function image({
           image,
         );
 
+        if (!response) {
+          throw new Error('404');
+        }
+
         const name = packs.aliasToArray(character.name)[0];
 
         const embed = await srch.characterEmbed(
@@ -407,11 +411,7 @@ function image({
             rating: false,
             description: false,
             media: { title: true },
-            existing: {
-              ...response,
-              rating: undefined,
-              image,
-            },
+            overwrite: { ...response, image },
           },
         );
 
@@ -831,7 +831,7 @@ function list({
             footer: false,
             description: false,
             media: { title: mediaTitle },
-            existing: character,
+            overwrite: character,
           });
         }
       } else {

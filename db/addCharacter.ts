@@ -1,18 +1,19 @@
-import db, { Mongo } from '~/db/mod.ts';
+import db, { type Mongo } from '~/db/mod.ts';
 
+import i18n from '~/src/i18n.ts';
 import utils from '~/src/utils.ts';
+
+import user from '~/src/user.ts';
 
 import { skills } from '~/src/skills.ts';
 
-import { NonFetalError, NoPullsError } from '~/src/errors.ts';
+import { DupeError, NonFetalError, NoPullsError } from '~/src/errors.ts';
 
 import type { ObjectId } from '~/db/mod.ts';
 
 import type * as Schema from './schema.ts';
 
 import type { SkillKey } from '~/src/types.ts';
-import i18n from '~/src/i18n.ts';
-import user from '~/src/user.ts';
 
 const newSkills = (rating: number): number => {
   switch (rating) {
@@ -108,6 +109,7 @@ export async function addCharacter(
     userId,
     guildId,
     sacrifices,
+    mongo,
   }: {
     rating: number;
     mediaId: string;
@@ -116,26 +118,27 @@ export async function addCharacter(
     userId: string;
     guildId: string;
     sacrifices?: ObjectId[];
+    mongo: Mongo;
   },
 ): Promise<void> {
   const locale = user.cachedUsers[userId]?.locale ??
     user.cachedUsers[guildId]?.locale;
 
-  const mongo = new Mongo();
-
   const session = mongo.startSession();
 
   try {
-    await mongo.connect();
-
     session.startTransaction();
 
-    const { user, ...inventory } = await db.rechargeConsumables(
-      guildId,
-      userId,
-      mongo,
-      true,
-    );
+    const [exists, guild, { user, ...inventory }] = await Promise.all([
+      mongo.characters().find({ guildId, characterId }).toArray(),
+      db.getGuild(guildId, mongo, true),
+      db.rechargeConsumables(
+        guildId,
+        userId,
+        mongo,
+        true,
+      ),
+    ]);
 
     if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
       throw new NoPullsError(inventory.rechargeTimestamp);
@@ -145,6 +148,16 @@ export async function addCharacter(
       guaranteed && !sacrifices?.length && !user?.guarantees?.includes(rating)
     ) {
       throw new Error('403');
+    }
+
+    // dupes disallowed
+    if (!guild.options.dupes && exists.length) {
+      throw new DupeError();
+    }
+
+    // same user dupe
+    if (guild.options.dupes && exists.some((e) => e.userId === userId)) {
+      throw new DupeError();
     }
 
     const newCharacter: Schema.Character = ensureCombat({
@@ -207,11 +220,9 @@ export async function addCharacter(
     }
 
     await session.endSession();
-    await mongo.close();
 
     throw err;
   } finally {
     await session.endSession();
-    await mongo.close();
   }
 }

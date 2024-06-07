@@ -105,7 +105,7 @@
   "maintenance-merge": "Merge se encuentra en mantenimiento, reinténtalo más tarde",
   "maintenance-trade": "Los intercambios se encuentran en mantenimiento, reinténtalo más tarde",
   "maintenance-steal": "Los robos se encuentran en mantemiento, reinténtalo más tarde",
-  "maintenance-combat": "El combate se encuentra en mantenimiento, reinténtalo más tarde",
+  "maintenance-combat-!": "El combate se encuentra en mantenimiento, reinténtalo más tarde",
   "maintenance-packs": "Los packs de la comunidad se encuentran en mantenimiento, reinténtalo más tarde",
 
   "gacha-no-more-pulls": "¡No te quedan tiradas!",
@@ -176,7 +176,6 @@
   "help-page8-title": "Otros Comandos",
   "help-page9-title": "Comandos de Administrador",
 
-  "community-packs-permission": "_> `/packs` requiere el permiso `Administrar Servidor` por defecto, pero esto se puede cambiar en la sección `Integraciones` de tu servidor, aunque no lo recomendamos._",
   "make-your-own-pack": "> Para crear tu propio pack de la comunidad visita <https://packs.deno.dev>",
 
   "/gacha": "realiza una tirada de gacha",

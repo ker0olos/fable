@@ -903,6 +903,20 @@ export const commands = [
       }),
     ],
   }),
+  // server management commands
+  ...Command({
+    name: 'server',
+    description: 'server management commands',
+    defaultPermission: Permission.MANAGE_GUILD,
+    options: [
+      Option({
+        name: 'options',
+        description: '/server options',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+    ],
+  }),
   ...Command({
     name: 'stats',
     description: '/stats',

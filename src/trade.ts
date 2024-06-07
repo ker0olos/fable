@@ -173,7 +173,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
               description: false,
               media: { title: true },
               mode: 'thumbnail',
-              existing: i > -1
+              overwrite: i > -1
                 ? {
                   rating: giveCollection[i].rating,
                   mediaId: giveCollection[i].mediaId,
@@ -238,7 +238,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
                 description: false,
                 media: { title: true },
                 mode: 'thumbnail',
-                existing: i > -1
+                overwrite: i > -1
                   ? {
                     rating: giveCollection[i].rating,
                     mediaId: giveCollection[i].mediaId,
@@ -283,12 +283,12 @@ function pre({ token, userId, guildId, targetId, give, take }: {
             description: false,
             media: { title: true },
             mode: 'thumbnail',
-            existing: i > -1
+            overwrite: i > -1
               ? {
                 rating: takeCollection[i].rating,
                 mediaId: takeCollection[i].mediaId,
               }
-              : {},
+              : undefined,
           });
         }));
 
@@ -309,7 +309,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
           description: false,
           media: { title: true },
           mode: 'thumbnail',
-          existing: i > -1
+          overwrite: i > -1
             ? {
               rating: giveCollection[i].rating,
               mediaId: giveCollection[i].mediaId,

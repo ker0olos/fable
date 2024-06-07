@@ -939,7 +939,13 @@ Deno.test('/nick', async (test) => {
     const setCharacterNicknameStub = stub(
       db,
       'setCharacterNickname',
-      () => undefined as any,
+      () =>
+        ({
+          id: 'anilist:1',
+          mediaId: 'anilist:0',
+          nickname: 'new_nickname',
+          rating: 2,
+        }) as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -1565,7 +1571,13 @@ Deno.test('/image', async (test) => {
     const setCharacterImageStub = stub(
       db,
       'setCharacterImage',
-      () => undefined as any,
+      () =>
+        [{
+          id: 'anilist:1',
+          mediaId: 'anilist:0',
+          image: 'new_image',
+          rating: 2,
+        }] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -1736,7 +1748,7 @@ Deno.test('/image', async (test) => {
     try {
       const message = user.image({
         token: 'test_token',
-        userId: 'user',
+        userId: 'user_id',
         guildId: 'guild_id',
         id: 'anilist:1',
       });

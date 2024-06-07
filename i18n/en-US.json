@@ -135,7 +135,7 @@
   "maintenance-merge": "Merging is under maintenance, try again later!",
   "maintenance-trade": "Trading is under maintenance, try again later!",
   "maintenance-steal": "Stealing is under maintenance, try again later!",
-  "maintenance-combat": "Combat is under maintenance, try again later!",
+  "maintenance-combat": "Combat test period has ended! Please wait while we implement a new rework to make things more fun!",
   "maintenance-packs": "Community Packs are under maintenance, try again later!",
   "maintenance-shop": "Shop is under maintenance, try again later!",
   "maintenance-chat": "Chat is under maintenance, try again later!",
@@ -201,6 +201,13 @@
 
   "chat-not-owned": "**You can't chat with a character you don't own!**",
 
+  "dupes-allowed": "Dupes are allowed (Experimental)",
+  "dupes-disallowed": "Dupes are disallowed",
+  "allow-dupes": "Allow Dupes",
+  "disallow-dupes": "Disallow Dupes",
+  "server-dupes-allowed": "Multiple users can own the same character.",
+  "server-dupes-disallowed": "Only one user can own a character.",
+
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
   "help-page1-characters-are-exclusive": "__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.",
@@ -264,7 +271,7 @@
   "help-page8-title": "Other Commands",
   "help-page9-title": "Admin Commands",
 
-  "community-packs-permission": "_> `/packs` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._",
+  "admin-permission": "_> Those commands require the `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._",
   "make-your-own-pack": "> To create your own community pack visit <https://packs.deno.dev>",
 
   "/gacha": "start a new gacha pull",
@@ -314,6 +321,8 @@
 
   "/packs install": "install a community pack",
   "/packs uninstall": "uninstall a community pack",
+
+  "/server options": "manage your server",
 
   "/stats": "manage your characters stat points and skills",
 

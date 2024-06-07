@@ -1,5 +1,7 @@
 import { Mongo, STEAL_COOLDOWN_HOURS } from '~/db/mod.ts';
 
+import config from '~/src/config.ts';
+
 import utils from '~/src/utils.ts';
 
 import type * as Schema from './schema.ts';
@@ -42,10 +44,8 @@ export const newGuild = (
   const guild: Schema.Guild = {
     excluded: false,
     discordId: guildId,
-    packIds: [
-      'anilist',
-      'vtubers',
-    ],
+    options: { dupes: config.defaultServerDupes ?? true },
+    packIds: ['anilist', 'vtubers'],
   };
 
   omit?.forEach((key) => {
@@ -125,13 +125,15 @@ export async function forceNewUser(userId: string): Promise<Schema.User> {
 
 export async function getGuild(
   guildId: string,
+  db?: Mongo,
+  manual?: boolean,
 ): Promise<Schema.PopulatedGuild> {
-  const db = new Mongo();
+  db ??= new Mongo();
 
   let _result: Schema.PopulatedGuild;
 
   try {
-    await db.connect();
+    !manual && await db.connect();
 
     // deno-lint-ignore no-non-null-assertion
     const { _id } = (await db.guilds().findOneAndUpdate(
@@ -154,7 +156,7 @@ export async function getGuild(
 
     _result = result as Schema.PopulatedGuild;
   } finally {
-    await db.close();
+    !manual && await db.close();
   }
 
   return _result;

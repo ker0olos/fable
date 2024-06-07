@@ -1,24 +1,36 @@
-// import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/mod.ts';
 
-// import { newGuild } from '~/db/getInventory.ts';
+import type { WithId } from 'mongodb';
 
-// export async function disableBuiltins(
-//   guildId: string,
-// ): Promise<void> {
-//   const db = new Mongo();
+import type * as Schema from '~/db/schema.ts';
 
-//   try {
-//     await db.connect();
+export async function invertDupes(
+  guildId: string,
+): Promise<WithId<Schema.Guild>> {
+  const db = new Mongo();
 
-//     await db.guilds().updateOne(
-//       { discordId: guildId },
-//       {
-//         $setOnInsert: newGuild(guildId, ['excluded', 'builtinsDisabled']),
-//         $set: { excluded: true, builtinsDisabled: true },
-//       },
-//       { upsert: true },
-//     );
-//   } finally {
-//     await db.close();
-//   }
-// }
+  try {
+    await db.connect();
+
+    const guild = await db.guilds().findOne(
+      { discordId: guildId },
+    );
+
+    if (!guild) {
+      throw new Error();
+    }
+
+    guild.options.dupes = !guild.options.dupes;
+
+    await db.guilds().updateOne(
+      { discordId: guildId },
+      {
+        $set: { options: guild.options },
+      },
+    );
+
+    return guild;
+  } finally {
+    await db.close();
+  }
+}

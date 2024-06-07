@@ -13,7 +13,7 @@ import db, { Mongo, ObjectId } from '~/db/mod.ts';
 
 import config from '~/src/config.ts';
 
-import { NonFetalError } from '~/src/errors.ts';
+import { DupeError, NonFetalError } from '~/src/errors.ts';
 
 let mongod: MongoMemoryReplSet;
 let client: Mongo;
@@ -52,6 +52,126 @@ describe({
         guildId: 'guild-id',
         characterId: 'character-id',
         guaranteed: false,
+        mongo: client,
+      });
+
+      const character = await client.characters().findOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+      });
+
+      const inventory = await client.inventories().findOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+      });
+
+      assertEquals(Object.keys(character!), [
+        '_id',
+        'createdAt',
+        'inventoryId',
+        'characterId',
+        'guildId',
+        'userId',
+        'mediaId',
+        'rating',
+        'combat',
+      ]);
+
+      assertEquals(objectIdRegex.test(character!._id.toHexString()), true);
+
+      assertWithinLast5secs(character!.createdAt);
+
+      assertObjectMatch(character!, {
+        rating: 3,
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+        mediaId: 'media-id',
+      });
+
+      assertWithinLast5secs(inventory!.lastPull!);
+      assertWithinLast5secs(inventory!.rechargeTimestamp!);
+
+      assertEquals(inventory!.availablePulls, 9);
+    });
+
+    it('duped pull (disallowed)', async () => {
+      await client.guilds().insertOne({
+        discordId: 'guild-id',
+        options: { dupes: false },
+      } as any);
+
+      await client.characters().insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+      } as any);
+
+      await assertRejects(
+        () =>
+          db.addCharacter({
+            rating: 3,
+            mediaId: 'media-id',
+            userId: 'user-id',
+            guildId: 'guild-id',
+            characterId: 'character-id',
+            guaranteed: false,
+            mongo: client,
+          }),
+        DupeError,
+        'DUPLICATED',
+      );
+    });
+
+    it('duped pull (allowed but same user)', async () => {
+      await client.guilds().insertOne({
+        discordId: 'guild-id',
+        options: { dupes: true },
+      } as any);
+
+      await client.characters().insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+      } as any);
+
+      await assertRejects(
+        () =>
+          db.addCharacter({
+            rating: 3,
+            mediaId: 'media-id',
+            userId: 'user-id',
+            guildId: 'guild-id',
+            characterId: 'character-id',
+            guaranteed: false,
+            mongo: client,
+          }),
+        DupeError,
+        'DUPLICATED',
+      );
+    });
+
+    it('duped pull (allowed)', async () => {
+      await client.guilds().insertOne({
+        discordId: 'guild-id',
+        options: { dupes: true },
+      } as any);
+
+      await client.characters().insertOne({
+        userId: 'another-user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+      } as any);
+
+      await db.addCharacter({
+        rating: 3,
+        mediaId: 'media-id',
+        userId: 'user-id',
+        guildId: 'guild-id',
+        characterId: 'character-id',
+        guaranteed: false,
+        mongo: client,
       });
 
       const character = await client.characters().findOne({
@@ -106,6 +226,7 @@ describe({
         characterId: 'character-id',
         guaranteed: false,
         sacrifices: [insertedId],
+        mongo: client,
       });
 
       const character = await client.characters().findOne({
@@ -163,6 +284,7 @@ describe({
           characterId: 'character-id',
           guaranteed: false,
           sacrifices: [new ObjectId()],
+          mongo: client,
         })
       ),
         NonFetalError,
@@ -185,6 +307,7 @@ describe({
         guildId: 'guild-id',
         characterId: 'character-id',
         guaranteed: true,
+        mongo: client,
       });
 
       const character = await client.characters().findOne({
@@ -243,6 +366,7 @@ describe({
             guildId: 'guild-id',
             characterId: 'character-id',
             guaranteed: true,
+            mongo: client,
           });
         },
         Error,

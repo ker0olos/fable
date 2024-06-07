@@ -11,6 +11,8 @@ import search from '~/src/search.ts';
 
 import db, { ObjectId } from '~/db/mod.ts';
 
+import { DupeError } from '~/src/errors.ts';
+
 import searchIndex from '~/search-index/mod.ts';
 
 import packs from '~/src/packs.ts';
@@ -251,6 +253,8 @@ async function rngPull(
     throw new PoolError();
   }
 
+  const mongo = await db.newMongo().connect();
+
   try {
     while (!signal.aborted) {
       const mediaIndex = Math.floor(Math.random() * poolKeys.length);
@@ -301,15 +305,10 @@ async function rngPull(
             guaranteed: typeof guarantee === 'number',
             rating: rating.stars,
             sacrifices,
+            mongo,
           });
         } catch (err) {
-          // E11000 duplicate key error collection
-          // character already exists in guild
-          if (err.code === 11000) {
-            continue;
-          }
-
-          if (err.message.includes('Write conflict during plan execution')) {
+          if (err instanceof DupeError) {
             continue;
           }
 
@@ -324,6 +323,7 @@ async function rngPull(
     }
   } finally {
     clearTimeout(timeoutId);
+    await mongo.close();
   }
 
   if (!character || !media || !rating?.stars) {
@@ -471,13 +471,10 @@ async function pullAnimation(
       const embed = await search.characterEmbed(message, pull.character, {
         userId,
         mode: 'thumbnail',
-        rating: true,
         description: false,
         footer: true,
         media: { title: true },
-        existing: {
-          rating: pull.rating.stars,
-        },
+        overwrite: { userId, rating: pull.rating.stars },
       });
 
       await message

@@ -93,6 +93,7 @@ describe('db.getGuild()', () => {
       '_id',
       'discordId',
       'excluded',
+      'options',
       'packIds',
       'packs',
     ]);
@@ -102,6 +103,7 @@ describe('db.getGuild()', () => {
     assertObjectMatch(guild, {
       excluded: false,
       discordId: 'guild-id',
+      options: { dupes: true },
       packIds: ['anilist', 'vtubers'],
     });
   });

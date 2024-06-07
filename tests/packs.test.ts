@@ -74,6 +74,7 @@ Deno.test('disabled', async (test) => {
     packs.cachedGuilds = {
       'guild_id': {
         packs: [],
+        options: { dupes: true },
         disables: new Map([['another-pack:1', true]]),
       },
     };
@@ -89,7 +90,11 @@ Deno.test('disabled', async (test) => {
     const pack: Schema.Pack = { _id: '_', manifest: { id: 'pack-id' } } as any;
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -326,7 +331,11 @@ Deno.test('media character', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -413,7 +422,11 @@ Deno.test('media character', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -514,7 +527,11 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -716,7 +733,11 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -815,7 +836,11 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -899,7 +924,11 @@ Deno.test('aggregate media', async (test) => {
       ] as any));
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -991,7 +1020,11 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -1098,7 +1131,11 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -1388,7 +1425,11 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -1566,7 +1607,11 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -1658,7 +1703,11 @@ Deno.test('aggregate characters', async (test) => {
       ] as any));
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     const mediaStub = stub(
@@ -1745,7 +1794,11 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {
@@ -1845,7 +1898,11 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [pack], disables: new Map() },
+      'guild_id': {
+        packs: [pack],
+        options: { dupes: true },
+        disables: new Map(),
+      },
     };
 
     try {

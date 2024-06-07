@@ -327,7 +327,9 @@ function pages(
           name: i18n.get('help-page9-title', locale),
         })
           .setDescription([
-            i18n.get('community-packs-permission', locale),
+            i18n.get('admin-permission', locale),
+            `- \`/server options\`: _${i18n.get('/server options', locale)}_`,
+            '',
             `- \`/packs install\`: _${i18n.get('/packs install', locale)}_`,
             `- \`/packs uninstall\`: _${i18n.get('/packs uninstall', locale)}_`,
             '',
