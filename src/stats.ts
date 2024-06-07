@@ -50,7 +50,7 @@ function view({ token, character, userId, guildId }: {
       ]);
     })
     .then(async ([character, existing]) => {
-      if (!existing) {
+      if (!existing.length) {
         const message = new discord.Message();
 
         const embed = await search.characterEmbed(message, character, {
@@ -69,32 +69,48 @@ function view({ token, character, userId, guildId }: {
         return await message.patch(token);
       }
 
-      if (packs.isDisabled(existing.mediaId, guildId)) {
+      const exists = existing?.sort((a, b) => {
+        if (
+          userId &&
+          a.userId === userId &&
+          b.userId !== userId
+        ) {
+          return -1;
+        }
+
+        if (a.rating !== b.rating) {
+          return b.rating - a.rating;
+        }
+
+        return a.createdAt.getTime() - b.createdAt.getTime();
+      })[0];
+
+      if (packs.isDisabled(exists.mediaId, guildId)) {
         throw new Error('404');
       }
 
       const message = new discord.Message();
 
-      const skillPoints = existing.combat!.skillPoints ?? 0;
+      const skillPoints = exists.combat!.skillPoints ?? 0;
 
       // const unclaimed = existing.combat!.unclaimedStatsPoints!;
 
-      const stats = existing.combat!.curStats!;
+      const stats = exists.combat!.curStats!;
 
-      const exp = existing.combat!.exp ?? 0;
-      const level = existing.combat!.level ?? 1;
+      const exp = exists.combat!.exp ?? 0;
+      const level = exists.combat!.level ?? 1;
       const expToLevel = experienceToNextLevel(level);
 
-      const _skills = Object.entries(existing.combat?.skills ?? {});
+      const _skills = Object.entries(exists.combat?.skills ?? {});
 
       const embed = await search.characterEmbed(message, character, {
         footer: false,
-        existing: {
-          image: existing.image,
-          nickname: existing.nickname,
-          rating: existing.rating,
+        overwrite: {
+          image: exists.image,
+          nickname: exists.nickname,
+          rating: exists.rating,
         },
-        userId: existing.userId,
+        userId: exists.userId,
         suffix: `${i18n.get('level', locale)} ${level}\n${exp}/${expToLevel}`,
         media: { title: false },
         description: false,
@@ -138,14 +154,14 @@ function view({ token, character, userId, guildId }: {
       message.addComponents([
         new discord.Component()
           .setLabel('/character')
-          .setId(`character`, existing.characterId),
+          .setId(`character`, exists.characterId),
         new discord.Component()
           .setLabel('/like')
-          .setId(`like`, existing.characterId),
-        existing.userId === userId
+          .setId(`like`, exists.characterId),
+        exists.userId === userId
           ? new discord.Component()
             .setLabel('/p assign')
-            .setId(`passign`, userId, existing.characterId)
+            .setId(`passign`, userId, exists.characterId)
           : undefined,
       ].filter(utils.nonNullable));
 

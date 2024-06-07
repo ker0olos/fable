@@ -331,7 +331,7 @@ function preAcquire(
       const locale = _user.cachedUsers[userId]?.locale ??
         _user.cachedGuilds[guildId]?.locale;
 
-      if (!existing) {
+      if (!existing.length) {
         const message = new discord.Message();
 
         const embed = await search.characterEmbed(message, character, {
@@ -350,7 +350,9 @@ function preAcquire(
         return await message.patch(token);
       }
 
-      if (existing.userId !== userId) {
+      const exists = existing.find((e) => e.userId === userId);
+
+      if (!exists) {
         const message = new discord.Message();
 
         const embed = await search.characterEmbed(message, character, {
@@ -358,8 +360,8 @@ function preAcquire(
           media: { title: false },
           description: false,
           footer: false,
-          userId: existing.userId,
-          existing: { rating: existing.rating },
+          userId,
+          existing,
         });
 
         message.addEmbed(
@@ -393,7 +395,7 @@ function preAcquire(
 
       const skill: CharacterSkill = skills[skillKey];
 
-      const existingSkill = existing.combat.skills[skillKey];
+      const existingSkill = exists.combat.skills[skillKey];
 
       const maxed = skill.max <= (existingSkill?.level ?? 0);
 
