@@ -270,7 +270,7 @@ function nick({
             mode: 'thumbnail',
             description: false,
             media: { title: true },
-            existing: [{ ...response, nickname: nick }],
+            overwrite: { ...response, nickname: nick },
           },
         );
 
@@ -411,7 +411,7 @@ function image({
             rating: false,
             description: false,
             media: { title: true },
-            existing: [{ ...response, image }],
+            overwrite: { ...response, image },
           },
         );
 
@@ -831,7 +831,7 @@ function list({
             footer: false,
             description: false,
             media: { title: mediaTitle },
-            existing: [character],
+            overwrite: character,
           });
         }
       } else {

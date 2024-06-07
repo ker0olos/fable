@@ -175,7 +175,12 @@ function pre({ token, userId, guildId, targetId, give, take }: {
               description: false,
               media: { title: true },
               mode: 'thumbnail',
-              rating: new Rating({ stars: giveCollection[i].rating }),
+              overwrite: i > -1
+                ? {
+                  rating: giveCollection[i].rating,
+                  mediaId: giveCollection[i].mediaId,
+                }
+                : undefined,
             });
 
             return [
@@ -235,7 +240,12 @@ function pre({ token, userId, guildId, targetId, give, take }: {
                 description: false,
                 media: { title: true },
                 mode: 'thumbnail',
-                rating: new Rating({ stars: giveCollection[i].rating }),
+                overwrite: i > -1
+                  ? {
+                    rating: giveCollection[i].rating,
+                    mediaId: giveCollection[i].mediaId,
+                  }
+                  : undefined,
               });
 
               return [
@@ -275,7 +285,12 @@ function pre({ token, userId, guildId, targetId, give, take }: {
             description: false,
             media: { title: true },
             mode: 'thumbnail',
-            rating: new Rating({ stars: takeCollection[i].rating }),
+            overwrite: i > -1
+              ? {
+                rating: takeCollection[i].rating,
+                mediaId: takeCollection[i].mediaId,
+              }
+              : undefined,
           });
         }));
 
@@ -296,7 +311,12 @@ function pre({ token, userId, guildId, targetId, give, take }: {
           description: false,
           media: { title: true },
           mode: 'thumbnail',
-          rating: new Rating({ stars: giveCollection[i].rating }),
+          overwrite: i > -1
+            ? {
+              rating: giveCollection[i].rating,
+              mediaId: giveCollection[i].mediaId,
+            }
+            : undefined,
         });
       }));
 
