@@ -151,12 +151,12 @@ export async function addCharacter(
     }
 
     // dupes disallowed
-    if (!guild.options.dupes && exists.length) {
+    if (!guild.options?.dupes && exists.length) {
       throw new DupeError();
     }
 
     // same user dupe
-    if (guild.options.dupes && exists.some((e) => e.userId === userId)) {
+    if (guild.options?.dupes && exists.some((e) => e.userId === userId)) {
       throw new DupeError();
     }
 

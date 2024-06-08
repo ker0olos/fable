@@ -20,11 +20,11 @@ const getOptionsEmbed = (
 
   embed.addField({
     name: i18n.get(
-      guild.options.dupes ? 'dupes-allowed' : 'dupes-disallowed',
+      guild.options?.dupes ? 'dupes-allowed' : 'dupes-disallowed',
       locale,
     ),
     value: i18n.get(
-      guild.options.dupes ? 'server-dupes-allowed' : 'server-dupes-disallowed',
+      guild.options?.dupes ? 'server-dupes-allowed' : 'server-dupes-disallowed',
       locale,
     ),
   });
@@ -33,7 +33,7 @@ const getOptionsEmbed = (
     new discord.Component()
       .setLabel(
         i18n.get(
-          guild.options.dupes ? 'disallow-dupes' : 'allow-dupes',
+          guild.options?.dupes ? 'disallow-dupes' : 'allow-dupes',
           locale,
         ),
       )
