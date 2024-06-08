@@ -3,6 +3,7 @@ import { Mongo } from '~/db/mod.ts';
 import type { WithId } from 'mongodb';
 
 import type * as Schema from '~/db/schema.ts';
+import config from '~/src/config.ts';
 
 export async function invertDupes(
   guildId: string,
@@ -19,6 +20,8 @@ export async function invertDupes(
     if (!guild) {
       throw new Error();
     }
+
+    guild.options ??= { dupes: config.defaultServerDupes ?? true };
 
     guild.options.dupes = !guild.options.dupes;
 
