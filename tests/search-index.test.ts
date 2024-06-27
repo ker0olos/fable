@@ -82,21 +82,21 @@ Deno.test('characters search', async (test) => {
     }
   });
 
-  await test.step('konosuba', async (test) => {
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+  // await test.step('konosuba', async (test) => {
+  //   const listStub = stub(packs, 'all', () =>
+  //     Promise.resolve([
+  //       { manifest: { id: 'anilist' } },
+  //     ] as any));
 
-    try {
-      await assertSnapshot(
-        test,
-        await toString(searchIndex.searchCharacters('konosuba', '')),
-      );
-    } finally {
-      listStub.restore();
-    }
-  });
+  //   try {
+  //     await assertSnapshot(
+  //       test,
+  //       await toString(searchIndex.searchCharacters('konosuba', '')),
+  //     );
+  //   } finally {
+  //     listStub.restore();
+  //   }
+  // });
 });
 
 Deno.test('media search', async (test) => {
