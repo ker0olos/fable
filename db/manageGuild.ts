@@ -1,9 +1,10 @@
 import { Mongo } from '~/db/mod.ts';
 
+import config from '~/src/config.ts';
+
 import type { WithId } from 'mongodb';
 
 import type * as Schema from '~/db/schema.ts';
-import config from '~/src/config.ts';
 
 export async function invertDupes(
   guildId: string,
