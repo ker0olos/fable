@@ -144,20 +144,23 @@ const pool = async (
 
         if (!media) return undefined;
 
-        const popularity = char.popularity ?? media.node.popularity ?? 1000;
-
         const role = media.role;
 
         if (!role) return undefined;
 
-        const rating = new Rating({ role, popularity }).stars;
+        const rating = new Rating(
+          char.popularity ? { popularity: char.popularity } : {
+            role,
+            popularity: media.node.popularity ?? 1000,
+          },
+        ).stars;
 
         return new IndexedCharacter(
           `${char.packId}:${char.id}`,
           `${media.node.packId}:${media.node.id}`,
           name,
           packs.aliasToArray(media.node.title),
-          popularity,
+          char.popularity ?? media.node.popularity ?? 1000,
           rating,
           role,
         );
