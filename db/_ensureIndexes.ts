@@ -62,7 +62,7 @@ async function createCharactersIndexes(db: Mongo) {
     .createIndex({
       characterId: Direction.ascending,
       guildId: Direction.ascending,
-    }, { unique: true });
+    });
 
   // @getInventory.getMediaCharacters
   // @getInventory.getUserCharacters
@@ -115,7 +115,7 @@ async function createChatIndexes(db: Mongo) {
       userId: Direction.ascending,
       guildId: Direction.ascending,
       characterId: Direction.ascending,
-    }, { unique: true });
+    });
 
   await db.chat() // TTL Index
     .createIndex({

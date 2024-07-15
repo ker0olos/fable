@@ -2896,6 +2896,21 @@ snapshot[`commands 1`] = `
     ]
   },
   {
+    "name": "server",
+    "description": "server management commands",
+    "default_member_permissions": 32,
+    "description_localizations": {},
+    "options": [
+      {
+        "name": "options",
+        "description": "manage your server",
+        "type": 1,
+        "required": false,
+        "description_localizations": {}
+      }
+    ]
+  },
+  {
     "name": "stats",
     "description": "manage your characters stat points and skills",
     "description_localizations": {

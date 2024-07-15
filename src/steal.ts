@@ -13,6 +13,8 @@ import db from '~/db/mod.ts';
 
 import * as discord from '~/src/discord.ts';
 
+import Rating from '~/src/rating.ts';
+
 import { Character, DisaggregatedCharacter } from '~/src/types.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
@@ -21,7 +23,7 @@ import type * as Schema from '~/db/schema.ts';
 
 export const PARTY_PROTECTION_PERIOD = 4;
 
-function getInactiveDays(inventory?: Partial<Schema.Inventory>): number {
+const getInactiveDays = (inventory?: Partial<Schema.Inventory>): number => {
   const lastPull = inventory?.lastPull
     ? new Date(inventory.lastPull)
     : undefined;
@@ -29,9 +31,12 @@ function getInactiveDays(inventory?: Partial<Schema.Inventory>): number {
   return !lastPull
     ? Number.MAX_SAFE_INTEGER
     : utils.diffInDays(new Date(), lastPull);
-}
+};
 
-function getChances(character: Schema.Character, inactiveDays: number): number {
+const getChances = (
+  character: Schema.Character,
+  inactiveDays: number,
+): number => {
   let chance = 0;
 
   switch (character.rating) {
@@ -63,7 +68,29 @@ function getChances(character: Schema.Character, inactiveDays: number): number {
   }
 
   return Math.min(chance, 90);
-}
+};
+
+const sortExisting = (existing: Schema.PopulatedCharacter[]): number[] => {
+  return existing.map((existing) => {
+    const targetInventory = existing.inventory;
+
+    const inactiveDays = getInactiveDays(targetInventory);
+
+    const isPartyMember = [
+      targetInventory.party.member1Id,
+      targetInventory.party.member2Id,
+      targetInventory.party.member3Id,
+      targetInventory.party.member4Id,
+      targetInventory.party.member5Id,
+    ].some((id) => id?.equals(existing._id));
+
+    if (isPartyMember && inactiveDays <= PARTY_PROTECTION_PERIOD) {
+      return 0;
+    }
+
+    return getChances(existing, inactiveDays);
+  });
+};
 
 function pre({ token, userId, guildId, search, id }: {
   token: string;
@@ -121,7 +148,7 @@ function pre({ token, userId, guildId, search, id }: {
 
       const media = character.media?.edges?.[0]?.node;
 
-      if (!existing) {
+      if (!existing?.length) {
         message.addEmbed(
           new discord.Embed().setDescription(
             i18n.get('character-hasnt-been-found', locale, characterName),
@@ -140,8 +167,14 @@ function pre({ token, userId, guildId, search, id }: {
         return message.patch(token);
       }
 
+      const chances = sortExisting(existing);
+
+      const target = Math.max(...chances);
+
+      const exists = existing[chances.indexOf(target)];
+
       if (
-        (packs.isDisabled(existing.mediaId, guildId)) ||
+        packs.isDisabled(exists.mediaId, guildId) ||
         (
           media &&
           packs.isDisabled(`${media.packId}:${media.id}`, guildId)
@@ -150,47 +183,34 @@ function pre({ token, userId, guildId, search, id }: {
         throw new Error('404');
       }
 
-      if (existing.userId === userId) {
+      if (exists.userId === userId) {
         throw new NonFetalError(i18n.get('stealing-from-yourself', locale));
       }
 
-      const targetInventory = existing.inventory;
-
-      const party = [
-        targetInventory.party.member1Id,
-        targetInventory.party.member2Id,
-        targetInventory.party.member3Id,
-        targetInventory.party.member4Id,
-        targetInventory.party.member5Id,
-      ];
-
-      const inactiveDays = getInactiveDays(targetInventory);
-
-      if (party.some((id) => id?.equals(existing._id))) {
-        if (inactiveDays <= PARTY_PROTECTION_PERIOD) {
-          message.addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get(
-                'stealing-party-member',
-                locale,
-                `<@${existing.userId}>`,
-                characterName,
-              ),
+      // means character is in party
+      if (target <= 0) {
+        message.addEmbed(
+          new discord.Embed().setDescription(
+            i18n.get(
+              'stealing-party-member',
+              locale,
+              `<@${exists.userId}>`,
+              characterName,
             ),
-          );
+          ),
+        );
 
-          const embed = await srch.characterEmbed(message, character, {
-            footer: true,
-            mode: 'thumbnail',
-            description: false,
-            media: { title: true },
-            existing: { rating: existing.rating },
-          });
+        const embed = await srch.characterEmbed(message, character, {
+          footer: true,
+          mode: 'thumbnail',
+          description: false,
+          media: { title: true },
+          rating: new Rating({ stars: exists.rating }),
+        });
 
-          message.addEmbed(embed);
+        message.addEmbed(embed);
 
-          return message.patch(token);
-        }
+        return message.patch(token);
       }
 
       const embed = await srch.characterEmbed(message, character, {
@@ -199,23 +219,17 @@ function pre({ token, userId, guildId, search, id }: {
         mode: 'thumbnail',
         description: false,
         media: { title: true },
-        existing: {
-          rating: existing.rating,
-          mediaId: existing.mediaId,
-        },
       });
 
-      embed.setDescription(`<@${existing.userId}>`);
+      embed.setDescription(`<@${exists.userId}>`);
 
-      message.addEmbed(embed);
-
-      const chance = getChances(existing, inactiveDays);
-
-      message.addEmbed(
-        new discord.Embed().setDescription(
-          i18n.get('steal-chance', locale, chance.toFixed(2)),
-        ),
-      );
+      message
+        .addEmbed(embed)
+        .addEmbed(
+          new discord.Embed().setDescription(
+            i18n.get('steal-chance', locale, target.toFixed(2)),
+          ),
+        );
 
       return discord.Message.dialog({
         userId,
@@ -223,9 +237,9 @@ function pre({ token, userId, guildId, search, id }: {
         confirmText: i18n.get('attempt', locale),
         confirm: [
           'steal',
-          userId,
+          exists.userId,
           characterId,
-          `${chance}`,
+          `${target}`,
         ],
       }).patch(token);
     })
@@ -265,12 +279,14 @@ function attempt({
   userId,
   guildId,
   characterId,
+  targetUserId,
   pre,
 }: {
   token: string;
   userId: string;
   guildId: string;
   characterId: string;
+  targetUserId: string;
   pre: number;
 }): discord.Message {
   const locale = user.cachedUsers[userId]?.locale ??
@@ -300,12 +316,13 @@ function attempt({
         );
       }
 
-      const existing = await db.findCharacter(
+      const exists = await db.findOneCharacter(
         guildId,
+        targetUserId,
         `${results[0].packId}:${results[0].id}`,
       );
 
-      if (!existing) {
+      if (!exists) {
         message.addEmbed(
           new discord.Embed().setDescription(
             i18n.get('character-hasnt-been-found', locale, characterName),
@@ -315,19 +332,15 @@ function attempt({
         return message.patch(token);
       }
 
-      const targetInventory = existing.inventory;
+      const target = sortExisting([exists])[0];
 
-      const inactiveDays = getInactiveDays(targetInventory);
-
-      const chance = getChances(existing, inactiveDays);
-
-      if (pre > chance) {
+      if (pre > target) {
         throw new NonFetalError(
           i18n.get('steal-unexpected', locale, characterName),
         );
       }
 
-      const success = utils.getRandomFloat() <= (chance / 100);
+      const success = utils.getRandomFloat() <= (target / 100);
 
       // delay to build up anticipation
       await utils.sleep(5);
@@ -356,17 +369,14 @@ function attempt({
       }
 
       try {
-        await db.stealCharacter(userId, guildId, characterId);
+        await db.stealCharacter(userId, guildId, exists._id);
 
         const embed = await srch.characterEmbed(message, character, {
           footer: false,
           mode: 'thumbnail',
           description: false,
           media: { title: true },
-          existing: {
-            rating: existing.rating,
-            mediaId: existing.mediaId,
-          },
+          rating: new Rating({ stars: exists.rating }),
         });
 
         embed.addField({
@@ -392,7 +402,7 @@ function attempt({
         await message.patch(token);
 
         const followupMessage = new discord.Message()
-          .setContent(`<@${existing.userId}>`)
+          .setContent(`<@${exists.userId}>`)
           .addEmbed(
             new discord.Embed().setDescription(
               i18n.get('stolen-from-you', locale, characterName),
@@ -407,10 +417,7 @@ function attempt({
             mode: 'thumbnail',
             description: false,
             media: { title: true },
-            existing: {
-              rating: existing.rating,
-              mediaId: existing.mediaId,
-            },
+            overwrite: { userId, rating: exists.rating },
           },
         );
 
@@ -467,7 +474,7 @@ function attempt({
   const embed = new discord.Embed();
   const loading = new discord.Message();
 
-  const image = embed.setImageFile('assets/public/steal.gif');
+  const image = embed.setImageFile('assets/public/steal2.gif');
 
   return loading
     .addEmbed(embed)

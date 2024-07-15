@@ -2381,7 +2381,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
-
+        userId: 'user_id',
         search: 'full name',
       });
 
@@ -2462,7 +2462,7 @@ Deno.test('/character', async (test) => {
     }
   });
 
-  await test.step('with owner', async () => {
+  await test.step('with 1 owner', async () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
@@ -2487,12 +2487,13 @@ Deno.test('/character', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           characterId: 'anilist:1',
           mediaId: 'media_id',
-          rating: 3,
           userId: 'user_id',
-        }) as any,
+          rating: 3,
+          createdAt: new Date(),
+        }] as any,
     );
 
     const fetchStub = stub(
@@ -2522,6 +2523,7 @@ Deno.test('/character', async (test) => {
         token: 'test_token',
         search: 'full name',
         guildId: 'guild_id',
+        userId: 'user_id',
       });
 
       assertEquals(message.json(), {
@@ -2558,6 +2560,456 @@ Deno.test('/character', async (test) => {
             type: 'rich',
             description:
               '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
+            image: {
+              url: 'attachment://image-url.webp',
+            },
+          }],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=pack-id:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'stats=pack-id:1',
+                label: '/stats',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      searchStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+      listStub.restore();
+
+      getGuildStub.restore();
+
+      findCharactersStub.restore();
+    }
+  });
+
+  await test.step('with 2 owner - sort userId first', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'pack-id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const timeStub = new FakeTime();
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacter',
+      () =>
+        [{
+          characterId: 'anilist:1',
+          mediaId: 'media_id',
+          userId: 'another_user_id',
+          rating: 3,
+          createdAt: new Date(),
+        }, {
+          characterId: 'anilist:1',
+          mediaId: 'media_id',
+          userId: 'user_id',
+          rating: 3,
+          createdAt: new Date(),
+        }] as any,
+    );
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => (undefined as any),
+    );
+
+    const searchStub = stub(
+      packs,
+      'searchOneCharacter',
+      () => Promise.resolve(character),
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = search.character({
+        token: 'test_token',
+        search: 'full name',
+        guildId: 'guild_id',
+        userId: 'user_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description:
+              '<@user_id><@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
+            image: {
+              url: 'attachment://image-url.webp',
+            },
+          }],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=pack-id:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'stats=pack-id:1',
+                label: '/stats',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      searchStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+      listStub.restore();
+
+      getGuildStub.restore();
+
+      findCharactersStub.restore();
+    }
+  });
+
+  await test.step('with 2 owner - sort highest rating first', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'pack-id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const timeStub = new FakeTime();
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacter',
+      () =>
+        [{
+          characterId: 'anilist:1',
+          mediaId: 'media_id',
+          userId: 'another_user_id_1',
+          rating: 2,
+          createdAt: new Date(),
+        }, {
+          characterId: 'anilist:1',
+          mediaId: 'media_id',
+          userId: 'another_user_id_2',
+          rating: 3,
+          createdAt: new Date(),
+        }] as any,
+    );
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => (undefined as any),
+    );
+
+    const searchStub = stub(
+      packs,
+      'searchOneCharacter',
+      () => Promise.resolve(character),
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = search.character({
+        token: 'test_token',
+        search: 'full name',
+        guildId: 'guild_id',
+        userId: 'user_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description:
+              '<@another_user_id_2><@another_user_id_1>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
+            image: {
+              url: 'attachment://image-url.webp',
+            },
+          }],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=pack-id:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'stats=pack-id:1',
+                label: '/stats',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      searchStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+      listStub.restore();
+
+      getGuildStub.restore();
+
+      findCharactersStub.restore();
+    }
+  });
+
+  await test.step('with 2 owner - sort older created first', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'pack-id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const timeStub = new FakeTime();
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacter',
+      () =>
+        [{
+          characterId: 'anilist:1',
+          mediaId: 'media_id',
+          userId: 'another_user_id_1',
+          rating: 3,
+          createdAt: new Date(),
+        }, {
+          characterId: 'anilist:1',
+          mediaId: 'media_id',
+          userId: 'another_user_id_2',
+          rating: 3,
+          createdAt: new Date('1999-1-1'),
+        }] as any,
+    );
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => (undefined as any),
+    );
+
+    const searchStub = stub(
+      packs,
+      'searchOneCharacter',
+      () => Promise.resolve(character),
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = search.character({
+        token: 'test_token',
+        search: 'full name',
+        guildId: 'guild_id',
+        userId: 'user_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description:
+              '<@another_user_id_2><@another_user_id_1>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             fields: [
               {
                 name: 'full name\n\u200B',
@@ -2658,7 +3110,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
-
+        userId: 'user_id',
         search: 'full name',
       });
 
@@ -2793,7 +3245,7 @@ Deno.test('/character', async (test) => {
       const message = await search.character({
         token: 'test_token',
         guildId: 'guild_id',
-
+        userId: 'user_id',
         search: 'full name',
       });
 
@@ -2943,6 +3395,7 @@ Deno.test('/character', async (test) => {
         token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
+        userId: 'user_id',
       });
 
       assertEquals(message.json(), {
@@ -3074,7 +3527,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
-
+        userId: 'user_id',
         search: 'full name',
       });
 
@@ -3194,6 +3647,7 @@ Deno.test('/character', async (test) => {
         token: 'test_token',
         guildId: 'guild_id',
         search: 'x'.repeat(100),
+        userId: 'user_id',
       });
 
       assertEquals(message.json(), {
@@ -3557,23 +4011,23 @@ Deno.test('character embed', async (test) => {
         description: false,
         footer: false,
         rating: false,
-        existing: {
+        existing: [{
           nickname: 'nickname',
           image: 'custom_image_url',
-        },
+          createdAt: new Date(),
+          rating: 1,
+          userId: 'user_id',
+        } as any],
       });
 
       assertEquals(embed.json(), {
-        fields: [
-          {
-            name: 'nickname',
-            value: '\u200B',
-          },
-        ],
-        thumbnail: {
-          url: 'attachment://custom-image-url.webp',
-        },
         type: 'rich',
+        description: '<@user_id>',
+        fields: [{
+          name: 'nickname',
+          value: '\u200B',
+        }],
+        thumbnail: { url: 'attachment://custom-image-url.webp' },
       });
     } finally {
       delete config.appId;
@@ -3682,7 +4136,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
-
+        userId: 'user_id',
         search: 'full name',
         debug: true,
       });
@@ -3841,7 +4295,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
-
+        userId: 'user_id',
         search: 'full name',
         debug: true,
       });
@@ -4009,7 +4463,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
-
+        userId: 'user_id',
         search: 'full name',
         debug: true,
       });
@@ -4156,7 +4610,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
-
+        userId: 'user_id',
         search: 'full name',
         debug: true,
       });
@@ -4458,12 +4912,12 @@ Deno.test('media characters', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           characterId: 'pack-id:2',
           mediaId: 'media_id',
           rating: 3,
           userId: 'user_id',
-        }) as any,
+        }] as any,
     );
 
     const listStub = stub(

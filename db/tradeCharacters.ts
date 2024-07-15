@@ -1,4 +1,4 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo, type ObjectId } from '~/db/mod.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -253,7 +253,7 @@ export async function tradeCharacters(
 export async function stealCharacter(
   userId: string,
   guildId: string,
-  characterId: string,
+  characterOId: ObjectId,
 ): Promise<void> {
   const db = new Mongo();
 
@@ -266,8 +266,7 @@ export async function stealCharacter(
 
     const [character] = await db.characters().aggregate()
       .match({
-        characterId,
-        guildId,
+        _id: characterOId,
       })
       .lookup({
         localField: 'inventoryId',

@@ -491,12 +491,12 @@ Deno.test('/steal', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           rating: 2,
           characterId: 'id:1',
           userId: 'another_user_id',
           inventory: { party: {} },
-        }) as any,
+        }] as any,
     );
 
     config.stealing = true;
@@ -563,7 +563,7 @@ Deno.test('/steal', async (test) => {
           components: [{
             components: [
               {
-                custom_id: 'steal=user_id=id:1=90',
+                custom_id: 'steal=another_user_id=id:1=90',
                 label: 'Attempt',
                 style: 2,
                 type: 2,
@@ -783,7 +783,7 @@ Deno.test('/steal', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           rating: 2,
           characterId: 'id:1',
           userId: 'another_user_id',
@@ -792,7 +792,7 @@ Deno.test('/steal', async (test) => {
               member1: { characterId: 'id:1' },
             },
           },
-        }) as any,
+        }] as any,
     );
 
     config.stealing = true;
@@ -859,7 +859,7 @@ Deno.test('/steal', async (test) => {
           components: [{
             components: [
               {
-                custom_id: 'steal=user_id=id:1=90',
+                custom_id: 'steal=another_user_id=id:1=90',
                 label: 'Attempt',
                 style: 2,
                 type: 2,
@@ -957,7 +957,7 @@ Deno.test('/steal', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           _id: id,
           rating: 2,
           characterId: 'id:1',
@@ -968,7 +968,7 @@ Deno.test('/steal', async (test) => {
               member1Id: id,
             },
           },
-        }) as any,
+        }] as any,
     );
 
     config.stealing = true;
@@ -1053,6 +1053,184 @@ Deno.test('/steal', async (test) => {
     }
   });
 
+  // TODO test co-owned character sorting
+
+  await test.step('co-owned character sorting', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: 'media',
+            packId: 'id',
+            type: MediaType.Anime,
+            title: {
+              english: 'media title',
+            },
+          },
+        }],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      returnsNext([
+        undefined,
+        undefined,
+      ] as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const packsStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'rechargeConsumables',
+      () =>
+        ({
+          party: {},
+          user: { discordId: 'user-id' },
+          stealTimestamp: undefined,
+        }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacter',
+      () =>
+        [
+          {
+            rating: 2,
+            characterId: 'id:1',
+            userId: 'another_user_id',
+            inventory: { party: {}, lastPull: new Date() },
+          },
+          {
+            rating: 2,
+            characterId: 'id:1',
+            userId: 'another_user_id_2',
+            inventory: { party: {}, lastPull: new Date('1999-1-1') },
+          },
+        ] as any,
+    );
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = steal.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        id: 'character_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: '<@another_user_id_2>',
+              fields: [
+                {
+                  name: 'media title',
+                  value: '**full name**',
+                },
+              ],
+              thumbnail: {
+                url: 'attachment://image-url.webp',
+              },
+            },
+            {
+              type: 'rich',
+              description: 'Your chance of success is **90.00%**',
+            },
+          ],
+          components: [{
+            components: [
+              {
+                custom_id: 'steal=another_user_id_2=id:1=90',
+                label: 'Attempt',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel=user_id',
+                label: 'Cancel',
+                style: 4,
+                type: 2,
+              },
+            ],
+            type: 1,
+          }],
+          attachments: [{ filename: 'image-url.webp', id: '0' }],
+        },
+      );
+    } finally {
+      delete config.stealing;
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      packsStub.restore();
+      timeStub.restore();
+
+      getInventoryStub.restore();
+      findCharactersStub.restore();
+    }
+  });
+
   await test.step('stealing from yourself', async () => {
     const character: Character = {
       id: '1',
@@ -1117,12 +1295,12 @@ Deno.test('/steal', async (test) => {
       db,
       'findCharacter',
       () =>
-        ({
+        [{
           rating: 2,
           characterId: 'id:1',
           userId: 'user_id',
           inventory: { party: {} },
-        }) as any,
+        }] as any,
     );
 
     config.stealing = true;
@@ -1519,7 +1697,7 @@ Deno.test('attempt', async (test) => {
 
     const findCharactersStub = stub(
       db,
-      'findCharacter',
+      'findOneCharacter',
       () =>
         ({
           rating: 2,
@@ -1545,18 +1723,19 @@ Deno.test('attempt', async (test) => {
         guildId: 'guild_id',
         token: 'test_token',
         characterId: 'character_id',
+        targetUserId: 'another_user_id',
         pre: 0,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -1668,7 +1847,7 @@ Deno.test('attempt', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'media title',
@@ -1766,7 +1945,7 @@ Deno.test('attempt', async (test) => {
 
     const findCharactersStub = stub(
       db,
-      'findCharacter',
+      'findOneCharacter',
       () =>
         ({
           rating: 2,
@@ -1792,18 +1971,19 @@ Deno.test('attempt', async (test) => {
         guildId: 'guild_id',
         token: 'test_token',
         characterId: 'character_id',
+        targetUserId: 'another_user_id',
         pre: 0,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -1935,18 +2115,19 @@ Deno.test('attempt', async (test) => {
         guildId: 'guild_id',
         token: 'test_token',
         characterId: 'character_id',
+        targetUserId: 'another_user_id',
         pre: 0,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -2048,7 +2229,7 @@ Deno.test('attempt', async (test) => {
 
     const findCharactersStub = stub(
       db,
-      'findCharacter',
+      'findOneCharacter',
       () =>
         ({
           rating: 2,
@@ -2068,18 +2249,19 @@ Deno.test('attempt', async (test) => {
         guildId: 'guild_id',
         token: 'test_token',
         characterId: 'character_id',
+        targetUserId: 'another_user_id',
         pre: 100,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -2184,7 +2366,7 @@ Deno.test('attempt', async (test) => {
 
     const findCharactersStub = stub(
       db,
-      'findCharacter',
+      'findOneCharacter',
       () => undefined as any,
     );
 
@@ -2198,18 +2380,19 @@ Deno.test('attempt', async (test) => {
         guildId: 'guild_id',
         token: 'test_token',
         characterId: 'character_id',
+        targetUserId: 'another_user_id',
         pre: 0,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -2315,7 +2498,7 @@ Deno.test('attempt', async (test) => {
 
     const findCharactersStub = stub(
       db,
-      'findCharacter',
+      'findOneCharacter',
       () =>
         ({
           rating: 2,
@@ -2343,18 +2526,19 @@ Deno.test('attempt', async (test) => {
         guildId: 'guild_id',
         token: 'test_token',
         characterId: 'character_id',
+        targetUserId: 'another_user_id',
         pre: 0,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },
@@ -2464,7 +2648,7 @@ Deno.test('attempt', async (test) => {
 
     const findCharactersStub = stub(
       db,
-      'findCharacter',
+      'findOneCharacter',
       () => undefined as any,
     );
 
@@ -2486,18 +2670,19 @@ Deno.test('attempt', async (test) => {
         guildId: 'guild_id',
         token: 'test_token',
         characterId: 'character_id',
+        targetUserId: 'another_user_id',
         pre: 0,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [{ filename: 'steal.gif', id: '0' }],
+          attachments: [{ filename: 'steal2.gif', id: '0' }],
           components: [],
           embeds: [{
             type: 'rich',
             image: {
-              url: 'attachment://steal.gif',
+              url: 'attachment://steal2.gif',
             },
           }],
         },

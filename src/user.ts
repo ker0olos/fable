@@ -255,6 +255,10 @@ function nick({
           nick,
         );
 
+        if (!response) {
+          throw new Error('404');
+        }
+
         const name = packs.aliasToArray(character.name)[0];
 
         const embed = await srch.characterEmbed(
@@ -266,11 +270,7 @@ function nick({
             mode: 'thumbnail',
             description: false,
             media: { title: true },
-            existing: {
-              ...response,
-              rating: undefined,
-              nickname: nick,
-            },
+            overwrite: { ...response, nickname: nick },
           },
         );
 
@@ -397,6 +397,10 @@ function image({
           image,
         );
 
+        if (!response) {
+          throw new Error('404');
+        }
+
         const name = packs.aliasToArray(character.name)[0];
 
         const embed = await srch.characterEmbed(
@@ -407,11 +411,7 @@ function image({
             rating: false,
             description: false,
             media: { title: true },
-            existing: {
-              ...response,
-              rating: undefined,
-              image,
-            },
+            overwrite: { ...response, image },
           },
         );
 
@@ -831,7 +831,7 @@ function list({
             footer: false,
             description: false,
             media: { title: mediaTitle },
-            existing: character,
+            overwrite: character,
           });
         }
       } else {
@@ -912,7 +912,8 @@ function list({
             members.some((member) => Boolean(member) && member === existing._id)
               ? discord.emotes.member
               : user.likes?.some((like) =>
-                  like.characterId === existing.characterId
+                  like.characterId === existing.characterId ||
+                  like.mediaId === existing.mediaId
                 )
               ? `${discord.emotes.liked}`
               : ''
@@ -1017,17 +1018,27 @@ function likeslist({
         }
       });
 
-      const results = await db.findCharacters(
-        guildId,
-        likes.map(({ characterId }) => characterId)
-          .filter(utils.nonNullable),
-      );
+      const results = ownedBy
+        ? await db.getUserCharacters(ownedBy, guildId)
+        : await db.findCharacters(
+          guildId,
+          likes.map(({ characterId }) => characterId)
+            .filter(utils.nonNullable),
+        );
 
       // show only characters that are owned by specific user
       if (ownedBy) {
-        likes = likes.filter((like, i) => {
-          return like.characterId && results[i]?.userId === ownedBy;
-        });
+        likes = results.map((character) => {
+          if (
+            likes.find((t) =>
+              t.characterId === character?.characterId ||
+              t.mediaId === character?.mediaId
+            )
+          ) {
+            // deno-lint-ignore no-non-null-assertion
+            return { characterId: character!.characterId };
+          }
+        }).filter(Boolean) as { characterId: string }[];
         // filter out characters that are owned by the user
       } else if (filter) {
         likes = likes.filter((like, i) => {

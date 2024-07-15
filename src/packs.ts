@@ -31,6 +31,7 @@ import type { Pack } from '~/db/schema.ts';
 const cachedGuilds: Record<string, {
   packs: Pack[];
   disables: Map<string, boolean>;
+  options: { dupes: boolean };
   excluded?: boolean;
 }> = {};
 
@@ -74,6 +75,7 @@ async function all(
     cachedGuild = packs.cachedGuilds[guildId] = {
       packs: _packs,
       excluded: guild.excluded,
+      options: guild.options,
       disables: new Map(),
     };
 

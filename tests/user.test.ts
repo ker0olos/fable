@@ -939,7 +939,13 @@ Deno.test('/nick', async (test) => {
     const setCharacterNicknameStub = stub(
       db,
       'setCharacterNickname',
-      () => undefined as any,
+      () =>
+        ({
+          id: 'anilist:1',
+          mediaId: 'anilist:0',
+          nickname: 'new_nickname',
+          rating: 2,
+        }) as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -1565,7 +1571,13 @@ Deno.test('/image', async (test) => {
     const setCharacterImageStub = stub(
       db,
       'setCharacterImage',
-      () => undefined as any,
+      () =>
+        [{
+          id: 'anilist:1',
+          mediaId: 'anilist:0',
+          image: 'new_image',
+          rating: 2,
+        }] as any,
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -1736,7 +1748,7 @@ Deno.test('/image', async (test) => {
     try {
       const message = user.image({
         token: 'test_token',
-        userId: 'user',
+        userId: 'user_id',
         guildId: 'guild_id',
         id: 'anilist:1',
       });
@@ -3415,7 +3427,8 @@ Deno.test('/collection stars', async (test) => {
                 {
                   inline: false,
                   name: 'title 6',
-                  value: '1<:smolstar:1107503653956374638> character 6',
+                  value:
+                    '1<:smolstar:1107503653956374638><:liked:1110491720375873567> character 6',
                 },
               ],
             },
@@ -9238,15 +9251,15 @@ Deno.test('/likeslist', async (test) => {
       } as any),
     );
 
-    const findCharactersStub = stub(
+    const getUserCharactersStub = stub(
       db,
-      'findCharacters',
+      'getUserCharacters',
       () =>
         [
           {
             characterId: 'anilist:1',
             rating: 3,
-            userId: 'user_id',
+            userId: 'another_user_id',
           },
           {
             characterId: 'anilist:2',
@@ -9345,6 +9358,12 @@ Deno.test('/likeslist', async (test) => {
               fields: [
                 {
                   inline: false,
+                  name: 'title 1',
+                  value:
+                    '3<:smolstar:1107503653956374638> <@another_user_id> character 1',
+                },
+                {
+                  inline: false,
                   name: 'title 2',
                   value:
                     '3<:smolstar:1107503653956374638> <@another_user_id> character 2',
@@ -9365,7 +9384,7 @@ Deno.test('/likeslist', async (test) => {
       characterStub.restore();
       getUserStub.restore();
 
-      findCharactersStub.restore();
+      getUserCharactersStub.restore();
     }
   });
 

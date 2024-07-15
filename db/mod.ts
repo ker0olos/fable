@@ -49,7 +49,11 @@ import {
   setCharacterNickname,
 } from '~/db/customizeCharacter.ts';
 
-import { findCharacter, findCharacters } from '~/db/findCharacters.ts';
+import {
+  findCharacter,
+  findCharacters,
+  findOneCharacter,
+} from '~/db/findCharacters.ts';
 
 import {
   assignCharacter,
@@ -73,6 +77,8 @@ import {
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
 import { addChatMessage } from '~/db/getChatHistory.ts';
+
+import { invertDupes } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -171,6 +177,7 @@ const db = {
   setCharacterNickname,
   //
   findCharacter,
+  findOneCharacter,
   findCharacters,
   getMediaCharacters,
   //
@@ -199,11 +206,12 @@ const db = {
   removePack,
   //
   addChatMessage,
+  //
+  invertDupes,
 };
 
 export {
   COSTS,
-  findCharacter,
   MAX_KEYS,
   MAX_LEVEL,
   MAX_NEW_PULLS,

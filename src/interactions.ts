@@ -16,6 +16,7 @@ import battle from '~/src/battle.ts';
 import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
 import chat from '~/src/chat.ts';
+import serverOptions from '~/src/serverOptions.ts';
 
 import _skills, { skills } from '~/src/skills.ts';
 
@@ -370,6 +371,7 @@ export const handler = async (r: Request) => {
             return search.character({
               token,
               guildId,
+              userId: member.user.id,
               search: name,
               debug: Boolean(options['debug']),
               id: name.startsWith(idPrefix)
@@ -757,6 +759,20 @@ export const handler = async (r: Request) => {
             }
             break;
           }
+          case 'server': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              default:
+              case 'options': {
+                return serverOptions.view({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                }).send();
+              }
+            }
+            break;
+          }
           case 'help':
           case 'start':
           case 'guide':
@@ -875,6 +891,7 @@ export const handler = async (r: Request) => {
               id,
               token,
               guildId,
+              userId: member.user.id,
             })
               .setType(
                 type === '1'
@@ -1154,7 +1171,7 @@ export const handler = async (r: Request) => {
           }
           case 'steal': {
             // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
+            const targetUserId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
             const characterId = customValues![1];
@@ -1162,19 +1179,16 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const chance = parseInt(customValues![2]);
 
-            if (userId === member.user.id) {
-              return steal.attempt({
-                token,
-                guildId,
-                userId: member.user.id,
-                characterId,
-                pre: chance,
-              })
-                .setType(discord.MessageType.Update)
-                .send();
-            }
-
-            throw new NoPermissionError();
+            return steal.attempt({
+              token,
+              guildId,
+              targetUserId,
+              userId: member.user.id,
+              characterId,
+              pre: chance,
+            })
+              .setType(discord.MessageType.Update)
+              .send();
           }
           case 'reply': {
             // deno-lint-ignore no-non-null-assertion
@@ -1337,6 +1351,24 @@ export const handler = async (r: Request) => {
             }
 
             throw new NoPermissionError();
+          }
+          case 'options': {
+            // deno-lint-ignore no-non-null-assertion
+            const type = customValues![0];
+
+            switch (type) {
+              case 'dupes':
+                return serverOptions.invertDupes({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                })
+                  .setType(discord.MessageType.Update)
+                  .send();
+              default:
+                break;
+            }
+            break;
           }
           case 'cancel': {
             // deno-lint-ignore no-non-null-assertion
