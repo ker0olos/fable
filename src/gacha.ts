@@ -184,26 +184,24 @@ export async function guaranteedPool(
   );
 
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
-    if (
-      typeof character.popularity === 'number' &&
-      new Rating({ popularity: character.popularity }).stars !== guarantee
-    ) {
-      return false;
-    }
-
     // deno-lint-ignore no-non-null-assertion
     const edge = character.media && 'edges' in character.media! &&
       character.media.edges[0];
 
-    if (edge) {
+    if (
+      typeof character.popularity === 'number' &&
+      new Rating({ popularity: character.popularity }).stars === guarantee
+    ) {
+      return true;
+    } else if (edge) {
       const popularity = character.popularity || edge.node.popularity || lowest;
 
-      if (new Rating({ popularity, role: edge.role }).stars !== guarantee) {
-        return false;
+      if (new Rating({ popularity, role: edge.role }).stars === guarantee) {
+        return true;
       }
     }
 
-    return true;
+    return false;
   };
 
   return {
