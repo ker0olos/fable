@@ -891,7 +891,7 @@ Deno.test('/media', async (test) => {
               value: 'main character description',
             }],
             thumbnail: {
-              url: 'attachment://main%20character%20url.webp',
+              url: 'attachment://maincharacterurl.webp',
             },
           }, {
             type: 'rich',
@@ -900,7 +900,7 @@ Deno.test('/media', async (test) => {
               value: 'supporting character description',
             }],
             thumbnail: {
-              url: 'attachment://supporting%20character%20url.webp',
+              url: 'attachment://supportingcharacterurl.webp',
             },
           }],
           components: [{
@@ -914,8 +914,8 @@ Deno.test('/media', async (test) => {
           }],
           attachments: [
             { filename: 'image-url.webp', id: '0' },
-            { filename: 'main%20character%20url.webp', id: '1' },
-            { filename: 'supporting%20character%20url.webp', id: '2' },
+            { filename: 'maincharacterurl.webp', id: '1' },
+            { filename: 'supportingcharacterurl.webp', id: '2' },
           ],
         },
       );
