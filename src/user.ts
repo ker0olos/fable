@@ -1180,18 +1180,20 @@ function sum({
     .then(async () => {
       const mongo = await db.newMongo().connect();
 
-      const { user, ...inventory } = await db.getInventory(
+      const { user, party } = await db.getInventory(
         guildId,
         userId,
         mongo,
         true,
       );
 
-      const likesCharactersIds = (user.likes ?? [])
-        .map(({ characterId }) => characterId);
+      const likesCharactersIds = user.likes
+        ?.map(({ characterId }) => characterId)
+        .filter(utils.nonNullable);
 
-      const likesMediaIds = (user.likes ?? [])
-        .map(({ mediaId }) => mediaId);
+      const likesMediaIds = user.likes
+        ?.map(({ mediaId }) => mediaId)
+        .filter(utils.nonNullable);
 
       const characters = await db.getUserCharacters(
         userId,
@@ -1201,11 +1203,11 @@ function sum({
       );
 
       const partyIds = [
-        inventory.party.member1Id,
-        inventory.party.member2Id,
-        inventory.party.member3Id,
-        inventory.party.member4Id,
-        inventory.party.member5Id,
+        party.member1?.characterId,
+        party.member2?.characterId,
+        party.member3?.characterId,
+        party.member4?.characterId,
+        party.member5?.characterId,
       ];
 
       const embed = new discord.Embed();
@@ -1232,7 +1234,7 @@ function sum({
         const r = char.rating as keyof typeof sum;
 
         if (
-          partyIds.includes(char._id) ||
+          partyIds.includes(char.characterId) ||
           likesCharactersIds.includes(char.characterId) ||
           likesMediaIds.includes(char.mediaId)
         ) {
