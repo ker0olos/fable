@@ -1407,6 +1407,17 @@ Deno.test('/merge', async (test) => {
 
     const timeStub = new FakeTime();
 
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
@@ -1613,6 +1624,7 @@ Deno.test('/merge', async (test) => {
 
       fetchStub.restore();
       listStub.restore();
+      mongoClientStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
       charactersStub.restore();
@@ -1674,6 +1686,17 @@ Deno.test('/merge', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getGuildStub = stub(
@@ -1871,6 +1894,7 @@ Deno.test('/merge', async (test) => {
 
       fetchStub.restore();
       listStub.restore();
+      mongoClientStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
       charactersStub.restore();
@@ -1932,6 +1956,17 @@ Deno.test('/merge', async (test) => {
       utils,
       'fetchWithRetry',
       () => undefined as any,
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getGuildStub = stub(
@@ -2106,6 +2141,7 @@ Deno.test('/merge', async (test) => {
       delete config.synthesis;
 
       fetchStub.restore();
+      mongoClientStub.restore();
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
@@ -2125,6 +2161,17 @@ Deno.test('/merge', async (test) => {
       returnsNext([
         undefined,
       ] as any),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getGuildStub = stub(
@@ -2280,6 +2327,7 @@ Deno.test('/merge', async (test) => {
       delete config.synthesis;
 
       fetchStub.restore();
+      mongoClientStub.restore();
       listStub.restore();
 
       timeStub.restore();
@@ -2297,6 +2345,17 @@ Deno.test('/merge', async (test) => {
       returnsNext([
         undefined,
       ] as any),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getGuildStub = stub(
@@ -2446,6 +2505,7 @@ Deno.test('/merge', async (test) => {
       delete config.synthesis;
 
       fetchStub.restore();
+      mongoClientStub.restore();
       listStub.restore();
       timeStub.restore();
 
@@ -2463,6 +2523,17 @@ Deno.test('/merge', async (test) => {
       returnsNext([
         undefined,
       ] as any),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getGuildStub = stub(
@@ -2604,6 +2675,7 @@ Deno.test('/merge', async (test) => {
       delete config.synthesis;
 
       fetchStub.restore();
+      mongoClientStub.restore();
       listStub.restore();
 
       timeStub.restore();
@@ -2633,6 +2705,17 @@ Deno.test('/merge', async (test) => {
         } as any,
         undefined,
       ]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     const getGuildStub = stub(
@@ -2723,6 +2806,7 @@ Deno.test('/merge', async (test) => {
       delete config.synthesis;
 
       fetchStub.restore();
+      mongoClientStub.restore();
       listStub.restore();
 
       timeStub.restore();

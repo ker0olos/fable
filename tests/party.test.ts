@@ -464,11 +464,11 @@ Deno.test('/party view', async (test) => {
         {
           components: [],
           attachments: [
-            { filename: 'image%201.webp', id: '0' },
-            { filename: 'image%202.webp', id: '1' },
-            { filename: 'image%203.webp', id: '2' },
-            { filename: 'image%204.webp', id: '3' },
-            { filename: 'image%205.webp', id: '4' },
+            { filename: 'image1.webp', id: '0' },
+            { filename: 'image2.webp', id: '1' },
+            { filename: 'image3.webp', id: '2' },
+            { filename: 'image4.webp', id: '3' },
+            { filename: 'image5.webp', id: '4' },
           ],
           embeds: [
             {
@@ -480,7 +480,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%201.webp',
+                url: 'attachment://image1.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -495,7 +495,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%202.webp',
+                url: 'attachment://image2.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -510,7 +510,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%203.webp',
+                url: 'attachment://image3.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -525,7 +525,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%204.webp',
+                url: 'attachment://image4.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -540,7 +540,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%205.webp',
+                url: 'attachment://image5.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1913,11 +1913,11 @@ Deno.test('/party swap', async (test) => {
         {
           components: [],
           attachments: [
-            { filename: 'image%201.webp', id: '0' },
-            { filename: 'image%202.webp', id: '1' },
-            { filename: 'image%203.webp', id: '2' },
-            { filename: 'image%204.webp', id: '3' },
-            { filename: 'image%205.webp', id: '4' },
+            { filename: 'image1.webp', id: '0' },
+            { filename: 'image2.webp', id: '1' },
+            { filename: 'image3.webp', id: '2' },
+            { filename: 'image4.webp', id: '3' },
+            { filename: 'image5.webp', id: '4' },
           ],
           embeds: [
             {
@@ -1929,7 +1929,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%201.webp',
+                url: 'attachment://image1.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1944,7 +1944,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%202.webp',
+                url: 'attachment://image2.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1959,7 +1959,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%203.webp',
+                url: 'attachment://image3.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1974,7 +1974,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%204.webp',
+                url: 'attachment://image4.webp',
               },
               footer: { text: 'LVL 1' },
               description:
@@ -1989,7 +1989,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'attachment://image%205.webp',
+                url: 'attachment://image5.webp',
               },
               footer: { text: 'LVL 1' },
               description:

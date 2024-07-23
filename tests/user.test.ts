@@ -23,7 +23,8 @@ import {
   MediaRelation,
   MediaType,
 } from '~/src/types.ts';
-import { DisaggregatedMedia } from '~/src/types.ts';
+
+import type { DisaggregatedMedia } from '~/src/types.ts';
 
 Deno.test('/now', async (test) => {
   await test.step('with pulls', async () => {
@@ -5975,7 +5976,7 @@ Deno.test('/collection sum', async (test) => {
       'getInventory',
       () =>
         ({
-          party: { member1Id: '1' },
+          party: { member1: { characterId: 'anilist:1' } },
           user: { likes: [{ characterId: 'anilist:2' }] },
         }) as any,
     );

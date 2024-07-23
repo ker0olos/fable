@@ -450,7 +450,7 @@ async function proxy(
   url?: string,
   size?: ImageSize,
 ): Promise<Attachment> {
-  let filename = url ? encodeURIComponent(basename(url)) : 'default.webp';
+  let filename = url ? basename(url) : 'default.webp';
 
   const file = await _proxy(url ?? '', size);
 
@@ -462,10 +462,15 @@ async function proxy(
     }
   }
 
-  filename = filename.replaceAll('_', '-');
+  const asciiFilename = Array.from(filename)
+    .map((char) => char.charCodeAt(0))
+    .map((code) => code < 128 ? String.fromCharCode(code) : '-')
+    .join('')
+    .replaceAll('_', '-')
+    .replace(/\s+/g, '');
 
   return {
-    filename,
+    filename: asciiFilename,
     arrayBuffer: file.image,
     type: file.format,
   };

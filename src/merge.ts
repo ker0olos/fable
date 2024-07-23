@@ -24,9 +24,19 @@ type CharacterWithId = WithId<Schema.Character>;
 async function getFilteredCharacters(
   { userId, guildId }: { userId: string; guildId: string },
 ): Promise<WithId<CharacterWithId>[]> {
-  const { user, party } = await db.getInventory(guildId, userId);
+  const mongo = await db.newMongo().connect();
 
-  const characters = await db.getUserCharacters(userId, guildId);
+  const { user, party } = await db.getInventory(guildId, userId, mongo, true);
+
+  const likesCharactersIds = user.likes
+    ?.map(({ characterId }) => characterId)
+    .filter(utils.nonNullable);
+
+  const likesMediaIds = user.likes
+    ?.map(({ mediaId }) => mediaId)
+    .filter(utils.nonNullable);
+
+  const characters = await db.getUserCharacters(userId, guildId, mongo, true);
 
   const partyIds = [
     party.member1?.characterId,
@@ -36,13 +46,7 @@ async function getFilteredCharacters(
     party.member5?.characterId,
   ];
 
-  const likesCharactersIds = user.likes
-    ?.map(({ characterId }) => characterId)
-    .filter(utils.nonNullable);
-
-  const likesMediaIds = user.likes
-    ?.map(({ mediaId }) => mediaId)
-    .filter(utils.nonNullable);
+  await mongo.close();
 
   return characters
     .filter((char) => {
