@@ -68,7 +68,7 @@ export const handler = async (r: Request) => {
 
   const interaction = new discord.Interaction<string | number | boolean>(body);
 
-  let {
+  const {
     name,
     type,
     locale,
@@ -93,9 +93,6 @@ export const handler = async (r: Request) => {
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
   }
-
-  guildId = '1091535236866768906';
-  member.user.id = '341969018535542794';
 
   if (!config.global) {
     const message = new discord.Message()
