@@ -289,6 +289,21 @@ snapshot[`characters search > aqua 1`] = `
     role: "SUPPORTING",
   },
   {
+    id: "anilist:340919",
+    mediaId: "anilist:154195",
+    mediaTitle: [
+      "Grendizer U",
+      "グレンダイザーU",
+    ],
+    name: [
+      "Teronna Aqua Vega",
+      "テロンナ • アクア • ベガ",
+    ],
+    popularity: 2452,
+    rating: 1,
+    role: "SUPPORTING",
+  },
+  {
     id: "anilist:31301",
     mediaId: "anilist:3051",
     mediaTitle: [
@@ -303,7 +318,7 @@ snapshot[`characters search > aqua 1`] = `
       "Dark Aqua",
       "ダークアクア",
     ],
-    popularity: 2066,
+    popularity: 2079,
     rating: 1,
     role: "SUPPORTING",
   },
@@ -464,23 +479,6 @@ snapshot[`characters search > aqua 1`] = `
     popularity: 5806,
     rating: 1,
     role: "SUPPORTING",
-  },
-  {
-    id: "anilist:263083",
-    mediaId: "anilist:143289",
-    mediaTitle: [
-      "ESTAB LIFE: Great Escape",
-      "Estab-Life: Great Escape",
-      "エスタブライフ グレイトエスケープ",
-      "エスタブライフ",
-    ],
-    name: [
-      "Equa",
-      "エクア",
-    ],
-    popularity: 3601,
-    rating: 1,
-    role: "MAIN",
   },
 ]
 `;
@@ -1867,7 +1865,7 @@ snapshot[`characters search > jahy 1`] = `
       "Jei",
       "Jay",
     ],
-    popularity: 2643,
+    popularity: 2674,
     rating: 1,
     role: "SUPPORTING",
   },
@@ -1885,7 +1883,7 @@ snapshot[`characters search > jahy 1`] = `
       "J",
       "Jay",
     ],
-    popularity: 2290,
+    popularity: 2315,
     rating: 1,
     role: "SUPPORTING",
   },
@@ -1900,7 +1898,7 @@ snapshot[`characters search > jahy 1`] = `
     name: [
       "Jay",
     ],
-    popularity: 1667,
+    popularity: 1689,
     rating: 1,
     role: "SUPPORTING",
   },
@@ -1923,9 +1921,24 @@ snapshot[`characters search > jahy 1`] = `
       "Jihei Suzakuin",
       "Jay",
     ],
-    popularity: 1573,
+    popularity: 1608,
     rating: 1,
     role: "MAIN",
+  },
+  {
+    id: "anilist:31227",
+    mediaId: "anilist:101178",
+    mediaTitle: [
+      "Voogie's Angel",
+      "Dennou Sentai Voogie's★Angel",
+      "電脳戦隊ヴギィ'ズ★エンジェル",
+    ],
+    name: [
+      "Jay Burst",
+    ],
+    popularity: 1010,
+    rating: 1,
+    role: "SUPPORTING",
   },
 ]
 `;
