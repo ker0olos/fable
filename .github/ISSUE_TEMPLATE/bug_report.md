@@ -4,7 +4,6 @@ about: Create a report about a bug you experienced
 title: ''
 labels: 'bug'
 assignees: ''
-
 ---
 
 **Describe the bug**
