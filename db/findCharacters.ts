@@ -46,12 +46,19 @@ export async function findGuildCharacters(
   manual?: boolean,
 ): Promise<Schema.Character[]> {
   db ??= new Mongo();
+
+  let results: Schema.Character[];
+
   try {
     !manual && await db.connect();
-    return db.characters().find({ guildId }).toArray();
+
+    results = await db.characters().find({ guildId })
+      .toArray() as Schema.Character[];
   } finally {
     !manual && await db.close();
   }
+
+  return results;
 }
 
 export async function findCharacter(
