@@ -677,7 +677,7 @@ const addEmbed = async ({
     });
 
   const thumbnail = await embed
-    .setImageWithProxy({
+    .setThumbnailWithProxy({
       url: character.existing?.image ?? character.character.images?.[0]?.url,
     });
 
