@@ -667,6 +667,12 @@ Deno.test('synthesis confirmed', async (test) => {
         }) as any,
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -810,6 +816,7 @@ Deno.test('synthesis confirmed', async (test) => {
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
       mongoClientStub.restore();
+      findGuildCharacterStub.restore();
     }
   });
 
@@ -936,6 +943,12 @@ Deno.test('synthesis confirmed', async (test) => {
             close: () => undefined,
           }),
         }) as any,
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
     );
 
     config.appId = 'app_id';
@@ -1118,6 +1131,7 @@ Deno.test('synthesis confirmed', async (test) => {
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
       mongoClientStub.restore();
+      findGuildCharacterStub.restore();
     }
   });
 

@@ -138,7 +138,6 @@
   "maintenance-combat-!": "Combate está em manutenção, cheque de novo em algumas horas!",
   "maintenance-packs": "Pacotes de Comunidade estão em manutenção, cheque de novo em algumas horas!",
   "maintenance-shop": "Loja está em manutenção, cheque de novo em algumas horas!",
-  "maintenance-chat": "Chat está em manutenção, cheque de novo em algumas horas!",
 
   "gacha-no-more-pulls": "Você não tem outras tiradas",
   "gacha-no-guarantees": "Você não tem {0}tiradas",
@@ -198,8 +197,6 @@
   "leveled-up": "**{0}** subiu de nível {1}e ganhou {2} {3} e {4} {5}.",
   "exp-gained": "**{0}** {1}(+{2})/{3} EXP",
   "exp": "Experiência",
-
-  "chat-not-owned": "**Você não pode conversar com um personagem que você não tem!**",
 
   "help-page1-before-anything": "Antes de tudo: Você precisará de personagens.",
   "help-page1-you-get-n-every-t": "__Você terá uma tirada grátis a cada {0} minutos (máximo de {1} tiradas)__. Use `/now` para checar quantas tiradas você tem e quanto tempo restante até a sua próxima tirada gratuita.",
@@ -273,7 +270,6 @@
   "/now": "cheque o que você pode fazer agora",
   "/search": "pesquise uma série específica",
   "/character": "pesquise um personagem específico",
-  "/chat": "converse com um de seus personagens",
 
   "/merge": "sacrifique personagens para receber um ou mais personagem brilhante.",
 
