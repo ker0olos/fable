@@ -11,8 +11,6 @@ import search from '~/src/search.ts';
 
 import db, { ObjectId } from '~/db/mod.ts';
 
-import { DupeError } from '~/src/errors.ts';
-
 import searchIndex from '~/search-index/mod.ts';
 
 import packs from '~/src/packs.ts';
@@ -223,13 +221,22 @@ async function rngPull(
     sacrifices?: ObjectId[];
   },
 ): Promise<Pull> {
+  const mongo = await db.newMongo().connect();
+
   let { pool, validate } = typeof guarantee === 'number'
     ? await gacha.guaranteedPool({ guildId, guarantee })
     : utils.rng(variables.liked).value && userId
     ? await gacha.likedPool({ guildId, userId })
     : await gacha.rngPool({ guildId });
 
-  let poolKeys = Array.from(pool.keys());
+  const [guild, existing] = await Promise.all([
+    db.getGuild(guildId, mongo, true),
+    db.findGuildCharacters(guildId, mongo, true),
+  ]);
+
+  const exists = new Map<string, string>(
+    existing.map((character) => [character.characterId, character.userId]),
+  );
 
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
@@ -241,25 +248,44 @@ async function rngPull(
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
-  if (!poolKeys.length && !guarantee) {
+  if (!pool.size && !guarantee) {
     pool = await gacha.rangeFallbackPool({ guildId });
-    poolKeys = Array.from(pool.keys());
     validate = () => true;
   }
 
-  if (!poolKeys.length) {
+  if (!pool.size) {
     throw new PoolError();
   }
 
-  const mongo = await db.newMongo().connect();
+  const poolKeys = Array.from(pool.keys());
 
   try {
     while (!signal.aborted) {
+      // pool is empty
+      if (!poolKeys.length) {
+        break;
+      }
+
       const mediaIndex = Math.floor(Math.random() * poolKeys.length);
 
-      const mediaCharacters = pool.get(poolKeys[mediaIndex]);
+      const mediaCharacters = pool.get(poolKeys[mediaIndex])
+        ?.filter((character) => {
+          // dupes disallowed
+          if (!guild.options?.dupes && exists.has(character.id)) {
+            return false;
+          }
 
-      if (!mediaCharacters) {
+          // same user dupe
+          if (guild.options?.dupes && exists.get(character.id) === userId) {
+            return false;
+          }
+
+          return true;
+        });
+
+      if (!mediaCharacters?.length) {
+        // remove media from pool to avoid slow down
+        poolKeys.splice(mediaIndex, 1);
         continue;
       }
 
@@ -306,10 +332,6 @@ async function rngPull(
             mongo,
           });
         } catch (err) {
-          if (err instanceof DupeError) {
-            continue;
-          }
-
           throw err;
         }
       }

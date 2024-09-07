@@ -38,9 +38,3 @@ export class PoolError extends Error {
     this.name = 'PoolError';
   }
 }
-
-export class DupeError extends Error {
-  constructor() {
-    super('DUPLICATED');
-  }
-}

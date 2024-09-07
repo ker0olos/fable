@@ -40,6 +40,20 @@ async function populateCharacters(
   return results;
 }
 
+export async function findGuildCharacters(
+  guildId: string,
+  db?: Mongo,
+  manual?: boolean,
+): Promise<Schema.Character[]> {
+  db ??= new Mongo();
+  try {
+    !manual && await db.connect();
+    return db.characters().find({ guildId }).toArray();
+  } finally {
+    !manual && await db.close();
+  }
+}
+
 export async function findCharacter(
   guildId: string,
   characterId: string,

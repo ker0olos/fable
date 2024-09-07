@@ -52,6 +52,7 @@ import {
 import {
   findCharacter,
   findCharacters,
+  findGuildCharacters,
   findOneCharacter,
 } from '~/db/findCharacters.ts';
 
@@ -173,6 +174,7 @@ const db = {
   findCharacter,
   findOneCharacter,
   findCharacters,
+  findGuildCharacters,
   getMediaCharacters,
   //
   addTokens,
