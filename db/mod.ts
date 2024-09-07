@@ -76,8 +76,6 @@ import {
 
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
-import { addChatMessage } from '~/db/getChatHistory.ts';
-
 import { invertDupes } from '~/db/manageGuild.ts';
 
 import type * as Schema from '~/db/schema.ts';
@@ -132,10 +130,6 @@ export class Mongo {
 
   battles(): Collection<Schema.BattleData> {
     return this.#client.db('default').collection('battles');
-  }
-
-  chat(): Collection<Schema.Chat> {
-    return this.#client.db('default').collection('chat');
   }
 
   // deno-lint-ignore explicit-function-return-type
@@ -204,8 +198,6 @@ const db = {
   getLastUpdatedPacks,
   publishPack,
   removePack,
-  //
-  addChatMessage,
   //
   invertDupes,
 };

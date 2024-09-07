@@ -15,7 +15,6 @@ import stats from '~/src/stats.ts';
 import battle from '~/src/battle.ts';
 import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
-import chat from '~/src/chat.ts';
 import serverOptions from '~/src/serverOptions.ts';
 
 import _skills, { skills } from '~/src/skills.ts';
@@ -201,8 +200,6 @@ export const handler = async (r: Request) => {
             'like',
             'unlike',
             'stats',
-            'chat',
-            'talk',
           ].includes(name) || (
             // deno-lint-ignore no-non-null-assertion
             name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
@@ -698,22 +695,6 @@ export const handler = async (r: Request) => {
                 break;
             }
             break;
-          }
-          case 'chat':
-          case 'talk': {
-            const name = options['name'] as string;
-            const message = options['message'] as string;
-
-            return chat.run({
-              token,
-              message,
-              guildId,
-              search: name,
-              member,
-              id: name.startsWith(idPrefix)
-                ? name.substring(idPrefix.length)
-                : undefined,
-            }).send();
           }
           case 'installed':
           case 'packs': {
@@ -1396,36 +1377,6 @@ export const handler = async (r: Request) => {
               ))
               .setType(discord.MessageType.Update)
               .send();
-          }
-          default:
-            break;
-        }
-        break;
-      case discord.InteractionType.Modal:
-        switch (customType) {
-          case 'reply': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-
-            // deno-lint-ignore no-non-null-assertion
-            const characterId = customValues![1];
-
-            const message = options['message'] as string;
-
-            if (userId === member.user.id) {
-              return chat.run({
-                token,
-                message,
-                guildId,
-                member,
-                id: characterId,
-                continue: true,
-              })
-                .setType(discord.MessageType.Update)
-                .send();
-            }
-
-            throw new NoPermissionError();
           }
           default:
             break;

@@ -124,12 +124,3 @@ export interface Party {
   member4?: Character;
   member5?: Character;
 }
-
-export interface Chat {
-  userId: string;
-  guildId: string;
-  characterId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  messages: { role: 'user' | 'assistant'; content: string }[];
-}

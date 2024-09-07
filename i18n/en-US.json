@@ -138,7 +138,6 @@
   "maintenance-combat": "Combat test period has ended! Please wait while we implement a new rework to make things more fun!",
   "maintenance-packs": "Community Packs are under maintenance, try again later!",
   "maintenance-shop": "Shop is under maintenance, try again later!",
-  "maintenance-chat": "Chat is under maintenance, try again later!",
 
   "gacha-no-more-pulls": "You don't have any more pulls!",
   "gacha-no-guarantees": "You don`t have any {0}pulls",
@@ -198,8 +197,6 @@
   "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}(+{2})/{3} EXP",
   "exp": "EXP",
-
-  "chat-not-owned": "**You can't chat with a character you don't own!**",
 
   "dupes-allowed": "Dupes are allowed (Experimental)",
   "dupes-disallowed": "Dupes are disallowed",
@@ -280,7 +277,6 @@
   "/now": "check what you can do right now",
   "/search": "search for a specific series",
   "/character": "search for a specific character",
-  "/chat": "chat with one of your characters",
 
   "/merge": "sacrifice characters to pull a new more shiny character",
 
