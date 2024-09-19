@@ -288,6 +288,7 @@
   "/party assign": "assign a character to your party",
   "/party swap": "swap characters spots with each others",
   "/party remove": "remove a character from your party",
+  "/party clear": "remove all characters from your party",
 
   "/coll show": "check and view how complete are a user collections",
   "/coll stars": "view user stars",

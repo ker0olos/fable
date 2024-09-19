@@ -58,6 +58,7 @@ import {
 
 import {
   assignCharacter,
+  clearParty,
   swapSpots,
   unassignCharacter,
 } from '~/db/assignParty.ts';
@@ -185,6 +186,7 @@ const db = {
   assignCharacter,
   swapSpots,
   unassignCharacter,
+  clearParty,
   //
   acquireSkill,
   //
