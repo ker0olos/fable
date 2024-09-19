@@ -121,10 +121,28 @@ function packEmbed(pack: Pack): discord.Embed {
   return embed;
 }
 
-function uninstallDialog(
-  { pack, userId }: { pack: Pack; userId: string },
-): discord.Message {
+async function uninstallDialog(
+  { userId, guildId, packId }: {
+    userId: string;
+    guildId: string;
+    packId: string;
+  },
+): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
+
+  if (!config.communityPacks) {
+    throw new NonFetalError(
+      i18n.get('maintenance-packs', locale),
+    );
+  }
+
+  const list = await packs.all({ filter: true, guildId });
+
+  const pack = list.find(({ manifest }) => manifest.id === packId);
+
+  if (!pack) {
+    throw new Error('404');
+  }
 
   const message = new discord.Message()
     .addEmbed(packEmbed(pack));
@@ -163,7 +181,7 @@ async function pages(
           s = `${manifest.title} | ${s}`;
         }
 
-        return `${i + 1}. ${s}`;
+        return `${i + 1}. [${s}](${config.packsUrl}/${manifest.id})`;
       }).join('\n'),
     );
   } else {
