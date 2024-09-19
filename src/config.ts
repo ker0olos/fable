@@ -3,6 +3,7 @@ const config: {
   appId?: string;
   publicKey?: string;
   mongoUri?: string;
+  packsUrl?: string;
   sentry?: string;
   origin?: string;
   notice?: string;
@@ -24,6 +25,7 @@ const config: {
   appId: undefined,
   publicKey: undefined,
   mongoUri: undefined,
+  packsUrl: undefined,
   sentry: undefined,
   origin: undefined,
   notice: undefined,
@@ -55,6 +57,8 @@ export async function initConfig(): Promise<void> {
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
     config.mongoUri = Deno.env.get('MONGO_URI');
+
+    config.packsUrl = Deno.env.get('PACKS_URL');
 
     config.notice = Deno.env.get('NOTICE');
 

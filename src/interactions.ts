@@ -725,24 +725,11 @@ export const handler = async (r: Request) => {
                   .send();
               }
               case 'uninstall': {
-                const list = await packs.all({
-                  filter: true,
+                return (await packs.uninstallDialog({
                   guildId,
-                });
-
-                const pack = list.find(({ manifest }) =>
-                  manifest.id === options['id'] as string
-                );
-
-                if (!pack) {
-                  throw new Error('404');
-                }
-
-                return packs.uninstallDialog({
                   userId: member.user.id,
-                  pack,
-                })
-                  .send();
+                  packId: options['id'] as string,
+                })).send();
               }
             }
             break;

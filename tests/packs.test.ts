@@ -2092,6 +2092,7 @@ Deno.test('/installed packs', async (test) => {
       () => Promise.resolve([pack, pack]),
     );
 
+    config.packsUrl = 'http://localhost:8080/packs';
     config.communityPacks = true;
 
     try {
@@ -2107,12 +2108,15 @@ Deno.test('/installed packs', async (test) => {
           components: [],
           embeds: [{
             type: 'rich',
-            description: '1. `pack_id`\n2. `pack_id`',
+            description:
+              '1. [`pack_id`](http://localhost:8080/packs/pack_id)\n' +
+              '2. [`pack_id`](http://localhost:8080/packs/pack_id)',
           }],
         },
       });
     } finally {
       delete config.communityPacks;
+      delete config.packsUrl;
 
       listStub.restore();
     }
@@ -2133,6 +2137,7 @@ Deno.test('/installed packs', async (test) => {
       () => Promise.resolve([pack]),
     );
 
+    config.packsUrl = 'http://localhost:8080/packs';
     config.communityPacks = true;
 
     try {
@@ -2148,12 +2153,14 @@ Deno.test('/installed packs', async (test) => {
           components: [],
           embeds: [{
             type: 'rich',
-            description: '1. Title | `pack-id`',
+            description:
+              '1. [Title | `pack-id`](http://localhost:8080/packs/pack-id)',
           }],
         },
       });
     } finally {
       delete config.communityPacks;
+      delete config.packsUrl;
 
       listStub.restore();
     }
