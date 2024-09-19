@@ -260,6 +260,9 @@ function pages(
             `- \`/party remove\` \`/team remove\` \`/p remove\`: _${
               i18n.get('/party remove', locale)
             }_`,
+            `- \`/party clear\` \`/team clear\` \`/p clear\`: _${
+              i18n.get('/party clear', locale)
+            }_`,
             '',
             `- \`/collection show\` \`/coll show\` \`/mm show\`: _${
               i18n.get('/coll show', locale)

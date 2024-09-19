@@ -362,3 +362,50 @@ describe('db.unassignCharacter()', () => {
     });
   });
 });
+
+describe('db.clearParty()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
+  });
+
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
+
+  it('normal', async () => {
+    const { insertedId: inventoryInsertedId } = await client.inventories()
+      .insertOne(
+        {
+          userId: 'user-id',
+          guildId: 'guild-id',
+          party: {
+            member1Id: 'character-1',
+            member2Id: 'character-2',
+            member3Id: 'character-3',
+            member4Id: 'character-4',
+            member5Id: 'character-5',
+          },
+        } as any,
+      );
+
+    await db.clearParty('user-id', 'guild-id');
+
+    const inventoryUpdated = await client.inventories().findOne(
+      { _id: inventoryInsertedId },
+    );
+
+    assertObjectMatch(inventoryUpdated!, {
+      party: {
+        member1Id: null,
+        member2Id: null,
+        member3Id: null,
+        member4Id: null,
+        member5Id: null,
+      },
+    });
+  });
+});

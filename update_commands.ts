@@ -672,6 +672,12 @@ export const commands = [
     aliases: ['team', 'p'],
     options: [
       Option({
+        name: 'clear',
+        description: '/party clear',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
         name: 'view',
         description: '/party view',
         type: Type.SUB_COMMAND,
