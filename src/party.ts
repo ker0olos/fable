@@ -355,11 +355,42 @@ function remove({ token, spot, userId, guildId }: {
   return discord.Message.spinner(true);
 }
 
+function clear({ token, userId, guildId }: {
+  token: string;
+  userId: string;
+  guildId: string;
+}): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
+
+  Promise.resolve()
+    .then(async () => {
+      await db.clearParty(userId, guildId);
+
+      const inventory = await db.getInventory(guildId, userId);
+
+      return (await embed({ guildId, party: inventory.party, locale }))
+        .patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  return discord.Message.spinner(true);
+}
+
 const party = {
   view,
   assign,
   swap,
   remove,
+  clear,
 };
 
 export default party;

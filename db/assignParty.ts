@@ -127,3 +127,31 @@ export async function unassignCharacter(
     await db.close();
   }
 }
+
+export async function clearParty(
+  userId: string,
+  guildId: string,
+): Promise<void> {
+  const db = new Mongo();
+
+  try {
+    await db.connect();
+
+    await db.inventories().updateOne(
+      { userId, guildId },
+      {
+        $set: {
+          party: {
+            member1Id: null,
+            member2Id: null,
+            member3Id: null,
+            member4Id: null,
+            member5Id: null,
+          },
+        },
+      },
+    );
+  } finally {
+    await db.close();
+  }
+}

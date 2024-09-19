@@ -410,6 +410,13 @@ export const handler = async (r: Request) => {
                   guildId,
                   userId: member.user.id,
                 }).send();
+              case 'clear': {
+                return party.clear({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                }).send();
+              }
               default: {
                 const user = options['user'] as string ?? member.user.id;
 
