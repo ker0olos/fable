@@ -8364,6 +8364,7 @@ Deno.test('community packs command handlers', async (test) => {
       () => Promise.resolve([{ manifest } as any]),
     );
 
+    config.communityPacks = true;
     config.publicKey = 'publicKey';
 
     try {
@@ -8442,6 +8443,7 @@ Deno.test('community packs command handlers', async (test) => {
       }, json);
     } finally {
       delete config.publicKey;
+      delete config.communityPacks;
 
       listStub.restore();
       validateStub.restore();
@@ -8455,7 +8457,11 @@ Deno.test('community packs command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
         name: 'packs',
         options: [{
@@ -8483,6 +8489,8 @@ Deno.test('community packs command handlers', async (test) => {
     );
 
     config.publicKey = 'publicKey';
+
+    config.communityPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -8544,6 +8552,7 @@ Deno.test('community packs command handlers', async (test) => {
       }, json);
     } finally {
       delete config.publicKey;
+      delete config.communityPacks;
 
       listStub.restore();
       validateStub.restore();
