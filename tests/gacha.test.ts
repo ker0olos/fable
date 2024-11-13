@@ -92,6 +92,12 @@ Deno.test('adding character to inventory', async (test) => {
       () => ({ ok: true }) as any,
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([
         { manifest: { id: 'anilist' } },
@@ -177,6 +183,7 @@ Deno.test('adding character to inventory', async (test) => {
       fetchStub.restore();
       listStub.restore();
       charactersStub.restore();
+      findGuildCharacterStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -243,6 +250,12 @@ Deno.test('adding character to inventory', async (test) => {
       db,
       'addCharacter',
       () => ({ ok: true }) as any,
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -330,6 +343,7 @@ Deno.test('adding character to inventory', async (test) => {
       fetchStub.restore();
       listStub.restore();
       charactersStub.restore();
+      findGuildCharacterStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -385,6 +399,12 @@ Deno.test('adding character to inventory', async (test) => {
       db,
       'addCharacter',
       () => ({ ok: true }) as any,
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -473,6 +493,7 @@ Deno.test('adding character to inventory', async (test) => {
       fetchStub.restore();
       listStub.restore();
       charactersStub.restore();
+      findGuildCharacterStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -549,6 +570,12 @@ Deno.test('adding character to inventory', async (test) => {
       db,
       'addCharacter',
       () => ({ ok: true }) as any,
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
     );
 
     const listStub = stub(packs, 'all', () =>
@@ -638,6 +665,7 @@ Deno.test('adding character to inventory', async (test) => {
       fetchStub.restore();
       listStub.restore();
       charactersStub.restore();
+      findGuildCharacterStub.restore();
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
@@ -720,6 +748,12 @@ Deno.test('adding character to inventory', async (test) => {
       () => ({ ok: true }) as any,
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([
         { manifest: { id: 'anilist' } },
@@ -807,6 +841,7 @@ Deno.test('adding character to inventory', async (test) => {
       fetchStub.restore();
       listStub.restore();
       charactersStub.restore();
+      findGuildCharacterStub.restore();
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
@@ -875,6 +910,12 @@ Deno.test('adding character to inventory', async (test) => {
       },
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([
         { manifest: { id: 'anilist' } },
@@ -937,6 +978,7 @@ Deno.test('adding character to inventory', async (test) => {
       fetchStub.restore();
       listStub.restore();
       charactersStub.restore();
+      findGuildCharacterStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -1003,6 +1045,12 @@ Deno.test('adding character to inventory', async (test) => {
       },
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([
         { manifest: { id: 'anilist' } },
@@ -1065,6 +1113,7 @@ Deno.test('adding character to inventory', async (test) => {
       fetchStub.restore();
       listStub.restore();
       charactersStub.restore();
+      findGuildCharacterStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -1159,6 +1208,12 @@ Deno.test('adding character to inventory', async (test) => {
       },
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const listStub = stub(packs, 'all', () =>
       Promise.resolve([
         { manifest: { id: 'anilist' } },
@@ -1194,6 +1249,7 @@ Deno.test('adding character to inventory', async (test) => {
       fetchStub.restore();
       listStub.restore();
       charactersStub.restore();
+      findGuildCharacterStub.restore();
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
       addCharacterStub.restore();
@@ -1428,6 +1484,12 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const getInstanceInventoriesStub = stub(
       db,
       'getActiveUsersIfLiked',
@@ -1438,6 +1500,17 @@ Deno.test('/gacha', async (test) => {
       gacha,
       'rngPull',
       returnsNext([Promise.resolve(pull)]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -1599,6 +1672,8 @@ Deno.test('/gacha', async (test) => {
 
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -1649,6 +1724,12 @@ Deno.test('/gacha', async (test) => {
       db,
       'getGuild',
       () => 'guild' as any,
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
     );
 
     const getInstanceInventoriesStub = stub(
@@ -1861,6 +1942,7 @@ Deno.test('/gacha', async (test) => {
       addCharacterStub.restore();
       getInstanceInventoriesStub.restore();
       mongoClientStub.restore();
+      findGuildCharacterStub.restore();
     }
   });
 
@@ -1916,6 +1998,12 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const getInstanceInventoriesStub = stub(
       db,
       'getActiveUsersIfLiked',
@@ -1926,6 +2014,17 @@ Deno.test('/gacha', async (test) => {
       gacha,
       'rngPull',
       returnsNext([Promise.resolve(pull)]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -2088,6 +2187,8 @@ Deno.test('/gacha', async (test) => {
 
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -2143,6 +2244,12 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const getInstanceInventoriesStub = stub(
       db,
       'getActiveUsersIfLiked',
@@ -2153,6 +2260,17 @@ Deno.test('/gacha', async (test) => {
       gacha,
       'rngPull',
       returnsNext([Promise.resolve(pull)]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -2249,6 +2367,8 @@ Deno.test('/gacha', async (test) => {
 
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -2304,6 +2424,12 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const getInstanceInventoriesStub = stub(
       db,
       'getActiveUsersIfLiked',
@@ -2314,6 +2440,17 @@ Deno.test('/gacha', async (test) => {
       gacha,
       'rngPull',
       returnsNext([Promise.resolve(pull)]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -2505,6 +2642,8 @@ Deno.test('/gacha', async (test) => {
 
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -2560,6 +2699,12 @@ Deno.test('/gacha', async (test) => {
       () => 'guild' as any,
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
     const getInstanceInventoriesStub = stub(
       db,
       'getActiveUsersIfLiked',
@@ -2570,6 +2715,17 @@ Deno.test('/gacha', async (test) => {
       gacha,
       'rngPull',
       returnsNext([Promise.resolve(pull)]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -2761,6 +2917,8 @@ Deno.test('/gacha', async (test) => {
 
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -2841,6 +2999,23 @@ Deno.test('/gacha', async (test) => {
       returnsNext([Promise.resolve(pull)]),
     );
 
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
+    );
+
     config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3030,6 +3205,8 @@ Deno.test('/gacha', async (test) => {
 
       getGuildStub.restore();
       getInstanceInventoriesStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -3049,6 +3226,23 @@ Deno.test('/gacha', async (test) => {
       async () => {
         throw new NoPullsError(new Date('2023-02-07T00:53:09.199Z'));
       },
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -3110,6 +3304,8 @@ Deno.test('/gacha', async (test) => {
       timeStub.restore();
       pullStub.restore();
       fetchStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -3129,6 +3325,23 @@ Deno.test('/gacha', async (test) => {
       async () => {
         throw new Error('403');
       },
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -3200,6 +3413,8 @@ Deno.test('/gacha', async (test) => {
       timeStub.restore();
       pullStub.restore();
       fetchStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -3228,6 +3443,29 @@ Deno.test('/gacha', async (test) => {
       'rangeFallbackPool',
       // deno-lint-ignore require-await
       async () => Promise.resolve(new Map()),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -3289,6 +3527,9 @@ Deno.test('/gacha', async (test) => {
       pullStub.restore();
       pullFallbackStub.restore();
       fetchStub.restore();
+      getGuildStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 
@@ -3310,6 +3551,29 @@ Deno.test('/gacha', async (test) => {
           pool: new Map(),
           validate: () => false,
         }),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const findGuildCharacterStub = stub(
+      db,
+      'findGuildCharacters',
+      () => Promise.resolve([]),
+    );
+
+    const mongoClientStub = stub(
+      db,
+      'newMongo',
+      () =>
+        ({
+          connect: () => ({
+            close: () => undefined,
+          }),
+        }) as any,
     );
 
     config.gacha = true;
@@ -3372,6 +3636,9 @@ Deno.test('/gacha', async (test) => {
       timeStub.restore();
       pullStub.restore();
       fetchStub.restore();
+      getGuildStub.restore();
+      findGuildCharacterStub.restore();
+      mongoClientStub.restore();
     }
   });
 });

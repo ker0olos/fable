@@ -7,11 +7,11 @@ import user from '~/src/user.ts';
 
 import { skills } from '~/src/skills.ts';
 
-import { DupeError, NonFetalError, NoPullsError } from '~/src/errors.ts';
+import { NonFetalError, NoPullsError } from '~/src/errors.ts';
 
 import type { ObjectId } from '~/db/mod.ts';
 
-import type * as Schema from './schema.ts';
+import type * as Schema from '~/db/schema.ts';
 
 import type { SkillKey } from '~/src/types.ts';
 
@@ -129,16 +129,12 @@ export async function addCharacter(
   try {
     session.startTransaction();
 
-    const [exists, guild, { user, ...inventory }] = await Promise.all([
-      mongo.characters().find({ guildId, characterId }).toArray(),
-      db.getGuild(guildId, mongo, true),
-      db.rechargeConsumables(
-        guildId,
-        userId,
-        mongo,
-        true,
-      ),
-    ]);
+    const { user, ...inventory } = await db.rechargeConsumables(
+      guildId,
+      userId,
+      mongo,
+      true,
+    );
 
     if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
       throw new NoPullsError(inventory.rechargeTimestamp);
@@ -148,16 +144,6 @@ export async function addCharacter(
       guaranteed && !sacrifices?.length && !user?.guarantees?.includes(rating)
     ) {
       throw new Error('403');
-    }
-
-    // dupes disallowed
-    if (!guild.options?.dupes && exists.length) {
-      throw new DupeError();
-    }
-
-    // same user dupe
-    if (guild.options?.dupes && exists.some((e) => e.userId === userId)) {
-      throw new DupeError();
     }
 
     const newCharacter: Schema.Character = ensureCombat({

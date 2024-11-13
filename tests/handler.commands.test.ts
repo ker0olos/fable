@@ -24,7 +24,6 @@ import battle from '~/src/battle.ts';
 import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
 import skills from '~/src/skills.ts';
-import chat from '~/src/chat.ts';
 import merge from '~/src/merge.ts';
 import serverOptions from '~/src/serverOptions.ts';
 
@@ -1676,6 +1675,89 @@ Deno.test('party command handlers', async (test) => {
           userId: 'user_id',
           guildId: 'guild_id',
           spot: 5,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      partyStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('party clear', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'party',
+        options: [{
+          type: 1,
+          name: 'clear',
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const partyStub = stub(party, 'clear', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(partyStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
         }],
       });
 
@@ -8064,284 +8146,6 @@ Deno.test('merge/automerge command handlers', async (test) => {
   });
 });
 
-Deno.test('chat command handlers', async (test) => {
-  await test.step('chat', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        name: 'chat',
-        options: [
-          {
-            name: 'name',
-            value: 'name',
-          },
-          {
-            name: 'message',
-            value: 'test message',
-          },
-        ],
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const chatStub = stub(chat, 'run', () => ({
-      send: () => true,
-    } as any));
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [
-          request,
-          {
-            POST: {
-              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-            },
-          },
-        ],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(chatStub, 0, {
-        args: [{
-          token: 'token',
-          member: { user: { id: 'user_id' } } as any,
-          guildId: 'guild_id',
-          message: 'test message',
-          search: 'name',
-          id: undefined,
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      chatStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
-  await test.step('talk', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        name: 'talk',
-        options: [
-          {
-            name: 'name',
-            value: 'name',
-          },
-          {
-            name: 'message',
-            value: 'test message',
-          },
-        ],
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const chatStub = stub(chat, 'run', () => ({
-      send: () => true,
-    } as any));
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [
-          request,
-          {
-            POST: {
-              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-            },
-          },
-        ],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(chatStub, 0, {
-        args: [{
-          token: 'token',
-          member: { user: { id: 'user_id' } } as any,
-          guildId: 'guild_id',
-          message: 'test message',
-          search: 'name',
-          id: undefined,
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      chatStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
-  await test.step('id prefix', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        name: 'chat',
-        options: [
-          {
-            name: 'name',
-            value: 'id=uuid',
-          },
-          {
-            name: 'message',
-            value: 'test message',
-          },
-        ],
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const chatStub = stub(chat, 'run', () => ({
-      send: () => true,
-    } as any));
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [
-          request,
-          {
-            POST: {
-              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-            },
-          },
-        ],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(chatStub, 0, {
-        args: [{
-          token: 'token',
-          member: { user: { id: 'user_id' } } as any,
-          guildId: 'guild_id',
-          search: 'id=uuid',
-          message: 'test message',
-          id: 'uuid',
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      chatStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-});
-
 Deno.test('installed packs', async () => {
   const body = JSON.stringify({
     id: 'id',
@@ -8643,6 +8447,7 @@ Deno.test('community packs command handlers', async (test) => {
       () => Promise.resolve([{ manifest } as any]),
     );
 
+    config.communityPacks = true;
     config.publicKey = 'publicKey';
 
     try {
@@ -8721,6 +8526,7 @@ Deno.test('community packs command handlers', async (test) => {
       }, json);
     } finally {
       delete config.publicKey;
+      delete config.communityPacks;
 
       listStub.restore();
       validateStub.restore();
@@ -8734,7 +8540,11 @@ Deno.test('community packs command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
         name: 'packs',
         options: [{
@@ -8762,6 +8572,8 @@ Deno.test('community packs command handlers', async (test) => {
     );
 
     config.publicKey = 'publicKey';
+
+    config.communityPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -8823,6 +8635,7 @@ Deno.test('community packs command handlers', async (test) => {
       }, json);
     } finally {
       delete config.publicKey;
+      delete config.communityPacks;
 
       listStub.restore();
       validateStub.restore();

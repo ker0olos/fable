@@ -2456,3 +2456,157 @@ Deno.test('/party remove', async (test) => {
     }
   });
 });
+
+Deno.test('/party clear', async (test) => {
+  await test.step('normal', async () => {
+    const media: Media[] = [
+      {
+        id: '0',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
+    const characters: Character[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'name 1',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const clearPartyStub = stub(
+      db,
+      'clearParty',
+      () => Promise.resolve(),
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () =>
+        ({
+          party: {},
+        }) as any,
+    );
+
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    const mediaStub = stub(
+      packs,
+      'media',
+      () => Promise.resolve(media),
+    );
+
+    const charactersStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve(characters),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = party.clear({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          attachments: [{ filename: 'spinner3.gif', id: '0' }],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          components: [],
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Unassigned',
+            },
+            {
+              type: 'rich',
+              description: 'Unassigned',
+            },
+            {
+              type: 'rich',
+              description: 'Unassigned',
+            },
+            {
+              type: 'rich',
+              description: 'Unassigned',
+            },
+            {
+              type: 'rich',
+              description: 'Unassigned',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+      mediaStub.restore();
+      charactersStub.restore();
+      getUserStub.restore();
+      getInventoryStub.restore();
+      clearPartyStub.restore();
+    }
+  });
+});

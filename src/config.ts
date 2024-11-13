@@ -3,6 +3,7 @@ const config: {
   appId?: string;
   publicKey?: string;
   mongoUri?: string;
+  packsUrl?: string;
   sentry?: string;
   origin?: string;
   notice?: string;
@@ -16,7 +17,6 @@ const config: {
   communityPacksMaintainerAPI?: boolean;
   communityPacksBrowseAPI?: boolean;
   combat?: boolean;
-  chat?: boolean;
   //
   defaultServerDupes?: boolean;
   disableImagesProxy?: boolean;
@@ -25,6 +25,7 @@ const config: {
   appId: undefined,
   publicKey: undefined,
   mongoUri: undefined,
+  packsUrl: undefined,
   sentry: undefined,
   origin: undefined,
   notice: undefined,
@@ -38,7 +39,6 @@ const config: {
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
   combat: undefined,
-  chat: undefined,
   //
   disableImagesProxy: undefined,
   defaultServerDupes: undefined,
@@ -57,6 +57,8 @@ export async function initConfig(): Promise<void> {
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
     config.mongoUri = Deno.env.get('MONGO_URI');
+
+    config.packsUrl = Deno.env.get('PACKS_URL');
 
     config.notice = Deno.env.get('NOTICE');
 
@@ -93,8 +95,6 @@ export async function initConfig(): Promise<void> {
     config.combat = !Deno.env.has('COMBAT') ||
       Deno.env.get('COMBAT') === '1';
 
-    config.chat = !Deno.env.has('CHAT') ||
-      Deno.env.get('CHAT') === '1';
     //
     config.disableImagesProxy = Deno.env.get('DISABLE_IMAGES_PROXY') === '1';
     config.defaultServerDupes = Deno.env.get('DEFAULT_SERVER_DUPES') === '1';

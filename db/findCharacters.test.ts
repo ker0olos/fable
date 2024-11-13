@@ -276,3 +276,67 @@ describe('db.findCharacters()', () => {
     assertEquals(characters[1], undefined);
   });
 });
+
+describe('db.findGuildCharacters()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
+  });
+
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
+
+  it('normal', async () => {
+    const { insertedId: inventory1InsertedId } = await client.inventories()
+      .insertOne({
+        userId: 'user-1',
+        guildId: 'guild-id',
+      } as any);
+
+    const { insertedId: character1InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-1',
+        guildId: 'guild-id',
+        inventoryId: inventory1InsertedId,
+        characterId: 'character-1',
+      } as any);
+
+    const { insertedId: inventory2InsertedId } = await client.inventories()
+      .insertOne({
+        userId: 'user-2',
+        guildId: 'guild-id',
+      } as any);
+
+    const { insertedId: character2InsertedId } = await client.characters()
+      .insertOne({
+        userId: 'user-2',
+        guildId: 'guild-id',
+        inventoryId: inventory2InsertedId,
+        characterId: 'character-2',
+      } as any);
+
+    const characters = await db.findGuildCharacters('guild-id');
+
+    assertEquals(characters.length, 2);
+
+    assertEquals(characters[0]!, {
+      _id: character1InsertedId,
+      userId: 'user-1',
+      guildId: 'guild-id',
+      inventoryId: inventory1InsertedId,
+      characterId: 'character-1',
+    } as any);
+
+    assertEquals(characters[1]!, {
+      _id: character2InsertedId,
+      userId: 'user-2',
+      guildId: 'guild-id',
+      inventoryId: inventory2InsertedId,
+      characterId: 'character-2',
+    } as any);
+  });
+});

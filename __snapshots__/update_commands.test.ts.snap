@@ -720,62 +720,6 @@ snapshot[`commands 1`] = `
     ]
   },
   {
-    "name": "chat",
-    "description": "chat with one of your characters",
-    "description_localizations": {},
-    "options": [
-      {
-        "name": "name",
-        "description": "the name of the character",
-        "autocomplete": true,
-        "type": 3,
-        "required": true,
-        "description_localizations": {
-          "es-ES": "el nombre del personaje",
-          "pt-BR": "o nome de um personagem"
-        }
-      },
-      {
-        "name": "message",
-        "description": "your next message",
-        "type": 3,
-        "required": true,
-        "max_length": 1024,
-        "description_localizations": {
-          "pt-BR": "sua próxima mensagem"
-        }
-      }
-    ]
-  },
-  {
-    "name": "talk",
-    "description": "chat with one of your characters",
-    "description_localizations": {},
-    "options": [
-      {
-        "name": "name",
-        "description": "the name of the character",
-        "autocomplete": true,
-        "type": 3,
-        "required": true,
-        "description_localizations": {
-          "es-ES": "el nombre del personaje",
-          "pt-BR": "o nome de um personagem"
-        }
-      },
-      {
-        "name": "message",
-        "description": "your next message",
-        "type": 3,
-        "required": true,
-        "max_length": 1024,
-        "description_localizations": {
-          "pt-BR": "sua próxima mensagem"
-        }
-      }
-    ]
-  },
-  {
     "name": "help",
     "description": "need more information? we got you",
     "description_localizations": {
@@ -1744,6 +1688,13 @@ snapshot[`commands 1`] = `
     "description_localizations": {},
     "options": [
       {
+        "name": "clear",
+        "description": "remove all characters from your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {}
+      },
+      {
         "name": "view",
         "description": "view your current party",
         "type": 1,
@@ -1948,6 +1899,13 @@ snapshot[`commands 1`] = `
     "description_localizations": {},
     "options": [
       {
+        "name": "clear",
+        "description": "remove all characters from your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {}
+      },
+      {
         "name": "view",
         "description": "view your current party",
         "type": 1,
@@ -2151,6 +2109,13 @@ snapshot[`commands 1`] = `
     "description": "party management commands",
     "description_localizations": {},
     "options": [
+      {
+        "name": "clear",
+        "description": "remove all characters from your party",
+        "type": 1,
+        "required": false,
+        "description_localizations": {}
+      },
       {
         "name": "view",
         "description": "view your current party",

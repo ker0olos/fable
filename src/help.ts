@@ -260,6 +260,9 @@ function pages(
             `- \`/party remove\` \`/team remove\` \`/p remove\`: _${
               i18n.get('/party remove', locale)
             }_`,
+            `- \`/party clear\` \`/team clear\` \`/p clear\`: _${
+              i18n.get('/party clear', locale)
+            }_`,
             '',
             `- \`/collection show\` \`/coll show\` \`/mm show\`: _${
               i18n.get('/coll show', locale)
@@ -277,8 +280,6 @@ function pages(
             `- \`/steal\`: _${i18n.get('/steal', locale)}_`,
             `- \`/trade\` \`/offer\`: _${i18n.get('/trade', locale)}_`,
             `- \`/give\` \`/gift\`: _${i18n.get('/give', locale)}_`,
-            '',
-            `- \`/chat\` \`/talk\`: _${i18n.get('/chat', locale)}_`,
             '',
             `- \`/battle tower\`: _${i18n.get('/battle tower', locale)}_`,
             `- \`/battle challenge\`: _${

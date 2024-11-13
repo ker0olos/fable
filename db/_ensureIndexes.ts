@@ -6,8 +6,6 @@ import { Mongo } from '~/db/mod.ts';
 
 import { MAX_BATTLE_TIME } from '~/src/battle.ts';
 
-export const MAX_CHAT_TIME = 1 * 604800; // 1 week
-
 enum Direction {
   ascending = 1,
   descending = -1,
@@ -23,7 +21,6 @@ export async function ensureIndexes(): Promise<void> {
   await createCharactersIndexes(db);
   await createPacksIndexes(db);
   await createBattleIndexes(db);
-  await createChatIndexes(db);
 
   await createAnimeIndexes(db);
 
@@ -105,20 +102,4 @@ async function createAnimeIndexes(db: Mongo) {
 
   await db.anime.characters()
     .createIndex({ 'id': Direction.ascending }, { unique: true });
-}
-
-async function createChatIndexes(db: Mongo) {
-  // Compound Index (speeds up queries)
-  // @addChatMessage.addChatMessage()
-  await db.chat()
-    .createIndex({
-      userId: Direction.ascending,
-      guildId: Direction.ascending,
-      characterId: Direction.ascending,
-    });
-
-  await db.chat() // TTL Index
-    .createIndex({
-      'createdAt': Direction.ascending,
-    }, { expireAfterSeconds: MAX_CHAT_TIME });
 }

@@ -52,11 +52,13 @@ import {
 import {
   findCharacter,
   findCharacters,
+  findGuildCharacters,
   findOneCharacter,
 } from '~/db/findCharacters.ts';
 
 import {
   assignCharacter,
+  clearParty,
   swapSpots,
   unassignCharacter,
 } from '~/db/assignParty.ts';
@@ -75,8 +77,6 @@ import {
 } from '~/db/getPack.ts';
 
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
-
-import { addChatMessage } from '~/db/getChatHistory.ts';
 
 import { invertDupes } from '~/db/manageGuild.ts';
 
@@ -134,10 +134,6 @@ export class Mongo {
     return this.#client.db('default').collection('battles');
   }
 
-  chat(): Collection<Schema.Chat> {
-    return this.#client.db('default').collection('chat');
-  }
-
   // deno-lint-ignore explicit-function-return-type
   public get anime() {
     return {
@@ -179,6 +175,7 @@ const db = {
   findCharacter,
   findOneCharacter,
   findCharacters,
+  findGuildCharacters,
   getMediaCharacters,
   //
   addTokens,
@@ -189,6 +186,7 @@ const db = {
   assignCharacter,
   swapSpots,
   unassignCharacter,
+  clearParty,
   //
   acquireSkill,
   //
@@ -204,8 +202,6 @@ const db = {
   getLastUpdatedPacks,
   publishPack,
   removePack,
-  //
-  addChatMessage,
   //
   invertDupes,
 };
