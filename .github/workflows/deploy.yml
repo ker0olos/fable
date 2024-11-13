@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: v2.x
       - run: deno fmt --check
 
   lint:
@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: v2.x
       - run: deno lint
 
   test:
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: v2.x
       - run: deno test -A --coverage=cov_profile --no-check
       - run: deno coverage cov_profile --lcov --output=lcov.info
       - uses: codecov/codecov-action@v4
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: v2.x
 
       - run: deno run -A db/_ensureIndexes.ts
         env:
