@@ -239,9 +239,15 @@ async function rngPull(
     db.findGuildCharacters(guildId, mongo, true),
   ]);
 
-  const exists = new Map<string, string>(
-    existing.map((character) => [character.characterId, character.userId]),
-  );
+  const exists: Record<string, string[]> = {};
+
+  existing.forEach(({ characterId, userId }) => {
+    if (!Array.isArray(exists[characterId])) {
+      exists[characterId] = [];
+    }
+
+    exists[characterId].push(userId);
+  });
 
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
@@ -276,12 +282,16 @@ async function rngPull(
       const mediaCharacters = pool.get(poolKeys[mediaIndex])
         ?.filter((character) => {
           // dupes disallowed
-          if (!guild.options?.dupes && exists.has(character.id)) {
+          if (!guild.options?.dupes && Array.isArray(exists[character.id])) {
             return false;
           }
 
           // same user dupe
-          if (guild.options?.dupes && exists.get(character.id) === userId) {
+          if (
+            userId &&
+            guild.options?.dupes && Array.isArray(exists[character.id]) &&
+            exists[character.id].includes(userId)
+          ) {
             return false;
           }
 
@@ -486,8 +496,11 @@ async function pullAnimation(
       mediaIds,
     );
 
+    const existing = await db.findCharacter(guildId, characterId);
+    const exists = existing.map((char) => char.userId);
+
     users.forEach((userId) => {
-      pings.add(`<@${userId}>`);
+      if (!exists.includes(userId)) pings.add(`<@${userId}>`);
     });
 
     if (pings.size > 0) {
