@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Once a month "At 00:00 on day-of-month 2" (see https://crontab.guru/once-a-month)
-    - cron: "0 0 2 * *"
+    - cron: '0 0 2 * *'
 
 jobs:
   index:
@@ -24,9 +24,9 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.PAT }}
-          title: "[bot] Updated Search Indexes"
+          title: '[bot] Updated Search Indexes'
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          commit-message: "[bot] Updated `search-index/*.bin`"
+          commit-message: '[bot] Updated `search-index/*.bin`'
           branch: update-search-index
           delete-branch: true
           body: |
