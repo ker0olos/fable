@@ -8,6 +8,8 @@ import { NonFetalError } from '~/src/errors.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
+import type { AnyBulkWriteOperation } from 'mongodb';
+
 export const STEAL_COOLDOWN_HOURS = 3 * 24;
 
 export async function giveCharacters(
@@ -210,9 +212,7 @@ export async function tradeCharacters(
       throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
-    const bulk: Parameters<
-      ReturnType<typeof db.characters>['bulkWrite']
-    >[0] = [];
+    const bulk: AnyBulkWriteOperation<Schema.Character>[] = [];
 
     bulk.push(
       {

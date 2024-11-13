@@ -291,7 +291,7 @@ function nick({
       } catch (err) {
         const names = packs.aliasToArray(results[0].name);
 
-        switch (err.message) {
+        switch ((err as Error).message) {
           case 'CHARACTER_NOT_FOUND': {
             return message
               .addEmbed(
@@ -433,7 +433,7 @@ function image({
       } catch (err) {
         const names = packs.aliasToArray(results[0].name);
 
-        switch (err.message) {
+        switch ((err as Error).message) {
           case 'CHARACTER_NOT_FOUND': {
             return message
               .addEmbed(

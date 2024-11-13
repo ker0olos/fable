@@ -434,7 +434,7 @@ function attempt({
           ])
           .followup(token);
       } catch (err) {
-        switch (err.message) {
+        switch ((err as Error).message) {
           case 'CHARACTER_NOT_FOUND':
             throw new NonFetalError(
               i18n.get('character-hasnt-been-found', locale, characterName),

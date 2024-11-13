@@ -968,7 +968,7 @@ export class Message {
         throw err;
       }
 
-      utils.captureException(err, {
+      utils.captureException(err as Error, {
         extra: {
           url,
           payload: JSON.stringify(this.json()),
