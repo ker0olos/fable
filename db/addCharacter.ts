@@ -15,6 +15,8 @@ import type * as Schema from '~/db/schema.ts';
 
 import type { SkillKey } from '~/src/types.ts';
 
+import type { AnyBulkWriteOperation } from 'mongodb';
+
 const newSkills = (rating: number): number => {
   switch (rating) {
     case 5:
@@ -160,9 +162,7 @@ export async function addCharacter(
       lastPull: new Date(),
     };
 
-    const deleteSacrifices: Parameters<
-      ReturnType<typeof mongo.characters>['bulkWrite']
-    >[0] = [];
+    const deleteSacrifices: AnyBulkWriteOperation<Schema.Character>[] = [];
 
     // if sacrifices (merge)
     if (sacrifices?.length) {

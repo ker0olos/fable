@@ -457,7 +457,11 @@ function reclear({ token, guildId, userId }: {
 
           return await message.patch(token);
         } catch (err) {
-          if (err.message.includes('Write conflict during plan execution')) {
+          if (
+            (err as Error).message.includes(
+              'Write conflict during plan execution',
+            )
+          ) {
             continue;
           }
 

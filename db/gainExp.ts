@@ -4,6 +4,8 @@ import { getFloorExp } from '~/src/tower.ts';
 
 import type * as Schema from './schema.ts';
 
+import type { AnyBulkWriteOperation } from 'mongodb';
+
 export const MAX_LEVEL = 10;
 
 type Status = {
@@ -102,9 +104,7 @@ export async function gainExp(
 
   const session = db.startSession();
 
-  const bulk: Parameters<
-    ReturnType<typeof db.characters>['bulkWrite']
-  >[0] = [];
+  const bulk: AnyBulkWriteOperation<Schema.Character>[] = [];
 
   let status: Status[];
 

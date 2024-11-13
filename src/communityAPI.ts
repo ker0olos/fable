@@ -112,7 +112,7 @@ export async function publish(req: Request): Promise<Response> {
       statusText: 'Created',
     });
   } catch (err) {
-    switch (err.message) {
+    switch ((err as Error).message) {
       case 'PERMISSION_DENIED':
         return utils.json({ error: 'No permission to edit this pack' }, {
           status: 403,

@@ -313,7 +313,7 @@ async function readJson<T>(filePath: string): Promise<T> {
     const jsonString = await Deno.readTextFile(filePath);
     return JSON.parse(jsonString);
   } catch (err) {
-    err.message = `${filePath}: ${err.message}`;
+    (err as Error).message = `${filePath}: ${(err as Error).message}`;
     throw err;
   }
 }

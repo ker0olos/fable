@@ -1381,8 +1381,10 @@ export const handler = async (r: Request) => {
     }
   } catch (err) {
     if (
-      err.response?.status === 404 || err?.message === '404' ||
-      err.message?.toLowerCase?.() === 'not found'
+      // deno-lint-ignore no-explicit-any
+      (err as any).response?.status === 404 ||
+      (err as Error)?.message === '404' ||
+      (err as Error).message?.toLowerCase?.() === 'not found'
     ) {
       return new discord.Message()
         .setContent('')
@@ -1418,7 +1420,7 @@ export const handler = async (r: Request) => {
       throw err;
     }
 
-    const refId = utils.captureException(err, {
+    const refId = utils.captureException(err as Error, {
       extra: { ...interaction },
     });
 
