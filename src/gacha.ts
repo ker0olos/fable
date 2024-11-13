@@ -148,7 +148,12 @@ async function rngPool(
     if (edge) {
       const popularity = character.popularity || edge.node.popularity || lowest;
 
-      if (new Rating({ popularity, role: edge.role }).stars !== rating) {
+      if (
+        new Rating({
+          popularity,
+          role: character.popularity ? undefined : edge.role,
+        }).stars !== rating
+      ) {
         return false;
       }
     }
