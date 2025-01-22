@@ -69,6 +69,10 @@
   "you-bought-pulls": "You bought **{0}** {1} {2}",
   "you-bought-guarantee": "You bought a **{0}**{1}pull {2}",
 
+  "admin-reward": "You want to reward {0} **{1}** {2} {3}?",
+  "rewarded-pulls": "You rewarded {0} **{1}** {2} {3}",
+  "got-rewarded-pulls": "{0} rewarded you **{1}** {2} {3}",
+
   "you-empty-collection": "You don't have any {0}characters",
   "you-empty-media-collection": "You don't have any characters from {0}",
 
@@ -334,12 +338,15 @@
 
   "/help": "need more information? we got you",
 
+  "/reward pulls": "reward a user with normal pulls",
+
   "$debug": "display the nerdy stuff",
   "$media-title": "the title of the series",
   "$character-name": "the name of the character",
   "$skill-name": "the name of the required skill",
   "$media-characters": "view the characters from the series",
   "$user-list": "the user of the list",
+  "$user-reward": "the user you want to reward",
   "$user-party": "the user of the party",
   "$user-likes-list": "the user of the likes list",
   "$user-likes-filter-owned": "filter out all the characters already owned by you",
@@ -360,6 +367,8 @@
   "$buy-normal-amount": "the amount of pulls you want to buy",
   "$buy-keys-amount": "the amount of keys you want to buy",
   "$buy-guaranteed-stars": "the star rating you want to buy",
+
+  "$reward-pulls": "the amount of pulls you want to give the user",
 
   "$party-spot": "the spot where you want this character",
   "$party-swap-1": "the first target of the swap",
