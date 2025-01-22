@@ -1,11 +1,11 @@
-import { Mongo } from "~/db/mod.ts";
+import { Mongo } from '~/db/mod.ts';
 
 if (import.meta.main) {
   // deno-lint-ignore no-non-null-assertion
-  const db = new Mongo(Deno.env.get("MONGO_URI")!);
+  const db = new Mongo(Deno.env.get('MONGO_URI')!);
 
-  const userId = "910124289372610560";
-  const guildId = "1288361915978092545";
+  const userId = '910124289372610560';
+  const guildId = '1288361915978092545';
 
   const result1 = await db.characters().deleteMany({
     userId,
