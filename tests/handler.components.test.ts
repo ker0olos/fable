@@ -2361,7 +2361,7 @@ Deno.test('reward components', async (test) => {
       });
 
       assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.Update],
+        args: [discord.MessageType.Defer],
       });
 
       assertSpyCall(rewardStub, 0, {
