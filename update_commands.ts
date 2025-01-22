@@ -904,6 +904,35 @@ export const commands = [
       }),
     ],
   }),
+  // admin rewards system
+  ...Command({
+    name: 'reward',
+    description: 'reward commands',
+    defaultPermission: Permission.MANAGE_GUILD,
+    options: [
+      Option({
+        name: 'pulls',
+        description: '/reward pulls',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'user',
+            description: '$user-reward',
+            type: Type.USER,
+          }),
+          Option({
+            min_value: 1,
+            max_value: 99,
+            name: 'amount',
+            description: '$reward-pulls',
+            type: Type.INTEGER,
+          }),
+        ],
+      }),
+    ],
+  }),
+  //
   ...Command({
     name: 'stats',
     description: '/stats',

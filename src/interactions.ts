@@ -15,6 +15,7 @@ import stats from '~/src/stats.ts';
 import battle from '~/src/battle.ts';
 import tower from '~/src/tower.ts';
 import help from '~/src/help.ts';
+import reward from '~/src/reward.ts';
 import serverOptions from '~/src/serverOptions.ts';
 
 import _skills, { skills } from '~/src/skills.ts';
@@ -840,6 +841,25 @@ export const handler = async (r: Request) => {
               nick: userId !== member.user.id,
             }).send();
           }
+          case 'reward': {
+            // deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'pulls': {
+                const targetId = options['user'] as string ?? member.user.id;
+                const amount = options['amount'] as number ?? 1;
+
+                return reward.pulls({
+                  amount,
+                  targetId,
+                  userId: member.user.id,
+                }).send();
+              }
+              default: {
+                break;
+              }
+            }
+            break;
+          }
           default: {
             break;
           }
@@ -1371,6 +1391,40 @@ export const handler = async (r: Request) => {
               ))
               .setType(discord.MessageType.Update)
               .send();
+          }
+          case 'reward': {
+            // deno-lint-ignore no-non-null-assertion
+            const item = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const targetId = customValues![2];
+
+            // deno-lint-ignore no-non-null-assertion
+            const amount = parseInt(customValues![3]);
+
+            if (userId && userId !== member.user.id) {
+              throw new NoPermissionError();
+            }
+
+            switch (item) {
+              case 'pulls': {
+                return (await reward.confirmPulls({
+                  amount,
+                  guildId,
+                  targetId,
+                  userId,
+                  token,
+                }))
+                  .setType(discord.MessageType.Defer)
+                  .send();
+              }
+              default:
+                break;
+            }
+            break;
           }
           default:
             break;

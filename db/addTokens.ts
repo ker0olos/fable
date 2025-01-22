@@ -28,6 +28,7 @@ export async function addPulls(
   userId: string,
   guildId: string,
   amount: number,
+  free: boolean = false,
 ): Promise<void> {
   const db = new Mongo();
 
@@ -38,13 +39,15 @@ export async function addPulls(
 
     session.startTransaction();
 
-    const { modifiedCount } = await db.users().updateOne({
-      discordId: userId,
-      availableTokens: { $gte: amount },
-    }, { $inc: { availableTokens: -amount } });
+    if (!free) {
+      const { modifiedCount } = await db.users().updateOne({
+        discordId: userId,
+        availableTokens: { $gte: amount },
+      }, { $inc: { availableTokens: -amount } });
 
-    if (!modifiedCount) {
-      throw new Error('INSUFFICIENT_TOKENS');
+      if (!modifiedCount) {
+        throw new Error('INSUFFICIENT_TOKENS');
+      }
     }
 
     await db.inventories().updateOne(

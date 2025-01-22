@@ -104,7 +104,7 @@ export enum MessageType {
   Pong = 1,
   New = 4,
   Loading = 5,
-  Defer = 6,
+  Defer = 6, //	For components
   Update = 7,
   Suggestions = 8,
   Modal = 9,
