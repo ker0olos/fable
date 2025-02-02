@@ -109,7 +109,7 @@ export async function publish(req: Request): Promise<Response> {
   } catch (err) {
     switch ((err as Error).message) {
       case 'PERMISSION_DENIED':
-        return utils.json({ error: 'NO_PERMISSION' }, {
+        return utils.json({ error: 'PERMISSION_DENIED' }, {
           status: 403,
           statusText: 'Forbidden',
         });

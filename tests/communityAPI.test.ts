@@ -439,7 +439,7 @@ Deno.test('/publish', async (test) => {
       assertEquals(response.statusText, 'Forbidden');
 
       assertEquals(await response.json(), {
-        error: 'No permission to edit this pack',
+        error: 'PERMISSION_DENIED',
       });
     } finally {
       delete config.communityPacksMaintainerAPI;
@@ -497,7 +497,7 @@ Deno.test('/publish', async (test) => {
       assertEquals(response.statusText, 'Internal Server Error');
 
       assertEquals(await response.json(), {
-        error: 'Internal Server Error',
+        error: 'INTERNAL_SERVER_ERROR',
       });
     } finally {
       delete config.communityPacksMaintainerAPI;
