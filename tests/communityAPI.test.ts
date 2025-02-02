@@ -656,7 +656,7 @@ Deno.test('/pack', async (test) => {
     }
   });
 
-  await test.step('missing pack id parameter', async () => {
+  await test.step('missing pack id', async () => {
     config.communityPacksBrowseAPI = true;
     config.communityPacksMaintainerAPI = true;
 
@@ -715,5 +715,78 @@ Deno.test('/pack', async (test) => {
       delete config.communityPacksBrowseAPI;
       delete config.communityPacksMaintainerAPI;
     }
+  });
+});
+
+Deno.test('/search', async (test) => {
+  await test.step('normal', async () => {
+    const searchPacksStub = stub(
+      db,
+      'searchPacks',
+      () =>
+        [
+          { manifest: { id: 'pack-1' } },
+          { manifest: { id: 'pack-2' } },
+          { manifest: { id: 'pack-3' } },
+        ] as any,
+    );
+
+    config.communityPacksBrowseAPI = true;
+
+    try {
+      const request = new Request('http://localhost:8000?q=test', {
+        method: 'GET',
+      });
+
+      const response = await communityAPI.search(request);
+
+      assertEquals(response.ok, true);
+      assertEquals(response.status, 200);
+      assertEquals(response.statusText, 'OK');
+
+      const data = await response.json();
+
+      assertEquals(data.limit, 20);
+      assertEquals(data.offset, 0);
+
+      assertEquals(data.packs[0].manifest.id, 'pack-1');
+      assertEquals(data.packs[1].manifest.id, 'pack-2');
+      assertEquals(data.packs[2].manifest.id, 'pack-3');
+    } finally {
+      delete config.communityPacksBrowseAPI;
+      searchPacksStub.restore();
+    }
+  });
+
+  await test.step('missing query', async () => {
+    config.communityPacksBrowseAPI = true;
+
+    try {
+      const request = new Request('http://localhost:8000', { method: 'GET' });
+
+      const response = await communityAPI.search(request);
+
+      assertEquals(response.ok, false);
+      assertEquals(response.status, 400);
+      assertEquals(response.statusText, 'Bad Request');
+
+      const data = await response.json();
+
+      assertEquals(data.error, 'MISSING_QUERY');
+    } finally {
+      delete config.communityPacksBrowseAPI;
+    }
+  });
+
+  await test.step('under maintenance', async () => {
+    const request = new Request('http://localhost:8000?q=test', {
+      method: 'GET',
+    });
+
+    const response = await communityAPI.search(request);
+
+    assertEquals(response.ok, false);
+    assertEquals(response.status, 503);
+    assertEquals(response.statusText, 'Under Maintenance');
   });
 });

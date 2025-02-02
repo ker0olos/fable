@@ -276,3 +276,56 @@ export async function pack(
 
   return utils.json(pack);
 }
+
+export async function search(req: Request): Promise<Response> {
+  const url = new URL(req.url);
+
+  const { error } = await utils.validateRequest(req, {
+    GET: {},
+  });
+
+  if (error) {
+    return utils.json({ error: error.message }, { status: error.status });
+  }
+
+  if (!config.communityPacksBrowseAPI) {
+    return utils.json(
+      { error: 'UNDER_MAINTENANCE' },
+      { status: 503, statusText: 'Under Maintenance' },
+    );
+  }
+
+  const query = url.searchParams.get('q');
+  const limit = +(url.searchParams.get('limit') ?? 20);
+  const offset = +(url.searchParams.get('offset') ?? 0);
+
+  if (!query) {
+    return utils.json(
+      { error: 'MISSING_QUERY' },
+      { status: 400, statusText: 'Bad Request' },
+    );
+  }
+
+  const packs = await db.searchPacks(query, offset, limit);
+
+  const data = {
+    packs: packs.map((pack) => ({
+      manifest: {
+        id: pack.manifest.id,
+        title: pack.manifest.title,
+        description: pack.manifest.description,
+        image: pack.manifest.image,
+        media: pack.manifest.media?.new?.length ?? 0,
+        characters: pack.manifest.characters?.new?.length ?? 0,
+        createdAt: pack.createdAt,
+        updatedAt: pack.updatedAt,
+        approved: pack.approved,
+        // deno-lint-ignore no-explicit-any
+      } as any,
+    })),
+    limit: Math.min(limit, 20),
+    offset,
+  };
+
+  return utils.json(data);
+}
