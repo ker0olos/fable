@@ -102,8 +102,8 @@ export async function getLastUpdatedPacks(
 
 export async function getPacksByMaintainerId(
   userId: string,
-  // offset = 0,
-  // limit = 20,
+  offset = 0,
+  limit = 20,
 ): Promise<Schema.Pack[]> {
   const db = new Mongo();
 
@@ -120,8 +120,8 @@ export async function getPacksByMaintainerId(
         ],
       })
       .sort({ updatedAt: -1 })
-      // .skip(offset)
-      // .limit(limit)
+      .skip(offset)
+      .limit(limit)
       .toArray();
   } finally {
     await db.close();
