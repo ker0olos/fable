@@ -9,7 +9,7 @@ import db from '~/db/mod.ts';
 import type { Manifest } from '~/src/types.ts';
 
 export async function user(req: Request): Promise<Response> {
-  // const url = new URL(req.url);
+  const url = new URL(req.url);
 
   const { error } = await utils.validateRequest(req, {
     GET: { headers: ['authorization'] },
@@ -21,7 +21,7 @@ export async function user(req: Request): Promise<Response> {
 
   if (!config.communityPacksMaintainerAPI) {
     return utils.json(
-      { error: 'Server is possibly under maintenance' },
+      { error: 'UNDER_MAINTENANCE' },
       { status: 503, statusText: 'Under Maintenance' },
     );
   }
@@ -40,11 +40,10 @@ export async function user(req: Request): Promise<Response> {
 
   const { id: userId } = await auth.json();
 
-  // const limit = +(url.searchParams.get('limit') ?? 20);
-  // const offset = +(url.searchParams.get('offset') ?? 0);
+  const limit = +(url.searchParams.get('limit') ?? 20);
+  const offset = +(url.searchParams.get('offset') ?? 0);
 
-  const packs = await db.getPacksByMaintainerId(userId);
-  // const packs = await db.getPacksByMaintainerId(userId, offset, limit);
+  const packs = await db.getPacksByMaintainerId(userId, offset, limit);
 
   const data = {
     packs: packs.map((pack) => ({
@@ -56,8 +55,8 @@ export async function user(req: Request): Promise<Response> {
         image: pack.manifest.image,
       },
     })),
-    // limit,
-    // offset,
+    limit: Math.min(limit, 20),
+    offset,
   };
 
   return utils.json(data);
@@ -74,7 +73,7 @@ export async function publish(req: Request): Promise<Response> {
 
   if (!config.communityPacksMaintainerAPI) {
     return utils.json(
-      { error: 'Server is possibly under maintenance' },
+      { error: 'UNDER_MAINTENANCE' },
       { status: 503, statusText: 'Under Maintenance' },
     );
   }
@@ -106,20 +105,16 @@ export async function publish(req: Request): Promise<Response> {
 
   try {
     const _ = await db.publishPack(userId, purgeReservedProps(manifest));
-
-    return new Response(undefined, {
-      status: 201,
-      statusText: 'Created',
-    });
+    return new Response(undefined, { status: 201, statusText: 'Created' });
   } catch (err) {
     switch ((err as Error).message) {
       case 'PERMISSION_DENIED':
-        return utils.json({ error: 'No permission to edit this pack' }, {
+        return utils.json({ error: 'PERMISSION_DENIED' }, {
           status: 403,
           statusText: 'Forbidden',
         });
       default:
-        return utils.json({ error: 'Internal Server Error' }, {
+        return utils.json({ error: 'INTERNAL_SERVER_ERROR' }, {
           status: 501,
           statusText: 'Internal Server Error',
         });
@@ -140,7 +135,7 @@ export async function popular(req: Request): Promise<Response> {
 
   if (!config.communityPacksBrowseAPI) {
     return utils.json(
-      { error: 'Server is possibly under maintenance' },
+      { error: 'UNDER_MAINTENANCE' },
       { status: 503, statusText: 'Under Maintenance' },
     );
   }
@@ -186,7 +181,7 @@ export async function lastUpdated(req: Request): Promise<Response> {
 
   if (!config.communityPacksBrowseAPI) {
     return utils.json(
-      { error: 'Server is possibly under maintenance' },
+      { error: 'UNDER_MAINTENANCE' },
       { status: 503, statusText: 'Under Maintenance' },
     );
   }
@@ -239,14 +234,14 @@ export async function pack(
     (!authKey && !config.communityPacksBrowseAPI)
   ) {
     return utils.json(
-      { error: 'Server is possibly under maintenance' },
+      { error: 'UNDER_MAINTENANCE' },
       { status: 503, statusText: 'Under Maintenance' },
     );
   }
 
   if (!packId) {
     return utils.json(
-      { error: 'Invalid Pack Id' },
+      { error: 'INVALID_PACK_ID' },
       { status: 400, statusText: 'Bad Request' },
     );
   }
@@ -273,11 +268,64 @@ export async function pack(
   const pack = await db.getPack(packId, userId);
 
   if (!pack) {
-    return utils.json(
-      { error: 'Not Found' },
-      { status: 404, statusText: 'Not Found' },
-    );
+    return utils.json({ error: 'NOT_FOUND' }, {
+      status: 404,
+      statusText: 'Not Found',
+    });
   }
 
   return utils.json(pack);
+}
+
+export async function search(req: Request): Promise<Response> {
+  const url = new URL(req.url);
+
+  const { error } = await utils.validateRequest(req, {
+    GET: {},
+  });
+
+  if (error) {
+    return utils.json({ error: error.message }, { status: error.status });
+  }
+
+  if (!config.communityPacksBrowseAPI) {
+    return utils.json(
+      { error: 'UNDER_MAINTENANCE' },
+      { status: 503, statusText: 'Under Maintenance' },
+    );
+  }
+
+  const query = url.searchParams.get('q');
+  const limit = +(url.searchParams.get('limit') ?? 20);
+  const offset = +(url.searchParams.get('offset') ?? 0);
+
+  if (!query) {
+    return utils.json(
+      { error: 'MISSING_QUERY' },
+      { status: 400, statusText: 'Bad Request' },
+    );
+  }
+
+  const packs = await db.searchPacks(query, offset, limit);
+
+  const data = {
+    packs: packs.map((pack) => ({
+      manifest: {
+        id: pack.manifest.id,
+        title: pack.manifest.title,
+        description: pack.manifest.description,
+        image: pack.manifest.image,
+        media: pack.manifest.media?.new?.length ?? 0,
+        characters: pack.manifest.characters?.new?.length ?? 0,
+        createdAt: pack.createdAt,
+        updatedAt: pack.updatedAt,
+        approved: pack.approved,
+        // deno-lint-ignore no-explicit-any
+      } as any,
+    })),
+    limit: Math.min(limit, 20),
+    offset,
+  };
+
+  return utils.json(data);
 }

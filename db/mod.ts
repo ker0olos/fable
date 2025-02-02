@@ -74,6 +74,7 @@ import {
   getPack,
   getPacksByMaintainerId,
   getPopularPacks,
+  searchPacks,
 } from '~/db/getPack.ts';
 
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
@@ -200,6 +201,7 @@ const db = {
   getPacksByMaintainerId,
   getPopularPacks,
   getLastUpdatedPacks,
+  searchPacks,
   publishPack,
   removePack,
   //

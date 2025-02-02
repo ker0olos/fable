@@ -1500,6 +1500,7 @@ export async function start(): Promise<void> {
     '/api/popular': communityAPI.popular,
     '/api/updated': communityAPI.lastUpdated,
     '/api/pack/:packId+': communityAPI.pack,
+    '/api/search': communityAPI.search,
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,

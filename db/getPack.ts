@@ -102,8 +102,8 @@ export async function getLastUpdatedPacks(
 
 export async function getPacksByMaintainerId(
   userId: string,
-  // offset = 0,
-  // limit = 20,
+  offset = 0,
+  limit = 20,
 ): Promise<Schema.Pack[]> {
   const db = new Mongo();
 
@@ -120,8 +120,8 @@ export async function getPacksByMaintainerId(
         ],
       })
       .sort({ updatedAt: -1 })
-      // .skip(offset)
-      // .limit(limit)
+      .skip(offset)
+      .limit(limit)
       .toArray();
   } finally {
     await db.close();
@@ -172,4 +172,51 @@ export async function getPack(
   }
 
   return pack;
+}
+
+export async function searchPacks(
+  query: string,
+  offset = 0,
+  limit = 20,
+): Promise<Schema.Pack[]> {
+  const db = new Mongo();
+
+  let packs: Schema.Pack[];
+
+  try {
+    await db.connect();
+
+    packs = await db.packs().aggregate()
+      .match({
+        $and: [
+          { hidden: false },
+          {
+            $or: [
+              { 'manifest.nsfw': false },
+              { 'manifest.nsfw': null },
+            ],
+          },
+          {
+            $or: [
+              { 'manifest.private': false },
+              { 'manifest.private': null },
+            ],
+          },
+          {
+            $or: [
+              { 'manifest.id': { $regex: query, $options: 'i' } },
+              { 'manifest.title': { $regex: query, $options: 'i' } },
+            ],
+          },
+        ],
+      })
+      .sort({ updatedAt: -1 })
+      .skip(offset)
+      .limit(limit)
+      .toArray() as Schema.Pack[];
+  } finally {
+    await db.close();
+  }
+
+  return packs;
 }
