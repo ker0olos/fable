@@ -273,7 +273,7 @@
   "help-page9-title": "Admin Commands",
 
   "admin-permission": "_> Those commands require the `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._",
-  "make-your-own-pack": "> To create your own community pack visit <https://packs.deno.dev>",
+  "make-your-own-pack": "> To create your own community pack visit <https://packs.fable.ing>",
 
   "/gacha": "start a new gacha pull",
   "/q": "start a gacha pull but with no animations",

@@ -62,7 +62,7 @@ Fable has no in-app purchases, no premiums, and no bullshit.
 <p>
   <img align="left" src="https://i.imgur.com/Kbh4IxM.png" alt="Community Packs">
   <h4>Community Packs</h4>
-  As easy as installing an app on your phone, add community-made character packs to your server, <a href="https://packs.deno.dev/">or create your own.</a>
+  As easy as installing an app on your phone, add community-made character packs to your server, <a href="https://packs.fable.ing/">or create your own.</a>
 </p>
 
 <br clear="left"/>
@@ -88,7 +88,7 @@ no players can pay to get ahead.
 Fable comes with a system where anyone can create new characters, or add
 characters that are missing from Fable. Then publish them for anyone else using
 Fable to install, wanna start creating your own pack? Visit
-<https://packs.deno.dev>
+<https://packs.fable.ing>
 
 #### [Add Fable to Your Server][invite]
 
@@ -111,7 +111,7 @@ Fable to install, wanna start creating your own pack? Visit
 
 - [Roadmap](https://github.com/ker0olos/fable/issues/1)
 - [How to Contribute](https://github.com/ker0olos/fable/wiki)
-- [How to Create Packs](https://packs.deno.dev)
+- [How to Create Packs](https://packs.fable.ing)
 - [Discord Support Server][discord]
 - [Donate](https://www.buymeacoffee.com/ker0olos)
 
@@ -143,7 +143,8 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 <details><summary>How can I install a new pack on my server?</summary>
 <p>
 
-Check the most popular packs or create your own pack at <https://packs.deno.dev>
+Check the most popular packs or create your own pack at
+<https://packs.fable.ing>
 
 > `Manage Server` permission is required to install packs on "your" server
 
@@ -154,7 +155,7 @@ Check the most popular packs or create your own pack at <https://packs.deno.dev>
 <p>
 
 It's very easy to create and update community packs, No coding required. Go to
-<https://packs.deno.dev>
+<https://packs.fable.ing>
 
 </p>
 </details>
