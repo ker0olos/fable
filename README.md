@@ -183,5 +183,5 @@ single dollar, it will help a lot.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
 [topgg]: https://top.gg/bot/1041970851559522304
-[invite]: https://fable.deno.dev/invite
+[invite]: https://fable.ing/invite
 [buymeacoffee]: https://www.buymeacoffee.com/ker0olos
