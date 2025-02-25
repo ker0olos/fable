@@ -1,13 +1,11 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 import type {
   DisaggregatedCharacter,
   DisaggregatedMedia,
 } from '~/src/types.ts';
 
-export async function media(
-  ids?: string[],
-): Promise<DisaggregatedMedia[]> {
+export async function media(ids?: string[]): Promise<DisaggregatedMedia[]> {
   if (!ids?.length) {
     return [];
   }
@@ -19,9 +17,10 @@ export async function media(
   try {
     await db.connect();
 
-    results = await db.anime.media().find(
-      { id: { $in: ids } },
-    ).toArray();
+    results = await db.anime
+      .media()
+      .find({ id: { $in: ids } })
+      .toArray();
   } finally {
     await db.close();
   }
@@ -30,7 +29,7 @@ export async function media(
 }
 
 export async function characters(
-  ids?: string[],
+  ids?: string[]
 ): Promise<DisaggregatedCharacter[]> {
   if (!ids?.length) {
     return [];
@@ -43,9 +42,10 @@ export async function characters(
   try {
     await db.connect();
 
-    results = await db.anime.characters().find(
-      { id: { $in: ids } },
-    ).toArray();
+    results = await db.anime
+      .characters()
+      .find({ id: { $in: ids } })
+      .toArray();
   } finally {
     await db.close();
   }

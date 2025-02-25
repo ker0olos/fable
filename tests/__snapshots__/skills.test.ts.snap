@@ -1,14 +1,93 @@
-export const snapshot = {};
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-snapshot[`all skills > snapshot 1`] = `
+exports[`skills > /skills showall > page 0 1`] = `
 {
-  "crit": {
-    "cost": 2,
-    "key": "~crit",
-    "descKey": "~crit-desc",
-    "categories": [
-      "offensive"
+  "data": {
+    "attachments": [],
+    "components": [
+      {
+        "components": [
+          {
+            "custom_id": "skills==3=prev",
+            "label": "Prev",
+            "style": 2,
+            "type": 2,
+          },
+          {
+            "custom_id": "_",
+            "disabled": true,
+            "label": "1/4",
+            "style": 2,
+            "type": 2,
+          },
+          {
+            "custom_id": "skills==1=next",
+            "label": "Next",
+            "style": 2,
+            "type": 2,
+          },
+        ],
+        "type": 1,
+      },
     ],
+    "embeds": [
+      {
+        "description": "**Critical Hit** (2 Skill Points)
+The art of performing the traditional critical hit.
+1. _Crit Chance (15%)_
+2. _Crit Damage (60%)_
+
+**Speed Boost** (1 Skill Point)
+Boost the speed of all party members (Not stackable)
+1. _Boost by (10%)_
+
+**Defense Boost** (1 Skill Point)
+Boost the defense of all party members (Not stackable)
+1. _Boost by (10%)_",
+        "type": "rich",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`skills > all skills > snapshot 1`] = `
+{
+  "chain": {
+    "activation": [Function],
+    "categories": [
+      "offensive",
+    ],
+    "cost": 10,
+    "descKey": "~chain-desc",
+    "key": "~chain",
+    "max": 1,
+    "stats": [
+      {
+        "key": "~chain-2-boost",
+        "scale": [
+          25,
+        ],
+        "suffix": "%",
+      },
+      {
+        "key": "~chain-3-boost",
+        "scale": [
+          50,
+        ],
+        "suffix": "%",
+      },
+    ],
+  },
+  "crit": {
+    "activation": [Function],
+    "categories": [
+      "offensive",
+    ],
+    "cost": 2,
+    "descKey": "~crit-desc",
+    "key": "~crit",
     "max": 3,
     "stats": [
       {
@@ -16,80 +95,46 @@ snapshot[`all skills > snapshot 1`] = `
         "scale": [
           0.5,
           5,
-          15
+          15,
         ],
-        "suffix": "%"
+        "suffix": "%",
       },
       {
         "key": "~crit-damage",
         "scale": [
           30,
           45,
-          60
+          60,
         ],
-        "suffix": "%"
-      }
-    ]
-  },
-  "speed": {
-    "key": "~speed-boost",
-    "descKey": "~speed-boost-desc",
-    "categories": [
-      "buff",
-      "support"
-    ],
-    "cost": 1,
-    "max": null,
-    "stats": [
-      {
-        "key": "~boost",
         "suffix": "%",
-        "factor": 1
-      }
-    ]
+      },
+    ],
   },
   "defense": {
-    "key": "~defense-boost",
-    "descKey": "~defense-boost-desc",
     "categories": [
       "buff",
-      "support"
+      "support",
     ],
     "cost": 1,
-    "max": null,
+    "descKey": "~defense-boost-desc",
+    "key": "~defense-boost",
+    "max": Infinity,
     "stats": [
       {
+        "factor": 1,
         "key": "~boost",
         "suffix": "%",
-        "factor": 1
-      }
-    ]
-  },
-  "slow": {
-    "key": "~slow-debuff",
-    "descKey": "~slow-debuff-desc",
-    "categories": [
-      "debuff",
-      "support"
+      },
     ],
-    "cost": 1,
-    "max": null,
-    "stats": [
-      {
-        "key": "~boost",
-        "suffix": "%",
-        "factor": 1
-      }
-    ]
   },
   "enrage": {
-    "cost": 2,
-    "key": "~enrage",
-    "descKey": "~enrage-desc",
     "categories": [
       "buff",
-      "offensive"
+      "offensive",
     ],
+    "cost": 2,
+    "descKey": "~enrage-desc",
+    "key": "~enrage",
     "max": 3,
     "stats": [
       {
@@ -97,29 +142,40 @@ snapshot[`all skills > snapshot 1`] = `
         "scale": [
           5,
           15,
-          25
+          25,
         ],
-        "suffix": "%"
+        "suffix": "%",
       },
       {
         "key": "~boost",
         "scale": [
           15,
           25,
-          50
+          50,
         ],
-        "suffix": "%"
-      }
-    ]
+        "suffix": "%",
+      },
+    ],
+  },
+  "grab": {
+    "categories": [
+      "offensive",
+    ],
+    "cost": 5,
+    "descKey": "~sneak-desc",
+    "key": "~sneak",
+    "max": 1,
+    "stats": [],
   },
   "heal": {
-    "cost": 2,
-    "key": "~heal",
-    "descKey": "~heal-desc",
+    "activation": [Function],
     "categories": [
       "support",
-      "heal"
+      "heal",
     ],
+    "cost": 2,
+    "descKey": "~heal-desc",
+    "key": "~heal",
     "max": 3,
     "stats": [
       {
@@ -127,20 +183,21 @@ snapshot[`all skills > snapshot 1`] = `
         "scale": [
           5,
           15,
-          25
+          25,
         ],
-        "suffix": "%"
-      }
-    ]
+        "suffix": "%",
+      },
+    ],
   },
   "lifesteal": {
-    "cost": 2,
-    "key": "~lifesteal",
-    "descKey": "~lifesteal-desc",
+    "activation": [Function],
     "categories": [
       "heal",
-      "offensive"
+      "offensive",
     ],
+    "cost": 2,
+    "descKey": "~lifesteal-desc",
+    "key": "~lifesteal",
     "max": 3,
     "stats": [
       {
@@ -148,19 +205,54 @@ snapshot[`all skills > snapshot 1`] = `
         "scale": [
           10,
           25,
-          50
+          50,
         ],
-        "suffix": "%"
-      }
-    ]
+        "suffix": "%",
+      },
+    ],
+  },
+  "slow": {
+    "categories": [
+      "debuff",
+      "support",
+    ],
+    "cost": 1,
+    "descKey": "~slow-debuff-desc",
+    "key": "~slow-debuff",
+    "max": Infinity,
+    "stats": [
+      {
+        "factor": 1,
+        "key": "~boost",
+        "suffix": "%",
+      },
+    ],
+  },
+  "speed": {
+    "categories": [
+      "buff",
+      "support",
+    ],
+    "cost": 1,
+    "descKey": "~speed-boost-desc",
+    "key": "~speed-boost",
+    "max": Infinity,
+    "stats": [
+      {
+        "factor": 1,
+        "key": "~boost",
+        "suffix": "%",
+      },
+    ],
   },
   "stun": {
-    "cost": 2,
-    "key": "~stun",
-    "descKey": "~stun-desc",
+    "activation": [Function],
     "categories": [
-      "offensive"
+      "offensive",
     ],
+    "cost": 2,
+    "descKey": "~stun-desc",
+    "key": "~stun",
     "max": 3,
     "stats": [
       {
@@ -168,87 +260,11 @@ snapshot[`all skills > snapshot 1`] = `
         "scale": [
           5,
           15,
-          80
+          80,
         ],
-        "suffix": "%"
-      }
-    ]
-  },
-  "chain": {
-    "cost": 10,
-    "key": "~chain",
-    "descKey": "~chain-desc",
-    "categories": [
-      "offensive"
-    ],
-    "max": 1,
-    "stats": [
-      {
-        "key": "~chain-2-boost",
-        "scale": [
-          25
-        ],
-        "suffix": "%"
+        "suffix": "%",
       },
-      {
-        "key": "~chain-3-boost",
-        "scale": [
-          50
-        ],
-        "suffix": "%"
-      }
-    ]
+    ],
   },
-  "grab": {
-    "cost": 5,
-    "key": "~sneak",
-    "descKey": "~sneak-desc",
-    "categories": [
-      "offensive"
-    ],
-    "max": 1,
-    "stats": []
-  }
-}
-`;
-
-snapshot[`/skills showall > page 0 1`] = `
-{
-  "type": 4,
-  "data": {
-    "embeds": [
-      {
-        "type": "rich",
-        "description": "**Critical Hit** (2 Skill Points)\\nThe art of performing the traditional critical hit.\\n1. _Crit Chance (15%)_\\n2. _Crit Damage (60%)_\\n\\n**Speed Boost** (1 Skill Point)\\nBoost the speed of all party members (Not stackable)\\n1. _Boost by (10%)_\\n\\n**Defense Boost** (1 Skill Point)\\nBoost the defense of all party members (Not stackable)\\n1. _Boost by (10%)_"
-      }
-    ],
-    "attachments": [],
-    "components": [
-      {
-        "type": 1,
-        "components": [
-          {
-            "type": 2,
-            "custom_id": "skills==3=prev",
-            "label": "Prev",
-            "style": 2
-          },
-          {
-            "type": 2,
-            "custom_id": "_",
-            "label": "1/4",
-            "disabled": true,
-            "style": 2
-          },
-          {
-            "type": 2,
-            "custom_id": "skills==1=next",
-            "label": "Next",
-            "style": 2
-          }
-        ]
-      }
-    ]
-  }
 }
 `;

@@ -1,4 +1,4 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 import type * as Schema from './schema.ts';
 
@@ -14,11 +14,10 @@ export async function acquireSkill(
   userId: string,
   guildId: string,
   characterId: string,
-  skillKey: SkillKey,
+  skillKey: SkillKey
 ): Promise<Schema.AcquiredCharacterSkill> {
   const db = new Mongo();
 
-  // deno-lint-ignore no-explicit-any
   let document: any;
 
   try {
@@ -40,7 +39,7 @@ export async function acquireSkill(
         ],
       },
       { $inc: { 'combat.skillPoints': -skill.cost, [level]: 1 } },
-      { returnDocument: 'after' },
+      { returnDocument: 'after' }
     );
 
     if (!document || !document.combat.skills[skillKey]?.level) {
@@ -50,6 +49,5 @@ export async function acquireSkill(
     await db.close();
   }
 
-  // deno-lint-ignore no-non-null-assertion
   return document.combat.skills[skillKey]!;
 }

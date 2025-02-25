@@ -96,16 +96,19 @@ export interface Media {
   };
 }
 
-export type DisaggregatedMedia = Modify<Media, {
-  relations?: {
-    relation: MediaRelation;
-    mediaId: string;
-  }[];
-  characters?: {
-    role: CharacterRole;
-    characterId: string;
-  }[];
-}>;
+export type DisaggregatedMedia = Modify<
+  Media,
+  {
+    relations?: {
+      relation: MediaRelation;
+      mediaId: string;
+    }[];
+    characters?: {
+      role: CharacterRole;
+      characterId: string;
+    }[];
+  }
+>;
 
 export interface Character {
   id: string;
@@ -127,16 +130,19 @@ export interface Character {
   };
 }
 
-export type DisaggregatedCharacter = Modify<Character, {
-  media?: {
-    role: CharacterRole;
-    mediaId: string;
-  }[];
-}>;
+export type DisaggregatedCharacter = Modify<
+  Character,
+  {
+    media?: {
+      role: CharacterRole;
+      mediaId: string;
+    }[];
+  }
+>;
 
 export type Pool = {
   [key: string]: {
-    'ALL': { id: string; mediaId: string; rating: number }[];
+    ALL: { id: string; mediaId: string; rating: number }[];
     [CharacterRole.Main]: { id: string; mediaId: string; rating: number }[];
     [CharacterRole.Supporting]: {
       id: string;
@@ -195,7 +201,7 @@ export const skillCategories = [
   'heal',
 ] as const;
 
-export type SkillCategory = typeof skillCategories[number];
+export type SkillCategory = (typeof skillCategories)[number];
 
 export interface CharacterSkill {
   key: Keys;
@@ -206,15 +212,13 @@ export interface CharacterSkill {
 
   cost: number;
 
-  activation?: (
-    args: {
-      lvl: number;
-      attacking: PartyMember;
-      receiving?: PartyMember;
-      damage?: number;
-      combo?: number;
-    },
-  ) => SkillOutput;
+  activation?: (args: {
+    lvl: number;
+    attacking: PartyMember;
+    receiving?: PartyMember;
+    damage?: number;
+    combo?: number;
+  }) => SkillOutput;
 
   stats: CharacterAdditionalStat[];
 }

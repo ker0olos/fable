@@ -1,19 +1,17 @@
-// deno-lint-ignore-file no-explicit-any
-
-import { assertEquals, assertThrows } from '$std/assert/mod.ts';
-
-import { assertSpyCallArgs, stub } from '$std/testing/mock.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, test, expect, vi, afterEach } from 'vitest';
 
 import shop from '~/src/shop.ts';
-
 import config from '~/src/config.ts';
-
-import db from '~/db/mod.ts';
-
+import db from '~/db/index.ts';
 import { NonFetalError } from '~/src/errors.ts';
 
-Deno.test('/buy pulls', async (test) => {
-  await test.step('normal dialog', () => {
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe('/buy pulls', () => {
+  test('normal dialog', () => {
     config.shop = true;
 
     try {
@@ -22,32 +20,36 @@ Deno.test('/buy pulls', async (test) => {
         amount: 1,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'buy=normal=user_id=1',
-                label: 'Confirm',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You want to spent **1 token** <:remove:1099004424111792158>?',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'buy=normal=user_id=1',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You want to spent **1 token** <:remove:1099004424111792158>?',
+            },
+          ],
         },
       });
     } finally {
@@ -55,7 +57,7 @@ Deno.test('/buy pulls', async (test) => {
     }
   });
 
-  await test.step('normal dialog (plural)', () => {
+  test('normal dialog (plural)', () => {
     config.shop = true;
 
     try {
@@ -64,32 +66,36 @@ Deno.test('/buy pulls', async (test) => {
         amount: 4,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'buy=normal=user_id=4',
-                label: 'Confirm',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You want to spent **4 tokens** <:remove:1099004424111792158>?',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'buy=normal=user_id=4',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You want to spent **4 tokens** <:remove:1099004424111792158>?',
+            },
+          ],
         },
       });
     } finally {
@@ -97,24 +103,10 @@ Deno.test('/buy pulls', async (test) => {
     }
   });
 
-  await test.step('normal confirmed', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const addPullsStub = stub(
-      db,
-      'addPulls',
-      () => '_' as any,
-    );
+  test('normal confirmed', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+    const addPullsSpy = vi.spyOn(db, 'addPulls').mockReturnValue('_' as any);
 
     config.shop = true;
 
@@ -125,66 +117,48 @@ Deno.test('/buy pulls', async (test) => {
         amount: 1,
       });
 
-      assertSpyCallArgs(addPullsStub, 0, [
-        'user_id',
-        'guild_id',
-        1,
-      ]);
+      expect(addPullsSpy).toHaveBeenCalledWith('user_id', 'guild_id', 1);
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'gacha=user_id',
-                label: '/gacha',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'q=user_id',
-                label: '/q',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description: 'You bought **1** pull <:add:1099004747123523644>',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'gacha=user_id',
+                  label: '/gacha',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'q=user_id',
+                  label: '/q',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You bought **1** pull <:add:1099004747123523644>',
+            },
+          ],
         },
       });
     } finally {
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addPullsStub.restore();
     }
   });
 
-  await test.step('normal confirmed (plural)', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const addPullsStub = stub(
-      db,
-      'addPulls',
-      () => '_' as any,
-    );
+  test('normal confirmed (plural)', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+    const addPullsSpy = vi.spyOn(db, 'addPulls').mockReturnValue('_' as any);
 
     config.shop = true;
 
@@ -195,71 +169,54 @@ Deno.test('/buy pulls', async (test) => {
         amount: 5,
       });
 
-      assertSpyCallArgs(addPullsStub, 0, [
-        'user_id',
-        'guild_id',
-        5,
-      ]);
+      expect(addPullsSpy).toHaveBeenCalledWith('user_id', 'guild_id', 5);
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'gacha=user_id',
-                label: '/gacha',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'q=user_id',
-                label: '/q',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description: 'You bought **5** pulls <:add:1099004747123523644>',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'gacha=user_id',
+                  label: '/gacha',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'q=user_id',
+                  label: '/q',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You bought **5** pulls <:add:1099004747123523644>',
+            },
+          ],
         },
       });
     } finally {
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addPullsStub.restore();
     }
   });
 
-  await test.step('normal insufficient tokens', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () =>
-        ({
-          availableTokens: 9,
-        }) as any,
-    );
+  test('normal insufficient tokens', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue({
+      availableTokens: 9,
+    } as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
-    const addPullsStub = stub(
-      db,
-      'addPulls',
-      () => {
-        throw new Error('INSUFFICIENT_TOKENS');
-      },
-    );
+    vi.spyOn(db, 'addPulls').mockImplementation(() => {
+      throw new Error('INSUFFICIENT_TOKENS');
+    });
 
     config.appId = 'app_id';
     config.shop = true;
@@ -271,50 +228,35 @@ Deno.test('/buy pulls', async (test) => {
         amount: 10,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description: 'You need **1 more token** before you can do this.',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You need **1 more token** before you can do this.',
+            },
+          ],
         },
       });
     } finally {
       delete config.appId;
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addPullsStub.restore();
     }
   });
 
-  await test.step('normal insufficient tokens (plural)', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () =>
-        ({
-          availableTokens: 5,
-        }) as any,
-    );
+  test('normal insufficient tokens (plural)', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue({
+      availableTokens: 5,
+    } as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
-    const addPullsStub = stub(
-      db,
-      'addPulls',
-      () => {
-        throw new Error('INSUFFICIENT_TOKENS');
-      },
-    );
+    vi.spyOn(db, 'addPulls').mockImplementation(() => {
+      throw new Error('INSUFFICIENT_TOKENS');
+    });
 
     config.appId = 'app_id';
     config.shop = true;
@@ -326,48 +268,50 @@ Deno.test('/buy pulls', async (test) => {
         amount: 10,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description: 'You need **5 more tokens** before you can do this.',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You need **5 more tokens** before you can do this.',
+            },
+          ],
         },
       });
     } finally {
       delete config.appId;
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addPullsStub.restore();
     }
   });
 
-  await test.step('under maintenance', () => {
+  test('under maintenance', () => {
     config.shop = false;
 
     try {
-      assertThrows(
-        () =>
-          shop.normal({
-            userId: 'user_id',
-            amount: 1,
-          }),
-        NonFetalError,
-        'Shop is under maintenance, try again later!',
-      );
+      expect(() =>
+        shop.normal({
+          userId: 'user_id',
+          amount: 1,
+        })
+      ).toThrow(NonFetalError);
+
+      expect(() =>
+        shop.normal({
+          userId: 'user_id',
+          amount: 1,
+        })
+      ).toThrow('Shop is under maintenance, try again later!');
     } finally {
       delete config.shop;
     }
   });
 });
 
-Deno.test('/buy guaranteed', async (test) => {
-  await test.step('guaranteed 3*', () => {
+describe('/buy guaranteed', () => {
+  test('guaranteed 3*', () => {
     config.shop = true;
 
     try {
@@ -376,32 +320,36 @@ Deno.test('/buy guaranteed', async (test) => {
         stars: 3,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'buy=guaranteed=user_id=3',
-                label: 'Confirm',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You want to spent **4 tokens** <:remove:1099004424111792158> for a **3<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'buy=guaranteed=user_id=3',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You want to spent **4 tokens** <:remove:1099004424111792158> for a **3<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
+            },
+          ],
         },
       });
     } finally {
@@ -409,7 +357,7 @@ Deno.test('/buy guaranteed', async (test) => {
     }
   });
 
-  await test.step('guaranteed 4*', () => {
+  test('guaranteed 4*', () => {
     config.shop = true;
 
     try {
@@ -418,32 +366,36 @@ Deno.test('/buy guaranteed', async (test) => {
         stars: 4,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'buy=guaranteed=user_id=4',
-                label: 'Confirm',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You want to spent **12 tokens** <:remove:1099004424111792158> for a **4<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'buy=guaranteed=user_id=4',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You want to spent **12 tokens** <:remove:1099004424111792158> for a **4<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
+            },
+          ],
         },
       });
     } finally {
@@ -451,7 +403,7 @@ Deno.test('/buy guaranteed', async (test) => {
     }
   });
 
-  await test.step('guaranteed 5*', () => {
+  test('guaranteed 5*', () => {
     config.shop = true;
 
     try {
@@ -460,32 +412,36 @@ Deno.test('/buy guaranteed', async (test) => {
         stars: 5,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'buy=guaranteed=user_id=5',
-                label: 'Confirm',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You want to spent **28 tokens** <:remove:1099004424111792158> for a **5<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'buy=guaranteed=user_id=5',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You want to spent **28 tokens** <:remove:1099004424111792158> for a **5<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
+            },
+          ],
         },
       });
     } finally {
@@ -493,24 +449,12 @@ Deno.test('/buy guaranteed', async (test) => {
     }
   });
 
-  await test.step('guaranteed 3* confirmed', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const addGuaranteeStub = stub(
-      db,
-      'addGuarantee',
-      () => '_' as any,
-    );
+  test('guaranteed 3* confirmed', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+    const addGuaranteeSpy = vi
+      .spyOn(db, 'addGuarantee')
+      .mockReturnValue('_' as any);
 
     config.shop = true;
 
@@ -520,60 +464,45 @@ Deno.test('/buy guaranteed', async (test) => {
         stars: 3,
       });
 
-      assertSpyCallArgs(addGuaranteeStub, 0, [
-        'user_id',
-        3,
-      ]);
+      expect(addGuaranteeSpy).toHaveBeenCalledWith('user_id', 3);
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'pull=user_id=3',
-                label: '/pull 3',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You bought a **3**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'pull=user_id=3',
+                  label: '/pull 3',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You bought a **3**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
+            },
+          ],
         },
       });
     } finally {
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addGuaranteeStub.restore();
     }
   });
 
-  await test.step('guaranteed 4* confirmed', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const addGuaranteeStub = stub(
-      db,
-      'addGuarantee',
-      () => '_' as any,
-    );
+  test('guaranteed 4* confirmed', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+    const addGuaranteeSpy = vi
+      .spyOn(db, 'addGuarantee')
+      .mockReturnValue('_' as any);
 
     config.shop = true;
 
@@ -583,60 +512,45 @@ Deno.test('/buy guaranteed', async (test) => {
         stars: 4,
       });
 
-      assertSpyCallArgs(addGuaranteeStub, 0, [
-        'user_id',
-        4,
-      ]);
+      expect(addGuaranteeSpy).toHaveBeenCalledWith('user_id', 4);
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'pull=user_id=4',
-                label: '/pull 4',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You bought a **4**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'pull=user_id=4',
+                  label: '/pull 4',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You bought a **4**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
+            },
+          ],
         },
       });
     } finally {
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addGuaranteeStub.restore();
     }
   });
 
-  await test.step('guaranteed 5* confirmed', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const addGuaranteeStub = stub(
-      db,
-      'addGuarantee',
-      () => '_' as any,
-    );
+  test('guaranteed 5* confirmed', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+    const addGuaranteeSpy = vi
+      .spyOn(db, 'addGuarantee')
+      .mockReturnValue('_' as any);
 
     config.shop = true;
 
@@ -646,65 +560,49 @@ Deno.test('/buy guaranteed', async (test) => {
         stars: 5,
       });
 
-      assertSpyCallArgs(addGuaranteeStub, 0, [
-        'user_id',
-        5,
-      ]);
+      expect(addGuaranteeSpy).toHaveBeenCalledWith('user_id', 5);
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'pull=user_id=5',
-                label: '/pull 5',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You bought a **5**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'pull=user_id=5',
+                  label: '/pull 5',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You bought a **5**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
+            },
+          ],
         },
       });
     } finally {
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addGuaranteeStub.restore();
     }
   });
 
-  await test.step('guaranteed insufficient tokens', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () =>
-        ({
-          availableTokens: 11,
-        }) as any,
-    );
+  test('guaranteed insufficient tokens', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue({
+      availableTokens: 11,
+    } as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
-    const addGuaranteeStub = stub(
-      db,
-      'addGuarantee',
-      () => {
-        throw new Error('INSUFFICIENT_TOKENS');
-      },
-    );
+    vi.spyOn(db, 'addGuarantee').mockImplementation(() => {
+      throw new Error('INSUFFICIENT_TOKENS');
+    });
 
     config.appId = 'app_id';
     config.shop = true;
@@ -715,50 +613,35 @@ Deno.test('/buy guaranteed', async (test) => {
         stars: 4,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description: 'You need **1 more token** before you can do this.',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You need **1 more token** before you can do this.',
+            },
+          ],
         },
       });
     } finally {
       delete config.appId;
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addGuaranteeStub.restore();
     }
   });
 
-  await test.step('guaranteed insufficient tokens (plural)', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () =>
-        ({
-          availableTokens: 5,
-        }) as any,
-    );
+  test('guaranteed insufficient tokens (plural)', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue({
+      availableTokens: 5,
+    } as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
-    const addGuaranteeStub = stub(
-      db,
-      'addGuarantee',
-      () => {
-        throw new Error('INSUFFICIENT_TOKENS');
-      },
-    );
+    vi.spyOn(db, 'addGuarantee').mockImplementation(() => {
+      throw new Error('INSUFFICIENT_TOKENS');
+    });
 
     config.appId = 'app_id';
     config.shop = true;
@@ -769,30 +652,28 @@ Deno.test('/buy guaranteed', async (test) => {
         stars: 4,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description: 'You need **7 more tokens** before you can do this.',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You need **7 more tokens** before you can do this.',
+            },
+          ],
         },
       });
     } finally {
       delete config.appId;
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addGuaranteeStub.restore();
     }
   });
 });
 
-Deno.test('/buy keys', async (test) => {
-  await test.step('keys dialog', () => {
+describe('/buy keys', () => {
+  test('keys dialog', () => {
     config.shop = true;
 
     try {
@@ -801,32 +682,36 @@ Deno.test('/buy keys', async (test) => {
         amount: 1,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'buy=keys=user_id=1',
-                label: 'Confirm',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You want to spent **1 token** <:remove:1099004424111792158>?',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'buy=keys=user_id=1',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You want to spent **1 token** <:remove:1099004424111792158>?',
+            },
+          ],
         },
       });
     } finally {
@@ -834,7 +719,7 @@ Deno.test('/buy keys', async (test) => {
     }
   });
 
-  await test.step('keys dialog (plural)', () => {
+  test('keys dialog (plural)', () => {
     config.shop = true;
 
     try {
@@ -843,32 +728,36 @@ Deno.test('/buy keys', async (test) => {
         amount: 4,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'buy=keys=user_id=4',
-                label: 'Confirm',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You want to spent **4 tokens** <:remove:1099004424111792158>?',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'buy=keys=user_id=4',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You want to spent **4 tokens** <:remove:1099004424111792158>?',
+            },
+          ],
         },
       });
     } finally {
@@ -876,24 +765,10 @@ Deno.test('/buy keys', async (test) => {
     }
   });
 
-  await test.step('keys confirmed', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const addPullsStub = stub(
-      db,
-      'addKeys',
-      () => '_' as any,
-    );
+  test('keys confirmed', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+    const addKeysSpy = vi.spyOn(db, 'addKeys').mockReturnValue('_' as any);
 
     config.shop = true;
 
@@ -904,66 +779,48 @@ Deno.test('/buy keys', async (test) => {
         amount: 1,
       });
 
-      assertSpyCallArgs(addPullsStub, 0, [
-        'user_id',
-        'guild_id',
-        1,
-      ]);
+      expect(addKeysSpy).toHaveBeenCalledWith('user_id', 'guild_id', 1);
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'tchallenge=user_id',
-                label: '/bt challenge',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'treclear=user_id',
-                label: '/reclear',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description: 'You bought **1** key <:add:1099004747123523644>',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'tchallenge=user_id',
+                  label: '/bt challenge',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'treclear=user_id',
+                  label: '/reclear',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You bought **1** key <:add:1099004747123523644>',
+            },
+          ],
         },
       });
     } finally {
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addPullsStub.restore();
     }
   });
 
-  await test.step('keys confirmed (plural)', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const addPullsStub = stub(
-      db,
-      'addKeys',
-      () => '_' as any,
-    );
+  test('keys confirmed (plural)', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+    const addKeysSpy = vi.spyOn(db, 'addKeys').mockReturnValue('_' as any);
 
     config.shop = true;
 
@@ -974,71 +831,54 @@ Deno.test('/buy keys', async (test) => {
         amount: 4,
       });
 
-      assertSpyCallArgs(addPullsStub, 0, [
-        'user_id',
-        'guild_id',
-        4,
-      ]);
+      expect(addKeysSpy).toHaveBeenCalledWith('user_id', 'guild_id', 4);
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'tchallenge=user_id',
-                label: '/bt challenge',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'treclear=user_id',
-                label: '/reclear',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description: 'You bought **4** keys <:add:1099004747123523644>',
-          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'tchallenge=user_id',
+                  label: '/bt challenge',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'treclear=user_id',
+                  label: '/reclear',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You bought **4** keys <:add:1099004747123523644>',
+            },
+          ],
         },
       });
     } finally {
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addPullsStub.restore();
     }
   });
 
-  await test.step('keys insufficient tokens', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () =>
-        ({
-          availableTokens: 9,
-        }) as any,
-    );
+  test('keys insufficient tokens', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue({
+      availableTokens: 9,
+    } as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
-    const addPullsStub = stub(
-      db,
-      'addKeys',
-      () => {
-        throw new Error('INSUFFICIENT_TOKENS');
-      },
-    );
+    vi.spyOn(db, 'addKeys').mockImplementation(() => {
+      throw new Error('INSUFFICIENT_TOKENS');
+    });
 
     config.appId = 'app_id';
     config.shop = true;
@@ -1050,50 +890,35 @@ Deno.test('/buy keys', async (test) => {
         amount: 10,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description: 'You need **1 more token** before you can do this.',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You need **1 more token** before you can do this.',
+            },
+          ],
         },
       });
     } finally {
       delete config.appId;
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addPullsStub.restore();
     }
   });
 
-  await test.step('keys insufficient tokens (plural)', async () => {
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () =>
-        ({
-          availableTokens: 5,
-        }) as any,
-    );
+  test('keys insufficient tokens (plural)', async () => {
+    vi.spyOn(db, 'getUser').mockReturnValue({
+      availableTokens: 5,
+    } as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
-    const addPullsStub = stub(
-      db,
-      'addKeys',
-      () => {
-        throw new Error('INSUFFICIENT_TOKENS');
-      },
-    );
+    vi.spyOn(db, 'addKeys').mockImplementation(() => {
+      throw new Error('INSUFFICIENT_TOKENS');
+    });
 
     config.appId = 'app_id';
     config.shop = true;
@@ -1105,24 +930,22 @@ Deno.test('/buy keys', async (test) => {
         amount: 10,
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description: 'You need **5 more tokens** before you can do this.',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You need **5 more tokens** before you can do this.',
+            },
+          ],
         },
       });
     } finally {
       delete config.appId;
       delete config.shop;
-
-      getUserStub.restore();
-      getGuildStub.restore();
-      addPullsStub.restore();
     }
   });
 });

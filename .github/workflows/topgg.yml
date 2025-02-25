@@ -11,11 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
+      - uses: actions/setup-node@v3
         with:
-          deno-version: v2.x
+          node-version: '20.x'
 
-      - run: deno run -A update_topgg_stats.ts
+      - run: npm install
+      - run: tsx update_topgg_stats.ts
         env:
           APP_ID: ${{ secrets.APP_ID }}
           TOPGG_TOKEN: ${{ secrets.TOPGG_TOKEN }}

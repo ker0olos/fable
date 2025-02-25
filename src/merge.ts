@@ -9,7 +9,7 @@ import gacha from '~/src/gacha.ts';
 import i18n from '~/src/i18n.ts';
 import utils, { ImageSize } from '~/src/utils.ts';
 
-import db from '~/db/mod.ts';
+import db from '~/db/index.ts';
 
 import { NonFetalError, PoolError } from '~/src/errors.ts';
 
@@ -21,9 +21,13 @@ import type { WithId } from 'mongodb';
 
 type CharacterWithId = WithId<Schema.Character>;
 
-async function getFilteredCharacters(
-  { userId, guildId }: { userId: string; guildId: string },
-): Promise<WithId<CharacterWithId>[]> {
+async function getFilteredCharacters({
+  userId,
+  guildId,
+}: {
+  userId: string;
+  guildId: string;
+}): Promise<WithId<CharacterWithId>[]> {
   const mongo = await db.newMongo().connect();
 
   const { user, party } = await db.getInventory(guildId, userId, mongo, true);
@@ -48,25 +52,24 @@ async function getFilteredCharacters(
 
   await mongo.close();
 
-  return characters
-    .filter((char) => {
-      if (
-        partyIds.includes(char.characterId) ||
-        likesCharactersIds.includes(char.characterId) ||
-        likesMediaIds.includes(char.mediaId)
-      ) {
-        return false;
-      }
+  return characters.filter((char) => {
+    if (
+      partyIds.includes(char.characterId) ||
+      likesCharactersIds.includes(char.characterId) ||
+      likesMediaIds.includes(char.mediaId)
+    ) {
+      return false;
+    }
 
-      return true;
-    });
+    return true;
+  });
 }
 
 function getSacrifices(
   characters: CharacterWithId[],
   mode: 'target' | 'min' | 'max',
   target?: number,
-  locale?: discord.AvailableLocales,
+  locale?: discord.AvailableLocales
 ): { sacrifices: CharacterWithId[]; target: number } {
   // I'm sure there is a faster way to do this with just math
   // but i am not smart enough to figure it out
@@ -82,7 +85,7 @@ function getSacrifices(
 
   // separate each rating into its own array
   characters
-    .toSorted((a, b) => a.rating - b.rating)
+    .sort((a, b) => a.rating - b.rating)
     .forEach((char) => {
       split[char.rating === 5 ? 4 : char.rating].push(char);
     });
@@ -110,11 +113,12 @@ function getSacrifices(
 
       possibilities[i].push(
         // split the previous possibilities into arrays of 5
-        ...utils.chunks(possibilities[i - 1], 5)
+        ...utils
+          .chunks(possibilities[i - 1], 5)
           // only use the required amount of chunks
           .slice(0, length)
           // flatten them so all of them are Character[] instead of Character[][]
-          .map((t) => t.flat()),
+          .map((t) => t.flat())
       );
     }
 
@@ -146,9 +150,7 @@ function getSacrifices(
   }
 
   if (!target) {
-    throw new NonFetalError(
-      i18n.get('merge-not-possible', locale),
-    );
+    throw new NonFetalError(i18n.get('merge-not-possible', locale));
   }
 
   const index = possibilities[target].findIndex((t) => t.length >= 5);
@@ -159,8 +161,8 @@ function getSacrifices(
         'merge-insufficient',
         locale,
         possibilities[target - 1].length,
-        `${target}${discord.emotes.smolStar}`,
-      ),
+        `${target}${discord.emotes.smolStar}`
+      )
     );
   }
 
@@ -173,7 +175,7 @@ function getSacrifices(
 async function characterPreview(
   message: discord.Message,
   character: Character,
-  existing: Partial<CharacterWithId>,
+  existing: Partial<CharacterWithId>
 ): Promise<discord.Embed> {
   const image = existing?.image
     ? { url: existing?.image }
@@ -181,17 +183,16 @@ async function characterPreview(
 
   const media = character.media?.edges?.[0]?.node;
 
-  const name = `${existing.rating}${discord.emotes.smolStar}${
-    utils.wrap(existing?.nickname ?? packs.aliasToArray(character.name)[0])
-  }`;
+  const name = `${existing.rating}${discord.emotes.smolStar}${utils.wrap(
+    existing?.nickname ?? packs.aliasToArray(character.name)[0]
+  )}`;
 
   const embed = new discord.Embed();
 
-  const attachment = await embed
-    .setThumbnailWithProxy({
-      size: ImageSize.Preview,
-      url: image?.url,
-    });
+  const attachment = await embed.setThumbnailWithProxy({
+    size: ImageSize.Preview,
+    url: image?.url,
+  });
 
   message.addAttachment(attachment);
 
@@ -207,7 +208,13 @@ async function characterPreview(
   return embed;
 }
 
-function synthesize({ token, userId, guildId, mode, target }: {
+function synthesize({
+  token,
+  userId,
+  guildId,
+  mode,
+  target,
+}: {
   token: string;
   userId: string;
   guildId: string;
@@ -221,7 +228,8 @@ function synthesize({ token, userId, guildId, mode, target }: {
   }
 
   // const message = new discord.Message();
-  synthesis.getFilteredCharacters({ userId, guildId })
+  synthesis
+    .getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
       const message = new discord.Message();
 
@@ -229,15 +237,13 @@ function synthesize({ token, userId, guildId, mode, target }: {
         characters,
         mode,
         target,
-        locale,
+        locale
       );
 
-      sacrifices = sacrifices
-        .sort((a, b) => b.rating - a.rating);
+      sacrifices = sacrifices.sort((a, b) => b.rating - a.rating);
 
       // highlight the top characters
-      const highlights = sacrifices
-        .slice(0, 5);
+      const highlights = sacrifices.slice(0, 5);
 
       const highlightedCharacters = await packs.characters({
         ids: highlights.map((char) => char.characterId),
@@ -246,15 +252,14 @@ function synthesize({ token, userId, guildId, mode, target }: {
 
       message.addEmbed(
         new discord.Embed().setDescription(
-          i18n.get('merge-sacrifice', locale, sacrifices.length),
-        ),
+          i18n.get('merge-sacrifice', locale, sacrifices.length)
+        )
       );
 
       for (const existing of highlights) {
-        const index = highlightedCharacters
-          .findIndex((char) =>
-            existing.characterId === `${char.packId}:${char.id}`
-          );
+        const index = highlightedCharacters.findIndex(
+          (char) => existing.characterId === `${char.packId}:${char.id}`
+        );
 
         if (index > -1) {
           const character = await packs.aggregate<Character>({
@@ -265,9 +270,8 @@ function synthesize({ token, userId, guildId, mode, target }: {
           const media = character?.media?.edges?.[0]?.node;
 
           if (
-            (packs.isDisabled(existing.mediaId, guildId)) ||
-            (media &&
-              packs.isDisabled(`${media.packId}:${media.id}`, guildId))
+            packs.isDisabled(existing.mediaId, guildId) ||
+            (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
           ) {
             highlightedCharacters.splice(index, 1);
             continue;
@@ -276,7 +280,7 @@ function synthesize({ token, userId, guildId, mode, target }: {
           const embed = await synthesis.characterPreview(
             message,
             character,
-            existing,
+            existing
           );
 
           message.addEmbed(embed);
@@ -286,8 +290,8 @@ function synthesize({ token, userId, guildId, mode, target }: {
       if (sacrifices.length - highlightedCharacters.length) {
         message.addEmbed(
           new discord.Embed().setDescription(
-            `_+${sacrifices.length - highlightedCharacters.length} others..._`,
-          ),
+            `_+${sacrifices.length - highlightedCharacters.length} others..._`
+          )
         );
       }
 
@@ -296,8 +300,7 @@ function synthesize({ token, userId, guildId, mode, target }: {
         message,
         confirm: ['synthesis', userId, `${_target}`],
         locale,
-      })
-        .patch(token);
+      }).patch(token);
     })
     .catch(async (err) => {
       if (err instanceof NonFetalError) {
@@ -331,13 +334,14 @@ function confirmed({
 }): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
 
-  synthesis.getFilteredCharacters({ userId, guildId })
+  synthesis
+    .getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
       const { sacrifices } = getSacrifices(
         characters,
         'target',
         target,
-        locale,
+        locale
       );
 
       const pull = await gacha.rngPull({
@@ -363,10 +367,11 @@ function confirmed({
               i18n.get(
                 'gacha-no-more-characters-left',
                 locale,
-                `${target}${discord.emotes.smolStar}`,
-              ),
-            ),
-          ).patch(token);
+                `${target}${discord.emotes.smolStar}`
+              )
+            )
+          )
+          .patch(token);
       }
 
       if (err instanceof NonFetalError) {

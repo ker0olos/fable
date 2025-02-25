@@ -18,12 +18,14 @@ jobs:
         with:
           deno-version: v2.x
 
+      - run: npm install
+
       - if: github.ref != 'refs/heads/main'
         name: Set environment to dummy
         run: echo "GUILD_ID=${{ secrets.DUMMY_GUILD }}" >> "$GITHUB_ENV"
 
       - name: Update Commands
-        run: deno run -A update_commands.ts
+        run: tsx update_commands.ts
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}

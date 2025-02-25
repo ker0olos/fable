@@ -1,12 +1,8 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
 
-import { stub } from '$std/testing/mock.ts';
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
-
-import db, { MAX_KEYS, MAX_PULLS, Mongo } from '~/db/mod.ts';
+import db, { MAX_KEYS, MAX_PULLS, Mongo } from '~/db/index.ts';
 
 import utils from '~/src/utils.ts';
 import config from '~/src/config.ts';
@@ -17,11 +13,11 @@ let client: Mongo;
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 const assertWithinLast5secs = (ts: Date) => {
-  assertEquals(Math.abs(Date.now() - ts.getTime()) <= 5000, true);
+  expect(Math.abs(Date.now() - ts.getTime()) <= 5000).toBe(true);
 };
 
 const assertWithinLastMins = (ts: Date, mins: number) => {
-  assertEquals(Math.abs(Date.now() - ts.getTime()) <= mins * 60 * 1000, true);
+  expect(Math.abs(Date.now() - ts.getTime()) <= mins * 60 * 1000).toBe(true);
 };
 
 describe('db.getUser()', () => {
@@ -40,7 +36,7 @@ describe('db.getUser()', () => {
   it('create new user', async () => {
     const user = await db.getUser('user-id');
 
-    assertEquals(Object.keys(user), [
+    expect(Object.keys(user)).toEqual([
       '_id',
       'discordId',
       'availableTokens',
@@ -49,11 +45,11 @@ describe('db.getUser()', () => {
       'likes',
     ]);
 
-    assertEquals(objectIdRegex.test(user._id.toHexString()), true);
+    expect(objectIdRegex.test(user._id.toHexString())).toBe(true);
 
     assertWithinLast5secs(user.dailyTimestamp);
 
-    assertObjectMatch(user, {
+    expect(user).toMatchObject({
       availableTokens: 0,
       discordId: 'user-id',
       guarantees: [],
@@ -68,8 +64,8 @@ describe('db.getUser()', () => {
 
     const user = await db.getUser('user-id');
 
-    assertEquals(user._id, insertedId);
-    assertEquals(user.discordId, 'user-id');
+    expect(user._id).toEqual(insertedId);
+    expect(user.discordId).toBe('user-id');
   });
 });
 
@@ -89,7 +85,7 @@ describe('db.getGuild()', () => {
   it('create new guild', async () => {
     const guild = await db.getGuild('guild-id');
 
-    assertEquals(Object.keys(guild), [
+    expect(Object.keys(guild)).toEqual([
       '_id',
       'discordId',
       'excluded',
@@ -98,9 +94,9 @@ describe('db.getGuild()', () => {
       'packs',
     ]);
 
-    assertEquals(objectIdRegex.test(guild._id.toHexString()), true);
+    expect(objectIdRegex.test(guild._id.toHexString())).toBe(true);
 
-    assertObjectMatch(guild, {
+    expect(guild).toMatchObject({
       excluded: false,
       discordId: 'guild-id',
       options: { dupes: true },
@@ -115,16 +111,16 @@ describe('db.getGuild()', () => {
 
     const guild = await db.getGuild('guild-id');
 
-    assertObjectMatch(guild, {
+    expect(guild).toMatchObject({
       _id: insertedId,
       discordId: 'guild-id',
     });
   });
 
   it('packs population', async () => {
-    const { insertedId: insertedPackId } = await client.packs().insertOne(
-      { manifest: { id: 'pack-id' } } as any,
-    );
+    const { insertedId: insertedPackId } = await client
+      .packs()
+      .insertOne({ manifest: { id: 'pack-id' } } as any);
 
     const { insertedId: insertedGuildId } = await client.guilds().insertOne({
       discordId: 'guild-id',
@@ -133,7 +129,7 @@ describe('db.getGuild()', () => {
 
     const guild = await db.getGuild('guild-id');
 
-    assertObjectMatch(guild, {
+    expect(guild).toMatchObject({
       _id: insertedGuildId,
       discordId: 'guild-id',
       packIds: ['pack-id'],
@@ -158,21 +154,23 @@ describe('db.getInventory()', () => {
   it('create new inventory', async () => {
     const inventory = await db.getInventory('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availableKeys',
-      'availablePulls',
-      'floorsCleared',
-      'user',
-      'party',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availableKeys',
+        'availablePulls',
+        'floorsCleared',
+        'party',
+        'user',
+      ].sort()
+    );
 
-    assertEquals(objectIdRegex.test(inventory._id.toHexString()), true);
-    assertEquals(objectIdRegex.test(inventory.user._id.toHexString()), true);
+    expect(objectIdRegex.test(inventory._id.toHexString())).toBe(true);
+    expect(objectIdRegex.test(inventory.user._id.toHexString())).toBe(true);
 
-    assertObjectMatch(inventory, {
+    expect(inventory).toMatchObject({
       guildId: 'guild-id',
       userId: 'user-id',
       availablePulls: 10,
@@ -200,7 +198,7 @@ describe('db.getInventory()', () => {
 
     const inventory = await db.getInventory('guild-id', 'user-id');
 
-    assertObjectMatch(inventory, {
+    expect(inventory).toMatchObject({
       _id: insertedId,
       guildId: 'guild-id',
       userId: 'user-id',
@@ -211,13 +209,15 @@ describe('db.getInventory()', () => {
   });
 
   it('party population', async () => {
-    const { insertedIds } = await client.characters().bulkWrite([
-      { insertOne: { document: { characterId: 'character-1' } as any } },
-      { insertOne: { document: { characterId: 'character-2' } as any } },
-      { insertOne: { document: { characterId: 'character-3' } as any } },
-      { insertOne: { document: { characterId: 'character-4' } as any } },
-      { insertOne: { document: { characterId: 'character-5' } as any } },
-    ]);
+    const { insertedIds } = await client
+      .characters()
+      .bulkWrite([
+        { insertOne: { document: { characterId: 'character-1' } as any } },
+        { insertOne: { document: { characterId: 'character-2' } as any } },
+        { insertOne: { document: { characterId: 'character-3' } as any } },
+        { insertOne: { document: { characterId: 'character-4' } as any } },
+        { insertOne: { document: { characterId: 'character-5' } as any } },
+      ]);
 
     const partyIds = {
       member1Id: insertedIds[0],
@@ -235,7 +235,7 @@ describe('db.getInventory()', () => {
 
     const inventory = await db.getInventory('guild-id', 'user-id');
 
-    assertObjectMatch(inventory, {
+    expect(inventory).toMatchObject({
       _id: insertedId,
       guildId: 'guild-id',
       userId: 'user-id',
@@ -259,6 +259,7 @@ describe('db.rechargeConsumables()', () => {
   });
 
   afterEach(async () => {
+    vi.resetAllMocks();
     delete config.mongoUri;
     await client.close();
     await mongod.stop();
@@ -267,376 +268,370 @@ describe('db.rechargeConsumables()', () => {
   it('normal', async () => {
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availableKeys',
-      'availablePulls',
-      'floorsCleared',
-      'user',
-      'party',
-    ]);
+    expect(Object.keys(inventory).sort().sort()).toEqual(
+      [
+        '_id',
+        'userId',
+        'guildId',
+        'availableKeys',
+        'availablePulls',
+        'floorsCleared',
+        'party',
+        'user',
+      ].sort()
+    );
 
-    assertObjectMatch(inventory, {
+    expect(inventory).toMatchObject({
       availablePulls: 10,
       availableKeys: 5,
     });
   });
 
   it('recharge 2 keys (20 mins ago ts)', async () => {
-    await client.inventories().insertOne(
-      {
-        guildId: 'guild-id',
-        userId: 'user-id',
-        availablePulls: 1,
-        availableKeys: 2,
-        keysTimestamp: new Date(Date.now() - 20 * 60 * 1000), // 20 minutes ago,
-      } as any,
-    );
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 1,
+      availableKeys: 2,
+      keysTimestamp: new Date(Date.now() - 20 * 60 * 1000), // 20 minutes ago,
+    } as any);
 
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availablePulls',
-      'availableKeys',
-      'keysTimestamp',
-      'user',
-      'party',
-      'rechargeTimestamp',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'availableKeys',
+        'keysTimestamp',
+        'user',
+        'party',
+        'rechargeTimestamp',
+      ].sort()
+    );
 
-    assertEquals(inventory.availablePulls, 1);
-    assertEquals(inventory.availableKeys, 4);
+    expect(inventory.availablePulls).toBe(1);
+    expect(inventory.availableKeys).toBe(4);
 
     assertWithinLast5secs(inventory.keysTimestamp!);
     assertWithinLast5secs(inventory.rechargeTimestamp!);
   });
 
   it('recharge 2 keys (25 mins ago ts)', async () => {
-    await client.inventories().insertOne(
-      {
-        guildId: 'guild-id',
-        userId: 'user-id',
-        availablePulls: 1,
-        availableKeys: 2,
-        keysTimestamp: new Date(Date.now() - 25 * 60 * 1000), // 25 minutes ago,
-      } as any,
-    );
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 1,
+      availableKeys: 2,
+      keysTimestamp: new Date(Date.now() - 25 * 60 * 1000), // 25 minutes ago,
+    } as any);
 
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availablePulls',
-      'availableKeys',
-      'keysTimestamp',
-      'user',
-      'party',
-      'rechargeTimestamp',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'availableKeys',
+        'keysTimestamp',
+        'user',
+        'party',
+        'rechargeTimestamp',
+      ].sort()
+    );
 
-    assertEquals(inventory.availablePulls, 1);
-    assertEquals(inventory.availableKeys, 4);
+    expect(inventory.availablePulls).toBe(1);
+    expect(inventory.availableKeys).toBe(4);
 
     assertWithinLastMins(inventory.keysTimestamp!, 5.5);
     assertWithinLast5secs(inventory.rechargeTimestamp!);
   });
 
   it('recharge MAX keys (50 mins ago ts)', async () => {
-    await client.inventories().insertOne(
-      {
-        guildId: 'guild-id',
-        userId: 'user-id',
-        availablePulls: 1,
-        availableKeys: 2,
-        keysTimestamp: new Date(Date.now() - 50 * 60 * 1000), // 50 minutes ago,
-      } as any,
-    );
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 1,
+      availableKeys: 2,
+      keysTimestamp: new Date(Date.now() - 50 * 60 * 1000), // 50 minutes ago,
+    } as any);
 
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availablePulls',
-      'availableKeys',
-      'user',
-      'party',
-      'rechargeTimestamp',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'availableKeys',
+        'user',
+        'party',
+        'rechargeTimestamp',
+      ].sort()
+    );
 
-    assertEquals(inventory.availablePulls, 1);
-    assertEquals(inventory.availableKeys, MAX_KEYS);
+    expect(inventory.availablePulls).toBe(1);
+    expect(inventory.availableKeys).toBe(MAX_KEYS);
 
     assertWithinLast5secs(inventory.rechargeTimestamp!);
   });
 
   it('recharge 2 pulls (60 mins ago ts)', async () => {
-    await client.inventories().insertOne(
-      {
-        guildId: 'guild-id',
-        userId: 'user-id',
-        availablePulls: 1,
-        availableKeys: 2,
-        rechargeTimestamp: new Date(Date.now() - 60 * 60 * 1000), // 60 minutes ago,
-      } as any,
-    );
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 1,
+      availableKeys: 2,
+      rechargeTimestamp: new Date(Date.now() - 60 * 60 * 1000), // 60 minutes ago,
+    } as any);
 
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availablePulls',
-      'availableKeys',
-      'rechargeTimestamp',
-      'user',
-      'party',
-      'keysTimestamp',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'availableKeys',
+        'rechargeTimestamp',
+        'user',
+        'party',
+        'keysTimestamp',
+      ].sort()
+    );
 
-    assertEquals(inventory.availablePulls, 3);
-    assertEquals(inventory.availableKeys, 2);
+    expect(inventory.availablePulls).toBe(3);
+    expect(inventory.availableKeys).toBe(2);
 
     assertWithinLast5secs(inventory.keysTimestamp!);
     assertWithinLast5secs(inventory.rechargeTimestamp!);
   });
 
   it('recharge 2 pulls (70 mins ago ts)', async () => {
-    await client.inventories().insertOne(
-      {
-        guildId: 'guild-id',
-        userId: 'user-id',
-        availablePulls: 1,
-        availableKeys: 2,
-        rechargeTimestamp: new Date(Date.now() - 70 * 60 * 1000), // 70 minutes ago,
-      } as any,
-    );
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 1,
+      availableKeys: 2,
+      rechargeTimestamp: new Date(Date.now() - 70 * 60 * 1000), // 70 minutes ago,
+    } as any);
 
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availablePulls',
-      'availableKeys',
-      'rechargeTimestamp',
-      'user',
-      'party',
-      'keysTimestamp',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'availableKeys',
+        'rechargeTimestamp',
+        'user',
+        'party',
+        'keysTimestamp',
+      ].sort()
+    );
 
-    assertEquals(inventory.availablePulls, 3);
-    assertEquals(inventory.availableKeys, 2);
+    expect(inventory.availablePulls).toBe(3);
+    expect(inventory.availableKeys).toBe(2);
 
     assertWithinLastMins(inventory.rechargeTimestamp!, 10.5);
     assertWithinLast5secs(inventory.keysTimestamp!);
   });
 
   it('recharge MAX pulls (2.5 hours ago ts)', async () => {
-    await client.inventories().insertOne(
-      {
-        guildId: 'guild-id',
-        userId: 'user-id',
-        availablePulls: 1,
-        availableKeys: 2,
-        rechargeTimestamp: new Date(Date.now() - 2.5 * 60 * 60 * 1000), // 2.5 hours ago,
-      } as any,
-    );
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 1,
+      availableKeys: 2,
+      rechargeTimestamp: new Date(Date.now() - 2.5 * 60 * 60 * 1000), // 2.5 hours ago,
+    } as any);
 
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availablePulls',
-      'availableKeys',
-      'user',
-      'party',
-      'keysTimestamp',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'availableKeys',
+        'user',
+        'party',
+        'keysTimestamp',
+      ].sort()
+    );
 
-    assertEquals(inventory.availablePulls, MAX_PULLS);
-    assertEquals(inventory.availableKeys, 2);
+    expect(inventory.availablePulls).toBe(MAX_PULLS);
+    expect(inventory.availableKeys).toBe(2);
 
     assertWithinLast5secs(inventory.keysTimestamp!);
   });
 
   it('recharge 0 tokens (11 hours ago)', async () => {
-    await client.users().insertOne(
-      {
-        discordId: 'user-id',
-        availableTokens: 0,
-        dailyTimestamp: new Date(Date.now() - 11 * 60 * 60 * 1000), // 11 hours ago,
-      } as any,
-    );
+    await client.users().insertOne({
+      discordId: 'user-id',
+      availableTokens: 0,
+      dailyTimestamp: new Date(Date.now() - 11 * 60 * 60 * 1000), // 11 hours ago,
+    } as any);
 
     const { user, ...inventory } = await db.rechargeConsumables(
       'guild-id',
-      'user-id',
+      'user-id'
     );
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availableKeys',
-      'availablePulls',
-      'floorsCleared',
-      'party',
-    ]);
+    expect(Object.keys(inventory).sort().sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availableKeys',
+        'availablePulls',
+        'floorsCleared',
+        'party',
+      ].sort()
+    );
 
-    assertEquals(Object.keys(user), [
+    expect(Object.keys(user)).toEqual([
       '_id',
       'discordId',
       'availableTokens',
       'dailyTimestamp',
     ]);
 
-    assertEquals(user.availableTokens, 0);
+    expect(user.availableTokens).toBe(0);
   });
 
   it('recharge 1 tokens (Monday) (12 hours ago)', async () => {
-    const dayOfWeekStub = stub(utils, 'getDayOfWeek', () => 'Monday' as const);
+    vi.spyOn(utils, 'getDayOfWeek').mockReturnValue('Monday');
 
-    try {
-      await client.users().insertOne(
-        {
-          discordId: 'user-id',
-          availableTokens: 1,
-          dailyTimestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago,
-        } as any,
-      );
+    await client.users().insertOne({
+      discordId: 'user-id',
+      availableTokens: 1,
+      dailyTimestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago,
+    } as any);
 
-      const { user, ...inventory } = await db.rechargeConsumables(
-        'guild-id',
-        'user-id',
-      );
+    const { user, ...inventory } = await db.rechargeConsumables(
+      'guild-id',
+      'user-id'
+    );
 
-      assertEquals(Object.keys(inventory), [
+    expect(Object.keys(inventory).sort().sort()).toEqual(
+      [
         '_id',
-        'guildId',
         'userId',
+        'guildId',
         'availableKeys',
         'availablePulls',
         'floorsCleared',
         'party',
-      ]);
+      ].sort()
+    );
 
-      assertEquals(Object.keys(user), [
-        '_id',
-        'discordId',
-        'availableTokens',
-        'dailyTimestamp',
-      ]);
+    expect(Object.keys(user)).toEqual([
+      '_id',
+      'discordId',
+      'availableTokens',
+      'dailyTimestamp',
+    ]);
 
-      assertEquals(user.availableTokens, 2);
+    expect(user.availableTokens).toBe(2);
 
-      assertWithinLast5secs(user.dailyTimestamp);
-    } finally {
-      dayOfWeekStub.restore();
-    }
+    assertWithinLast5secs(user.dailyTimestamp);
   });
 
   it('recharge 2 tokens (Sunday) (12 hours ago)', async () => {
-    const dayOfWeekStub = stub(utils, 'getDayOfWeek', () => 'Sunday' as const);
+    vi.spyOn(utils, 'getDayOfWeek').mockReturnValue('Sunday');
 
-    try {
-      await client.users().insertOne(
-        {
-          discordId: 'user-id',
-          availableTokens: 1,
-          dailyTimestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago,
-        } as any,
-      );
+    await client.users().insertOne({
+      discordId: 'user-id',
+      availableTokens: 1,
+      dailyTimestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago,
+    } as any);
 
-      const { user, ...inventory } = await db.rechargeConsumables(
-        'guild-id',
-        'user-id',
-      );
+    const { user, ...inventory } = await db.rechargeConsumables(
+      'guild-id',
+      'user-id'
+    );
 
-      assertEquals(Object.keys(inventory), [
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
         '_id',
-        'guildId',
         'userId',
+        'guildId',
         'availableKeys',
         'availablePulls',
         'floorsCleared',
         'party',
-      ]);
+      ].sort()
+    );
 
-      assertEquals(Object.keys(user), [
-        '_id',
-        'discordId',
-        'availableTokens',
-        'dailyTimestamp',
-      ]);
+    expect(Object.keys(user)).toEqual([
+      '_id',
+      'discordId',
+      'availableTokens',
+      'dailyTimestamp',
+    ]);
 
-      assertEquals(user.availableTokens, 3);
+    expect(user.availableTokens).toBe(3);
 
-      assertWithinLast5secs(user.dailyTimestamp);
-    } finally {
-      dayOfWeekStub.restore();
-    }
+    assertWithinLast5secs(user.dailyTimestamp);
   });
 
   it('reset steal cooldown (1 day ago)', async () => {
-    await client.inventories().insertOne(
-      {
-        guildId: 'guild-id',
-        userId: 'user-id',
-        availablePulls: 5,
-        availableKeys: 5,
-        stealTimestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago,
-      } as any,
-    );
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 5,
+      availableKeys: 5,
+      stealTimestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago,
+    } as any);
 
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availablePulls',
-      'availableKeys',
-      'stealTimestamp',
-      'user',
-      'party',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'availableKeys',
+        'stealTimestamp',
+        'user',
+        'party',
+      ].sort()
+    );
   });
 
   it('reset steal cooldown (3 day ago)', async () => {
-    await client.inventories().insertOne(
-      {
-        guildId: 'guild-id',
-        userId: 'user-id',
-        availablePulls: 5,
-        availableKeys: 5,
-        stealTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 day ago,
-      } as any,
-    );
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 5,
+      availableKeys: 5,
+      stealTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 day ago,
+    } as any);
 
     const inventory = await db.rechargeConsumables('guild-id', 'user-id');
 
-    assertEquals(Object.keys(inventory), [
-      '_id',
-      'guildId',
-      'userId',
-      'availablePulls',
-      'availableKeys',
-      'user',
-      'party',
-    ]);
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'availableKeys',
+        'user',
+        'party',
+      ].sort()
+    );
   });
 });
 
@@ -656,150 +651,115 @@ describe('db.getActiveUsersIfLiked()', () => {
   it('2 users like character', async () => {
     await client.users().insertOne({
       discordId: 'user-id',
-      likes: [
-        { characterId: 'character-id' },
-        { characterId: 'character-2' },
-      ],
+      likes: [{ characterId: 'character-id' }, { characterId: 'character-2' }],
     } as any);
 
-    await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        lastPull: new Date(),
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      lastPull: new Date(),
+    } as any);
 
     await client.users().insertOne({
       discordId: 'user-2',
-      likes: [
-        { characterId: 'character-id' },
-        { characterId: 'character-2' },
-      ],
+      likes: [{ characterId: 'character-id' }, { characterId: 'character-2' }],
     } as any);
 
-    await client.inventories()
-      .insertOne({
-        userId: 'user-2',
-        guildId: 'guild-id',
-        lastPull: new Date(),
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-2',
+      guildId: 'guild-id',
+      lastPull: new Date(),
+    } as any);
 
-    const users = await db.getActiveUsersIfLiked(
-      'guild-id',
-      'character-id',
-      ['media-id'],
-    );
+    const users = await db.getActiveUsersIfLiked('guild-id', 'character-id', [
+      'media-id',
+    ]);
 
-    assertEquals(users, ['user-id', 'user-2']);
+    expect(users).toEqual(['user-id', 'user-2']);
   });
 
   it('2 users like media', async () => {
     await client.users().insertOne({
       discordId: 'user-id',
-      likes: [
-        { mediaId: 'media-id' },
-        { mediaId: 'media-2' },
-      ],
+      likes: [{ mediaId: 'media-id' }, { mediaId: 'media-2' }],
     } as any);
 
-    await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        lastPull: new Date(),
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      lastPull: new Date(),
+    } as any);
 
     await client.users().insertOne({
       discordId: 'user-2',
-      likes: [
-        { mediaId: 'media-id' },
-        { mediaId: 'media-2' },
-      ],
+      likes: [{ mediaId: 'media-id' }, { mediaId: 'media-2' }],
     } as any);
 
-    await client.inventories()
-      .insertOne({
-        userId: 'user-2',
-        guildId: 'guild-id',
-        lastPull: new Date(),
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-2',
+      guildId: 'guild-id',
+      lastPull: new Date(),
+    } as any);
 
-    const users = await db.getActiveUsersIfLiked(
-      'guild-id',
-      'character-id',
-      ['media-id'],
-    );
+    const users = await db.getActiveUsersIfLiked('guild-id', 'character-id', [
+      'media-id',
+    ]);
 
-    assertEquals(users, ['user-id', 'user-2']);
+    expect(users).toEqual(['user-id', 'user-2']);
   });
 
   it('1 active user likes character', async () => {
     await client.users().insertOne({
       discordId: 'user-id',
-      likes: [
-        { characterId: 'character-id' },
-      ],
+      likes: [{ characterId: 'character-id' }],
     } as any);
 
-    await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        lastPull: new Date('1999-1-1'),
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      lastPull: new Date('1999-1-1'),
+    } as any);
 
     await client.users().insertOne({
       discordId: 'user-2',
-      likes: [
-        { characterId: 'character-id' },
-      ],
+      likes: [{ characterId: 'character-id' }],
     } as any);
 
-    await client.inventories()
-      .insertOne({
-        userId: 'user-2',
-        guildId: 'guild-id',
-        lastPull: new Date(),
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-2',
+      guildId: 'guild-id',
+      lastPull: new Date(),
+    } as any);
 
-    const users = await db.getActiveUsersIfLiked(
-      'guild-id',
-      'character-id',
-      ['media-id'],
-    );
+    const users = await db.getActiveUsersIfLiked('guild-id', 'character-id', [
+      'media-id',
+    ]);
 
-    assertEquals(users, ['user-2']);
+    expect(users).toEqual(['user-2']);
   });
 
   it('no users like character', async () => {
     await client.users().insertOne({
       discordId: 'user-id',
-      likes: [
-        { characterId: 'character-2' },
-      ],
+      likes: [{ characterId: 'character-2' }],
     } as any);
 
     await client.users().insertOne({
       discordId: 'user-2',
-      likes: [
-        { mediaId: 'media-2' },
-      ],
+      likes: [{ mediaId: 'media-2' }],
     } as any);
 
-    await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        lastPull: new Date(),
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      lastPull: new Date(),
+    } as any);
 
-    const users = await db.getActiveUsersIfLiked(
-      'guild-id',
-      'character-id',
-      ['media-id'],
-    );
+    const users = await db.getActiveUsersIfLiked('guild-id', 'character-id', [
+      'media-id',
+    ]);
 
-    assertEquals(users, []);
+    expect(users).toEqual([]);
   });
 });
 
@@ -841,20 +801,17 @@ describe('db.getUserCharacters()', () => {
       characterId: 'character-3',
     } as any);
 
-    const characters = await db.getUserCharacters(
-      'user-id',
-      'guild-id',
-    );
+    const characters = await db.getUserCharacters('user-id', 'guild-id');
 
-    assertEquals(characters.length, 2);
+    expect(characters.length).toBe(2);
 
-    assertObjectMatch(characters[0], {
+    expect(characters[0]).toMatchObject({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-1',
     });
 
-    assertObjectMatch(characters[1], {
+    expect(characters[1]).toMatchObject({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-2',
@@ -875,20 +832,17 @@ describe('db.getUserCharacters()', () => {
       characterId: 'character-2',
     } as any);
 
-    const characters = await db.getUserCharacters(
-      'user-id',
-      'guild-id',
-    );
+    const characters = await db.getUserCharacters('user-id', 'guild-id');
 
-    assertEquals(characters.length, 2);
+    expect(characters.length).toBe(2);
 
-    assertObjectMatch(characters[0], {
+    expect(characters[0]).toMatchObject({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-2',
     });
 
-    assertObjectMatch(characters[1], {
+    expect(characters[1]).toMatchObject({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-1',
@@ -909,20 +863,17 @@ describe('db.getUserCharacters()', () => {
       createdAt: new Date('1999-1-1'),
     } as any);
 
-    const characters = await db.getUserCharacters(
-      'user-id',
-      'guild-id',
-    );
+    const characters = await db.getUserCharacters('user-id', 'guild-id');
 
-    assertEquals(characters.length, 2);
+    expect(characters.length).toBe(2);
 
-    assertObjectMatch(characters[0], {
+    expect(characters[0]).toMatchObject({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-1',
     });
 
-    assertObjectMatch(characters[1], {
+    expect(characters[1]).toMatchObject({
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-2',
@@ -942,12 +893,9 @@ describe('db.getUserCharacters()', () => {
       characterId: 'character-2',
     } as any);
 
-    const characters = await db.getUserCharacters(
-      'user-id',
-      'guild-id',
-    );
+    const characters = await db.getUserCharacters('user-id', 'guild-id');
 
-    assertEquals(characters.length, 0);
+    expect(characters.length).toBe(0);
   });
 });
 
@@ -965,47 +913,14 @@ describe('db.getMediaCharacters()', () => {
   });
 
   it('2 character - 1 media (exists)', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await client.characters()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        inventoryId: inventoryInsertedId,
-        characterId: 'character-1',
-        mediaId: 'media-id',
-      } as any);
-
-    const { insertedId: character2InsertedId } = await client.characters()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        inventoryId: inventoryInsertedId,
-        characterId: 'character-2',
-        mediaId: 'media-id',
-      } as any);
-
-    const { insertedId: _character3InsertedId } = await client.characters()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        inventoryId: inventoryInsertedId,
-        characterId: 'character-3',
-        mediaId: 'another-media-id',
-      } as any);
-
-    const characters = await db.getMediaCharacters('guild-id', [
-      'media-id',
-    ]);
-
-    assertEquals(characters.length, 2);
-
-    assertEquals(characters[0]!, {
-      _id: character1InsertedId,
+    await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       inventoryId: inventoryInsertedId,
@@ -1013,68 +928,7 @@ describe('db.getMediaCharacters()', () => {
       mediaId: 'media-id',
     } as any);
 
-    assertEquals(characters[1]!, {
-      _id: character2InsertedId,
-      userId: 'user-id',
-      guildId: 'guild-id',
-      inventoryId: inventoryInsertedId,
-      characterId: 'character-2',
-      mediaId: 'media-id',
-    } as any);
-  });
-
-  it('2 character - 2 media (exists)', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-      } as any);
-
-    const { insertedId: character1InsertedId } = await client.characters()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        inventoryId: inventoryInsertedId,
-        characterId: 'character-1',
-        mediaId: 'media-id',
-      } as any);
-
-    const { insertedId: character2InsertedId } = await client.characters()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        inventoryId: inventoryInsertedId,
-        characterId: 'character-2',
-        mediaId: 'media-id',
-      } as any);
-
-    const { insertedId: character3InsertedId } = await client.characters()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        inventoryId: inventoryInsertedId,
-        characterId: 'character-3',
-        mediaId: 'another-media-id',
-      } as any);
-
-    const characters = await db.getMediaCharacters('guild-id', [
-      'media-id',
-      'another-media-id',
-    ]);
-
-    assertEquals(characters.length, 3);
-
-    assertEquals(characters[0]!, {
-      _id: character1InsertedId,
-      userId: 'user-id',
-      guildId: 'guild-id',
-      inventoryId: inventoryInsertedId,
-      characterId: 'character-1',
-      mediaId: 'media-id',
-    } as any);
-
-    assertEquals(characters[1]!, {
-      _id: character2InsertedId,
+    await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       inventoryId: inventoryInsertedId,
@@ -1082,14 +936,92 @@ describe('db.getMediaCharacters()', () => {
       mediaId: 'media-id',
     } as any);
 
-    assertEquals(characters[2]!, {
-      _id: character3InsertedId,
+    await client.characters().insertOne({
       userId: 'user-id',
       guildId: 'guild-id',
       inventoryId: inventoryInsertedId,
       characterId: 'character-3',
       mediaId: 'another-media-id',
     } as any);
+
+    const characters = await db.getMediaCharacters('guild-id', ['media-id']);
+
+    expect(characters.length).toBe(2);
+
+    expect(characters[0]).toMatchObject({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-1',
+      mediaId: 'media-id',
+    });
+
+    expect(characters[1]).toMatchObject({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+      mediaId: 'media-id',
+    });
+  });
+
+  it('2 character - 2 media (exists)', async () => {
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+      } as any);
+
+    await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      characterId: 'character-1',
+      mediaId: 'media-id',
+    } as any);
+
+    await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      characterId: 'character-2',
+      mediaId: 'media-id',
+    } as any);
+
+    await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      inventoryId: inventoryInsertedId,
+      characterId: 'character-3',
+      mediaId: 'another-media-id',
+    } as any);
+
+    const characters = await db.getMediaCharacters('guild-id', [
+      'media-id',
+      'another-media-id',
+    ]);
+
+    expect(characters.length).toBe(3);
+
+    expect(characters[0]).toMatchObject({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-1',
+      mediaId: 'media-id',
+    });
+
+    expect(characters[1]).toMatchObject({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-2',
+      mediaId: 'media-id',
+    });
+
+    expect(characters[2]).toMatchObject({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-3',
+      mediaId: 'another-media-id',
+    });
   });
 
   it('2 media (nothing found)', async () => {
@@ -1098,6 +1030,6 @@ describe('db.getMediaCharacters()', () => {
       'another-media-id',
     ]);
 
-    assertEquals(characters.length, 0);
+    expect(characters.length).toBe(0);
   });
 });

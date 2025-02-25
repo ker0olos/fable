@@ -1,18 +1,15 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assert, assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
+import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
 let client: Mongo;
 
 const assertWithinLast5secs = (ts: Date) => {
-  assertEquals(Math.abs(Date.now() - ts.getTime()) <= 5000, true);
+  expect(Math.abs(Date.now() - ts.getTime()) <= 5000).toBe(true);
 };
 
 describe('db.clearFloor()', () => {
@@ -29,19 +26,15 @@ describe('db.clearFloor()', () => {
   });
 
   it('normal', async () => {
-    const { insertedId } = await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        floorsCleared: 1,
-      } as any);
+    const { insertedId } = await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      floorsCleared: 1,
+    } as any);
 
-    const inventory = await db.clearFloor(
-      'user-id',
-      'guild-id',
-    );
+    const inventory = await db.clearFloor('user-id', 'guild-id');
 
-    assertObjectMatch(inventory!, {
+    expect(inventory).toMatchObject({
       _id: insertedId,
       userId: 'user-id',
       guildId: 'guild-id',
@@ -64,26 +57,22 @@ describe('db.consumeKey()', () => {
   });
 
   it('normal', async () => {
-    const { insertedId } = await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        availableKeys: 1,
-      } as any);
+    const { insertedId } = await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      availableKeys: 1,
+    } as any);
 
-    const update = await db.consumeKey(
-      'user-id',
-      'guild-id',
-    );
+    const update = await db.consumeKey('user-id', 'guild-id');
 
-    assert(update);
+    expect(update).toBeTruthy();
 
     const inventory = await client.inventories().findOne({ _id: insertedId });
 
     assertWithinLast5secs(inventory!.keysTimestamp!);
     assertWithinLast5secs(inventory!.lastPVE!);
 
-    assertObjectMatch(inventory!, {
+    expect(inventory).toMatchObject({
       _id: insertedId,
       userId: 'user-id',
       guildId: 'guild-id',
@@ -92,17 +81,13 @@ describe('db.consumeKey()', () => {
   });
 
   it('no keys', async () => {
-    await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+    } as any);
 
-    const update = await db.consumeKey(
-      'user-id',
-      'guild-id',
-    );
+    const update = await db.consumeKey('user-id', 'guild-id');
 
-    assert(!update);
+    expect(update).toBeFalsy();
   });
 });

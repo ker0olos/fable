@@ -1,4 +1,4 @@
-import db, { type Mongo } from '~/db/mod.ts';
+import db, { type Mongo } from '~/db/index.ts';
 
 import i18n from '~/src/i18n.ts';
 import utils from '~/src/utils.ts';
@@ -9,7 +9,7 @@ import { skills } from '~/src/skills.ts';
 
 import { NonFetalError, NoPullsError } from '~/src/errors.ts';
 
-import type { ObjectId } from '~/db/mod.ts';
+import type { ObjectId } from '~/db/index.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -34,7 +34,7 @@ const newUnclaimed = (rating: number): number => {
 
 export const randomStats = (
   total: number,
-  seed?: string,
+  seed?: string
 ): Schema.CharacterStats => {
   let attack = 0;
   let defense = 0;
@@ -65,16 +65,14 @@ export const randomStats = (
 };
 
 export const ensureCombat = (
-  character: Partial<Schema.Character>,
+  character: Partial<Schema.Character>
 ): Schema.Character => {
   if (character.combat !== undefined) {
     return character as Schema.Character;
   }
 
-  // deno-lint-ignore no-non-null-assertion
   const total = newUnclaimed(character.rating!);
 
-  // deno-lint-ignore no-non-null-assertion
   const slots = newSkills(character.rating!);
 
   character.combat = {
@@ -93,7 +91,7 @@ export const ensureCombat = (
   for (let i = 0; i < slots; i++) {
     const randomSkillKey = skillsPool.splice(
       Math.floor(Math.random() * skillsPool.length),
-      1,
+      1
     )[0];
 
     character.combat.skills[randomSkillKey] = { level: 1 };
@@ -102,29 +100,27 @@ export const ensureCombat = (
   return character as Schema.Character;
 };
 
-export async function addCharacter(
-  {
-    rating,
-    mediaId,
-    characterId,
-    guaranteed,
-    userId,
-    guildId,
-    sacrifices,
-    mongo,
-  }: {
-    rating: number;
-    mediaId: string;
-    characterId: string;
-    guaranteed: boolean;
-    userId: string;
-    guildId: string;
-    sacrifices?: ObjectId[];
-    mongo: Mongo;
-  },
-): Promise<void> {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedUsers[guildId]?.locale;
+export async function addCharacter({
+  rating,
+  mediaId,
+  characterId,
+  guaranteed,
+  userId,
+  guildId,
+  sacrifices,
+  mongo,
+}: {
+  rating: number;
+  mediaId: string;
+  characterId: string;
+  guaranteed: boolean;
+  userId: string;
+  guildId: string;
+  sacrifices?: ObjectId[];
+  mongo: Mongo;
+}): Promise<void> {
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedUsers[guildId]?.locale;
 
   const session = mongo.startSession();
 
@@ -135,7 +131,7 @@ export async function addCharacter(
       guildId,
       userId,
       mongo,
-      true,
+      true
     );
 
     if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
@@ -143,7 +139,9 @@ export async function addCharacter(
     }
 
     if (
-      guaranteed && !sacrifices?.length && !user?.guarantees?.includes(rating)
+      guaranteed &&
+      !sacrifices?.length &&
+      !user?.guarantees?.includes(rating)
     ) {
       throw new Error('403');
     }
@@ -175,25 +173,29 @@ export async function addCharacter(
 
       user.guarantees.splice(i, 1);
 
-      await mongo.users().updateOne({ _id: user._id }, {
-        $set: { guarantees: user.guarantees },
-      }, { session });
+      await mongo.users().updateOne(
+        { _id: user._id },
+        {
+          $set: { guarantees: user.guarantees },
+        },
+        { session }
+      );
     } else {
       // if normal pull
       update.availablePulls = inventory.availablePulls - 1;
       update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
     }
 
-    await mongo.inventories().updateOne(
-      { _id: inventory._id },
-      { $set: update },
-      { session },
-    );
+    await mongo
+      .inventories()
+      .updateOne({ _id: inventory._id }, { $set: update }, { session });
 
-    const result = await mongo.characters().bulkWrite([
-      ...deleteSacrifices,
-      { insertOne: { document: newCharacter } },
-    ], { session });
+    const result = await mongo
+      .characters()
+      .bulkWrite(
+        [...deleteSacrifices, { insertOne: { document: newCharacter } }],
+        { session }
+      );
 
     if (sacrifices?.length && result.deletedCount !== sacrifices.length) {
       throw new NonFetalError(i18n.get('failed', locale));

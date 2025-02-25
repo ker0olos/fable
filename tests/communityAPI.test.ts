@@ -1,149 +1,119 @@
-// deno-lint-ignore-file no-explicit-any
-
-import { assertEquals } from '$std/assert/mod.ts';
-
-import {
-  assertSpyCall,
-  assertSpyCalls,
-  returnsNext,
-  stub,
-} from '$std/testing/mock.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, test, expect, vi, afterEach } from 'vitest';
 
 import utils from '~/src/utils.ts';
-
 import * as communityAPI from '~/src/communityAPI.ts';
-
-import db from '~/db/mod.ts';
-
+import db from '~/db/index.ts';
 import config from '~/src/config.ts';
 
-Deno.test('/user', async (test) => {
-  await test.step('normal', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
+describe('/user', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-    const getPacksByMaintainerIdStub = stub(
-      db,
-      'getPacksByMaintainerId',
-      () =>
-        [
-          { manifest: { id: 'pack-1' } },
-          { manifest: { id: 'pack-2' } },
-          { manifest: { id: 'pack-3' } },
-        ] as any,
-    );
+  test('normal', async () => {
+    vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: 'user_id' }),
+    } as any);
+
+    vi.spyOn(db, 'getPacksByMaintainerId').mockReturnValue([
+      { manifest: { id: 'pack-1' } },
+      { manifest: { id: 'pack-2' } },
+      { manifest: { id: 'pack-3' } },
+    ] as any);
 
     config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
+        headers: { authorization: 'Bearer token' },
       });
 
       const response = await communityAPI.user(request);
 
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      expect(response.ok).toBe(true);
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe('OK');
 
       const data = await response.json();
 
-      assertEquals(data.packs.length, 3);
-
-      assertEquals(data.packs[0].manifest.id, 'pack-1');
-      assertEquals(data.packs[1].manifest.id, 'pack-2');
-      assertEquals(data.packs[2].manifest.id, 'pack-3');
+      expect(data.packs.length).toBe(3);
+      expect(data.packs[0].manifest.id).toBe('pack-1');
+      expect(data.packs[1].manifest.id).toBe('pack-2');
+      expect(data.packs[2].manifest.id).toBe('pack-3');
     } finally {
       delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      getPacksByMaintainerIdStub.restore();
     }
   });
 
-  await test.step('invalid access token', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: false,
-          status: 403,
-          statusText: 'Unauthorized',
-          json: (() =>
-            Promise.resolve({
-              error: 'invalid access token',
-            })),
-        } as any,
-      ]),
-    );
+  test('invalid access token', async () => {
+    const fetchStub = vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: 'Unauthorized',
+      json: () =>
+        Promise.resolve({
+          error: 'invalid access token',
+        }),
+    } as any);
 
     config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
+        headers: { authorization: 'Bearer token' },
       });
 
       const response = await communityAPI.user(request);
 
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
+      expect(fetchStub).toHaveBeenCalledTimes(1);
+      expect(fetchStub).toHaveBeenCalledWith(
+        'https://discord.com/api/users/@me',
+        {
           method: 'GET',
           headers: {
             'content-type': 'application/json',
-            'authorization': `Bearer token`,
+            authorization: `Bearer token`,
           },
-        }],
-      });
+        }
+      );
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 403);
-      assertEquals(response.statusText, 'Unauthorized');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(403);
+      expect(response.statusText).toBe('Unauthorized');
 
-      assertEquals(await response.json(), {
+      expect(await response.json()).toEqual({
         error: 'invalid access token',
       });
     } finally {
       delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
     }
   });
 
-  await test.step('under maintenance', async () => {
+  test('under maintenance', async () => {
     const request = new Request('http://localhost:8000', {
       method: 'GET',
-      headers: { 'authorization': 'Bearer token' },
+      headers: { authorization: 'Bearer token' },
     });
 
     const response = await communityAPI.user(request);
 
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 503);
-    assertEquals(response.statusText, 'Under Maintenance');
+    expect(response.ok).toBe(false);
+    expect(response.status).toBe(503);
+    expect(response.statusText).toBe('Under Maintenance');
   });
 });
 
-Deno.test('/popular', async (test) => {
-  await test.step('normal', async () => {
-    const getAllPublicPacksStub = stub(
-      db,
-      'getPopularPacks',
-      () =>
-        [
-          { pack: { manifest: { id: 'pack-1' } } },
-          { pack: { manifest: { id: 'pack-2' } } },
-          { pack: { manifest: { id: 'pack-3' } } },
-        ] as any,
-    );
+describe('/popular', () => {
+  test('normal', async () => {
+    vi.spyOn(db, 'getPopularPacks').mockReturnValue([
+      { pack: { manifest: { id: 'pack-1' } } },
+      { pack: { manifest: { id: 'pack-2' } } },
+      { pack: { manifest: { id: 'pack-3' } } },
+    ] as any);
 
     config.communityPacksBrowseAPI = true;
 
@@ -152,48 +122,41 @@ Deno.test('/popular', async (test) => {
 
       const response = await communityAPI.popular(request);
 
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      expect(response.ok).toBe(true);
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe('OK');
 
       const data = await response.json();
 
-      assertEquals(data.limit, 20);
-      assertEquals(data.offset, 0);
+      expect(data.limit).toBe(20);
+      expect(data.offset).toBe(0);
 
-      assertEquals(data.packs[0].manifest.id, 'pack-1');
-      assertEquals(data.packs[1].manifest.id, 'pack-2');
-      assertEquals(data.packs[2].manifest.id, 'pack-3');
+      expect(data.packs[0].manifest.id).toBe('pack-1');
+      expect(data.packs[1].manifest.id).toBe('pack-2');
+      expect(data.packs[2].manifest.id).toBe('pack-3');
     } finally {
       delete config.communityPacksBrowseAPI;
-
-      getAllPublicPacksStub.restore();
     }
   });
 
-  await test.step('under maintenance', async () => {
+  test('under maintenance', async () => {
     const request = new Request('http://localhost:8000', { method: 'GET' });
 
     const response = await communityAPI.popular(request);
 
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 503);
-    assertEquals(response.statusText, 'Under Maintenance');
+    expect(response.ok).toBe(false);
+    expect(response.status).toBe(503);
+    expect(response.statusText).toBe('Under Maintenance');
   });
 });
 
-Deno.test('/updated', async (test) => {
-  await test.step('normal', async () => {
-    const getAllPublicPacksStub = stub(
-      db,
-      'getLastUpdatedPacks',
-      () =>
-        [
-          { manifest: { id: 'pack-1' } },
-          { manifest: { id: 'pack-2' } },
-          { manifest: { id: 'pack-3' } },
-        ] as any,
-    );
+describe('/updated', () => {
+  test('normal', async () => {
+    vi.spyOn(db, 'getLastUpdatedPacks').mockReturnValue([
+      { manifest: { id: 'pack-1' } },
+      { manifest: { id: 'pack-2' } },
+      { manifest: { id: 'pack-3' } },
+    ] as any);
 
     config.communityPacksBrowseAPI = true;
 
@@ -202,112 +165,96 @@ Deno.test('/updated', async (test) => {
 
       const response = await communityAPI.lastUpdated(request);
 
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      expect(response.ok).toBe(true);
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe('OK');
 
       const data = await response.json();
 
-      assertEquals(data.limit, 20);
-      assertEquals(data.offset, 0);
+      expect(data.limit).toBe(20);
+      expect(data.offset).toBe(0);
 
-      assertEquals(data.packs[0].manifest.id, 'pack-1');
-      assertEquals(data.packs[1].manifest.id, 'pack-2');
-      assertEquals(data.packs[2].manifest.id, 'pack-3');
+      expect(data.packs[0].manifest.id).toBe('pack-1');
+      expect(data.packs[1].manifest.id).toBe('pack-2');
+      expect(data.packs[2].manifest.id).toBe('pack-3');
     } finally {
       delete config.communityPacksBrowseAPI;
-
-      getAllPublicPacksStub.restore();
     }
   });
 
-  await test.step('under maintenance', async () => {
+  test('under maintenance', async () => {
     const request = new Request('http://localhost:8000', { method: 'GET' });
 
     const response = await communityAPI.lastUpdated(request);
 
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 503);
-    assertEquals(response.statusText, 'Under Maintenance');
+    expect(response.ok).toBe(false);
+    expect(response.status).toBe(503);
+    expect(response.statusText).toBe('Under Maintenance');
   });
 });
 
-Deno.test('/publish', async (test) => {
-  await test.step('normal', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
+describe('/publish', () => {
+  test('normal', async () => {
+    const fetchStub = vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: 'user_id' }),
+    } as any);
 
-    const publishPackStub = stub(
-      db,
-      'publishPack',
-      () => [] as any,
-    );
+    const publishPackStub = vi
+      .spyOn(db, 'publishPack')
+      .mockReturnValue([] as any);
 
     config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
-        headers: { 'authorization': 'Bearer token' },
+        headers: { authorization: 'Bearer token' },
         body: JSON.stringify({ manifest: { id: 'pack_id' } }),
       });
 
       const response = await communityAPI.publish(request);
 
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
+      expect(fetchStub).toHaveBeenCalledWith(
+        'https://discord.com/api/users/@me',
+        {
           method: 'GET',
           headers: {
             'content-type': 'application/json',
-            'authorization': `Bearer token`,
+            authorization: `Bearer token`,
           },
-        }],
-      });
-
-      assertEquals(
-        publishPackStub.calls[0].args[0],
-        'user_id',
+        }
       );
 
-      assertEquals(publishPackStub.calls[0].args[1], { id: 'pack_id' });
+      expect(publishPackStub).toHaveBeenCalledWith('user_id', {
+        id: 'pack_id',
+      });
 
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 201);
-      assertEquals(response.statusText, 'Created');
+      expect(response.ok).toBe(true);
+      expect(response.status).toBe(201);
+      expect(response.statusText).toBe('Created');
     } finally {
       delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      publishPackStub.restore();
     }
   });
 
-  await test.step('invalid access token', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: false,
-          status: 403,
-          statusText: 'Unauthorized',
-          json: (() =>
-            Promise.resolve({
-              error: 'invalid access token',
-            })),
-        } as any,
-      ]),
-    );
+  test('invalid access token', async () => {
+    const fetchStub = vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: 'Unauthorized',
+      json: () =>
+        Promise.resolve({
+          error: 'invalid access token',
+        }),
+    } as any);
 
     config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
-        headers: { 'authorization': 'Bearer token' },
+        headers: { authorization: 'Bearer token' },
         body: JSON.stringify({
           manifest: {
             id: 'pack_id',
@@ -317,45 +264,42 @@ Deno.test('/publish', async (test) => {
 
       const response = await communityAPI.publish(request);
 
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
+      expect(fetchStub).toHaveBeenCalledTimes(1);
+      expect(fetchStub).toHaveBeenCalledWith(
+        'https://discord.com/api/users/@me',
+        {
           method: 'GET',
           headers: {
             'content-type': 'application/json',
-            'authorization': `Bearer token`,
+            authorization: `Bearer token`,
           },
-        }],
-      });
+        }
+      );
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 403);
-      assertEquals(response.statusText, 'Unauthorized');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(403);
+      expect(response.statusText).toBe('Unauthorized');
 
-      assertEquals(await response.json(), {
+      expect(await response.json()).toEqual({
         error: 'invalid access token',
       });
     } finally {
       delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
     }
   });
 
-  await test.step('invalid manifest', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
+  test('invalid manifest', async () => {
+    vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: 'user_id' }),
+    } as any);
 
     config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
-        headers: { 'authorization': 'Bearer token' },
+        headers: { authorization: 'Bearer token' },
         body: JSON.stringify({
           manifest: {},
         }),
@@ -363,11 +307,11 @@ Deno.test('/publish', async (test) => {
 
       const response = await communityAPI.publish(request);
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 400);
-      assertEquals(response.statusText, 'Bad Request');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(400);
+      expect(response.statusText).toBe('Bad Request');
 
-      assertEquals(await response.json(), {
+      expect(await response.json()).toEqual({
         errors: [
           {
             instancePath: '',
@@ -382,32 +326,27 @@ Deno.test('/publish', async (test) => {
       });
     } finally {
       delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
     }
   });
 
-  await test.step('permission denied', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
+  test('permission denied', async () => {
+    const fetchStub = vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: 'user_id' }),
+    } as any);
 
-    const publishPackStub = stub(
-      db,
-      'publishPack',
-      () => {
+    const publishPackStub = vi
+      .spyOn(db, 'publishPack')
+      .mockImplementation(() => {
         throw new Error('PERMISSION_DENIED');
-      },
-    );
+      });
 
     config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
-        headers: { 'authorization': 'Bearer token' },
+        headers: { authorization: 'Bearer token' },
         body: JSON.stringify({
           manifest: {
             id: 'pack_id',
@@ -417,125 +356,107 @@ Deno.test('/publish', async (test) => {
 
       const response = await communityAPI.publish(request);
 
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
+      expect(fetchStub).toHaveBeenCalledWith(
+        'https://discord.com/api/users/@me',
+        {
           method: 'GET',
           headers: {
             'content-type': 'application/json',
-            'authorization': `Bearer token`,
+            authorization: `Bearer token`,
           },
-        }],
-      });
-
-      assertEquals(
-        publishPackStub.calls[0].args[0],
-        'user_id',
+        }
       );
 
-      assertEquals(publishPackStub.calls[0].args[1], { id: 'pack_id' });
+      expect(publishPackStub).toHaveBeenCalledWith('user_id', {
+        id: 'pack_id',
+      });
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 403);
-      assertEquals(response.statusText, 'Forbidden');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(403);
+      expect(response.statusText).toBe('Forbidden');
 
-      assertEquals(await response.json(), {
+      expect(await response.json()).toEqual({
         error: 'PERMISSION_DENIED',
       });
     } finally {
       delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      publishPackStub.restore();
     }
   });
 
-  await test.step('unknown server error', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
+  test('unknown server error', async () => {
+    const fetchStub = vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: 'user_id' }),
+    } as any);
 
-    const publishPackStub = stub(
-      db,
-      'publishPack',
-      () => {
+    const publishPackStub = vi
+      .spyOn(db, 'publishPack')
+      .mockImplementation(() => {
         throw new Error();
-      },
-    );
+      });
 
     config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
-        headers: { 'authorization': 'Bearer token' },
+        headers: { authorization: 'Bearer token' },
         body: JSON.stringify({ manifest: { id: 'pack_id' } }),
       });
 
       const response = await communityAPI.publish(request);
 
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
+      expect(fetchStub).toHaveBeenCalledWith(
+        'https://discord.com/api/users/@me',
+        {
           method: 'GET',
           headers: {
             'content-type': 'application/json',
-            'authorization': `Bearer token`,
+            authorization: `Bearer token`,
           },
-        }],
-      });
-
-      assertEquals(
-        publishPackStub.calls[0].args[0],
-        'user_id',
+        }
       );
 
-      assertEquals(publishPackStub.calls[0].args[1], { id: 'pack_id' });
+      expect(publishPackStub).toHaveBeenCalledWith('user_id', {
+        id: 'pack_id',
+      });
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 501);
-      assertEquals(response.statusText, 'Internal Server Error');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(501);
+      expect(response.statusText).toBe('Internal Server Error');
 
-      assertEquals(await response.json(), {
+      expect(await response.json()).toEqual({
         error: 'INTERNAL_SERVER_ERROR',
       });
     } finally {
       delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      publishPackStub.restore();
     }
   });
 
-  await test.step('under maintenance', async () => {
+  test('under maintenance', async () => {
     const request = new Request('http://localhost:8000', {
       method: 'POST',
-      headers: { 'authorization': 'Bearer token' },
+      headers: { authorization: 'Bearer token' },
       body: JSON.stringify({ manifest: { id: 'pack_id' } }),
     });
 
     const response = await communityAPI.publish(request);
 
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 503);
-    assertEquals(response.statusText, 'Under Maintenance');
+    expect(response.ok).toBe(false);
+    expect(response.status).toBe(503);
+    expect(response.statusText).toBe('Under Maintenance');
   });
 });
 
-Deno.test('/pack', async (test) => {
-  await test.step('normal', async () => {
-    const getPack = stub(
-      db,
-      'getPack',
-      () =>
-        ({
-          owner: 'user_id',
-          manifest: {
-            id: 'pack-id',
-            private: false,
-          },
-        }) as any,
-    );
+describe('/pack', () => {
+  test('normal', async () => {
+    vi.spyOn(db, 'getPack').mockReturnValue({
+      owner: 'user_id',
+      manifest: {
+        id: 'pack-id',
+        private: false,
+      },
+    } as any);
 
     config.communityPacksBrowseAPI = true;
     config.communityPacksMaintainerAPI = true;
@@ -545,27 +466,19 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
+      const response = await communityAPI.pack(request, 'pack-id');
 
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      expect(response.ok).toBe(true);
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe('OK');
     } finally {
       delete config.communityPacksBrowseAPI;
       delete config.communityPacksMaintainerAPI;
-
-      getPack.restore();
     }
   });
 
-  await test.step('not found', async () => {
-    const getPack = stub(
-      db,
-      'getPack',
-      () => undefined as any,
-    );
+  test('not found', async () => {
+    vi.spyOn(db, 'getPack').mockReturnValue(undefined as any);
 
     config.communityPacksBrowseAPI = true;
     config.communityPacksMaintainerAPI = true;
@@ -575,88 +488,68 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
+      const response = await communityAPI.pack(request, 'pack-id');
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 404);
-      assertEquals(response.statusText, 'Not Found');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(404);
+      expect(response.statusText).toBe('Not Found');
     } finally {
       delete config.communityPacksBrowseAPI;
       delete config.communityPacksMaintainerAPI;
-
-      getPack.restore();
     }
   });
 
-  await test.step('invalid access token (public)', async () => {
-    const getPack = stub(
-      db,
-      'getPack',
-      () =>
-        ({
-          owner: 'user_id',
-          manifest: {
-            id: 'pack-id',
-          },
-        }) as any,
-    );
+  test('invalid access token (public)', async () => {
+    vi.spyOn(db, 'getPack').mockReturnValue({
+      owner: 'user_id',
+      manifest: {
+        id: 'pack-id',
+      },
+    } as any);
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
+    const fetchStub = vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: 'Unauthorized',
+      json: () =>
+        Promise.resolve({
+          error: 'invalid access token',
+        }),
+    } as any);
+
+    config.communityPacksBrowseAPI = true;
+    config.communityPacksMaintainerAPI = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        method: 'GET',
+        headers: { authorization: 'Bearer token' },
+      });
+
+      const response = await communityAPI.pack(request, 'pack-id');
+
+      expect(fetchStub).toHaveBeenCalledTimes(1);
+      expect(fetchStub).toHaveBeenCalledWith(
+        'https://discord.com/api/users/@me',
         {
-          ok: false,
-          status: 403,
-          statusText: 'Unauthorized',
-          json: (() =>
-            Promise.resolve({
-              error: 'invalid access token',
-            })),
-        } as any,
-      ]),
-    );
-
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
           method: 'GET',
           headers: {
             'content-type': 'application/json',
-            'authorization': `Bearer token`,
+            authorization: `Bearer token`,
           },
-        }],
-      });
+        }
+      );
 
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      expect(response.ok).toBe(true);
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe('OK');
     } finally {
       delete config.communityPacksBrowseAPI;
       delete config.communityPacksMaintainerAPI;
-
-      getPack.restore();
-      fetchStub.restore();
     }
   });
 
-  await test.step('missing pack id', async () => {
+  test('missing pack id', async () => {
     config.communityPacksBrowseAPI = true;
     config.communityPacksMaintainerAPI = true;
 
@@ -665,18 +558,18 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await communityAPI.pack(request, {});
+      const response = await communityAPI.pack(request, '');
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 400);
-      assertEquals(response.statusText, 'Bad Request');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(400);
+      expect(response.statusText).toBe('Bad Request');
     } finally {
       delete config.communityPacksBrowseAPI;
       delete config.communityPacksMaintainerAPI;
     }
   });
 
-  await test.step('under maintenance', async () => {
+  test('under maintenance', async () => {
     config.communityPacksBrowseAPI = false;
     config.communityPacksMaintainerAPI = true;
 
@@ -685,32 +578,32 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await communityAPI.pack(request, {});
+      const response = await communityAPI.pack(request, '');
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 503);
-      assertEquals(response.statusText, 'Under Maintenance');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(503);
+      expect(response.statusText).toBe('Under Maintenance');
     } finally {
       delete config.communityPacksBrowseAPI;
       delete config.communityPacksMaintainerAPI;
     }
   });
 
-  await test.step('under maintenance 2', async () => {
+  test('under maintenance 2', async () => {
     config.communityPacksBrowseAPI = true;
     config.communityPacksMaintainerAPI = false;
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
+        headers: { authorization: 'Bearer token' },
       });
 
-      const response = await communityAPI.pack(request, {});
+      const response = await communityAPI.pack(request, '');
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 503);
-      assertEquals(response.statusText, 'Under Maintenance');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(503);
+      expect(response.statusText).toBe('Under Maintenance');
     } finally {
       delete config.communityPacksBrowseAPI;
       delete config.communityPacksMaintainerAPI;
@@ -718,18 +611,13 @@ Deno.test('/pack', async (test) => {
   });
 });
 
-Deno.test('/search', async (test) => {
-  await test.step('normal', async () => {
-    const searchPacksStub = stub(
-      db,
-      'searchPacks',
-      () =>
-        [
-          { manifest: { id: 'pack-1' } },
-          { manifest: { id: 'pack-2' } },
-          { manifest: { id: 'pack-3' } },
-        ] as any,
-    );
+describe('/search', () => {
+  test('normal', async () => {
+    vi.spyOn(db, 'searchPacks').mockReturnValue([
+      { manifest: { id: 'pack-1' } },
+      { manifest: { id: 'pack-2' } },
+      { manifest: { id: 'pack-3' } },
+    ] as any);
 
     config.communityPacksBrowseAPI = true;
 
@@ -740,25 +628,24 @@ Deno.test('/search', async (test) => {
 
       const response = await communityAPI.search(request);
 
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      expect(response.ok).toBe(true);
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe('OK');
 
       const data = await response.json();
 
-      assertEquals(data.limit, 20);
-      assertEquals(data.offset, 0);
+      expect(data.limit).toBe(20);
+      expect(data.offset).toBe(0);
 
-      assertEquals(data.packs[0].manifest.id, 'pack-1');
-      assertEquals(data.packs[1].manifest.id, 'pack-2');
-      assertEquals(data.packs[2].manifest.id, 'pack-3');
+      expect(data.packs[0].manifest.id).toBe('pack-1');
+      expect(data.packs[1].manifest.id).toBe('pack-2');
+      expect(data.packs[2].manifest.id).toBe('pack-3');
     } finally {
       delete config.communityPacksBrowseAPI;
-      searchPacksStub.restore();
     }
   });
 
-  await test.step('missing query', async () => {
+  test('missing query', async () => {
     config.communityPacksBrowseAPI = true;
 
     try {
@@ -766,27 +653,27 @@ Deno.test('/search', async (test) => {
 
       const response = await communityAPI.search(request);
 
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 400);
-      assertEquals(response.statusText, 'Bad Request');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(400);
+      expect(response.statusText).toBe('Bad Request');
 
       const data = await response.json();
 
-      assertEquals(data.error, 'MISSING_QUERY');
+      expect(data.error).toBe('MISSING_QUERY');
     } finally {
       delete config.communityPacksBrowseAPI;
     }
   });
 
-  await test.step('under maintenance', async () => {
+  test('under maintenance', async () => {
     const request = new Request('http://localhost:8000?q=test', {
       method: 'GET',
     });
 
     const response = await communityAPI.search(request);
 
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 503);
-    assertEquals(response.statusText, 'Under Maintenance');
+    expect(response.ok).toBe(false);
+    expect(response.status).toBe(503);
+    expect(response.statusText).toBe('Under Maintenance');
   });
 });

@@ -1,17 +1,9 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ObjectId } from 'mongodb';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import {
-  assertEquals,
-  assertNotEquals,
-  assertObjectMatch,
-  assertRejects,
-} from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
+import db, { Mongo } from '~/db/index.ts';
 
 import config from '~/src/config.ts';
 
@@ -21,7 +13,7 @@ let client: Mongo;
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 const assertWithinLast5secs = (ts: Date) => {
-  assertEquals(Math.abs(Date.now() - ts.getTime()) <= 5000, true);
+  expect(Math.abs(Date.now() - ts.getTime()) <= 5000).toBe(true);
 };
 
 describe('db.giveCharacters()', () => {
@@ -66,17 +58,14 @@ describe('db.giveCharacters()', () => {
       characterId: 'character-id',
     });
 
-    assertEquals(objectIdRegex.test(inventoryId[0].toHexString()), true);
-    assertEquals(objectIdRegex.test(character!._id.toHexString()), true);
+    expect(objectIdRegex.test(inventoryId[0].toHexString())).toBe(true);
+    expect(objectIdRegex.test(character!._id.toHexString())).toBe(true);
 
-    assertEquals(
-      objectIdRegex.test(character!.inventoryId.toHexString()),
-      true,
-    );
+    expect(objectIdRegex.test(character!.inventoryId.toHexString())).toBe(true);
 
-    assertNotEquals(character!.inventoryId, inventoryId[0]);
+    expect(character!.inventoryId).not.toEqual(inventoryId[0]);
 
-    assertObjectMatch(character!, {
+    expect(character).toMatchObject({
       userId: 'user-2',
       guildId: 'guild-id',
       characterId: 'character-id',
@@ -117,9 +106,9 @@ describe('db.giveCharacters()', () => {
       characterId: 'character-id',
     });
 
-    assertEquals(objectIdRegex.test(character!._id.toHexString()), true);
+    expect(objectIdRegex.test(character!._id.toHexString())).toBe(true);
 
-    assertObjectMatch(character!, {
+    expect(character).toMatchObject({
       userId: 'user-2',
       guildId: 'guild-id',
       inventoryId: inventoryId[1],
@@ -136,17 +125,14 @@ describe('db.giveCharacters()', () => {
       },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.giveCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-id'],
-        }),
-      Error,
-      'NOT_OWNED',
-    );
+    await expect(
+      db.giveCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-id'],
+      })
+    ).rejects.toThrow('NOT_OWNED');
   });
 
   it('character not owned', async () => {
@@ -172,17 +158,14 @@ describe('db.giveCharacters()', () => {
       },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.giveCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-id'],
-        }),
-      Error,
-      'NOT_OWNED',
-    );
+    await expect(
+      db.giveCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-id'],
+      })
+    ).rejects.toThrow('NOT_OWNED');
   });
 
   it('give party characters', async () => {
@@ -208,17 +191,14 @@ describe('db.giveCharacters()', () => {
       },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.giveCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-id'],
-        }),
-      Error,
-      'CHARACTER_IN_PARTY',
-    );
+    await expect(
+      db.giveCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-id'],
+      })
+    ).rejects.toThrow('CHARACTER_IN_PARTY');
   });
 });
 
@@ -272,21 +252,24 @@ describe('db.tradeCharacters()', () => {
       takeIds: ['character-2'],
     });
 
-    const [character1, character2] = await client.characters().find({
-      characterId: { $in: ['character-1', 'character-2'] },
-    }).toArray();
+    const [character1, character2] = await client
+      .characters()
+      .find({
+        characterId: { $in: ['character-1', 'character-2'] },
+      })
+      .toArray();
 
-    assertEquals(objectIdRegex.test(character1!._id.toHexString()), true);
-    assertEquals(objectIdRegex.test(character2!._id.toHexString()), true);
+    expect(objectIdRegex.test(character1!._id.toHexString())).toBe(true);
+    expect(objectIdRegex.test(character2!._id.toHexString())).toBe(true);
 
-    assertObjectMatch(character1!, {
+    expect(character1).toMatchObject({
       userId: 'user-2',
       guildId: 'guild-id',
       inventoryId: inventoryId[1],
       characterId: 'character-1',
     });
 
-    assertObjectMatch(character2!, {
+    expect(character2).toMatchObject({
       userId: 'user-1',
       guildId: 'guild-id',
       inventoryId: inventoryId[0],
@@ -309,12 +292,6 @@ describe('db.tradeCharacters()', () => {
     ] as any);
 
     await client.characters().insertMany([
-      // {
-      //   userId: 'user-1',
-      //   guildId: 'guild-id',
-      //   inventoryId: inventoryId[0],
-      //   characterId: 'character-1',
-      // },
       {
         userId: 'user-2',
         guildId: 'guild-id',
@@ -323,18 +300,15 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.tradeCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-1'],
-          takeIds: ['character-2'],
-        }),
-      Error,
-      'NOT_OWNED',
-    );
+    await expect(
+      db.tradeCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-1'],
+        takeIds: ['character-2'],
+      })
+    ).rejects.toThrow('NOT_OWNED');
   });
 
   it('take character not found', async () => {
@@ -358,26 +332,17 @@ describe('db.tradeCharacters()', () => {
         inventoryId: inventoryId[0],
         characterId: 'character-1',
       },
-      // {
-      //   userId: 'user-2',
-      //   guildId: 'guild-id',
-      //   inventoryId: inventoryId[1],
-      //   characterId: 'character-2',
-      // },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.tradeCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-1'],
-          takeIds: ['character-2'],
-        }),
-      Error,
-      'NOT_OWNED',
-    );
+    await expect(
+      db.tradeCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-1'],
+        takeIds: ['character-2'],
+      })
+    ).rejects.toThrow('NOT_OWNED');
   });
 
   it('give character not owned', async () => {
@@ -409,18 +374,15 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.tradeCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-1'],
-          takeIds: ['character-2'],
-        }),
-      Error,
-      'NOT_OWNED',
-    );
+    await expect(
+      db.tradeCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-1'],
+        takeIds: ['character-2'],
+      })
+    ).rejects.toThrow('NOT_OWNED');
   });
 
   it('take character not owned', async () => {
@@ -452,18 +414,15 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.tradeCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-1'],
-          takeIds: ['character-2'],
-        }),
-      Error,
-      'NOT_OWNED',
-    );
+    await expect(
+      db.tradeCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-1'],
+        takeIds: ['character-2'],
+      })
+    ).rejects.toThrow('NOT_OWNED');
   });
 
   it('give character in party', async () => {
@@ -500,18 +459,15 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.tradeCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-1'],
-          takeIds: ['character-2'],
-        }),
-      Error,
-      'CHARACTER_IN_PARTY',
-    );
+    await expect(
+      db.tradeCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-1'],
+        takeIds: ['character-2'],
+      })
+    ).rejects.toThrow('CHARACTER_IN_PARTY');
   });
 
   it('take character in party', async () => {
@@ -548,18 +504,15 @@ describe('db.tradeCharacters()', () => {
       },
     ] as any);
 
-    await assertRejects(
-      () =>
-        db.tradeCharacters({
-          aUserId: 'user-1',
-          bUserId: 'user-2',
-          guildId: 'guild-id',
-          giveIds: ['character-1'],
-          takeIds: ['character-2'],
-        }),
-      Error,
-      'CHARACTER_IN_PARTY',
-    );
+    await expect(
+      db.tradeCharacters({
+        aUserId: 'user-1',
+        bUserId: 'user-2',
+        guildId: 'guild-id',
+        giveIds: ['character-1'],
+        takeIds: ['character-2'],
+      })
+    ).rejects.toThrow('CHARACTER_IN_PARTY');
   });
 });
 
@@ -597,19 +550,15 @@ describe('db.stealCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    await db.stealCharacter(
-      'user-1',
-      'guild-id',
-      characterOId,
-    );
+    await db.stealCharacter('user-1', 'guild-id', characterOId);
 
     const character = await client.characters().findOne({
       characterId: 'character-id',
     });
 
-    assertEquals(objectIdRegex.test(character!._id.toHexString()), true);
+    expect(objectIdRegex.test(character!._id.toHexString())).toBe(true);
 
-    assertObjectMatch(character!, {
+    expect(character).toMatchObject({
       userId: 'user-1',
       guildId: 'guild-id',
       inventoryId: inventoryId[0],
@@ -641,19 +590,15 @@ describe('db.stealCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    await db.stealCharacter(
-      'user-1',
-      'guild-id',
-      characterOId,
-    );
+    await db.stealCharacter('user-1', 'guild-id', characterOId);
 
     const character = await client.characters().findOne({
       characterId: 'character-id',
     });
 
-    assertEquals(objectIdRegex.test(character!._id.toHexString()), true);
+    expect(objectIdRegex.test(character!._id.toHexString())).toBe(true);
 
-    assertObjectMatch(character!, {
+    expect(character).toMatchObject({
       userId: 'user-1',
       guildId: 'guild-id',
       inventoryId: inventoryId[0],
@@ -664,15 +609,13 @@ describe('db.stealCharacter()', () => {
       _id: inventoryId[1],
     });
 
-    assertEquals(targetInventory!.party, {} as any);
+    expect(targetInventory!.party).toEqual({});
   });
 
   it('character not found', async () => {
-    await assertRejects(
-      () => db.stealCharacter('user-1', 'guild-id', new ObjectId()),
-      Error,
-      'NOT_FOUND',
-    );
+    await expect(
+      db.stealCharacter('user-1', 'guild-id', new ObjectId())
+    ).rejects.toThrow('NOT_FOUND');
   });
 });
 
@@ -697,19 +640,17 @@ describe('db.failSteal()', () => {
       guildId: 'guild-id',
     });
 
-    assertEquals(objectIdRegex.test(inventory!._id.toHexString()), true);
+    expect(objectIdRegex.test(inventory!._id.toHexString())).toBe(true);
 
     assertWithinLast5secs(inventory!.stealTimestamp!);
   });
 
   it('existing', async () => {
-    const { insertedId } = await client.inventories().insertOne(
-      {
-        userId: 'user-id',
-        guildId: 'guild-id',
-        stealTimestamp: new Date('1999-1-1'),
-      } as any,
-    );
+    const { insertedId } = await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      stealTimestamp: new Date('1999-1-1'),
+    } as any);
 
     await db.failSteal('guild-id', 'user-id');
 
@@ -718,7 +659,7 @@ describe('db.failSteal()', () => {
       guildId: 'guild-id',
     });
 
-    assertEquals(inventory!._id.toHexString(), insertedId.toHexString());
+    expect(inventory!._id.toHexString()).toBe(insertedId.toHexString());
 
     assertWithinLast5secs(inventory!.stealTimestamp!);
   });

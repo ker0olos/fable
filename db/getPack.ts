@@ -1,4 +1,4 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -9,7 +9,7 @@ type PopularPack = {
 
 export async function getPopularPacks(
   offset = 0,
-  limit = 20,
+  limit = 20
 ): Promise<PopularPack[]> {
   const db = new Mongo();
 
@@ -18,7 +18,9 @@ export async function getPopularPacks(
   try {
     await db.connect();
 
-    packs = await db.guilds().aggregate()
+    packs = (await db
+      .guilds()
+      .aggregate()
       .unwind('$packIds')
       .group({
         _id: '$packIds',
@@ -52,7 +54,7 @@ export async function getPopularPacks(
       .skip(offset)
       .limit(limit)
       .project({ _id: 0 })
-      .toArray() as PopularPack[];
+      .toArray()) as PopularPack[];
   } finally {
     await db.close();
   }
@@ -62,7 +64,7 @@ export async function getPopularPacks(
 
 export async function getLastUpdatedPacks(
   offset = 0,
-  limit = 20,
+  limit = 20
 ): Promise<Schema.Pack[]> {
   const db = new Mongo();
 
@@ -71,28 +73,24 @@ export async function getLastUpdatedPacks(
   try {
     await db.connect();
 
-    packs = await db.packs().aggregate()
+    packs = (await db
+      .packs()
+      .aggregate()
       .match({
         $and: [
-          { 'hidden': false },
+          { hidden: false },
           {
-            $or: [
-              { 'manifest.nsfw': false },
-              { 'manifest.nsfw': null },
-            ],
+            $or: [{ 'manifest.nsfw': false }, { 'manifest.nsfw': null }],
           },
           {
-            $or: [
-              { 'manifest.private': false },
-              { 'manifest.private': null },
-            ],
+            $or: [{ 'manifest.private': false }, { 'manifest.private': null }],
           },
         ],
       })
       .sort({ updatedAt: -1 })
       .skip(offset)
       .limit(limit)
-      .toArray() as Schema.Pack[];
+      .toArray()) as Schema.Pack[];
   } finally {
     await db.close();
   }
@@ -103,7 +101,7 @@ export async function getLastUpdatedPacks(
 export async function getPacksByMaintainerId(
   userId: string,
   offset = 0,
-  limit = 20,
+  limit = 20
 ): Promise<Schema.Pack[]> {
   const db = new Mongo();
 
@@ -112,12 +110,10 @@ export async function getPacksByMaintainerId(
   try {
     await db.connect();
 
-    packs = await db.packs()
+    packs = await db
+      .packs()
       .find({
-        $or: [
-          { owner: userId },
-          { 'manifest.maintainers': { $in: [userId] } },
-        ],
+        $or: [{ owner: userId }, { 'manifest.maintainers': { $in: [userId] } }],
       })
       .sort({ updatedAt: -1 })
       .skip(offset)
@@ -132,7 +128,7 @@ export async function getPacksByMaintainerId(
 
 export async function getPack(
   manifestId: string,
-  userId?: string,
+  userId?: string
 ): Promise<Schema.Pack | null> {
   const db = new Mongo();
 
@@ -142,30 +138,25 @@ export async function getPack(
     await db.connect();
 
     if (typeof userId === 'string') {
-      pack = await db.packs()
-        .findOne({
-          'manifest.id': manifestId,
-          $or: [
-            { 'manifest.private': null },
-            { 'manifest.private': false },
-            {
-              'manifest.private': true,
-              $or: [
-                { owner: userId },
-                { 'manifest.maintainers': { $in: [userId] } },
-              ],
-            },
-          ],
-        }) as Schema.Pack;
+      pack = (await db.packs().findOne({
+        'manifest.id': manifestId,
+        $or: [
+          { 'manifest.private': null },
+          { 'manifest.private': false },
+          {
+            'manifest.private': true,
+            $or: [
+              { owner: userId },
+              { 'manifest.maintainers': { $in: [userId] } },
+            ],
+          },
+        ],
+      })) as Schema.Pack;
     } else {
-      pack = await db.packs()
-        .findOne({
-          'manifest.id': manifestId,
-          $or: [
-            { 'manifest.private': null },
-            { 'manifest.private': false },
-          ],
-        }) as Schema.Pack;
+      pack = (await db.packs().findOne({
+        'manifest.id': manifestId,
+        $or: [{ 'manifest.private': null }, { 'manifest.private': false }],
+      })) as Schema.Pack;
     }
   } finally {
     await db.close();
@@ -177,7 +168,7 @@ export async function getPack(
 export async function searchPacks(
   query: string,
   offset = 0,
-  limit = 20,
+  limit = 20
 ): Promise<Schema.Pack[]> {
   const db = new Mongo();
 
@@ -186,21 +177,17 @@ export async function searchPacks(
   try {
     await db.connect();
 
-    packs = await db.packs().aggregate()
+    packs = (await db
+      .packs()
+      .aggregate()
       .match({
         $and: [
           { hidden: false },
           {
-            $or: [
-              { 'manifest.nsfw': false },
-              { 'manifest.nsfw': null },
-            ],
+            $or: [{ 'manifest.nsfw': false }, { 'manifest.nsfw': null }],
           },
           {
-            $or: [
-              { 'manifest.private': false },
-              { 'manifest.private': null },
-            ],
+            $or: [{ 'manifest.private': false }, { 'manifest.private': null }],
           },
           {
             $or: [
@@ -213,7 +200,7 @@ export async function searchPacks(
       .sort({ updatedAt: -1 })
       .skip(offset)
       .limit(limit)
-      .toArray() as Schema.Pack[];
+      .toArray()) as Schema.Pack[];
   } finally {
     await db.close();
   }

@@ -9,7 +9,7 @@ import utils from '~/src/utils.ts';
 
 import user from '~/src/user.ts';
 
-import db from '~/db/mod.ts';
+import db from '~/db/index.ts';
 
 import * as discord from '~/src/discord.ts';
 
@@ -35,7 +35,7 @@ const getInactiveDays = (inventory?: Partial<Schema.Inventory>): number => {
 
 const getChances = (
   character: Schema.Character,
-  inactiveDays: number,
+  inactiveDays: number
 ): number => {
   let chance = 0;
 
@@ -92,20 +92,24 @@ const sortExisting = (existing: Schema.PopulatedCharacter[]): number[] => {
   });
 };
 
-function pre({ token, userId, guildId, search, id }: {
+function pre({
+  token,
+  userId,
+  guildId,
+  search,
+  id,
+}: {
   token: string;
   userId: string;
   guildId: string;
   search?: string;
   id?: string;
 }): discord.Message {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
   if (!config.stealing) {
-    throw new NonFetalError(
-      i18n.get('maintenance-steal', locale),
-    );
+    throw new NonFetalError(i18n.get('maintenance-steal', locale));
   }
 
   packs
@@ -122,8 +126,8 @@ function pre({ token, userId, guildId, search, id }: {
           i18n.get(
             'steal-cooldown',
             locale,
-            `<t:${utils.rechargeStealTimestamp(stealTimestamp)}:R>`,
-          ),
+            `<t:${utils.rechargeStealTimestamp(stealTimestamp)}:R>`
+          )
         );
       }
 
@@ -133,10 +137,7 @@ function pre({ token, userId, guildId, search, id }: {
           character: results[0],
           end: 1,
         }),
-        db.findCharacter(
-          guildId,
-          `${results[0].packId}:${results[0].id}`,
-        ),
+        db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
       ]);
     })
     .then(async ([character, existing]) => {
@@ -151,8 +152,8 @@ function pre({ token, userId, guildId, search, id }: {
       if (!existing?.length) {
         message.addEmbed(
           new discord.Embed().setDescription(
-            i18n.get('character-hasnt-been-found', locale, characterName),
-          ),
+            i18n.get('character-hasnt-been-found', locale, characterName)
+          )
         );
 
         const embed = await srch.characterEmbed(message, character, {
@@ -175,10 +176,7 @@ function pre({ token, userId, guildId, search, id }: {
 
       if (
         packs.isDisabled(exists.mediaId, guildId) ||
-        (
-          media &&
-          packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-        )
+        (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
       ) {
         throw new Error('404');
       }
@@ -195,9 +193,9 @@ function pre({ token, userId, guildId, search, id }: {
               'stealing-party-member',
               locale,
               `<@${exists.userId}>`,
-              characterName,
-            ),
-          ),
+              characterName
+            )
+          )
         );
 
         const embed = await srch.characterEmbed(message, character, {
@@ -227,20 +225,15 @@ function pre({ token, userId, guildId, search, id }: {
         .addEmbed(embed)
         .addEmbed(
           new discord.Embed().setDescription(
-            i18n.get('steal-chance', locale, target.toFixed(2)),
-          ),
+            i18n.get('steal-chance', locale, target.toFixed(2))
+          )
         );
 
       return discord.Message.dialog({
         userId,
         message,
         confirmText: i18n.get('attempt', locale),
-        confirm: [
-          'steal',
-          exists.userId,
-          characterId,
-          `${target}`,
-        ],
+        confirm: ['steal', exists.userId, characterId, `${target}`],
       }).patch(token);
     })
     .catch(async (err) => {
@@ -248,17 +241,15 @@ function pre({ token, userId, guildId, search, id }: {
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (err instanceof NonFetalError) {
         return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(err.message),
-          )
+          .addEmbed(new discord.Embed().setDescription(err.message))
           .patch(token);
       }
 
@@ -289,10 +280,11 @@ function attempt({
   targetUserId: string;
   pre: number;
 }): discord.Message {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  packs.characters({ ids: [characterId], guildId })
+  packs
+    .characters({ ids: [characterId], guildId })
     .then(async (results) => {
       const message = new discord.Message();
 
@@ -311,22 +303,22 @@ function attempt({
           i18n.get(
             'steal-cooldown',
             locale,
-            `<t:${utils.rechargeStealTimestamp(stealTimestamp)}:R>`,
-          ),
+            `<t:${utils.rechargeStealTimestamp(stealTimestamp)}:R>`
+          )
         );
       }
 
       const exists = await db.findOneCharacter(
         guildId,
         targetUserId,
-        `${results[0].packId}:${results[0].id}`,
+        `${results[0].packId}:${results[0].id}`
       );
 
       if (!exists) {
         message.addEmbed(
           new discord.Embed().setDescription(
-            i18n.get('character-hasnt-been-found', locale, characterName),
-          ),
+            i18n.get('character-hasnt-been-found', locale, characterName)
+          )
         );
 
         return message.patch(token);
@@ -336,11 +328,11 @@ function attempt({
 
       if (pre > target) {
         throw new NonFetalError(
-          i18n.get('steal-unexpected', locale, characterName),
+          i18n.get('steal-unexpected', locale, characterName)
         );
       }
 
-      const success = utils.getRandomFloat() <= (target / 100);
+      const success = utils.getRandomFloat() <= target / 100;
 
       // delay to build up anticipation
       await utils.sleep(5);
@@ -351,18 +343,16 @@ function attempt({
 
         message
           .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('you-failed', locale),
-            ),
+            new discord.Embed().setDescription(i18n.get('you-failed', locale))
           )
           .addEmbed(
             new discord.Embed().setDescription(
               i18n.get(
                 'steal-try-again',
                 locale,
-                `<t:${utils.rechargeStealTimestamp(new Date())}:R>`,
-              ),
-            ),
+                `<t:${utils.rechargeStealTimestamp(new Date())}:R>`
+              )
+            )
           );
 
         return message.patch(token);
@@ -386,8 +376,8 @@ function attempt({
         message
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('you-succeeded', locale),
-            ),
+              i18n.get('you-succeeded', locale)
+            )
           )
           .addEmbed(embed)
           .addComponents([
@@ -405,8 +395,8 @@ function attempt({
           .setContent(`<@${exists.userId}>`)
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('stolen-from-you', locale, characterName),
-            ),
+              i18n.get('stolen-from-you', locale, characterName)
+            )
           );
 
         const followupEmbed = await srch.characterEmbed(
@@ -418,7 +408,7 @@ function attempt({
             description: false,
             media: { title: true },
             overwrite: { userId, rating: exists.rating },
-          },
+          }
         );
 
         followupEmbed.addField({
@@ -437,15 +427,11 @@ function attempt({
         switch ((err as Error).message) {
           case 'CHARACTER_NOT_FOUND':
             throw new NonFetalError(
-              i18n.get('character-hasnt-been-found', locale, characterName),
+              i18n.get('character-hasnt-been-found', locale, characterName)
             );
           case 'CHARACTER_NOT_OWNED':
             throw new NonFetalError(
-              i18n.get(
-                'character-not-owned-by-you',
-                locale,
-                characterName,
-              ),
+              i18n.get('character-not-owned-by-you', locale, characterName)
             );
           default:
             throw err;
@@ -455,10 +441,7 @@ function attempt({
     .catch(async (err) => {
       if (err instanceof NonFetalError) {
         return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(err.message),
-          )
+          .addEmbed(new discord.Embed().setDescription(err.message))
           .patch(token);
       }
 
@@ -476,9 +459,7 @@ function attempt({
 
   const image = embed.setImageFile('assets/public/steal2.gif');
 
-  return loading
-    .addEmbed(embed)
-    .addAttachment(image);
+  return loading.addEmbed(embed).addAttachment(image);
 }
 
 const steal = {

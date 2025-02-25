@@ -4,7 +4,7 @@ import utils from '~/src/utils.ts';
 
 import validate, { purgeReservedProps } from '~/src/validate.ts';
 
-import db from '~/db/mod.ts';
+import db from '~/db/index.ts';
 
 import type { Manifest } from '~/src/types.ts';
 
@@ -22,7 +22,7 @@ export async function user(req: Request): Promise<Response> {
   if (!config.communityPacksMaintainerAPI) {
     return utils.json(
       { error: 'UNDER_MAINTENANCE' },
-      { status: 503, statusText: 'Under Maintenance' },
+      { status: 503, statusText: 'Under Maintenance' }
     );
   }
 
@@ -30,7 +30,7 @@ export async function user(req: Request): Promise<Response> {
     method: 'GET',
     headers: {
       'content-type': 'application/json',
-      'authorization': req.headers.get('authorization') ?? '',
+      authorization: req.headers.get('authorization') ?? '',
     },
   });
 
@@ -74,7 +74,7 @@ export async function publish(req: Request): Promise<Response> {
   if (!config.communityPacksMaintainerAPI) {
     return utils.json(
       { error: 'UNDER_MAINTENANCE' },
-      { status: 503, statusText: 'Under Maintenance' },
+      { status: 503, statusText: 'Under Maintenance' }
     );
   }
 
@@ -82,7 +82,7 @@ export async function publish(req: Request): Promise<Response> {
     method: 'GET',
     headers: {
       'content-type': 'application/json',
-      'authorization': req.headers.get('authorization') ?? '',
+      authorization: req.headers.get('authorization') ?? '',
     },
   });
 
@@ -97,10 +97,13 @@ export async function publish(req: Request): Promise<Response> {
   const valid = validate(manifest);
 
   if (valid.errors?.length) {
-    return utils.json({ errors: valid.errors }, {
-      status: 400,
-      statusText: 'Bad Request',
-    });
+    return utils.json(
+      { errors: valid.errors },
+      {
+        status: 400,
+        statusText: 'Bad Request',
+      }
+    );
   }
 
   try {
@@ -109,15 +112,21 @@ export async function publish(req: Request): Promise<Response> {
   } catch (err) {
     switch ((err as Error).message) {
       case 'PERMISSION_DENIED':
-        return utils.json({ error: 'PERMISSION_DENIED' }, {
-          status: 403,
-          statusText: 'Forbidden',
-        });
+        return utils.json(
+          { error: 'PERMISSION_DENIED' },
+          {
+            status: 403,
+            statusText: 'Forbidden',
+          }
+        );
       default:
-        return utils.json({ error: 'INTERNAL_SERVER_ERROR' }, {
-          status: 501,
-          statusText: 'Internal Server Error',
-        });
+        return utils.json(
+          { error: 'INTERNAL_SERVER_ERROR' },
+          {
+            status: 501,
+            statusText: 'Internal Server Error',
+          }
+        );
     }
   }
 }
@@ -136,7 +145,7 @@ export async function popular(req: Request): Promise<Response> {
   if (!config.communityPacksBrowseAPI) {
     return utils.json(
       { error: 'UNDER_MAINTENANCE' },
-      { status: 503, statusText: 'Under Maintenance' },
+      { status: 503, statusText: 'Under Maintenance' }
     );
   }
 
@@ -158,7 +167,6 @@ export async function popular(req: Request): Promise<Response> {
         createdAt: pack.createdAt,
         updatedAt: pack.updatedAt,
         approved: pack.approved,
-        // deno-lint-ignore no-explicit-any
       } as any,
     })),
     limit: Math.min(limit, 20),
@@ -182,7 +190,7 @@ export async function lastUpdated(req: Request): Promise<Response> {
   if (!config.communityPacksBrowseAPI) {
     return utils.json(
       { error: 'UNDER_MAINTENANCE' },
-      { status: 503, statusText: 'Under Maintenance' },
+      { status: 503, statusText: 'Under Maintenance' }
     );
   }
 
@@ -203,7 +211,6 @@ export async function lastUpdated(req: Request): Promise<Response> {
         createdAt: pack.createdAt,
         updatedAt: pack.updatedAt,
         approved: pack.approved,
-        // deno-lint-ignore no-explicit-any
       } as any,
     })),
     limit: Math.min(limit, 20),
@@ -215,7 +222,7 @@ export async function lastUpdated(req: Request): Promise<Response> {
 
 export async function pack(
   req: Request,
-  params: import('sift').PathParams,
+  packId: string | undefined
 ): Promise<Response> {
   const { error } = await utils.validateRequest(req, { GET: {} });
 
@@ -225,8 +232,6 @@ export async function pack(
 
   let userId: string | undefined;
 
-  const packId = params?.packId;
-
   const authKey = req.headers.get('authorization');
 
   if (
@@ -235,14 +240,14 @@ export async function pack(
   ) {
     return utils.json(
       { error: 'UNDER_MAINTENANCE' },
-      { status: 503, statusText: 'Under Maintenance' },
+      { status: 503, statusText: 'Under Maintenance' }
     );
   }
 
   if (!packId) {
     return utils.json(
       { error: 'INVALID_PACK_ID' },
-      { status: 400, statusText: 'Bad Request' },
+      { status: 400, statusText: 'Bad Request' }
     );
   }
 
@@ -253,9 +258,9 @@ export async function pack(
         method: 'GET',
         headers: {
           'content-type': 'application/json',
-          'authorization': req.headers.get('authorization') ?? '',
+          authorization: req.headers.get('authorization') ?? '',
         },
-      },
+      }
     );
 
     if (auth.ok) {
@@ -268,10 +273,13 @@ export async function pack(
   const pack = await db.getPack(packId, userId);
 
   if (!pack) {
-    return utils.json({ error: 'NOT_FOUND' }, {
-      status: 404,
-      statusText: 'Not Found',
-    });
+    return utils.json(
+      { error: 'NOT_FOUND' },
+      {
+        status: 404,
+        statusText: 'Not Found',
+      }
+    );
   }
 
   return utils.json(pack);
@@ -291,7 +299,7 @@ export async function search(req: Request): Promise<Response> {
   if (!config.communityPacksBrowseAPI) {
     return utils.json(
       { error: 'UNDER_MAINTENANCE' },
-      { status: 503, statusText: 'Under Maintenance' },
+      { status: 503, statusText: 'Under Maintenance' }
     );
   }
 
@@ -302,7 +310,7 @@ export async function search(req: Request): Promise<Response> {
   if (!query) {
     return utils.json(
       { error: 'MISSING_QUERY' },
-      { status: 400, statusText: 'Bad Request' },
+      { status: 400, statusText: 'Bad Request' }
     );
   }
 
@@ -320,7 +328,6 @@ export async function search(req: Request): Promise<Response> {
         createdAt: pack.createdAt,
         updatedAt: pack.updatedAt,
         approved: pack.approved,
-        // deno-lint-ignore no-explicit-any
       } as any,
     })),
     limit: Math.min(limit, 20),

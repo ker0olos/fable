@@ -1,0 +1,9 @@
+[submodule "images-proxy"]
+	path = images-proxy
+	url = git@github.com:fable-community/images-proxy.git
+[submodule "dyn-images"]
+	path = dyn-images
+	url = git@github.com:fable-community/dyn-images.git
+[submodule "search-index"]
+	path = search-index
+	url = git@github.com:fable-community/search-index.git

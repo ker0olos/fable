@@ -1,12 +1,8 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertEquals } from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
-
+import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
@@ -26,19 +22,22 @@ describe('db.findCharacter()', () => {
   });
 
   it('exists', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: inventory2InsertedId } = await client.inventories()
+    const { insertedId: inventory2InsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'another-user-id',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: characterInsertedId } = await client.characters()
+    const { insertedId: characterInsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -46,7 +45,8 @@ describe('db.findCharacter()', () => {
         characterId: 'character-id',
       } as any);
 
-    const { insertedId: character2InsertedId } = await client.characters()
+    const { insertedId: character2InsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'another-user-id',
         guildId: 'guild-id',
@@ -56,7 +56,7 @@ describe('db.findCharacter()', () => {
 
     const characters = await db.findCharacter('guild-id', 'character-id');
 
-    assertEquals(characters, [
+    expect(characters).toEqual([
       {
         _id: characterInsertedId,
         userId: 'user-id',
@@ -87,7 +87,7 @@ describe('db.findCharacter()', () => {
   it("doesn't exists", async () => {
     const characters = await db.findCharacter('guild-id', 'character-id');
 
-    assertEquals(characters.length, 0);
+    expect(characters.length).toBe(0);
   });
 });
 
@@ -105,13 +105,15 @@ describe('db.findOneCharacter()', () => {
   });
 
   it('exists', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: characterInsertedId } = await client.characters()
+    const { insertedId: characterInsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -122,10 +124,10 @@ describe('db.findOneCharacter()', () => {
     const character = await db.findOneCharacter(
       'guild-id',
       'user-id',
-      'character-id',
+      'character-id'
     );
 
-    assertEquals(character, {
+    expect(character).toEqual({
       _id: characterInsertedId,
       userId: 'user-id',
       guildId: 'guild-id',
@@ -143,10 +145,10 @@ describe('db.findOneCharacter()', () => {
     const character = await db.findOneCharacter(
       'guild-id',
       'user-id',
-      'character-id',
+      'character-id'
     );
 
-    assertEquals(character, undefined);
+    expect(character).toBeUndefined();
   });
 });
 
@@ -164,13 +166,15 @@ describe('db.findCharacters()', () => {
   });
 
   it('2 exists', async () => {
-    const { insertedId: inventory1InsertedId } = await client.inventories()
+    const { insertedId: inventory1InsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await client.characters()
+    const { insertedId: character1InsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
@@ -178,13 +182,15 @@ describe('db.findCharacters()', () => {
         characterId: 'character-1',
       } as any);
 
-    const { insertedId: inventory2InsertedId } = await client.inventories()
+    const { insertedId: inventory2InsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character2InsertedId } = await client.characters()
+    const { insertedId: character2InsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
@@ -197,9 +203,9 @@ describe('db.findCharacters()', () => {
       'character-2',
     ]);
 
-    assertEquals(characters.length, 2);
+    expect(characters.length).toBe(2);
 
-    assertEquals(characters[0]!, {
+    expect(characters[0]).toEqual({
       _id: character1InsertedId,
       userId: 'user-1',
       guildId: 'guild-id',
@@ -212,7 +218,7 @@ describe('db.findCharacters()', () => {
       characterId: 'character-1',
     } as any);
 
-    assertEquals(characters[1]!, {
+    expect(characters[1]).toEqual({
       _id: character2InsertedId,
       userId: 'user-2',
       guildId: 'guild-id',
@@ -227,13 +233,15 @@ describe('db.findCharacters()', () => {
   });
 
   it("1 exists 1 doesn't", async () => {
-    const { insertedId: inventory1InsertedId } = await client.inventories()
+    const { insertedId: inventory1InsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await client.characters()
+    const { insertedId: character1InsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
@@ -246,9 +254,9 @@ describe('db.findCharacters()', () => {
       'character-2',
     ]);
 
-    assertEquals(characters.length, 2);
+    expect(characters.length).toBe(2);
 
-    assertEquals(characters[0]!, {
+    expect(characters[0]).toEqual({
       _id: character1InsertedId,
       userId: 'user-1',
       guildId: 'guild-id',
@@ -261,7 +269,7 @@ describe('db.findCharacters()', () => {
       characterId: 'character-1',
     } as any);
 
-    assertEquals(characters[1], undefined);
+    expect(characters[1]).toBeUndefined();
   });
 
   it("2 don't", async () => {
@@ -270,10 +278,10 @@ describe('db.findCharacters()', () => {
       'character-2',
     ]);
 
-    assertEquals(characters.length, 2);
+    expect(characters.length).toBe(2);
 
-    assertEquals(characters[0], undefined);
-    assertEquals(characters[1], undefined);
+    expect(characters[0]).toBeUndefined();
+    expect(characters[1]).toBeUndefined();
   });
 });
 
@@ -291,13 +299,15 @@ describe('db.findGuildCharacters()', () => {
   });
 
   it('normal', async () => {
-    const { insertedId: inventory1InsertedId } = await client.inventories()
+    const { insertedId: inventory1InsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character1InsertedId } = await client.characters()
+    const { insertedId: character1InsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-1',
         guildId: 'guild-id',
@@ -305,13 +315,15 @@ describe('db.findGuildCharacters()', () => {
         characterId: 'character-1',
       } as any);
 
-    const { insertedId: inventory2InsertedId } = await client.inventories()
+    const { insertedId: inventory2InsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
       } as any);
 
-    const { insertedId: character2InsertedId } = await client.characters()
+    const { insertedId: character2InsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-2',
         guildId: 'guild-id',
@@ -321,9 +333,9 @@ describe('db.findGuildCharacters()', () => {
 
     const characters = await db.findGuildCharacters('guild-id');
 
-    assertEquals(characters.length, 2);
+    expect(characters.length).toBe(2);
 
-    assertEquals(characters[0]!, {
+    expect(characters[0]).toEqual({
       _id: character1InsertedId,
       userId: 'user-1',
       guildId: 'guild-id',
@@ -331,7 +343,7 @@ describe('db.findGuildCharacters()', () => {
       characterId: 'character-1',
     } as any);
 
-    assertEquals(characters[1]!, {
+    expect(characters[1]).toEqual({
       _id: character2InsertedId,
       userId: 'user-2',
       guildId: 'guild-id',

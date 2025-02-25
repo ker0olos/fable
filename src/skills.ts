@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-non-null-assertion
-
 import _user from '~/src/user.ts';
 
 import i18n from '~/src/i18n.ts';
@@ -10,7 +8,7 @@ import packs from '~/src/packs.ts';
 
 import search, { idPrefix } from '~/src/search.ts';
 
-import db from '~/db/mod.ts';
+import db from '~/db/index.ts';
 
 import * as discord from '~/src/discord.ts';
 
@@ -31,10 +29,7 @@ const skills = {
     key: '~crit',
     descKey: '~crit-desc',
     categories: ['offensive'],
-    activation: function ({
-      lvl,
-      attacking: char,
-    }): SkillOutput {
+    activation: function ({ lvl, attacking: char }): SkillOutput {
       const [critChance, critDamageMultiplier] = this.stats!;
 
       const rng = Math.random() * 100;
@@ -44,9 +39,9 @@ const skills = {
         return {
           damage: Math.max(
             Math.round(
-              char.attack * (critDamageMultiplier.scale![lvl - 1] / 100),
+              char.attack * (critDamageMultiplier.scale![lvl - 1] / 100)
             ),
-            1,
+            1
           ),
         };
       }
@@ -54,15 +49,18 @@ const skills = {
       return {};
     },
     max: 3,
-    stats: [{
-      key: '~crit-chance',
-      scale: [0.5, 5, 15],
-      suffix: '%',
-    }, {
-      key: '~crit-damage',
-      scale: [30, 45, 60],
-      suffix: '%',
-    }],
+    stats: [
+      {
+        key: '~crit-chance',
+        scale: [0.5, 5, 15],
+        suffix: '%',
+      },
+      {
+        key: '~crit-damage',
+        scale: [30, 45, 60],
+        suffix: '%',
+      },
+    ],
   },
   speed: {
     key: '~speed-boost',
@@ -70,11 +68,13 @@ const skills = {
     categories: ['buff', 'support'],
     cost: 1,
     max: Infinity,
-    stats: [{
-      key: '~boost',
-      suffix: '%',
-      factor: 1,
-    }],
+    stats: [
+      {
+        key: '~boost',
+        suffix: '%',
+        factor: 1,
+      },
+    ],
   },
   defense: {
     key: '~defense-boost',
@@ -82,11 +82,13 @@ const skills = {
     categories: ['buff', 'support'],
     cost: 1,
     max: Infinity,
-    stats: [{
-      key: '~boost',
-      suffix: '%',
-      factor: 1,
-    }],
+    stats: [
+      {
+        key: '~boost',
+        suffix: '%',
+        factor: 1,
+      },
+    ],
   },
   slow: {
     key: '~slow-debuff',
@@ -94,11 +96,13 @@ const skills = {
     categories: ['debuff', 'support'],
     cost: 1,
     max: Infinity,
-    stats: [{
-      key: '~boost',
-      suffix: '%',
-      factor: 1,
-    }],
+    stats: [
+      {
+        key: '~boost',
+        suffix: '%',
+        factor: 1,
+      },
+    ],
   },
   enrage: {
     cost: 2,
@@ -106,40 +110,42 @@ const skills = {
     descKey: '~enrage-desc',
     categories: ['buff', 'offensive'],
     max: 3,
-    stats: [{
-      key: '~hp-remaining',
-      scale: [5, 15, 25],
-      suffix: '%',
-    }, {
-      key: '~boost',
-      scale: [15, 25, 50],
-      suffix: '%',
-    }],
+    stats: [
+      {
+        key: '~hp-remaining',
+        scale: [5, 15, 25],
+        suffix: '%',
+      },
+      {
+        key: '~boost',
+        scale: [15, 25, 50],
+        suffix: '%',
+      },
+    ],
   },
   heal: {
     cost: 2,
     key: '~heal',
     descKey: '~heal-desc',
     categories: ['support', 'heal'],
-    activation: function ({
-      lvl,
-      attacking: char,
-    }): SkillOutput {
+    activation: function ({ lvl, attacking: char }): SkillOutput {
       const [healPercent] = this.stats!;
 
       return {
         heal: Math.max(
           Math.round(char.maxHP * (healPercent.scale![lvl - 1] / 100)),
-          1,
+          1
         ),
       };
     },
     max: 3,
-    stats: [{
-      key: '~heal-amount',
-      scale: [5, 15, 25],
-      suffix: '%',
-    }],
+    stats: [
+      {
+        key: '~heal-amount',
+        scale: [5, 15, 25],
+        suffix: '%',
+      },
+    ],
   },
   lifesteal: {
     cost: 2,
@@ -158,11 +164,13 @@ const skills = {
       };
     },
     max: 3,
-    stats: [{
-      key: '~lifesteal-amount',
-      scale: [10, 25, 50],
-      suffix: '%',
-    }],
+    stats: [
+      {
+        key: '~lifesteal-amount',
+        scale: [10, 25, 50],
+        suffix: '%',
+      },
+    ],
   },
   stun: {
     cost: 2,
@@ -180,11 +188,13 @@ const skills = {
         stun: isStunned,
       };
     },
-    stats: [{
-      key: '~stun-chance',
-      scale: [5, 15, 80],
-      suffix: '%',
-    }],
+    stats: [
+      {
+        key: '~stun-chance',
+        scale: [5, 15, 80],
+        suffix: '%',
+      },
+    ],
   },
   chain: {
     cost: 10,
@@ -207,15 +217,18 @@ const skills = {
       return {};
     },
     max: 1,
-    stats: [{
-      key: '~chain-2-boost',
-      scale: [25],
-      suffix: '%',
-    }, {
-      key: '~chain-3-boost',
-      scale: [50],
-      suffix: '%',
-    }],
+    stats: [
+      {
+        key: '~chain-2-boost',
+        scale: [25],
+        suffix: '%',
+      },
+      {
+        key: '~chain-3-boost',
+        scale: [50],
+        suffix: '%',
+      },
+    ],
   },
   grab: {
     cost: 5,
@@ -230,18 +243,20 @@ const skills = {
 const format = (
   skill: CharacterSkill,
   locale?: discord.AvailableLocales,
-  options?: { showcase?: boolean; lvl?: number },
+  options?: { showcase?: boolean; lvl?: number }
 ): string => {
   const generateStatsString = (
     s: CharacterAdditionalStat,
-    options?: { showcase?: boolean; lvl?: number },
+    options?: { showcase?: boolean; lvl?: number }
   ): string => {
     const { scale, prefix, suffix, factor } = s;
 
     options ??= {};
 
     options.lvl ??= options.showcase
-      ? skill.max === Infinity ? 10 : skill.max
+      ? skill.max === Infinity
+        ? 10
+        : skill.max
       : 0;
 
     const i = !options.showcase
@@ -249,14 +264,15 @@ const format = (
       : options.lvl;
 
     const lvl = Array.isArray(scale)
-      ? `${prefix ?? ''}${(scale[i - 1])}${suffix ?? ''}`
-      : `${prefix ?? ''}${(factor! * i)}${suffix ?? ''}`;
+      ? `${prefix ?? ''}${scale[i - 1]}${suffix ?? ''}`
+      : `${prefix ?? ''}${factor! * i}${suffix ?? ''}`;
 
-    const prev = options.lvl && i > 1 && i < skill.max
-      ? Array.isArray(scale)
-        ? `${prefix ?? ''}${(scale[options.lvl - 1])}${suffix ?? ''}`
-        : `${prefix ?? ''}${(factor! * options.lvl)}${suffix ?? ''}`
-      : '';
+    const prev =
+      options.lvl && i > 1 && i < skill.max
+        ? Array.isArray(scale)
+          ? `${prefix ?? ''}${scale[options.lvl - 1]}${suffix ?? ''}`
+          : `${prefix ?? ''}${factor! * options.lvl}${suffix ?? ''}`
+        : '';
 
     return prev && !options.showcase
       ? `${prev} ${discord.emotes.rightArrow} ${lvl}`
@@ -264,27 +280,28 @@ const format = (
   };
 
   const stats =
-    skill.stats?.map((s, index) =>
-      `${index + 1}. _${i18n.get(s.key, locale)} (${
-        generateStatsString(s, options)
-      })_`
+    skill.stats?.map(
+      (s, index) =>
+        `${index + 1}. _${i18n.get(s.key, locale)} (${generateStatsString(
+          s,
+          options
+        )})_`
     ) ?? [];
 
   let cost = '';
 
   if (options?.showcase) {
-    cost = `(${skill.cost} ${
-      i18n.get(
-        skill.cost === 1 ? 'skill-point' : 'skill-points',
-        locale,
-      )
-    })`;
+    cost = `(${skill.cost} ${i18n.get(
+      skill.cost === 1 ? 'skill-point' : 'skill-points',
+      locale
+    )})`;
   } else if (typeof skill.max === 'number' && options?.lvl === skill.max) {
     cost = `**(${i18n.get('lvl', locale)} ${i18n.get('max', locale)})**`;
   } else if (typeof options?.lvl === 'number' && !options?.showcase) {
-    cost = `**(${
-      i18n.get('lvl', locale)
-    } ${options.lvl} ${discord.emotes.rightArrow} ${i18n.get('lvl', locale)} ${
+    cost = `**(${i18n.get(
+      'lvl',
+      locale
+    )} ${options.lvl} ${discord.emotes.rightArrow} ${i18n.get('lvl', locale)} ${
       options.lvl + 1 === skill.max ? i18n.get('max', locale) : options.lvl + 1
     })**`;
   }
@@ -296,24 +313,29 @@ const format = (
   ].join('\n');
 };
 
-function preAcquire(
-  { token, skillKey, guildId, character, userId }: {
-    token: string;
-    skillKey: SkillKey;
-    guildId: string;
-    character: string;
-    userId: string;
-  },
-): discord.Message {
+function preAcquire({
+  token,
+  skillKey,
+  guildId,
+  character,
+  userId,
+}: {
+  token: string;
+  skillKey: SkillKey;
+  guildId: string;
+  character: string;
+  userId: string;
+}): discord.Message {
   if (!skills[skillKey]) {
     throw new Error('404');
   }
 
-  packs.characters(
-    character.startsWith(idPrefix)
-      ? { ids: [character.substring(idPrefix.length)], guildId }
-      : { search: character, guildId },
-  )
+  packs
+    .characters(
+      character.startsWith(idPrefix)
+        ? { ids: [character.substring(idPrefix.length)], guildId }
+        : { search: character, guildId }
+    )
     .then((results) => {
       if (
         !results.length ||
@@ -328,7 +350,8 @@ function preAcquire(
       ]);
     })
     .then(async ([character, existing]) => {
-      const locale = _user.cachedUsers[userId]?.locale ??
+      const locale =
+        _user.cachedUsers[userId]?.locale ??
         _user.cachedGuilds[guildId]?.locale;
 
       if (!existing.length) {
@@ -365,12 +388,13 @@ function preAcquire(
         });
 
         message.addEmbed(
-          new discord.Embed()
-            .setDescription(i18n.get(
+          new discord.Embed().setDescription(
+            i18n.get(
               'character-not-owned-by-you',
               locale,
-              packs.aliasToArray(character.name)[0],
-            )),
+              packs.aliasToArray(character.name)[0]
+            )
+          )
         );
 
         message.addEmbed(embed);
@@ -403,15 +427,11 @@ function preAcquire(
         lvl: existingSkill?.level,
       });
 
-      message.addEmbed(
-        new discord.Embed()
-          .setDescription(formatted),
-      );
+      message.addEmbed(new discord.Embed().setDescription(formatted));
 
       if (maxed) {
         message.addEmbed(
-          new discord.Embed()
-            .setTitle(i18n.get('skill-is-maxed', locale)),
+          new discord.Embed().setTitle(i18n.get('skill-is-maxed', locale))
         );
 
         return await message.patch(token);
@@ -422,17 +442,15 @@ function preAcquire(
           .setTitle(
             i18n.get(
               existingSkill?.level ? 'upgrade-skill' : 'acquire-skill',
-              locale,
-            ),
+              locale
+            )
           )
           .setDescription(
-            `${discord.emotes.remove} ${skill.cost} ${
-              i18n.get(
-                skill.cost === 1 ? 'skill-point' : 'skill-points',
-                locale,
-              )
-            }`,
-          ),
+            `${discord.emotes.remove} ${skill.cost} ${i18n.get(
+              skill.cost === 1 ? 'skill-point' : 'skill-points',
+              locale
+            )}`
+          )
       );
 
       discord.Message.dialog({
@@ -444,17 +462,22 @@ function preAcquire(
       return await message.patch(token);
     })
     .catch(async (err) => {
-      const locale = _user.cachedUsers[userId]?.locale ??
+      const locale =
+        _user.cachedUsers[userId]?.locale ??
         _user.cachedGuilds[guildId]?.locale;
 
       if (
-        err.response?.status === 404 || err?.message === '404' ||
+        err.response?.status === 404 ||
+        err?.message === '404' ||
         err.message?.toLowerCase?.() === 'not found'
       ) {
         return await new discord.Message()
-          .addEmbed(new discord.Embed().setDescription(
-            i18n.get('found-nothing', locale),
-          )).patch(token);
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (err instanceof NonFetalError) {
@@ -475,16 +498,19 @@ function preAcquire(
   return discord.Message.spinner(true);
 }
 
-async function acquire(
-  { skillKey, guildId, characterId, userId }: {
-    skillKey: SkillKey;
-    guildId: string;
-    characterId: string;
-    userId: string;
-  },
-): Promise<discord.Message> {
-  const locale = _user.cachedUsers[userId]?.locale ??
-    _user.cachedGuilds[guildId]?.locale;
+async function acquire({
+  skillKey,
+  guildId,
+  characterId,
+  userId,
+}: {
+  skillKey: SkillKey;
+  guildId: string;
+  characterId: string;
+  userId: string;
+}): Promise<discord.Message> {
+  const locale =
+    _user.cachedUsers[userId]?.locale ?? _user.cachedGuilds[guildId]?.locale;
 
   if (!skills[skillKey]) {
     throw new Error('404');
@@ -497,7 +523,7 @@ async function acquire(
       userId,
       guildId,
       characterId,
-      skillKey,
+      skillKey
     );
 
     const formatted = format(skill, locale, {
@@ -506,26 +532,22 @@ async function acquire(
 
     return new discord.Message()
       .addEmbed(
-        new discord.Embed()
-          .setTitle(
-            i18n.get(
-              existingSkill.level > 1 ? 'skill-upgraded' : 'skill-acquired',
-              locale,
-            ),
-          ),
+        new discord.Embed().setTitle(
+          i18n.get(
+            existingSkill.level > 1 ? 'skill-upgraded' : 'skill-acquired',
+            locale
+          )
+        )
       )
-      .addEmbed(
-        new discord.Embed()
-          .setDescription(formatted),
-      );
+      .addEmbed(new discord.Embed().setDescription(formatted));
   } catch (err) {
     if (err instanceof NonFetalError) {
-      const message = err.message === 'failed'
-        ? i18n.get('failed', locale)
-        : err.message;
+      const message =
+        err.message === 'failed' ? i18n.get('failed', locale) : err.message;
 
-      return new discord.Message()
-        .addEmbed(new discord.Embed().setDescription(message));
+      return new discord.Message().addEmbed(
+        new discord.Embed().setDescription(message)
+      );
     }
 
     throw err;
@@ -535,17 +557,16 @@ async function acquire(
 function all(
   index: number,
   category?: SkillCategory,
-  locale?: discord.AvailableLocales,
+  locale?: discord.AvailableLocales
 ): discord.Message {
   const message = new discord.Message();
 
-  const __skills = Object.values(skills)
-    .filter((skill) => {
-      if (category && !(skill.categories as string[]).includes(category)) {
-        return false;
-      }
-      return true;
-    });
+  const __skills = Object.values(skills).filter((skill) => {
+    if (category && !(skill.categories as string[]).includes(category)) {
+      return false;
+    }
+    return true;
+  });
 
   const pages = utils.chunks(__skills, 3);
 

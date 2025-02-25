@@ -1,27 +1,24 @@
+import mime from 'mime';
 import nacl from 'tweetnacl';
-
-import { chunk } from '$std/collections/chunk.ts';
-
-import { basename, extname } from '$std/path/mod.ts';
-import { extensionsByType } from '$std/media_types/mod.ts';
+import { basename, extname } from 'path';
 
 import {
   captureException as _captureException,
   init as _initSentry,
-} from 'sentry';
+} from '@sentry/node';
 
-import { json, serve, serveStatic, validateRequest } from 'sift';
+import { readFile } from 'fs/promises';
 
-import { distance as levenshtein } from 'levenshtein';
+import { distance as levenshtein } from 'fastest-levenshtein';
 
-import { proxy as _proxy } from 'images-proxy';
+import { proxy as _proxy } from '@fable-community/images-proxy';
 
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
-} from '~/db/mod.ts';
+} from '~/db/index.ts';
 
 import type { Attachment } from '~/src/discord.ts';
 
@@ -59,9 +56,123 @@ class LehmerRNG {
   }
 }
 
+export function json(
+  jsobj: Parameters<typeof JSON.stringify>[0],
+  {
+    status = 200,
+    statusText = 'OK',
+  }: { status?: number; statusText?: string } = {}
+): Response {
+  const headers = new Headers();
+
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json; charset=utf-8');
+  }
+
+  return new Response(JSON.stringify(jsobj) + '\n', {
+    status,
+    statusText,
+    headers,
+  });
+}
+
 function getRandomFloat(): number {
   const randomInt = crypto.getRandomValues(new Uint32Array(1))[0];
   return randomInt / 2 ** 32;
+}
+
+export async function validateRequest(
+  request: Request,
+  terms: any
+): Promise<{
+  error?: { message: string; status: number };
+  body?: { [key: string]: unknown };
+}> {
+  let body = {};
+
+  // Validate the method.
+  if (!terms[request.method]) {
+    return {
+      error: {
+        message: `method ${request.method} is not allowed for the URL`,
+        status: 405,
+      },
+    };
+  }
+
+  // Validate the params if defined in the terms.
+  if (
+    terms[request.method]?.params &&
+    terms[request.method].params!.length > 0
+  ) {
+    const requestParams = [];
+
+    const { searchParams } = new URL(request.url);
+
+    for (const param of searchParams.keys()) {
+      requestParams.push(param);
+    }
+
+    for (const param of terms[request.method].params!) {
+      if (!requestParams.includes(param)) {
+        return {
+          error: {
+            message: `param '${param}' is required to process the request`,
+            status: 400,
+          },
+        };
+      }
+    }
+  }
+
+  // Validate the headers if defined in the terms.
+  if (
+    terms[request.method].headers &&
+    terms[request.method].headers!.length > 0
+  ) {
+    // Collect the headers into an array.
+    const requestHeaderKeys = [];
+    for (const header of request.headers.keys()) {
+      requestHeaderKeys.push(header);
+    }
+
+    // Loop through the headers defined in the terms and check if they
+    // are present in the request.
+    for (const header of terms[request.method].headers!) {
+      if (!requestHeaderKeys.includes(header.toLowerCase())) {
+        return {
+          error: {
+            message: `header '${header}' not available`,
+            status: 400,
+          },
+        };
+      }
+    }
+  }
+
+  // Validate the body of the request if defined in the terms.
+  if (terms[request.method].body && terms[request.method].body!.length > 0) {
+    const requestBody = await request.json();
+
+    const bodyKeys = Object.keys(requestBody);
+
+    for (const key of terms[request.method].body!) {
+      if (!bodyKeys.includes(key)) {
+        return {
+          error: {
+            message: `field '${key}' is not available in the body`,
+            status: 400,
+          },
+        };
+      }
+    }
+
+    // We store and return the body as once the request.json() is called
+    // the user cannot call request.json() again.
+    body = requestBody;
+  }
+
+  return { body };
 }
 
 function nanoid(size = 16): string {
@@ -118,7 +229,7 @@ function sleep(secs: number): Promise<void> {
 async function fetchWithRetry(
   input: RequestInfo | URL,
   init: RequestInit,
-  n = 0,
+  n = 0
 ): Promise<Response> {
   try {
     const response = await fetch(input, init);
@@ -133,7 +244,7 @@ async function fetchWithRetry(
       throw err;
     }
 
-    await sleep(0.250 * n);
+    await sleep(0.25 * n);
 
     return fetchWithRetry(input, init, n + 1);
   }
@@ -172,14 +283,10 @@ function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
   };
 }
 
-function truncate(
-  str: string | undefined,
-  n: number,
-): string | undefined {
+function truncate(str: string | undefined, n: number): string | undefined {
   if (str && str.length > n) {
     const s = str.substring(0, n - 2);
-    return s.slice(0, s.lastIndexOf(' ')) +
-      '...';
+    return s.slice(0, s.lastIndexOf(' ')) + '...';
   }
 
   return str;
@@ -188,7 +295,7 @@ function truncate(
 function wrap(text: string, width = 32): string {
   return text.replace(
     new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'),
-    '$1\n',
+    '$1\n'
   );
 }
 
@@ -218,8 +325,7 @@ function compact(n: number): string {
   const index = Math.floor(Math.log10(Math.abs(n)) / 3);
   const value = n / Math.pow(10, index * 3);
 
-  const formattedValue = value.toFixed(1)
-    .replace(/\.0+$/, '');
+  const formattedValue = value.toFixed(1).replace(/\.0+$/, '');
 
   return formattedValue + units[index];
 }
@@ -229,9 +335,11 @@ function comma(n: number): string {
 }
 
 function distance(a: string, b: string): number {
-  return 100 -
+  return (
+    100 -
     (100 * levenshtein(a.toLowerCase(), b.toLowerCase())) /
-      (a.length + b.length);
+      (a.length + b.length)
+  );
 }
 
 function _parseInt(query?: string): number | undefined {
@@ -267,7 +375,7 @@ function decodeDescription(s?: string): string | undefined {
   s = s.replace(/<b.*?>([\S\s]*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
   s = s.replace(
     /<strike.*?>([\S\s]*)<\/?strike>/g,
-    (_, s) => `~~${s.trim()}~~`,
+    (_, s) => `~~${s.trim()}~~`
   );
 
   s = s.replace(/<\/?br\/?>|<\/?hr\/?>/gm, '\n');
@@ -285,37 +393,30 @@ function hexToUint8Array(hex: string): Uint8Array | undefined {
   }
 }
 
-function verifySignature(
-  { publicKey, signature, timestamp, body }: {
-    publicKey?: string;
-    signature?: string | null;
-    timestamp?: string | null;
-    body: string;
-  },
-): { valid: boolean; body: string } {
+function verifySignature({
+  publicKey,
+  signature,
+  timestamp,
+  body,
+}: {
+  publicKey?: string;
+  signature?: string | null;
+  timestamp?: string | null;
+  body: string;
+}): { valid: boolean; body: string } {
   if (!signature || !timestamp || !publicKey) {
     return { valid: false, body };
   }
 
   const valid = nacl.sign.detached.verify(
     new TextEncoder().encode(timestamp + body),
-    // deno-lint-ignore no-non-null-assertion
+
     hexToUint8Array(signature)!,
-    // deno-lint-ignore no-non-null-assertion
-    hexToUint8Array(publicKey)!,
+
+    hexToUint8Array(publicKey)!
   );
 
   return { valid, body };
-}
-
-async function readJson<T>(filePath: string): Promise<T> {
-  try {
-    const jsonString = await Deno.readTextFile(filePath);
-    return JSON.parse(jsonString);
-  } catch (err) {
-    (err as Error).message = `${filePath}: ${(err as Error).message}`;
-    throw err;
-  }
 }
 
 function normalTimestamp(v?: Date): string {
@@ -383,10 +484,12 @@ function diffInMinutes(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 60000);
 }
 
-function captureException(err: Error, opts?: {
-  // deno-lint-ignore no-explicit-any
-  extra?: any;
-}): string {
+function captureException(
+  err: Error,
+  opts?: {
+    extra?: any;
+  }
+): string {
   return _captureException(err, {
     extra: {
       ...(err.cause ?? {}),
@@ -409,7 +512,7 @@ function pagination<T, X extends string>(
   url: URL,
   collection: T[],
   collectionName: X,
-  defaultLimit = 20,
+  defaultLimit = 20
 ): { [K in X]: T[] } & { length: number; offset: number; limit: number } {
   const limit = +(url.searchParams.get('limit') ?? defaultLimit);
   const offset = +(url.searchParams.get('offset') ?? 0);
@@ -439,35 +542,31 @@ function getDayOfWeek(): DayOfWeek {
 }
 
 function initSentry(dsn?: string): void {
-  const DENO_DEPLOYMENT_ID = Deno.env.get('DENO_DEPLOYMENT_ID');
-
-  if (dsn) {
-    _initSentry({ dsn, release: DENO_DEPLOYMENT_ID });
-  }
+  if (dsn) _initSentry({ dsn });
 }
 
-async function proxy(
-  url?: string,
-  size?: ImageSize,
-): Promise<Attachment> {
+async function proxy(url?: string, size?: ImageSize): Promise<Attachment> {
   let filename = url ? basename(url) : 'default.webp';
 
   const file = await _proxy(url ?? '', size);
 
   if (extname(filename) === '') {
-    const ext = extensionsByType(file.format);
+    const ext = mime.getExtension(file.format);
+
+    console.log({ ext });
 
     if (ext?.length) {
-      filename = `${filename}.${ext[0]}`;
+      filename = `${filename}.${ext}`;
     }
   }
 
   const asciiFilename = Array.from(filename)
     .map((char) => char.charCodeAt(0))
-    .map((code) => code < 128 ? String.fromCharCode(code) : '-')
+    .map((code) => (code < 128 ? String.fromCharCode(code) : '-'))
     .join('')
     .replaceAll('_', '-')
     .replace(/\s+/g, '');
+  console.log({ filename });
 
   return {
     filename: asciiFilename,
@@ -476,13 +575,21 @@ async function proxy(
   };
 }
 
+function chunks<T>(array: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+}
+
 const utils = {
   proxy,
   LehmerRNG,
   isWithin14Days,
   capitalize,
   captureException,
-  chunks: chunk,
+  chunks,
   comma,
   compact,
   nonNullable,
@@ -499,15 +606,12 @@ const utils = {
   json,
   nanoid,
   parseInt: _parseInt,
-  readJson,
   normalTimestamp,
   rechargeTimestamp,
   rechargeDailyTimestamp,
   rechargeKeysTimestamp,
   rechargeStealTimestamp,
   rng,
-  serve,
-  serveStatic,
   shuffle,
   sleep,
   truncate,

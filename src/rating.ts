@@ -7,13 +7,15 @@ import { Character, CharacterRole } from '~/src/types.ts';
 export default class Rating {
   #stars = 0;
 
-  constructor(
-    { role, popularity, stars }: {
-      stars?: number;
-      role?: CharacterRole;
-      popularity?: number;
-    },
-  ) {
+  constructor({
+    role,
+    popularity,
+    stars,
+  }: {
+    stars?: number;
+    role?: CharacterRole;
+    popularity?: number;
+  }) {
     if (typeof stars === 'number') {
       this.#stars = stars;
       return;
@@ -21,7 +23,8 @@ export default class Rating {
 
     if (
       role === CharacterRole.Background ||
-      !popularity || popularity < 50_000
+      !popularity ||
+      popularity < 50_000
     ) {
       this.#stars = 1;
     } else if (popularity < 200_000) {
@@ -47,8 +50,8 @@ export default class Rating {
     } else {
       utils.captureException(
         new Error(
-          `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
-        ),
+          `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`
+        )
       );
     }
   }
@@ -58,9 +61,9 @@ export default class Rating {
   }
 
   get emotes(): string {
-    return `${emotes.star.repeat(this.#stars)}${
-      emotes.noStar.repeat(5 - this.#stars)
-    }`;
+    return `${emotes.star.repeat(this.#stars)}${emotes.noStar.repeat(
+      5 - this.#stars
+    )}`;
   }
 
   static fromCharacter(character: Character): Rating {

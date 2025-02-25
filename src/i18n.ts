@@ -1,8 +1,8 @@
 import { AvailableLocales } from '~/src/discord.ts';
 
-import EN from '~/i18n/en-US.json' with { type: 'json' };
-import ES from '~/i18n/es-ES.json' with { type: 'json' };
-import BR from '~/i18n/pt-BR.json' with { type: 'json' };
+import EN from '~/i18n/en-US.json';
+import ES from '~/i18n/es-ES.json';
+import BR from '~/i18n/pt-BR.json';
 
 export type Keys = keyof typeof EN;
 
@@ -21,14 +21,16 @@ function get(
 
   switch (locale) {
     case 'es-ES':
-      value = key in i18n.dict[locale]
-        ? i18n.dict[locale][key as keyof typeof ES]
-        : i18n.dict['en-US'][key];
+      value =
+        key in i18n.dict[locale]
+          ? i18n.dict[locale][key as keyof typeof ES]
+          : i18n.dict['en-US'][key];
       break;
     case 'pt-BR':
-      value = key in i18n.dict[locale]
-        ? i18n.dict[locale][key as keyof typeof BR]
-        : i18n.dict['en-US'][key];
+      value =
+        key in i18n.dict[locale]
+          ? i18n.dict[locale][key as keyof typeof BR]
+          : i18n.dict['en-US'][key];
       break;
     default:
       value = i18n.dict['en-US'][key];
@@ -38,9 +40,8 @@ function get(
   value ??= i18n.dict['en-US'][key] ?? key;
 
   if (args?.length) {
-    value = value.replaceAll(
-      /{(\d+)}/g,
-      (match, i) => typeof args[i] !== 'undefined' ? `${args[i]}` : match,
+    value = value.replaceAll(/{(\d+)}/g, (match, i) =>
+      typeof args[i] !== 'undefined' ? `${args[i]}` : match
     );
   }
 

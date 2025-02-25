@@ -1,0 +1,39 @@
+{
+  "type": "module",
+  "name": "fable",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"cp .env .dev.vars && npx wrangler dev src/interactions.ts\" \"ngrok http 127.0.0.1:8787\" \"tsx start_dev.ts\"",
+    "lint": "eslint . --config ./eslint.config.mjs",
+    "check": "tsc --noEmit",
+    "test": "vitest tests db"
+  },
+  "dependencies": {
+    "@fable-community/dyn-images": "file:dyn-images",
+    "@fable-community/images-proxy": "file:images-proxy",
+    "@fable-community/search-index": "file:search-index",
+    "@sentry/node": "^9.1.0",
+    "ajv": "^8.17.1",
+    "awesome-ajv-errors": "^5.1.0",
+    "fastest-levenshtein": "^1.0.16",
+    "mime": "^4.0.6",
+    "mongodb": "^6.13.0",
+    "mongodb-memory-server": "^10.1.3",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.4",
+    "dotenv": "^16.4.7",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "prettier": "3.5.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.25.0",
+    "vite-plugin-wasm": "^3.4.1",
+    "vitest": "^3.0.7",
+    "wrangler": "^3.111.0"
+  }
+}

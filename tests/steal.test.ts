@@ -1,15 +1,5 @@
-// deno-lint-ignore-file no-explicit-any
-
-import { assertEquals, assertThrows } from '$std/assert/mod.ts';
-
-import { FakeTime } from '$std/testing/time.ts';
-
-import {
-  assertSpyCall,
-  assertSpyCalls,
-  returnsNext,
-  stub,
-} from '$std/testing/mock.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import packs from '~/src/packs.ts';
 import utils from '~/src/utils.ts';
@@ -18,29 +8,48 @@ import steal from '~/src/steal.ts';
 
 import config from '~/src/config.ts';
 
-import db, { ObjectId } from '~/db/mod.ts';
+import db, { ObjectId } from '~/db/index.ts';
 
 import { Character, CharacterRole, MediaType } from '~/src/types.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
 
-Deno.test('chances', async (test) => {
-  await test.step('5*', async (test) => {
+beforeEach(() => {
+  // Setup fake timers
+  vi.useFakeTimers({ now: 0 });
+});
+
+afterEach(() => {
+  // Clean up all mocks and timers
+  vi.restoreAllMocks();
+  vi.clearAllTimers();
+
+  // Clean up config
+  delete config.stealing;
+  delete config.appId;
+  delete config.origin;
+});
+
+describe('chances', () => {
+  describe('5*', () => {
     const rating = 5;
 
-    await test.step('no inactive time', () => {
+    test('no inactive time', () => {
       const inactiveDays = steal.getInactiveDays({
         lastPull: undefined,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
 
-    await test.step('1 inactive day', () => {
+    test('1 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 1);
@@ -49,14 +58,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(1, chance);
+      expect(chance).toBe(1);
     });
 
-    await test.step('7 inactive day', () => {
+    test('7 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 7);
@@ -65,14 +77,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(26, chance);
+      expect(chance).toBe(26);
     });
 
-    await test.step('15 inactive day', () => {
+    test('15 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 15);
@@ -81,14 +96,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(51, chance);
+      expect(chance).toBe(51);
     });
 
-    await test.step('32 inactive day', () => {
+    test('32 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 32);
@@ -97,30 +115,36 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
   });
 
-  await test.step('4*', async (test) => {
+  describe('4*', () => {
     const rating = 4;
 
-    await test.step('no inactive time', () => {
+    test('no inactive time', () => {
       const inactiveDays = steal.getInactiveDays({
         lastPull: undefined,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
 
-    await test.step('1 inactive day', () => {
+    test('1 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 1);
@@ -129,14 +153,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(3, chance);
+      expect(chance).toBe(3);
     });
 
-    await test.step('6 inactive day', () => {
+    test('6 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 8);
@@ -145,14 +172,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(28, chance);
+      expect(chance).toBe(28);
     });
 
-    await test.step('15 inactive day', () => {
+    test('15 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 15);
@@ -161,14 +191,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(53, chance);
+      expect(chance).toBe(53);
     });
 
-    await test.step('32 inactive day', () => {
+    test('32 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 32);
@@ -177,30 +210,36 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
   });
 
-  await test.step('3*', async (test) => {
+  describe('3*', () => {
     const rating = 3;
 
-    await test.step('no inactive time', () => {
+    test('no inactive time', () => {
       const inactiveDays = steal.getInactiveDays({
         lastPull: undefined,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
 
-    await test.step('1 inactive day', () => {
+    test('1 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 1);
@@ -209,14 +248,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(15, chance);
+      expect(chance).toBe(15);
     });
 
-    await test.step('7 inactive day', () => {
+    test('7 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 7);
@@ -225,14 +267,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(40, chance);
+      expect(chance).toBe(40);
     });
 
-    await test.step('15 inactive day', () => {
+    test('15 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 15);
@@ -241,14 +286,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(65, chance);
+      expect(chance).toBe(65);
     });
 
-    await test.step('32 inactive day', () => {
+    test('32 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 32);
@@ -257,30 +305,36 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
   });
 
-  await test.step('2*', async (test) => {
+  describe('2*', () => {
     const rating = 2;
 
-    await test.step('no inactive time', () => {
+    test('no inactive time', () => {
       const inactiveDays = steal.getInactiveDays({
         lastPull: undefined,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
 
-    await test.step('1 inactive day', () => {
+    test('1 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 1);
@@ -289,14 +343,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(25, chance);
+      expect(chance).toBe(25);
     });
 
-    await test.step('7 inactive day', () => {
+    test('7 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 7);
@@ -305,14 +362,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(50, chance);
+      expect(chance).toBe(50);
     });
 
-    await test.step('15 inactive day', () => {
+    test('15 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 15);
@@ -321,14 +381,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(75, chance);
+      expect(chance).toBe(75);
     });
 
-    await test.step('32 inactive day', () => {
+    test('32 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 32);
@@ -337,30 +400,36 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
   });
 
-  await test.step('1*', async (test) => {
+  describe('1*', () => {
     const rating = 1;
 
-    await test.step('no inactive time', () => {
+    test('no inactive time', () => {
       const inactiveDays = steal.getInactiveDays({
         lastPull: undefined,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
 
-    await test.step('1 inactive day', () => {
+    test('1 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 1);
@@ -369,14 +438,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(50, chance);
+      expect(chance).toBe(50);
     });
 
-    await test.step('7 inactive day', () => {
+    test('7 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 7);
@@ -385,14 +457,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(75, chance);
+      expect(chance).toBe(75);
     });
 
-    await test.step('15 inactive day', () => {
+    test('15 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 15);
@@ -401,14 +476,17 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
 
-    await test.step('32 inactive day', () => {
+    test('32 inactive day', () => {
       const date = new Date();
 
       date.setDate(date.getDate() - 32);
@@ -417,29 +495,34 @@ Deno.test('chances', async (test) => {
         lastPull: date,
       });
 
-      const chance = steal.getChances({
-        rating,
-      } as any, inactiveDays);
+      const chance = steal.getChances(
+        {
+          rating,
+        } as any,
+        inactiveDays
+      );
 
-      assertEquals(90, chance);
+      expect(chance).toBe(90);
     });
   });
 });
 
-Deno.test('/steal', async (test) => {
-  await test.step('normal', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
+describe('/steal', () => {
+  const character: Character = {
+    id: '1',
+    packId: 'id',
+    description: 'long description',
+    name: {
+      english: 'full name',
+    },
+    images: [
+      {
         url: 'image_url',
-      }],
-      media: {
-        edges: [{
+      },
+    ],
+    media: {
+      edges: [
+        {
           role: CharacterRole.Main,
           node: {
             id: 'media',
@@ -449,1184 +532,752 @@ Deno.test('/steal', async (test) => {
               english: 'media title',
             },
           },
-        }],
+        },
+      ],
+    },
+  };
+
+  test('normal', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+
+    vi.spyOn(db, 'rechargeConsumables').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: undefined,
+    } as any);
+
+    vi.spyOn(db, 'findCharacter').mockResolvedValue([
+      {
+        rating: 2,
+        characterId: 'id:1',
+        userId: 'another_user_id',
+        inventory: { party: {} },
       },
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'rechargeConsumables',
-      () =>
-        ({
-          party: {},
-          user: { discordId: 'user-id' },
-          stealTimestamp: undefined,
-        }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findCharacter',
-      () =>
-        [{
-          rating: 2,
-          characterId: 'id:1',
-          userId: 'another_user_id',
-          inventory: { party: {} },
-        }] as any,
-    );
+    ] as any);
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'character_id',
-      });
+    const message = steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          components: [],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
         {
-          embeds: [
+          type: 'rich',
+          description: '<@another_user_id>',
+          fields: [
             {
-              type: 'rich',
-              description: '<@another_user_id>',
-              fields: [
-                {
-                  name: 'media title',
-                  value: '**full name**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image-url.webp',
-              },
-            },
-            {
-              type: 'rich',
-              description: 'Your chance of success is **90.00%**',
+              name: 'media title',
+              value: '**full name**',
             },
           ],
-          components: [{
-            components: [
-              {
-                custom_id: 'steal=another_user_id=id:1=90',
-                label: 'Attempt',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-            type: 1,
-          }],
-          attachments: [{ filename: 'image-url.webp', id: '0' }],
-        },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-    }
-  });
-
-  await test.step('on cooldown', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
+          thumbnail: {
+            url: 'attachment://image-url.webp',
           },
-        }],
-      },
-    };
-
-    const timeStub = new FakeTime('2011/1/25 00:00 UTC');
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'rechargeConsumables',
-      () =>
-        ({
-          party: {},
-          user: { discordId: 'user-id' },
-          stealTimestamp: new Date(),
-        }) as any,
-    );
-
-    config.stealing = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = steal.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'character_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
         },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
         {
-          embeds: [{
-            type: 'rich',
-            description: 'Steal is on cooldown, try again <t:1296172800:R>',
-          }],
-          components: [],
-          attachments: [],
+          type: 'rich',
+          description: 'Your chance of success is **90.00%**',
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-    }
-  });
-
-  await test.step('stealing from party (inactive user)', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'rechargeConsumables',
-      () =>
-        ({
-          party: {},
-          user: { discordId: 'user-id' },
-          stealTimestamp: undefined,
-        }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findCharacter',
-      () =>
-        [{
-          rating: 2,
-          characterId: 'id:1',
-          userId: 'another_user_id',
-          inventory: {
-            party: {
-              member1: { characterId: 'id:1' },
-            },
-          },
-        }] as any,
-    );
-
-    config.stealing = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = steal.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'character_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+      ],
+      components: [
         {
-          embeds: [
+          components: [
             {
-              type: 'rich',
-              description: '<@another_user_id>',
-              fields: [
-                {
-                  name: 'media title',
-                  value: '**full name**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image-url.webp',
-              },
+              custom_id: 'steal=another_user_id=id:1=90',
+              label: 'Attempt',
+              style: 2,
+              type: 2,
             },
             {
-              type: 'rich',
-              description: 'Your chance of success is **90.00%**',
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
             },
           ],
-          components: [{
-            components: [
-              {
-                custom_id: 'steal=another_user_id=id:1=90',
-                label: 'Attempt',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-            type: 1,
-          }],
-          attachments: [{ filename: 'image-url.webp', id: '0' }],
+          type: 1,
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-    }
+      ],
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+    });
   });
 
-  await test.step('stealing from party (active user)', async () => {
+  test('on cooldown', async () => {
+    // Set specific date for the test
+    vi.setSystemTime(new Date('2011/1/25 00:00 UTC'));
+
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+
+    vi.spyOn(db, 'rechargeConsumables').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: new Date(),
+    } as any);
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
+        {
+          type: 'rich',
+          description: 'Steal is on cooldown, try again <t:1296172800:R>',
+        },
+      ],
+      components: [],
+      attachments: [],
+    });
+  });
+
+  test('stealing from party (inactive user)', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+
+    vi.spyOn(db, 'rechargeConsumables').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: undefined,
+    } as any);
+
+    vi.spyOn(db, 'findCharacter').mockResolvedValue([
+      {
+        rating: 2,
+        characterId: 'id:1',
+        userId: 'another_user_id',
+        inventory: {
+          party: {
+            member1: { characterId: 'id:1' },
+          },
+        },
+      },
+    ] as any);
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
+        {
+          type: 'rich',
+          description: '<@another_user_id>',
+          fields: [
+            {
+              name: 'media title',
+              value: '**full name**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image-url.webp',
+          },
+        },
+        {
+          type: 'rich',
+          description: 'Your chance of success is **90.00%**',
+        },
+      ],
+      components: [
+        {
+          components: [
+            {
+              custom_id: 'steal=another_user_id=id:1=90',
+              label: 'Attempt',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+          type: 1,
+        },
+      ],
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+    });
+  });
+
+  test('stealing from party (active user)', async () => {
     const id = new ObjectId();
 
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+
+    vi.spyOn(db, 'rechargeConsumables').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: undefined,
+    } as any);
+
+    vi.spyOn(db, 'findCharacter').mockResolvedValue([
+      {
+        _id: id,
+        rating: 2,
+        characterId: 'id:1',
+        userId: 'another_user_id',
+        inventory: {
+          lastPull: new Date(),
+          party: {
+            member1Id: id,
           },
-        }],
+        },
       },
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'rechargeConsumables',
-      () =>
-        ({
-          party: {},
-          user: { discordId: 'user-id' },
-          stealTimestamp: undefined,
-        }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findCharacter',
-      () =>
-        [{
-          _id: id,
-          rating: 2,
-          characterId: 'id:1',
-          userId: 'another_user_id',
-          inventory: {
-            lastPull: new Date(),
-            party: {
-              member1Id: id,
-            },
-          },
-        }] as any,
-    );
+    ] as any);
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'character_id',
-      });
+    const message = steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          components: [],
-          attachments: [{ filename: 'image-url.webp', id: '0' }],
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                "As part of <@another_user_id>'s party, **full name** cannot be stolen while <@another_user_id> is still active",
-            },
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-              fields: [
-                {
-                  name: 'media title',
-                  value: '**full name**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image-url.webp',
-              },
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-    }
-  });
-
-  // TODO test co-owned character sorting
-
-  await test.step('co-owned character sorting', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'rechargeConsumables',
-      () =>
-        ({
-          party: {},
-          user: { discordId: 'user-id' },
-          stealTimestamp: undefined,
-        }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findCharacter',
-      () =>
-        [
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        components: [],
+        embeds: [
           {
-            rating: 2,
-            characterId: 'id:1',
-            userId: 'another_user_id',
-            inventory: { party: {}, lastPull: new Date() },
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
           },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      embeds: [
+        {
+          type: 'rich',
+          description:
+            "As part of <@another_user_id>'s party, **full name** cannot be stolen while <@another_user_id> is still active",
+        },
+        {
+          type: 'rich',
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+          fields: [
+            {
+              name: 'media title',
+              value: '**full name**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image-url.webp',
+          },
+        },
+      ],
+    });
+  });
+
+  test('co-owned character sorting', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+
+    vi.spyOn(db, 'rechargeConsumables').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: undefined,
+    } as any);
+
+    vi.spyOn(db, 'findCharacter').mockResolvedValue([
+      {
+        rating: 2,
+        characterId: 'id:1',
+        userId: 'another_user_id',
+        inventory: { party: {}, lastPull: new Date() },
+      },
+      {
+        rating: 2,
+        characterId: 'id:1',
+        userId: 'another_user_id_2',
+        inventory: { party: {}, lastPull: new Date('1999-1-1') },
+      },
+    ] as any);
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        components: [],
+        embeds: [
           {
-            rating: 2,
-            characterId: 'id:1',
-            userId: 'another_user_id_2',
-            inventory: { party: {}, lastPull: new Date('1999-1-1') },
-          },
-        ] as any,
-    );
-
-    config.stealing = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = steal.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'character_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          components: [],
-          embeds: [{
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
         {
-          embeds: [
+          type: 'rich',
+          description: '<@another_user_id_2>',
+          fields: [
             {
-              type: 'rich',
-              description: '<@another_user_id_2>',
-              fields: [
-                {
-                  name: 'media title',
-                  value: '**full name**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image-url.webp',
-              },
-            },
-            {
-              type: 'rich',
-              description: 'Your chance of success is **90.00%**',
+              name: 'media title',
+              value: '**full name**',
             },
           ],
-          components: [{
-            components: [
-              {
-                custom_id: 'steal=another_user_id_2=id:1=90',
-                label: 'Attempt',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-            type: 1,
-          }],
-          attachments: [{ filename: 'image-url.webp', id: '0' }],
-        },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-    }
-  });
-
-  await test.step('stealing from yourself', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
+          thumbnail: {
+            url: 'attachment://image-url.webp',
           },
-        }],
-      },
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'rechargeConsumables',
-      () =>
-        ({
-          party: {},
-          user: { discordId: 'user-id' },
-          stealTimestamp: undefined,
-        }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findCharacter',
-      () =>
-        [{
-          rating: 2,
-          characterId: 'id:1',
-          userId: 'user_id',
-          inventory: { party: {} },
-        }] as any,
-    );
-
-    config.stealing = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = steal.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'character_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
         },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
         {
-          embeds: [{
-            type: 'rich',
-            description: "You can't steal from yourself!",
-          }],
-          components: [],
-          attachments: [],
+          type: 'rich',
+          description: 'Your chance of success is **90.00%**',
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-    }
-  });
-
-  await test.step('not found', async () => {
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([]),
-    );
-
-    config.stealing = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = steal.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'character_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+      ],
+      components: [
         {
-          embeds: [{
-            type: 'rich',
-            description: 'Found _nothing_ matching that query!',
-          }],
-          components: [],
-          attachments: [],
-        },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-    }
-  });
-
-  await test.step('not owned', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  stealTimestamp: undefined,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-        undefined,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-    const getInventoryStub = stub(
-      db,
-      'rechargeConsumables',
-      () =>
-        ({
-          party: {},
-          user: { discordId: 'user-id' },
-          stealTimestamp: undefined,
-        }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findCharacter',
-      () => undefined as any,
-    );
-
-    config.stealing = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = steal.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'character_id',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          components: [],
-          attachments: [{ filename: 'image-url.webp', id: '0' }],
-          embeds: [
+          components: [
             {
-              type: 'rich',
-              description: "full name hasn't been found by anyone yet",
+              custom_id: 'steal=another_user_id_2=id:1=90',
+              label: 'Attempt',
+              style: 2,
+              type: 2,
             },
             {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-              fields: [
-                {
-                  name: 'media title',
-                  value: '**full name**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image-url.webp',
-              },
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
             },
           ],
+          type: 1,
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-    }
+      ],
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+    });
   });
 
-  await test.step('under maintenance', () => {
+  test('stealing from yourself', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+
+    vi.spyOn(db, 'rechargeConsumables').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: undefined,
+    } as any);
+
+    vi.spyOn(db, 'findCharacter').mockResolvedValue([
+      {
+        rating: 2,
+        characterId: 'id:1',
+        userId: 'user_id',
+        inventory: { party: {} },
+      },
+    ] as any);
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
+        {
+          type: 'rich',
+          description: "You can't steal from yourself!",
+        },
+      ],
+      components: [],
+      attachments: [],
+    });
+  });
+
+  test('not found', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([]);
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
+        {
+          type: 'rich',
+          description: 'Found _nothing_ matching that query!',
+        },
+      ],
+      components: [],
+      attachments: [],
+    });
+  });
+
+  test('not owned', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+
+    vi.spyOn(db, 'rechargeConsumables').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: undefined,
+    } as any);
+
+    vi.spyOn(db, 'findCharacter').mockResolvedValue(undefined as any);
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      embeds: [
+        {
+          type: 'rich',
+          description: "full name hasn't been found by anyone yet",
+        },
+        {
+          type: 'rich',
+          description:
+            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+          fields: [
+            {
+              name: 'media title',
+              value: '**full name**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image-url.webp',
+          },
+        },
+      ],
+    });
+  });
+
+  test('under maintenance', () => {
     config.stealing = false;
 
     try {
-      assertThrows(
-        () =>
-          steal.pre({
-            userId: 'user_id',
-            guildId: 'guild_id',
-            token: 'test_token',
-            id: 'character_id',
-          }),
-        NonFetalError,
-        'Stealing is under maintenance, try again later!',
+      expect(() =>
+        steal.pre({
+          userId: 'user_id',
+          guildId: 'guild_id',
+          token: 'test_token',
+          id: 'character_id',
+        })
+      ).toThrowError(
+        new NonFetalError('Stealing is under maintenance, try again later!')
       );
     } finally {
       delete config.stealing;
@@ -1634,20 +1285,22 @@ Deno.test('/steal', async (test) => {
   });
 });
 
-Deno.test('attempt', async (test) => {
-  await test.step('success', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
+describe('attempt', () => {
+  const character: Character = {
+    id: '1',
+    packId: 'id',
+    description: 'long description',
+    name: {
+      english: 'full name',
+    },
+    images: [
+      {
         url: 'image_url',
-      }],
-      media: {
-        edges: [{
+      },
+    ],
+    media: {
+      edges: [
+        {
           role: CharacterRole.Main,
           node: {
             id: 'media',
@@ -1657,1076 +1310,667 @@ Deno.test('attempt', async (test) => {
               english: 'media title',
             },
           },
-        }],
-      },
-    };
+        },
+      ],
+    },
+  };
 
-    const timeStub = new FakeTime();
+  beforeEach(() => {
+    // Setup fake timers
+    vi.useFakeTimers();
+  });
 
-    const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
+  afterEach(() => {
+    // Clean up all mocks and timers
+    vi.restoreAllMocks();
+    vi.clearAllTimers();
 
-    const rngStub = stub(utils, 'getRandomFloat', () => 0);
+    // Clean up config
+    delete config.stealing;
+    delete config.appId;
+    delete config.origin;
+  });
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-        undefined,
-      ] as any),
-    );
+  test('success', async () => {
+    const sleepMock = vi.spyOn(utils, 'sleep').mockResolvedValue(undefined);
+    const rngMock = vi.spyOn(utils, 'getRandomFloat').mockReturnValue(0);
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
 
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
+    vi.spyOn(db, 'getInventory').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+    } as any);
 
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ party: {}, user: { discordId: 'user-id' } }) as any,
-    );
+    vi.spyOn(db, 'findOneCharacter').mockResolvedValue({
+      rating: 2,
+      characterId: 'id:1',
+      userId: 'another_user_id',
+      inventory: { party: {} },
+    } as any);
 
-    const findCharactersStub = stub(
-      db,
-      'findOneCharacter',
-      () =>
-        ({
-          rating: 2,
-          characterId: 'id:1',
-          userId: 'another_user_id',
-          inventory: { party: {} },
-        }) as any,
-    );
-
-    const stealCharacterStub = stub(
-      db,
-      'stealCharacter',
-      () => '_' as any,
-    );
+    vi.spyOn(db, 'stealCharacter').mockResolvedValue('_' as any);
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.attempt({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        characterId: 'character_id',
-        targetUserId: 'another_user_id',
-        pre: 0,
-      });
+    const message = steal.attempt({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      characterId: 'character_id',
+      targetUserId: 'another_user_id',
+      pre: 0,
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'steal2.gif', id: '0' }],
-          components: [],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://steal2.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertSpyCalls(rngStub, 1);
+    expect(rngMock).toHaveBeenCalledTimes(1);
+    expect(sleepMock).toHaveBeenCalledWith(5);
 
-      assertSpyCall(sleepStub, 0, {
-        args: [5],
-      });
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      components: [
         {
-          attachments: [{ filename: 'image-url.webp', id: '0' }],
+          type: 1,
           components: [
             {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'character=character_id=1',
-                  label: '/character',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'like=character_id',
-                  label: '/like',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
-          embeds: [
-            {
-              type: 'rich',
-              description: '**You Succeeded**',
+              custom_id: 'character=character_id=1',
+              label: '/character',
+              style: 2,
+              type: 2,
             },
             {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-              fields: [
-                {
-                  name: 'media title',
-                  value: '**full name**',
-                },
-                {
-                  name: '\u200B',
-                  value: '<:add:1099004747123523644>',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image-url.webp',
-              },
+              custom_id: 'like=character_id',
+              label: '/like',
+              style: 2,
+              type: 2,
             },
           ],
         },
-      );
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'POST');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+      ],
+      embeds: [
         {
-          content: '<@another_user_id>',
-          attachments: [{ filename: 'image-url.webp', id: '0' }],
+          type: 'rich',
+          description: '**You Succeeded**',
+        },
+        {
+          type: 'rich',
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+          fields: [
+            {
+              name: 'media title',
+              value: '**full name**',
+            },
+            {
+              name: '\u200B',
+              value: '<:add:1099004747123523644>',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image-url.webp',
+          },
+        },
+      ],
+    });
+
+    expect(fetchMock.mock.calls[1][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token'
+    );
+
+    expect(fetchMock.mock.calls[1][1]?.method).toBe('POST');
+
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[1][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      content: '<@another_user_id>',
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      components: [
+        {
           components: [
             {
-              components: [
-                {
-                  custom_id: 'character=character_id=1',
-                  label: '/character',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-              type: 1,
+              custom_id: 'character=character_id=1',
+              label: '/character',
+              style: 2,
+              type: 2,
             },
           ],
-          embeds: [
+          type: 1,
+        },
+      ],
+      embeds: [
+        {
+          type: 'rich',
+          description: '**full name** was stolen from you!',
+        },
+        {
+          type: 'rich',
+          description:
+            '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+          fields: [
             {
-              type: 'rich',
-              description: '**full name** was stolen from you!',
+              name: 'media title',
+              value: '**full name**',
             },
             {
-              type: 'rich',
-              description:
-                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-              fields: [
-                {
-                  name: 'media title',
-                  value: '**full name**',
-                },
-                {
-                  name: '\u200B',
-                  value: '<:remove:1099004424111792158>',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image-url.webp',
-              },
+              name: '\u200B',
+              value: '<:remove:1099004424111792158>',
             },
           ],
+          thumbnail: {
+            url: 'attachment://image-url.webp',
+          },
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      rngStub.restore();
-      sleepStub.restore();
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-
-      stealCharacterStub.restore();
-    }
+      ],
+    });
   });
 
-  await test.step('fail', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
+  test('fail', async () => {
+    const sleepMock = vi.spyOn(utils, 'sleep').mockResolvedValue(undefined);
+    const rngMock = vi.spyOn(utils, 'getRandomFloat').mockReturnValue(1);
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
 
-    const timeStub = new FakeTime('2011/1/25 00:00 UTC');
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
 
-    const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
+    vi.spyOn(db, 'getInventory').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+    } as any);
 
-    const rngStub = stub(utils, 'getRandomFloat', () => 1);
+    vi.spyOn(db, 'findOneCharacter').mockResolvedValue({
+      rating: 2,
+      characterId: 'id:1',
+      userId: 'another_user_id',
+      inventory: { party: {} },
+    } as any);
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ party: {}, user: { discordId: 'user-id' } }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findOneCharacter',
-      () =>
-        ({
-          rating: 2,
-          characterId: 'id:1',
-          userId: 'another_user_id',
-          inventory: { party: {} },
-        }) as any,
-    );
-
-    const stealCharacterStub = stub(
-      db,
-      'failSteal',
-      () => undefined as any,
-    );
+    vi.spyOn(db, 'failSteal').mockResolvedValue(undefined as any);
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.attempt({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        characterId: 'character_id',
-        targetUserId: 'another_user_id',
-        pre: 0,
-      });
+    const message = steal.attempt({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      characterId: 'character_id',
+      targetUserId: 'another_user_id',
+      pre: 0,
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'steal2.gif', id: '0' }],
-          components: [],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://steal2.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertSpyCalls(rngStub, 1);
+    expect(rngMock).toHaveBeenCalledTimes(1);
+    expect(sleepMock).toHaveBeenCalledWith(5);
 
-      assertSpyCall(sleepStub, 0, {
-        args: [5],
-      });
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [],
+      embeds: [
         {
-          components: [],
-          attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              description: '**You Failed**',
-            },
-            {
-              type: 'rich',
-              description: 'You can try again <t:1296172800:R>',
-            },
-          ],
+          type: 'rich',
+          description: '**You Failed**',
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      rngStub.restore();
-      sleepStub.restore();
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-
-      findCharactersStub.restore();
-      stealCharacterStub.restore();
-    }
+        {
+          type: 'rich',
+          description: 'You can try again <t:259200:R>',
+        },
+      ],
+    });
   });
 
-  await test.step('on cooldown', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
+  test('on cooldown', async () => {
+    // Set specific date for the test
+    vi.setSystemTime(new Date('2011/1/25 00:00 UTC'));
 
-    const timeStub = new FakeTime('2011/1/25 00:00 UTC');
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-        undefined,
-      ] as any),
-    );
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {},
-          user: { discordId: 'user-id' },
-          stealTimestamp: new Date(),
-        }) as any,
-    );
+    vi.spyOn(db, 'getInventory').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: new Date(),
+    } as any);
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.attempt({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        characterId: 'character_id',
-        targetUserId: 'another_user_id',
-        pre: 0,
-      });
+    const message = steal.attempt({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      characterId: 'character_id',
+      targetUserId: 'another_user_id',
+      pre: 0,
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'steal2.gif', id: '0' }],
-          components: [],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://steal2.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [],
+      embeds: [
         {
-          components: [],
-          attachments: [],
-          embeds: [{
-            type: 'rich',
-            description: 'Steal is on cooldown, try again <t:1296172800:R>',
-          }],
+          type: 'rich',
+          description: 'Steal is on cooldown, try again <t:1296172800:R>',
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-    }
+      ],
+    });
   });
 
-  await test.step('chances lowered', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
+  test('chances lowered', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
 
-    const timeStub = new FakeTime();
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-        undefined,
-      ] as any),
-    );
+    vi.spyOn(db, 'getInventory').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+    } as any);
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ party: {}, user: { discordId: 'user-id' } }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findOneCharacter',
-      () =>
-        ({
-          rating: 2,
-          characterId: 'id:1',
-          userId: 'another_user_id',
-          inventory: { party: {} },
-        }) as any,
-    );
+    vi.spyOn(db, 'findOneCharacter').mockResolvedValue({
+      rating: 2,
+      characterId: 'id:1',
+      userId: 'another_user_id',
+      inventory: { party: {} },
+    } as any);
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.attempt({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        characterId: 'character_id',
-        targetUserId: 'another_user_id',
-        pre: 100,
-      });
+    const message = steal.attempt({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      characterId: 'character_id',
+      targetUserId: 'another_user_id',
+      pre: 100,
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'steal2.gif', id: '0' }],
-          components: [],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://steal2.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [],
+      embeds: [
         {
-          components: [],
-          attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                'Something happened and affected your chances of stealing **full name**, Please try again!',
-            },
-          ],
+          type: 'rich',
+          description:
+            'Something happened and affected your chances of stealing **full name**, Please try again!',
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-    }
+      ],
+    });
   });
 
-  await test.step('not found', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
+  test('not found', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
 
-    const timeStub = new FakeTime();
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
+    vi.spyOn(db, 'getInventory').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+    } as any);
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ party: {}, user: { discordId: 'user-id' } }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findOneCharacter',
-      () => undefined as any,
-    );
+    vi.spyOn(db, 'findOneCharacter').mockResolvedValue(undefined as any);
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.attempt({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        characterId: 'character_id',
-        targetUserId: 'another_user_id',
-        pre: 0,
-      });
+    const message = steal.attempt({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      characterId: 'character_id',
+      targetUserId: 'another_user_id',
+      pre: 0,
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'steal2.gif', id: '0' }],
-          components: [],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://steal2.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [],
+      embeds: [
         {
-          components: [],
-          attachments: [],
-          embeds: [{
-            type: 'rich',
-            description: "full name hasn't been found by anyone yet",
-          }],
+          type: 'rich',
+          description: "full name hasn't been found by anyone yet",
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-    }
+      ],
+    });
   });
 
-  await test.step('not found 2', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
+  test('not found 2', async () => {
+    vi.spyOn(utils, 'getRandomFloat').mockReturnValue(0);
+    const sleepMock = vi.spyOn(utils, 'sleep').mockResolvedValue(undefined);
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
 
-    const timeStub = new FakeTime();
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
 
-    const rngStub = stub(utils, 'getRandomFloat', () => 0);
+    vi.spyOn(db, 'getInventory').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+    } as any);
 
-    const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
+    vi.spyOn(db, 'findOneCharacter').mockResolvedValue({
+      rating: 2,
+      characterId: 'id:1',
+      userId: 'another_user_id',
+      inventory: { party: {} },
+    } as any);
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ party: {}, user: { discordId: 'user-id' } }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findOneCharacter',
-      () =>
-        ({
-          rating: 2,
-          characterId: 'id:1',
-          userId: 'another_user_id',
-          inventory: { party: {} },
-        }) as any,
-    );
-
-    const stealCharacterStub = stub(
-      db,
-      'stealCharacter',
-      () => {
-        throw new Error('CHARACTER_NOT_FOUND');
-      },
-    );
+    vi.spyOn(db, 'stealCharacter').mockImplementation(() => {
+      throw new Error('CHARACTER_NOT_FOUND');
+    });
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.attempt({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        characterId: 'character_id',
-        targetUserId: 'another_user_id',
-        pre: 0,
-      });
+    const message = steal.attempt({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      characterId: 'character_id',
+      targetUserId: 'another_user_id',
+      pre: 0,
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'steal2.gif', id: '0' }],
-          components: [],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://steal2.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertSpyCall(sleepStub, 0, {
-        args: [5],
-      });
+    expect(sleepMock).toHaveBeenCalledWith(5);
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [],
+      embeds: [
         {
-          components: [],
-          attachments: [],
-          embeds: [{
-            type: 'rich',
-            description: "full name hasn't been found by anyone yet",
-          }],
+          type: 'rich',
+          description: "full name hasn't been found by anyone yet",
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      rngStub.restore();
-      sleepStub.restore();
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-
-      findCharactersStub.restore();
-      stealCharacterStub.restore();
-    }
+      ],
+    });
   });
 
-  await test.step('not owned', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
+  test('not owned', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined);
 
-    const timeStub = new FakeTime();
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        undefined,
-        undefined,
-      ] as any),
-    );
+    vi.spyOn(db, 'getInventory').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+    } as any);
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    vi.spyOn(db, 'findOneCharacter').mockResolvedValue(undefined as any);
 
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ party: {}, user: { discordId: 'user-id' } }) as any,
-    );
-
-    const findCharactersStub = stub(
-      db,
-      'findOneCharacter',
-      () => undefined as any,
-    );
-
-    const stealCharacterStub = stub(
-      db,
-      'stealCharacter',
-      () => {
-        throw new Error('CHARACTER_NOT_OWNED');
-      },
-    );
+    vi.spyOn(db, 'stealCharacter').mockImplementation(() => {
+      throw new Error('CHARACTER_NOT_OWNED');
+    });
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = steal.attempt({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        characterId: 'character_id',
-        targetUserId: 'another_user_id',
-        pre: 0,
-      });
+    const message = steal.attempt({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      characterId: 'character_id',
+      targetUserId: 'another_user_id',
+      pre: 0,
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [{ filename: 'steal2.gif', id: '0' }],
-          components: [],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        components: [],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://steal2.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [],
+      embeds: [
         {
-          components: [],
-          attachments: [],
-          embeds: [
-            {
-              description: "full name hasn't been found by anyone yet",
-              type: 'rich',
-            },
-          ],
+          description: "full name hasn't been found by anyone yet",
+          type: 'rich',
         },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      timeStub.restore();
-
-      getInventoryStub.restore();
-      findCharactersStub.restore();
-      stealCharacterStub.restore();
-    }
+      ],
+    });
   });
 });

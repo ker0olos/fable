@@ -1,4 +1,4 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 import { newGuild } from '~/db/getInventory.ts';
 
@@ -8,7 +8,7 @@ import type * as Schema from '~/db/schema.ts';
 
 export async function publishPack(
   userId: string,
-  manifest: Manifest,
+  manifest: Manifest
 ): Promise<void> {
   const db = new Mongo();
 
@@ -25,16 +25,13 @@ export async function publishPack(
     await db.packs().updateOne(
       {
         'manifest.id': manifest.id,
-        $or: [
-          { owner: userId },
-          { 'manifest.maintainers': { $in: [userId] } },
-        ],
+        $or: [{ owner: userId }, { 'manifest.maintainers': { $in: [userId] } }],
       },
       {
         $setOnInsert: newPack, // new
         $set: { manifest, updatedAt: new Date() }, // update existing
       },
-      { upsert: true },
+      { upsert: true }
     );
   } finally {
     await db.close();
@@ -44,7 +41,7 @@ export async function publishPack(
 export async function addPack(
   userId: string,
   guildId: string,
-  manifestId: string,
+  manifestId: string
 ): Promise<Schema.Pack | null> {
   const db = new Mongo();
 
@@ -53,9 +50,7 @@ export async function addPack(
   try {
     await db.connect();
 
-    const pack = await db.packs().findOne(
-      { 'manifest.id': manifestId },
-    );
+    const pack = await db.packs().findOne({ 'manifest.id': manifestId });
 
     if (!pack) {
       await db.close();
@@ -63,7 +58,8 @@ export async function addPack(
     }
 
     if (
-      pack.manifest.private && pack.owner !== userId &&
+      pack.manifest.private &&
+      pack.owner !== userId &&
       !pack.manifest.maintainers?.includes(userId)
     ) {
       await db.close();
@@ -76,7 +72,7 @@ export async function addPack(
         $setOnInsert: newGuild(guildId, ['packIds']),
         $addToSet: { packIds: manifestId },
       },
-      { upsert: true, returnDocument: 'after' },
+      { upsert: true, returnDocument: 'after' }
     );
 
     if (!guild) {
@@ -94,7 +90,7 @@ export async function addPack(
 
 export async function removePack(
   guildId: string,
-  manifestId: string,
+  manifestId: string
 ): Promise<Schema.Pack | null> {
   const db = new Mongo();
 
@@ -103,20 +99,20 @@ export async function removePack(
   try {
     await db.connect();
 
-    const pack = await db.packs().findOne(
-      { 'manifest.id': manifestId },
-    );
+    const pack = await db.packs().findOne({ 'manifest.id': manifestId });
 
     if (!pack) {
       await db.close();
       return null;
     }
 
-    const guild = await db.guilds().findOneAndUpdate(
-      { discordId: guildId },
-      { $pull: { packIds: manifestId } },
-      { returnDocument: 'after' },
-    );
+    const guild = await db
+      .guilds()
+      .findOneAndUpdate(
+        { discordId: guildId },
+        { $pull: { packIds: manifestId } },
+        { returnDocument: 'after' }
+      );
 
     if (!guild) {
       await db.close();

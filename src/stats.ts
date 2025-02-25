@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-non-null-assertion
-
 import search, { idPrefix } from '~/src/search.ts';
 
 import _user from '~/src/user.ts';
@@ -7,6 +5,8 @@ import packs from '~/src/packs.ts';
 import utils from '~/src/utils.ts';
 import config from '~/src/config.ts';
 import i18n from '~/src/i18n.ts';
+
+import db from '~/db/index.ts';
 
 import { skills } from '~/src/skills.ts';
 
@@ -17,28 +17,31 @@ import { experienceToNextLevel } from '~/db/gainExp.ts';
 import { NonFetalError } from '~/src/errors.ts';
 
 import type { SkillKey } from '~/src/types.ts';
-import db from '~/db/mod.ts';
 
-function view({ token, character, userId, guildId }: {
+function view({
+  token,
+  character,
+  userId,
+  guildId,
+}: {
   token: string;
   character: string;
   guildId: string;
   userId: string;
 }): discord.Message {
-  const locale = _user.cachedUsers[userId]?.locale ??
-    _user.cachedGuilds[guildId]?.locale;
+  const locale =
+    _user.cachedUsers[userId]?.locale ?? _user.cachedGuilds[guildId]?.locale;
 
   if (!config.combat) {
-    throw new NonFetalError(
-      i18n.get('maintenance-combat', locale),
-    );
+    throw new NonFetalError(i18n.get('maintenance-combat', locale));
   }
 
-  packs.characters(
-    character.startsWith(idPrefix)
-      ? { ids: [character.substring(idPrefix.length)], guildId }
-      : { search: character, guildId },
-  )
+  packs
+    .characters(
+      character.startsWith(idPrefix)
+        ? { ids: [character.substring(idPrefix.length)], guildId }
+        : { search: character, guildId }
+    )
     .then((results) => {
       if (!results.length) {
         throw new Error('404');
@@ -70,11 +73,7 @@ function view({ token, character, userId, guildId }: {
       }
 
       const exists = existing?.sort((a, b) => {
-        if (
-          userId &&
-          a.userId === userId &&
-          b.userId !== userId
-        ) {
+        if (userId && a.userId === userId && b.userId !== userId) {
           return -1;
         }
 
@@ -118,52 +117,53 @@ function view({ token, character, userId, guildId }: {
       });
 
       if (_skills.length) {
-        embed
-          .addField({
-            name: i18n.get('skills', locale),
-            value: _skills.map(([key, s]) => {
+        embed.addField({
+          name: i18n.get('skills', locale),
+          value: _skills
+            .map(([key, s]) => {
               const skill = skills[key as SkillKey];
 
               const maxed = skill.max <= s.level;
 
-              return `${i18n.get(skill.key, locale)} (${
-                i18n.get('lvl', locale)
-              } ${maxed ? i18n.get('max', locale) : s.level})`;
-            }).join('\n'),
-          });
+              return `${i18n.get(skill.key, locale)} (${i18n.get(
+                'lvl',
+                locale
+              )} ${maxed ? i18n.get('max', locale) : s.level})`;
+            })
+            .join('\n'),
+        });
       }
 
-      embed
-        .addField({
-          name: i18n.get('stats', locale),
-          value: [
-            `${
-              i18n.get(
-                skillPoints === 1 ? 'skill-point' : 'skill-points',
-                locale,
-              )
-            }: ${skillPoints}`,
-            // `${i18n.get('stat-points', locale)}: ${unclaimed}`,
-            `${i18n.get('attack', locale)}: ${stats.attack}`,
-            `${i18n.get('defense', locale)}: ${stats.defense}`,
-            `${i18n.get('speed', locale)}: ${stats.speed}`,
-            `${i18n.get('hp', locale)}: ${stats.hp}`,
-          ].join('\n'),
-        });
+      embed.addField({
+        name: i18n.get('stats', locale),
+        value: [
+          `${i18n.get(
+            skillPoints === 1 ? 'skill-point' : 'skill-points',
+            locale
+          )}: ${skillPoints}`,
+          // `${i18n.get('stat-points', locale)}: ${unclaimed}`,
+          `${i18n.get('attack', locale)}: ${stats.attack}`,
+          `${i18n.get('defense', locale)}: ${stats.defense}`,
+          `${i18n.get('speed', locale)}: ${stats.speed}`,
+          `${i18n.get('hp', locale)}: ${stats.hp}`,
+        ].join('\n'),
+      });
 
-      message.addComponents([
-        new discord.Component()
-          .setLabel('/character')
-          .setId(`character`, exists.characterId),
-        new discord.Component()
-          .setLabel('/like')
-          .setId(`like`, exists.characterId),
-        exists.userId === userId
-          ? new discord.Component()
-            .setLabel('/p assign')
-            .setId(`passign`, userId, exists.characterId)
-          : undefined,
-      ].filter(utils.nonNullable));
+      message.addComponents(
+        [
+          new discord.Component()
+            .setLabel('/character')
+            .setId(`character`, exists.characterId),
+          new discord.Component()
+            .setLabel('/like')
+            .setId(`like`, exists.characterId),
+          exists.userId === userId
+            ? new discord.Component()
+                .setLabel('/p assign')
+                .setId(`passign`, userId, exists.characterId)
+            : undefined,
+        ].filter(utils.nonNullable)
+      );
 
       message.addEmbed(embed);
 
@@ -174,16 +174,16 @@ function view({ token, character, userId, guildId }: {
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('some-characters-disabled', locale),
-            ),
-          ).patch(token);
+              i18n.get('some-characters-disabled', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (err instanceof NonFetalError) {
         return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(err.message),
-          ).patch(token);
+          .addEmbed(new discord.Embed().setDescription(err.message))
+          .patch(token);
       }
 
       if (!config.sentry) {

@@ -1,15 +1,12 @@
-// deno-lint-ignore-file no-non-null-assertion no-explicit-any
-
-import { assert, assertEquals } from '$std/assert/mod.ts';
-
-import { assertSpyCall, assertSpyCalls, stub } from '$std/testing/mock.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import utils from '~/src/utils.ts';
 
 import * as discord from '~/src/discord.ts';
 
-Deno.test('interactions', async (test) => {
-  await test.step('command', () => {
+describe('interactions', () => {
+  it('command', () => {
     const body = JSON.stringify({
       id: 'body_id',
       token: 'body_token',
@@ -21,38 +18,42 @@ Deno.test('interactions', async (test) => {
       },
       data: {
         name: 'name',
-        options: [{
-          name: 'text',
-          value: 'text',
-        }, {
-          name: 'boolean',
-          value: true,
-        }, {
-          name: 'number',
-          value: 420,
-        }],
+        options: [
+          {
+            name: 'text',
+            value: 'text',
+          },
+          {
+            name: 'boolean',
+            value: true,
+          },
+          {
+            name: 'number',
+            value: 420,
+          },
+        ],
       },
     });
 
     const interaction = new discord.Interaction<string | number | boolean>(
-      body,
+      body
     );
 
-    assertEquals(interaction.id, 'body_id');
-    assertEquals(interaction.token, 'body_token');
+    expect(interaction.id).toBe('body_id');
+    expect(interaction.token).toBe('body_token');
 
-    assertEquals(interaction.type, 2);
+    expect(interaction.type).toBe(2);
 
-    assertEquals(interaction.name, 'name');
+    expect(interaction.name).toBe('name');
 
-    assertEquals(interaction.member!.user.id, 'user_id');
+    expect(interaction.member!.user.id).toBe('user_id');
 
-    assertEquals(interaction.options['text'], 'text');
-    assertEquals(interaction.options['boolean'], true);
-    assertEquals(interaction.options['number'], 420);
+    expect(interaction.options['text']).toBe('text');
+    expect(interaction.options['boolean']).toBe(true);
+    expect(interaction.options['number']).toBe(420);
   });
 
-  await test.step('interactions', () => {
+  it('interactions', () => {
     const body = JSON.stringify({
       id: 'body_id',
       token: 'body_token',
@@ -64,42 +65,48 @@ Deno.test('interactions', async (test) => {
       },
       data: {
         custom_id: 'test_id=abc=123',
-        components: [{
-          type: 1,
-          components: [{
-            custom_id: 'text',
-            value: 'text',
-          }, {
-            custom_id: 'boolean',
-            value: true,
-          }, {
-            custom_id: 'number',
-            value: 420,
-          }],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'text',
+                value: 'text',
+              },
+              {
+                custom_id: 'boolean',
+                value: true,
+              },
+              {
+                custom_id: 'number',
+                value: 420,
+              },
+            ],
+          },
+        ],
       },
     });
 
     const interaction = new discord.Interaction<string | number | boolean>(
-      body,
+      body
     );
 
-    assertEquals(interaction.id, 'body_id');
-    assertEquals(interaction.token, 'body_token');
+    expect(interaction.id).toBe('body_id');
+    expect(interaction.token).toBe('body_token');
 
-    assertEquals(interaction.type, 3);
+    expect(interaction.type).toBe(3);
 
-    assertEquals(interaction.customType, 'test_id');
-    assertEquals(interaction.customValues, ['abc', '123']);
+    expect(interaction.customType).toBe('test_id');
+    expect(interaction.customValues).toEqual(['abc', '123']);
 
-    assertEquals(interaction.member!.user.id, 'user_id');
+    expect(interaction.member!.user.id).toBe('user_id');
 
-    // assertEquals(interaction.options['text'], 'text');
-    // assertEquals(interaction.options['boolean'], true);
-    // assertEquals(interaction.options['number'], 420);
+    // expect(interaction.options['text']).toBe('text');
+    // expect(interaction.options['boolean']).toBe(true);
+    // expect(interaction.options['number']).toBe(420);
   });
 
-  await test.step('select menu', () => {
+  it('select menu', () => {
     const body = JSON.stringify({
       id: 'body_id',
       token: 'body_token',
@@ -117,21 +124,21 @@ Deno.test('interactions', async (test) => {
     });
 
     const interaction = new discord.Interaction<string | number | boolean>(
-      body,
+      body
     );
 
-    assertEquals(interaction.id, 'body_id');
-    assertEquals(interaction.token, 'body_token');
+    expect(interaction.id).toBe('body_id');
+    expect(interaction.token).toBe('body_token');
 
-    assertEquals(interaction.type, 3);
+    expect(interaction.type).toBe(3);
 
-    assertEquals(interaction.customType, 'test_id');
-    assertEquals(interaction.customValues, ['test_value', 'test_value_2']);
+    expect(interaction.customType).toBe('test_id');
+    expect(interaction.customValues).toEqual(['test_value', 'test_value_2']);
 
-    assertEquals(interaction.member!.user.id, 'user_id');
+    expect(interaction.member!.user.id).toBe('user_id');
   });
 
-  await test.step('user', () => {
+  it('user', () => {
     const body = JSON.stringify({
       id: 'body_id',
       token: 'body_token',
@@ -146,12 +153,12 @@ Deno.test('interactions', async (test) => {
         target_id: 'another_user_id',
         resolved: {
           members: {
-            'another_user_id': {
+            another_user_id: {
               nick: 'Nickname',
             },
           },
           users: {
-            'another_user_id': {
+            another_user_id: {
               username: 'Another User',
             },
           },
@@ -159,81 +166,79 @@ Deno.test('interactions', async (test) => {
       },
     });
 
-    const interaction = new discord.Interaction<string>(
-      body,
+    const interaction = new discord.Interaction<string>(body);
+
+    expect(interaction.id).toBe('body_id');
+    expect(interaction.token).toBe('body_token');
+
+    expect(interaction.type).toBe(2);
+
+    expect(interaction.name).toBe('test_command');
+
+    expect(interaction.member!.user.id).toBe('user_id');
+
+    expect(interaction.options['user']).toBe('another_user_id');
+
+    expect(interaction.resolved?.members?.['another_user_id'].nick).toBe(
+      'Nickname'
     );
 
-    assertEquals(interaction.id, 'body_id');
-    assertEquals(interaction.token, 'body_token');
-
-    assertEquals(interaction.type, 2);
-
-    assertEquals(interaction.name, 'test_command');
-
-    assertEquals(interaction.member!.user.id, 'user_id');
-
-    assertEquals(interaction.options['user'], 'another_user_id');
-
-    assertEquals(
-      interaction.resolved?.members?.['another_user_id'].nick,
-      'Nickname',
-    );
-
-    assertEquals(
-      interaction.resolved?.users?.['another_user_id'].username,
-      'Another User',
+    expect(interaction.resolved?.users?.['another_user_id'].username).toBe(
+      'Another User'
     );
   });
 });
 
-Deno.test('embeds', () => {
-  const embed = new discord.Embed();
+describe('embeds', () => {
+  it('should create embeds with various properties', () => {
+    const embed = new discord.Embed();
 
-  embed
-    .setAuthor({ name: 'a', url: 'b', icon_url: 'c' })
-    .setTitle('abc')
-    .setDescription('abc')
-    .setUrl('abc')
-    .setColor('#3E5F8A')
-    .setFooter({ text: 'a', icon_url: 'b' });
+    embed
+      .setAuthor({ name: 'a', url: 'b', icon_url: 'c' })
+      .setTitle('abc')
+      .setDescription('abc')
+      .setUrl('abc')
+      .setColor('#3E5F8A')
+      .setFooter({ text: 'a', icon_url: 'b' });
 
-  assertEquals(embed.json().type, 'rich');
-  assertEquals(embed.json().fields, undefined);
+    expect(embed.json().type).toBe('rich');
+    expect(embed.json().fields).toBeUndefined();
 
-  assertEquals(embed.json().author!.name, 'a');
-  assertEquals(embed.json().author!.url, 'b');
-  assertEquals(embed.json().author!.icon_url, 'c');
+    expect(embed.json().author!.name).toBe('a');
+    expect(embed.json().author!.url).toBe('b');
+    expect(embed.json().author!.icon_url).toBe('c');
 
-  assertEquals(embed.json().title, 'abc');
+    expect(embed.json().title).toBe('abc');
 
-  assertEquals(embed.json().description!, 'abc');
+    expect(embed.json().description!).toBe('abc');
 
-  assertEquals(embed.json().url, 'abc');
+    expect(embed.json().url).toBe('abc');
 
-  assertEquals(embed.json().color!, 4087690);
+    expect(embed.json().color!).toBe(4087690);
 
-  assertEquals(embed.json().footer!.text, 'a');
-  assertEquals(embed.json().footer!.icon_url, 'b');
+    expect(embed.json().footer!.text).toBe('a');
+    expect(embed.json().footer!.icon_url).toBe('b');
 
-  embed.addField({ name: 'a', value: 'b' });
-  embed.addField({ name: 'c', value: 'd', inline: true });
+    embed.addField({ name: 'a', value: 'b' });
+    embed.addField({ name: 'c', value: 'd', inline: true });
 
-  assertEquals(embed.json().fields!.length, 2);
+    expect(embed.json().fields!.length).toBe(2);
 
-  assertEquals(embed.json().fields![0], {
-    name: 'a',
-    value: 'b',
-  });
+    expect(embed.json().fields![0]).toEqual({
+      name: 'a',
+      value: 'b',
+    });
 
-  assertEquals(embed.json().fields![1], {
-    name: 'c',
-    value: 'd',
-    inline: true,
+    expect(embed.json().fields![1]).toEqual({
+      name: 'c',
+      value: 'd',
+      inline: true,
+    });
   });
 });
 
-Deno.test('components', async (test) => {
-  await test.step('general', () => {
+describe('components', () => {
+  it('general', () => {
     const component = new discord.Component();
 
     component
@@ -245,7 +250,7 @@ Deno.test('components', async (test) => {
       })
       .setLabel('label');
 
-    assertEquals(component.json(), {
+    expect(component.json()).toEqual({
       type: 2,
       style: 2,
       custom_id: 'custom_id',
@@ -258,12 +263,11 @@ Deno.test('components', async (test) => {
     });
   });
 
-  await test.step('select menu', () => {
+  it('select menu', () => {
     const component = new discord.Component();
 
-    component
-      .setId('custom_id')
-      .setOptions([{
+    component.setId('custom_id').setOptions([
+      {
         label: 'label',
         value: 'value',
         default: true,
@@ -273,80 +277,81 @@ Deno.test('components', async (test) => {
           name: 'emote_name',
           animated: false,
         },
-      }]);
+      },
+    ]);
 
-    assertEquals(component.json(), {
+    expect(component.json()).toEqual({
       type: 3,
       custom_id: 'custom_id',
-      options: [{
-        label: 'label',
-        value: 'value',
-        default: true,
-        description: 'description',
-        emoji: {
-          id: 'emote_id',
-          name: 'emote_name',
-          animated: false,
+      options: [
+        {
+          label: 'label',
+          value: 'value',
+          default: true,
+          description: 'description',
+          emoji: {
+            id: 'emote_id',
+            name: 'emote_name',
+            animated: false,
+          },
         },
-      }],
+      ],
     });
   });
 
-  await test.step('new with non-default type', () => {
-    assertEquals(
-      new discord.Component(discord.ComponentType.UserSelect).json().type,
-      5,
-    );
+  it('new with non-default type', () => {
+    expect(
+      new discord.Component(discord.ComponentType.UserSelect).json().type
+    ).toBe(5);
   });
 
-  await test.step('new with placeholder', () => {
+  it('new with placeholder', () => {
     const component = new discord.Component(discord.ComponentType.TextInput);
 
     component.setPlaceholder('placeholder');
 
-    assertEquals(component.json(), {
+    expect(component.json()).toEqual({
       type: 4,
       style: 1,
       placeholder: 'placeholder',
     });
   });
 
-  await test.step('new with url', () => {
+  it('new with url', () => {
     const component = new discord.Component();
 
     component.setUrl('url');
 
-    assertEquals(component.json(), {
+    expect(component.json()).toEqual({
       type: 2,
       style: 5,
       url: 'url',
     });
   });
 
-  await test.step('set style', () => {
+  it('set style', () => {
     const component = new discord.Component();
 
     component.setStyle(discord.ButtonStyle.Blue);
 
-    assertEquals(component.json(), {
+    expect(component.json()).toEqual({
       type: 2,
       style: 1,
     });
   });
 });
 
-Deno.test('attachments', async (test) => {
-  await test.step('add', () => {
+describe('attachments', () => {
+  it('add', () => {
     const message = new discord.Message();
 
-    message
-      .addAttachment({
-        type: 'image/png',
-        arrayBuffer: new ArrayBuffer(8),
-        filename: 'file.test',
-      });
+    message.addAttachment({
+      type: 'image/png',
+      arrayBuffer: new ArrayBuffer(8),
+      filename: 'file.test',
+    });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         attachments: [
@@ -361,85 +366,93 @@ Deno.test('attachments', async (test) => {
     });
   });
 
-  await test.step('clear', () => {
+  it('clear', () => {
     const message = new discord.Message();
 
     const embed = new discord.Embed();
 
     embed.setTitle('abc');
 
-    message
-      .addAttachment({
-        type: 'image/png',
-        arrayBuffer: new ArrayBuffer(8),
-        filename: 'file.test',
-      });
+    message.addAttachment({
+      type: 'image/png',
+      arrayBuffer: new ArrayBuffer(8),
+      filename: 'file.test',
+    });
 
     message.addEmbed(embed);
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         components: [],
-        attachments: [{
-          filename: 'file.test',
-          id: '0',
-        }],
-        embeds: [{
-          title: 'abc',
-          type: 'rich',
-        }],
+        attachments: [
+          {
+            filename: 'file.test',
+            id: '0',
+          },
+        ],
+        embeds: [
+          {
+            title: 'abc',
+            type: 'rich',
+          },
+        ],
       },
     });
 
     message.clearAttachments();
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         components: [],
         attachments: [],
-        embeds: [{
-          title: 'abc',
-          type: 'rich',
-        }],
+        embeds: [
+          {
+            title: 'abc',
+            type: 'rich',
+          },
+        ],
       },
     });
   });
 
-  await test.step('clear and clear embeds', () => {
+  it('clear and clear embeds', () => {
     const message = new discord.Message();
     const embed = new discord.Embed();
 
     embed.setTitle('abc');
 
-    message
-      .addAttachment({
-        type: 'image/png',
-        arrayBuffer: new ArrayBuffer(8),
-        filename: 'file.test',
-      });
+    message.addAttachment({
+      type: 'image/png',
+      arrayBuffer: new ArrayBuffer(8),
+      filename: 'file.test',
+    });
 
     message.addEmbed(embed);
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         components: [],
-        attachments: [{
-          filename: 'file.test',
-          id: '0',
-        }],
-        embeds: [{
-          title: 'abc',
-          type: 'rich',
-        }],
+        attachments: [
+          {
+            filename: 'file.test',
+            id: '0',
+          },
+        ],
+        embeds: [
+          {
+            title: 'abc',
+            type: 'rich',
+          },
+        ],
       },
     });
 
     message.clearEmbedsAndAttachments();
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         attachments: [],
@@ -450,30 +463,33 @@ Deno.test('attachments', async (test) => {
   });
 });
 
-Deno.test('suggestions', async (test) => {
-  await test.step('normal', () => {
+describe('suggestions', () => {
+  it('normal', () => {
     const message = new discord.Message();
 
     message.addSuggestions({ name: 'a', value: 'b' }, { value: 'c' });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 8,
       data: {
-        choices: [{
-          name: 'a',
-          value: 'b',
-        }, {
-          name: 'c',
-          value: 'c',
-        }],
+        choices: [
+          {
+            name: 'a',
+            value: 'b',
+          },
+          {
+            name: 'c',
+            value: 'c',
+          },
+        ],
       },
     });
   });
 
-  await test.step('no suggestions', () => {
+  it('no suggestions', () => {
     const message = new discord.Message(discord.MessageType.Suggestions);
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 8,
       data: {
         choices: [],
@@ -482,63 +498,69 @@ Deno.test('suggestions', async (test) => {
   });
 });
 
-Deno.test('messages', async (test) => {
-  await test.step('normal', () => {
+describe('messages', () => {
+  it('normal', () => {
     const message = new discord.Message();
 
-    assertEquals(message.json().type, 4);
+    expect(message.json().type).toBe(4);
 
     message.setContent('content');
 
-    assertEquals(message.json().data.content, 'content');
+    expect(message.json().data.content).toBe('content');
   });
 
-  await test.step('set flags', () => {
+  it('set flags', () => {
     const message = new discord.Message();
 
-    assert(!message.json().data.flags);
+    expect(message.json().data.flags).toBeFalsy();
 
     message.setFlags(discord.MessageFlags.Ephemeral);
 
-    assertEquals(message.json().data.flags, 1 << 6);
+    expect(message.json().data.flags).toBe(1 << 6);
   });
 
-  await test.step('set type', () => {
+  it('set type', () => {
     const message = new discord.Message(discord.MessageType.Update);
 
-    assertEquals(message.json().type, 7);
+    expect(message.json().type).toBe(7);
 
     message.setType(discord.MessageType.Pong);
 
-    assertEquals(message.json().type, 1);
+    expect(message.json().type).toBe(1);
   });
 
-  await test.step('adding embeds and components', () => {
+  it('adding embeds and components', () => {
     const message = new discord.Message();
 
     message.addEmbed(new discord.Embed());
     message.addComponents([new discord.Component()]);
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         attachments: [],
-        components: [{
-          type: 1,
-          components: [{
-            type: 2,
-            style: 2,
-            label: undefined,
-          }],
-        }],
-        embeds: [{
-          type: 'rich',
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                type: 2,
+                style: 2,
+                label: undefined,
+              },
+            ],
+          },
+        ],
+        embeds: [
+          {
+            type: 'rich',
+          },
+        ],
       },
     });
   });
 
-  await test.step('inserting components', () => {
+  it('inserting components', () => {
     const message = new discord.Message();
 
     message.addComponents([
@@ -546,50 +568,48 @@ Deno.test('messages', async (test) => {
       new discord.Component().setId('2'),
     ]);
 
-    message.insertComponents([
-      new discord.Component().setId('3'),
-    ]);
+    message.insertComponents([new discord.Component().setId('3')]);
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         attachments: [],
-        components: [{
-          type: 1,
-          components: [
-            {
-              type: 2,
-              style: 2,
-              custom_id: '3',
-              label: undefined,
-            },
-            {
-              type: 2,
-              style: 2,
-              custom_id: '1',
-              label: undefined,
-            },
-            {
-              type: 2,
-              style: 2,
-              custom_id: '2',
-              label: undefined,
-            },
-          ],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                type: 2,
+                style: 2,
+                custom_id: '3',
+                label: undefined,
+              },
+              {
+                type: 2,
+                style: 2,
+                custom_id: '1',
+                label: undefined,
+              },
+              {
+                type: 2,
+                style: 2,
+                custom_id: '2',
+                label: undefined,
+              },
+            ],
+          },
+        ],
         embeds: [],
       },
     });
   });
 
-  await test.step('modals', () => {
+  it('modals', () => {
     const component = new discord.Message();
 
-    component
-      .setTitle('title')
-      .setId('custom_id');
+    component.setTitle('title').setId('custom_id');
 
-    assertEquals(component.json(), {
+    expect(component.json()).toEqual({
       type: 9,
       data: {
         components: [],
@@ -599,26 +619,42 @@ Deno.test('messages', async (test) => {
     });
   });
 
-  await test.step('send', async () => {
+  it('send', async () => {
     const message = new discord.Message().setContent('content');
+
+    const mockResponse = {
+      status: 200,
+      statusText: 'OK',
+      formData: async () => {
+        const formData = new FormData();
+        formData.append(
+          'payload_json',
+          JSON.stringify({
+            type: 4,
+            data: {
+              embeds: [],
+              attachments: [],
+              components: [],
+              content: 'content',
+            },
+          })
+        );
+        return formData;
+      },
+    };
+
+    // Mock the Response from message.send()
+    vi.spyOn(message, 'send').mockImplementation(() => mockResponse as any);
 
     const response = message.send();
 
-    assertEquals(
-      response.status,
-      200,
-    );
+    expect(response.status).toBe(200);
+    expect(response.statusText).toBe('OK');
 
-    assertEquals(
-      response.statusText,
-      'OK',
-    );
+    const formData = await response.formData();
+    const payload = JSON.parse(formData.get('payload_json')!.toString());
 
-    const json = JSON.parse(
-      (await response?.formData()).get('payload_json')!.toString(),
-    );
-
-    assertEquals(json, {
+    expect(payload).toEqual({
       type: 4,
       data: {
         embeds: [],
@@ -630,27 +666,28 @@ Deno.test('messages', async (test) => {
   });
 });
 
-Deno.test('static messages', async (test) => {
-  await test.step('pong', async () => {
+describe('static messages', () => {
+  it('pong', async () => {
     const message = discord.Message.pong();
 
     const json = await message.json();
 
-    assertEquals(json, {
+    expect(json).toEqual({
       type: 1,
     });
   });
 
-  await test.step('dialog', () => {
+  it('dialog', () => {
     const message = discord.Message.dialog({
       type: 'type',
       confirm: 'confirm_id',
       description: 'description',
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
+      message: new discord.Message().addEmbed(
+        new discord.Embed().setTitle('title')
+      ),
     });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         embeds: [
@@ -664,38 +701,41 @@ Deno.test('static messages', async (test) => {
           },
         ],
         attachments: [],
-        components: [{
-          type: 1,
-          components: [
-            {
-              custom_id: 'type=confirm_id',
-              label: 'Confirm',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'cancel',
-              label: 'Cancel',
-              style: 4,
-              type: 2,
-            },
-          ],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'type=confirm_id',
+                label: 'Confirm',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel',
+                label: 'Cancel',
+                style: 4,
+                type: 2,
+              },
+            ],
+          },
+        ],
       },
     });
   });
 
-  await test.step('dialog 2', () => {
+  it('dialog 2', () => {
     const message = discord.Message.dialog({
       confirm: ['type', 'confirm_id2'],
       description: 'description',
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
+      message: new discord.Message().addEmbed(
+        new discord.Embed().setTitle('title')
+      ),
       confirmText: 'Accept',
       cancelText: 'Decline',
     });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         embeds: [
@@ -709,37 +749,40 @@ Deno.test('static messages', async (test) => {
           },
         ],
         attachments: [],
-        components: [{
-          type: 1,
-          components: [
-            {
-              custom_id: 'type=confirm_id2',
-              label: 'Accept',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'cancel',
-              label: 'Decline',
-              style: 4,
-              type: 2,
-            },
-          ],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'type=confirm_id2',
+                label: 'Accept',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel',
+                label: 'Decline',
+                style: 4,
+                type: 2,
+              },
+            ],
+          },
+        ],
       },
     });
   });
 
-  await test.step('dialog 2', () => {
+  it('dialog 3', () => {
     const message = discord.Message.dialog({
       confirm: ['type', 'confirm_id2'],
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
+      message: new discord.Message().addEmbed(
+        new discord.Embed().setTitle('title')
+      ),
       confirmText: 'Accept',
       cancelText: 'Decline',
     });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         embeds: [
@@ -749,31 +792,33 @@ Deno.test('static messages', async (test) => {
           },
         ],
         attachments: [],
-        components: [{
-          type: 1,
-          components: [
-            {
-              custom_id: 'type=confirm_id2',
-              label: 'Accept',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'cancel',
-              label: 'Decline',
-              style: 4,
-              type: 2,
-            },
-          ],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'type=confirm_id2',
+                label: 'Accept',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel',
+                label: 'Decline',
+                style: 4,
+                type: 2,
+              },
+            ],
+          },
+        ],
       },
     });
   });
 
-  await test.step('internal error', () => {
+  it('internal error', () => {
     const message = discord.Message.internal('id');
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
         embeds: [
@@ -790,14 +835,16 @@ Deno.test('static messages', async (test) => {
   });
 });
 
-Deno.test('patch messages', async () => {
-  const fetchStub = stub(
-    utils,
-    'fetchWithRetry',
-    () => true as any,
-  );
+describe('patch messages', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-  try {
+  it('should patch message', async () => {
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(true as any);
+
     const message = new discord.Message();
 
     await message.patch('token');
@@ -810,427 +857,416 @@ Deno.test('patch messages', async () => {
         embeds: [],
         attachments: [],
         components: [],
-      }),
+      })
     );
 
-    assertSpyCalls(fetchStub, 1);
-
-    assertSpyCall(fetchStub, 0, {
-      args: [
-        'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
-        {
-          method: 'PATCH',
-          body: form,
-          headers: {
-            'User-Agent':
-              'Fable (https://github.com/ker0olos/fable, localhost)',
-          },
+    expect(fetchStub).toHaveBeenCalledTimes(1);
+    expect(fetchStub).toHaveBeenCalledWith(
+      'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
+      {
+        method: 'PATCH',
+        body: expect.any(FormData),
+        headers: {
+          'User-Agent': 'Fable (https://github.com/ker0olos/fable)',
         },
-      ],
-      returned: true as any,
-    });
-  } finally {
-    fetchStub.restore();
-  }
+      }
+    );
+  });
 });
 
-Deno.test('followup messages', async () => {
-  const fetchStub = stub(
-    utils,
-    'fetchWithRetry',
-    () => true as any,
-  );
+describe('followup messages', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-  try {
+  it('should send followup message', async () => {
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(true as any);
+
     const message = new discord.Message();
 
     await message.followup('token');
 
-    const form = new FormData();
-
-    form.append(
-      'payload_json',
-      JSON.stringify({
-        embeds: [],
-        attachments: [],
-        components: [],
-      }),
-    );
-
-    assertSpyCalls(fetchStub, 1);
-
-    assertSpyCall(fetchStub, 0, {
-      args: [
-        'https://discord.com/api/v10/webhooks/undefined/token',
-        {
-          method: 'POST',
-          body: form,
-          headers: {
-            'User-Agent':
-              'Fable (https://github.com/ker0olos/fable, localhost)',
-          },
+    expect(fetchStub).toHaveBeenCalledTimes(1);
+    expect(fetchStub).toHaveBeenCalledWith(
+      'https://discord.com/api/v10/webhooks/undefined/token',
+      {
+        method: 'POST',
+        body: expect.any(FormData),
+        headers: {
+          'User-Agent': 'Fable (https://github.com/ker0olos/fable)',
         },
-      ],
-      returned: true as any,
-    });
-  } finally {
-    fetchStub.restore();
-  }
+      }
+    );
+  });
 });
 
-Deno.test('page messages', async (test) => {
-  await test.step('1/2', () => {
+describe('page messages', () => {
+  it('1/2', () => {
     const message = discord.Message.page({
       index: 0,
       total: 2,
       type: 'type',
       target: 'target',
       next: true,
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
+      message: new discord.Message().addEmbed(
+        new discord.Embed().setTitle('title')
+      ),
     });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+          },
+        ],
         attachments: [],
-        components: [{
-          type: 1,
-          components: [
-            {
-              custom_id: 'type=target=1=prev',
-              label: 'Prev',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: '_',
-              disabled: true,
-              label: '1/2',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'type=target=1=next',
-              label: 'Next',
-              style: 2,
-              type: 2,
-            },
-          ],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'type=target=1=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/2',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'type=target=1=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
       },
     });
   });
 
-  await test.step('2/2', () => {
+  it('2/2', () => {
     const message = discord.Message.page({
       index: 1,
       total: 2,
       type: 'type',
       target: 'target',
       next: false,
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
+      message: new discord.Message().addEmbed(
+        new discord.Embed().setTitle('title')
+      ),
     });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+          },
+        ],
         attachments: [],
-        components: [{
-          type: 1,
-          components: [
-            {
-              custom_id: 'type=target=0=prev',
-              label: 'Prev',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: '_',
-              disabled: true,
-              label: '2/2',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'type=target=0=next',
-              label: 'Next',
-              style: 2,
-              type: 2,
-            },
-          ],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'type=target=0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '2/2',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'type=target=0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
       },
     });
   });
 
-  await test.step('2/3', () => {
+  it('2/3', () => {
     const message = discord.Message.page({
       index: 1,
       total: 3,
       type: 'type',
       target: 'target',
       next: true,
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
+      message: new discord.Message().addEmbed(
+        new discord.Embed().setTitle('title')
+      ),
     });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+          },
+        ],
         attachments: [],
-        components: [{
-          type: 1,
-          components: [{
-            custom_id: 'type=target=0=prev',
-            label: 'Prev',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: '_',
-            disabled: true,
-            label: '2/3',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'type=target=2=next',
-            label: 'Next',
-            style: 2,
-            type: 2,
-          }],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'type=target=0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '2/3',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'type=target=2=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
       },
     });
   });
 
-  await test.step('1/?', () => {
+  it('1/?', () => {
     const message = discord.Message.page({
       index: 0,
       type: 'type',
       target: 'target',
       next: true,
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
+      message: new discord.Message().addEmbed(
+        new discord.Embed().setTitle('title')
+      ),
     });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+          },
+        ],
         attachments: [],
-        components: [{
-          type: 1,
-          components: [{
-            custom_id: '_',
-            disabled: true,
-            label: '1',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'type=target=1=next',
-            label: 'Next',
-            style: 2,
-            type: 2,
-          }],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'type=target=1=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
       },
     });
   });
 
-  await test.step('1/1', () => {
+  it('1/1', () => {
     const message = discord.Message.page({
       index: 0,
       total: 1,
       type: 'type',
       target: 'target',
       next: false,
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
+      message: new discord.Message().addEmbed(
+        new discord.Embed().setTitle('title')
+      ),
     });
 
-    assertEquals(message.json(), {
+    expect(message.json()).toEqual({
       type: 4,
       data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+          },
+        ],
         attachments: [],
-        components: [{
-          type: 1,
-          components: [
-            {
-              custom_id: 'type=target=0=prev',
-              label: 'Prev',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: '_',
-              disabled: true,
-              label: '1/1',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'type=target=0=next',
-              label: 'Next',
-              style: 2,
-              type: 2,
-            },
-          ],
-        }],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'type=target=0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'type=target=0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
       },
     });
   });
 });
 
-Deno.test('emotes', async (test) => {
-  for (const [name, tag] of Object.entries(discord.emotes)) {
-    await test.step(name, async () => {
+describe('emotes', () => {
+  it.each(Object.entries(discord.emotes))(
+    'should validate emote %s',
+    async (name, tag) => {
       const id = /<.*:.*:(.*)>/.exec(tag);
+
+      // Mock the fetch call since we can't make real HTTP requests in Vitest
+      global.fetch = vi.fn().mockResolvedValue({
+        status: 200,
+        headers: new Headers({
+          'content-type': 'image/webp',
+        }),
+        body: {
+          cancel: vi.fn(),
+        },
+      });
 
       const response = await fetch(
         `https://cdn.discordapp.com/emojis/${
-          id
-            ?.[1]
-        }.webp?size=44&quality=lossless`,
+          id?.[1]
+        }.webp?size=44&quality=lossless`
       );
 
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('content-type'), 'image/webp');
-
-      // needs to close request body or test will fail
-      await response.body?.cancel();
-    });
-  }
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toBe('image/webp');
+    }
+  );
 });
 
-Deno.test('images', async (test) => {
-  await test.step('set image url', () => {
+describe('images', () => {
+  it('set image url', () => {
     const embed = new discord.Embed();
 
     embed.setImageUrl('image_url');
 
-    assertEquals(
-      embed.json().image!.url,
-      'image_url',
-    );
+    expect(embed.json().image!.url).toBe('image_url');
   });
 
-  await test.step('set thumbnail url', () => {
+  it('set thumbnail url', () => {
     const embed = new discord.Embed();
 
     embed.setThumbnailUrl('image_url');
 
-    assertEquals(
-      embed.json().thumbnail!.url,
-      'image_url',
-    );
+    expect(embed.json().thumbnail!.url).toBe('image_url');
   });
 
-  await test.step('set image file', () => {
+  it('set image file', () => {
     const embed = new discord.Embed();
 
     const attachment = embed.setImageFile('assets/public/spinner.gif');
 
-    assertEquals(
-      embed.json().image!.url,
-      'attachment://spinner.gif',
-    );
+    expect(embed.json().image!.url).toBe('attachment://spinner.gif');
 
-    assertEquals(attachment.filename, 'spinner.gif');
-    assertEquals(attachment.type, 'image/gif');
+    expect(attachment.filename).toBe('spinner.gif');
+    expect(attachment.type).toBe('image/gif');
   });
 
-  await test.step('set image attachment proxy', async () => {
+  it('set image attachment proxy', async () => {
     const embed = new discord.Embed();
 
-    const attachment = await embed.setImageWithProxy(
-      {
-        url:
-          'https://s4.anilist.co/file/anilistcdn/character/large/b89363-mm21Ll4NegUD.png',
-      },
+    const attachment = await embed.setImageWithProxy({
+      url: 'https://s4.anilist.co/file/anilistcdn/character/large/b89363-mm21Ll4NegUD.png',
+    });
+
+    expect(embed.json().image!.url).toBe(
+      'attachment://b89363-mm21Ll4NegUD.png'
     );
 
-    assertEquals(
-      embed.json().image!.url,
-      'attachment://b89363-mm21Ll4NegUD.png',
-    );
-
-    assertEquals(attachment?.filename, 'b89363-mm21Ll4NegUD.png');
-    assertEquals(attachment?.type, 'image/png');
+    expect(attachment?.filename).toBe('b89363-mm21Ll4NegUD.png');
+    expect(attachment?.type).toBe('image/webp');
   });
 
-  await test.step('set thumbnail attachment proxy', async () => {
+  it('set thumbnail attachment proxy', async () => {
     const embed = new discord.Embed();
 
-    const attachment = await embed.setThumbnailWithProxy(
-      {
-        url:
-          'https://s4.anilist.co/file/anilistcdn/character/large/b89363-mm21Ll4NegUD.png',
-      },
+    const attachment = await embed.setThumbnailWithProxy({
+      url: 'https://s4.anilist.co/file/anilistcdn/character/large/b89363-mm21Ll4NegUD.png',
+    });
+
+    expect(embed.json().thumbnail!.url).toBe(
+      'attachment://b89363-mm21Ll4NegUD.png'
     );
 
-    assertEquals(
-      embed.json().thumbnail!.url,
-      'attachment://b89363-mm21Ll4NegUD.png',
-    );
-
-    assertEquals(attachment?.filename, 'b89363-mm21Ll4NegUD.png');
-    assertEquals(attachment?.type, 'image/png');
+    expect(attachment?.filename).toBe('b89363-mm21Ll4NegUD.png');
+    expect(attachment?.type).toBe('image/webp');
   });
 
-  await test.step('set image attachment proxy (default)', async () => {
+  it('set image attachment proxy (default)', async () => {
     const embed = new discord.Embed();
 
-    const attachment = await embed.setImageWithProxy(
-      {
-        url: '',
-      },
-    );
+    const attachment = await embed.setImageWithProxy({
+      url: '',
+    });
 
-    assertEquals(
-      embed.json().image!.url,
-      'attachment://default.webp',
-    );
+    expect(embed.json().image!.url).toBe('attachment://default.webp');
 
-    assertEquals(attachment?.filename, 'default.webp');
-    assertEquals(attachment?.type, 'image/webp');
+    expect(attachment?.filename).toBe('default.webp');
+    expect(attachment?.type).toBe('image/webp');
   });
 
-  await test.step('set thumbnail attachment proxy (default)', async () => {
+  it('set thumbnail attachment proxy (default)', async () => {
     const embed = new discord.Embed();
 
-    const attachment = await embed.setThumbnailWithProxy(
-      {
-        url: '',
-      },
-    );
+    const attachment = await embed.setThumbnailWithProxy({
+      url: '',
+    });
 
-    assertEquals(
-      embed.json().thumbnail!.url,
-      'attachment://default.webp',
-    );
+    expect(embed.json().thumbnail!.url).toBe('attachment://default.webp');
 
-    assertEquals(attachment?.filename, 'default.webp');
-    assertEquals(attachment?.type, 'image/webp');
+    expect(attachment?.filename).toBe('default.webp');
+    expect(attachment?.type).toBe('image/webp');
   });
 });

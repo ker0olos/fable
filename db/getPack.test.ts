@@ -1,12 +1,8 @@
-// deno-lint-ignore-file no-explicit-any
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertEquals } from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
-
+import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
@@ -48,7 +44,7 @@ describe('db.getPopularPacks()', () => {
 
     const packs = await db.getPopularPacks();
 
-    assertEquals(packs, [
+    expect(packs).toEqual([
       {
         servers: 2,
         pack: {
@@ -74,7 +70,7 @@ describe('db.getPopularPacks()', () => {
       manifest: { id: 'pack-id' },
     } as any);
 
-    const { insertedId: _pack2InsertedId } = await client.packs().insertOne({
+    await client.packs().insertOne({
       hidden: true,
       manifest: { id: 'pack-2' },
     } as any);
@@ -91,7 +87,7 @@ describe('db.getPopularPacks()', () => {
 
     const packs = await db.getPopularPacks();
 
-    assertEquals(packs, [
+    expect(packs).toEqual([
       {
         servers: 1,
         pack: {
@@ -109,7 +105,7 @@ describe('db.getPopularPacks()', () => {
       manifest: { id: 'pack-id' },
     } as any);
 
-    const { insertedId: _pack2InsertedId } = await client.packs().insertOne({
+    await client.packs().insertOne({
       hidden: false,
       manifest: { private: true, id: 'pack-2' },
     } as any);
@@ -126,7 +122,7 @@ describe('db.getPopularPacks()', () => {
 
     const packs = await db.getPopularPacks();
 
-    assertEquals(packs, [
+    expect(packs).toEqual([
       {
         servers: 1,
         pack: {
@@ -144,7 +140,7 @@ describe('db.getPopularPacks()', () => {
       manifest: { id: 'pack-id' },
     } as any);
 
-    const { insertedId: _pack2InsertedId } = await client.packs().insertOne({
+    await client.packs().insertOne({
       hidden: false,
       manifest: { nsfw: true, id: 'pack-2' },
     } as any);
@@ -161,7 +157,7 @@ describe('db.getPopularPacks()', () => {
 
     const packs = await db.getPopularPacks();
 
-    assertEquals(packs, [
+    expect(packs).toEqual([
       {
         servers: 1,
         pack: {
@@ -198,14 +194,14 @@ describe('db.getPacksByMaintainerId()', () => {
       manifest: { id: 'pack-2' },
     } as any);
 
-    const { insertedId: _pack3InsertedId } = await client.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'maintainer-2',
       manifest: { id: 'pack-3' },
     } as any);
 
     const packs = await db.getPacksByMaintainerId('maintainer-id');
 
-    assertEquals(packs, [
+    expect(packs).toEqual([
       {
         _id: pack1InsertedId,
         owner: 'maintainer-id',
@@ -228,13 +224,13 @@ describe('db.getPacksByMaintainerId()', () => {
       manifest: { id: 'pack-2', maintainers: ['maintainer-id'] },
     } as any);
 
-    const { insertedId: _pack3InsertedId } = await client.packs().insertOne({
+    await client.packs().insertOne({
       manifest: { id: 'pack-3', maintainers: ['maintainer-2'] },
     } as any);
 
     const packs = await db.getPacksByMaintainerId('maintainer-id');
 
-    assertEquals(packs, [
+    expect(packs).toEqual([
       {
         _id: pack1InsertedId,
         manifest: { id: 'pack-1', maintainers: ['maintainer-id'] },
@@ -256,14 +252,14 @@ describe('db.getPacksByMaintainerId()', () => {
       manifest: { id: 'pack-2', maintainers: ['maintainer-id'] },
     } as any);
 
-    const { insertedId: _pack3InsertedId } = await client.packs().insertOne({
+    await client.packs().insertOne({
       owner: 'maintainer-2',
       manifest: { id: 'pack-3', maintainers: ['maintainer-3'] },
     } as any);
 
     const packs = await db.getPacksByMaintainerId('maintainer-id');
 
-    assertEquals(packs, [
+    expect(packs).toEqual([
       {
         _id: pack1InsertedId,
         owner: 'maintainer-id',
@@ -298,7 +294,7 @@ describe('db.getPack()', () => {
 
     const pack = await db.getPack('pack-id');
 
-    assertEquals(pack, {
+    expect(pack).toEqual({
       _id: insertedId,
       owner: 'maintainer-id',
       manifest: { id: 'pack-id' },
@@ -316,7 +312,7 @@ describe('db.getPack()', () => {
 
     const pack = await db.getPack('pack-id');
 
-    assertEquals(pack, null);
+    expect(pack).toBeNull();
   });
 
   it('private (owned)', async () => {
@@ -330,7 +326,7 @@ describe('db.getPack()', () => {
 
     const pack = await db.getPack('pack-id', 'maintainer-id');
 
-    assertEquals(pack, {
+    expect(pack).toEqual({
       _id: insertedId,
       owner: 'maintainer-id',
       manifest: { private: true, id: 'pack-id' },
@@ -349,7 +345,7 @@ describe('db.getPack()', () => {
 
     const pack = await db.getPack('pack-id', 'maintainer-id');
 
-    assertEquals(pack, {
+    expect(pack).toEqual({
       _id: insertedId,
       owner: 'maintainer-2',
       manifest: {

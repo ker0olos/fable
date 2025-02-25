@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: denoland/setup-deno@v1
+      - uses: actions/setup-node@v3
         with:
-          deno-version: v2.x
+          node-version: '20.x'
 
-      - run: deno run -A search-index/index.ts
+      - run: npm install
+      - run: tsx search-index/index.ts
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
 

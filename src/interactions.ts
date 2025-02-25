@@ -40,16 +40,11 @@ export const handler = async (r: Request) => {
   });
 
   if (error) {
-    return utils.json(
-      { error: error.message },
-      { status: error.status },
-    );
+    return utils.json({ error: error.message }, { status: error.status });
   }
 
-  // deno-lint-ignore no-non-null-assertion
   const signature = r.headers.get('X-Signature-Ed25519')!;
 
-  // deno-lint-ignore no-non-null-assertion
   const timestamp = r.headers.get('X-Signature-Timestamp')!;
 
   const { valid, body } = utils.verifySignature({
@@ -62,7 +57,7 @@ export const handler = async (r: Request) => {
   if (!valid) {
     return utils.json(
       { error: 'Invalid request' },
-      { status: 401 },
+      { status: 401, statusText: 'Unauthorized' }
     );
   }
 
@@ -87,7 +82,7 @@ export const handler = async (r: Request) => {
 
   // exceeded time limit set by discord (3 seconds)
   if (ts >= 2800) {
-    return Response.error();
+    return new Response('Request Timeout', { status: 408 });
   }
 
   if (type === discord.InteractionType.Ping) {
@@ -99,14 +94,15 @@ export const handler = async (r: Request) => {
       .setFlags(discord.MessageFlags.Ephemeral)
       .addEmbed(
         new discord.Embed().setDescription(
-          i18n.get('global-maintenance', locale),
-        ),
+          i18n.get('global-maintenance', locale)
+        )
       );
 
     if (config.notice) {
       message.addEmbed(
-        new discord.Embed()
-          .setDescription(config.notice.replaceAll('\\n', '\n')),
+        new discord.Embed().setDescription(
+          config.notice.replaceAll('\\n', '\n')
+        )
       );
     }
 
@@ -117,7 +113,6 @@ export const handler = async (r: Request) => {
 
   if (guildId) {
     user.cachedGuilds[guildId] = {
-      // deno-lint-ignore no-non-null-assertion
       locale: guildLocale!,
     };
   }
@@ -125,7 +120,6 @@ export const handler = async (r: Request) => {
   if (member?.user?.id) {
     // cache the user's locale into a global variable
     user.cachedUsers[member.user.id] = {
-      // deno-lint-ignore no-non-null-assertion
       locale: locale!,
     };
   }
@@ -139,31 +133,23 @@ export const handler = async (r: Request) => {
 
         // suggest media
         if (
-          (
-            [
-              'search',
-              'anime',
-              'manga',
-              'media',
-              'series',
-              'found',
-              'owned',
-              'likeall',
-              'unlikeall',
-            ]
-              .includes(name)
-          ) ||
-          (
-            ['collection', 'coll', 'mm'].includes(name) &&
-            subcommand === 'media'
-          )
+          [
+            'search',
+            'anime',
+            'manga',
+            'media',
+            'series',
+            'found',
+            'owned',
+            'likeall',
+            'unlikeall',
+          ].includes(name) ||
+          (['collection', 'coll', 'mm'].includes(name) &&
+            subcommand === 'media')
         ) {
-          // deno-lint-ignore no-non-null-assertion
           const search = options[focused!] as string;
 
-          const message = new discord.Message(
-            discord.MessageType.Suggestions,
-          );
+          const message = new discord.Message(discord.MessageType.Suggestions);
 
           if (search) {
             const results = await packs._searchManyMedia({
@@ -171,13 +157,12 @@ export const handler = async (r: Request) => {
               guildId,
             });
 
-            results
-              .forEach((media) => {
-                message.addSuggestions({
-                  name: media.title[0],
-                  value: `${idPrefix}${media.id}`,
-                });
+            results.forEach((media) => {
+              message.addSuggestions({
+                name: media.title[0],
+                value: `${idPrefix}${media.id}`,
               });
+            });
           }
 
           return message.send();
@@ -201,18 +186,14 @@ export const handler = async (r: Request) => {
             'like',
             'unlike',
             'stats',
-          ].includes(name) || (
-            // deno-lint-ignore no-non-null-assertion
-            name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
-            focused === 'character'
-          )
+          ].includes(name) ||
+          (name === 'skills' &&
+            ['acquire', 'upgrade'].includes(subcommand!) &&
+            focused === 'character')
         ) {
-          // deno-lint-ignore no-non-null-assertion
           const search = options[focused!] as string;
 
-          const message = new discord.Message(
-            discord.MessageType.Suggestions,
-          );
+          const message = new discord.Message(discord.MessageType.Suggestions);
 
           if (search) {
             const results = await packs._searchManyCharacters({
@@ -220,31 +201,24 @@ export const handler = async (r: Request) => {
               guildId,
             });
 
-            results
-              .forEach((character) => {
-                message.addSuggestions({
-                  name: character.mediaTitle?.length
-                    ? `${character.name[0]} (${character.mediaTitle[0]})`
-                    : character.name[0],
-                  value: `${idPrefix}${character.id}`,
-                });
+            results.forEach((character) => {
+              message.addSuggestions({
+                name: character.mediaTitle?.length
+                  ? `${character.name[0]} (${character.mediaTitle[0]})`
+                  : character.name[0],
+                value: `${idPrefix}${character.id}`,
               });
+            });
           }
 
           return message.send();
         }
 
         // suggest installed community packs
-        if (
-          // deno-lint-ignore no-non-null-assertion
-          name === 'packs' && ['uninstall'].includes(subcommand!)
-        ) {
-          // deno-lint-ignore no-non-null-assertion
+        if (name === 'packs' && ['uninstall'].includes(subcommand!)) {
           const id = options[focused!] as string;
 
-          const message = new discord.Message(
-            discord.MessageType.Suggestions,
-          );
+          const message = new discord.Message(discord.MessageType.Suggestions);
 
           let list = await packs.all({
             filter: true,
@@ -269,8 +243,8 @@ export const handler = async (r: Request) => {
             distance[manifest.id] = d;
           });
 
-          list = list.sort((a, b) =>
-            distance[b.manifest.id] - distance[a.manifest.id]
+          list = list.sort(
+            (a, b) => distance[b.manifest.id] - distance[a.manifest.id]
           );
 
           list?.forEach(({ manifest }) => {
@@ -285,16 +259,13 @@ export const handler = async (r: Request) => {
 
         // suggest acquirable character skills
         if (
-          // deno-lint-ignore no-non-null-assertion
-          name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
+          name === 'skills' &&
+          ['acquire', 'upgrade'].includes(subcommand!) &&
           focused === 'skill'
         ) {
-          // deno-lint-ignore no-non-null-assertion
           const name = options[focused!] as string;
 
-          const message = new discord.Message(
-            discord.MessageType.Suggestions,
-          );
+          const message = new discord.Message(discord.MessageType.Suggestions);
 
           const distance: Record<string, number> = {};
 
@@ -340,42 +311,47 @@ export const handler = async (r: Request) => {
             const title = options['title'] as string;
 
             if (options['characters']) {
-              return search.mediaCharacters({
+              return search
+                .mediaCharacters({
+                  token,
+                  guildId,
+                  index: 0,
+                  search: title,
+                  userId: member.user.id,
+                  id: title.startsWith(idPrefix)
+                    ? title.substring(idPrefix.length)
+                    : undefined,
+                })
+                .send();
+            }
+
+            return search
+              .media({
                 token,
                 guildId,
-                index: 0,
                 search: title,
-                userId: member.user.id,
+                debug: Boolean(options['debug']),
                 id: title.startsWith(idPrefix)
                   ? title.substring(idPrefix.length)
                   : undefined,
-              }).send();
-            }
-
-            return search.media({
-              token,
-              guildId,
-              search: title,
-              debug: Boolean(options['debug']),
-              id: title.startsWith(idPrefix)
-                ? title.substring(idPrefix.length)
-                : undefined,
-            })
+              })
               .send();
           }
           case 'character': {
             const name = options['name'] as string;
 
-            return search.character({
-              token,
-              guildId,
-              userId: member.user.id,
-              search: name,
-              debug: Boolean(options['debug']),
-              id: name.startsWith(idPrefix)
-                ? name.substring(idPrefix.length)
-                : undefined,
-            }).send();
+            return search
+              .character({
+                token,
+                guildId,
+                userId: member.user.id,
+                search: name,
+                debug: Boolean(options['debug']),
+                id: name.startsWith(idPrefix)
+                  ? name.substring(idPrefix.length)
+                  : undefined,
+              })
+              .send();
           }
           case 'party':
           case 'team':
@@ -383,67 +359,77 @@ export const handler = async (r: Request) => {
             const spot = options['spot'] as 1 | 2 | 3 | 4 | 5;
             const character = options['name'] as string;
 
-            // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'assign':
-                return party.assign({
-                  token,
-                  spot,
-                  userId: member.user.id,
-                  guildId,
-                  search: character,
-                  id: character.startsWith(idPrefix)
-                    ? character.substring(idPrefix.length)
-                    : undefined,
-                }).send();
+                return party
+                  .assign({
+                    token,
+                    spot,
+                    userId: member.user.id,
+                    guildId,
+                    search: character,
+                    id: character.startsWith(idPrefix)
+                      ? character.substring(idPrefix.length)
+                      : undefined,
+                  })
+                  .send();
               case 'swap':
-                return party.swap({
-                  token,
-                  guildId,
-                  userId: member.user.id,
-                  a: options['a'] as 1 | 2 | 3 | 4 | 5,
-                  b: options['b'] as 1 | 2 | 3 | 4 | 5,
-                }).send();
+                return party
+                  .swap({
+                    token,
+                    guildId,
+                    userId: member.user.id,
+                    a: options['a'] as 1 | 2 | 3 | 4 | 5,
+                    b: options['b'] as 1 | 2 | 3 | 4 | 5,
+                  })
+                  .send();
               case 'remove':
-                return party.remove({
-                  token,
-                  spot,
-                  guildId,
-                  userId: member.user.id,
-                }).send();
+                return party
+                  .remove({
+                    token,
+                    spot,
+                    guildId,
+                    userId: member.user.id,
+                  })
+                  .send();
               case 'clear': {
-                return party.clear({
-                  token,
-                  guildId,
-                  userId: member.user.id,
-                }).send();
+                return party
+                  .clear({
+                    token,
+                    guildId,
+                    userId: member.user.id,
+                  })
+                  .send();
               }
               default: {
-                const user = options['user'] as string ?? member.user.id;
+                const user = (options['user'] as string) ?? member.user.id;
 
-                return party.view({
-                  token,
-                  guildId,
-                  userId: user,
-                }).send();
+                return party
+                  .view({
+                    token,
+                    guildId,
+                    userId: user,
+                  })
+                  .send();
               }
             }
           }
           case 'collection':
           case 'coll':
           case 'mm': {
-            const userId = options['user'] as string ?? member.user.id;
+            const userId = (options['user'] as string) ?? member.user.id;
 
-            // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'show': {
-                return user.showcase({
-                  token,
-                  userId,
-                  guildId,
-                  index: 0,
-                  nick: userId !== member.user.id,
-                }).send();
+                return user
+                  .showcase({
+                    token,
+                    userId,
+                    guildId,
+                    index: 0,
+                    nick: userId !== member.user.id,
+                  })
+                  .send();
               }
               case 'stars':
               case 'media': {
@@ -451,27 +437,31 @@ export const handler = async (r: Request) => {
                 const rating = options['rating'] as number;
                 const picture = options['picture'] as boolean;
 
-                return user.list({
-                  token,
-                  userId,
-                  guildId,
-                  index: 0,
-                  rating,
-                  search: title,
-                  id: title?.startsWith(idPrefix)
-                    ? title?.substring(idPrefix.length)
-                    : undefined,
-                  nick: userId !== member.user.id,
-                  picture,
-                }).send();
+                return user
+                  .list({
+                    token,
+                    userId,
+                    guildId,
+                    index: 0,
+                    rating,
+                    search: title,
+                    id: title?.startsWith(idPrefix)
+                      ? title?.substring(idPrefix.length)
+                      : undefined,
+                    nick: userId !== member.user.id,
+                    picture,
+                  })
+                  .send();
               }
               case 'sum': {
-                return user.sum({
-                  token,
-                  userId,
-                  guildId,
-                  nick: userId !== member.user.id,
-                }).send();
+                return user
+                  .sum({
+                    token,
+                    userId,
+                    guildId,
+                    nick: userId !== member.user.id,
+                  })
+                  .send();
               }
               default:
                 break;
@@ -484,67 +474,72 @@ export const handler = async (r: Request) => {
           case 'unlike': {
             const search = options['name'] as string;
 
-            return user.like({
-              token,
-              search,
-              guildId,
+            return user
+              .like({
+                token,
+                search,
+                guildId,
 
-              userId: member.user.id,
-              undo: name === 'unlike',
-              id: search.startsWith(idPrefix)
-                ? search.substring(idPrefix.length)
-                : undefined,
-            })
+                userId: member.user.id,
+                undo: name === 'unlike',
+                id: search.startsWith(idPrefix)
+                  ? search.substring(idPrefix.length)
+                  : undefined,
+              })
               .send();
           }
           case 'likeall':
           case 'unlikeall': {
             const search = options['title'] as string;
 
-            return user.likeall({
-              token,
-              search,
-              guildId,
+            return user
+              .likeall({
+                token,
+                search,
+                guildId,
 
-              userId: member.user.id,
-              undo: name === 'unlikeall',
-              id: search.startsWith(idPrefix)
-                ? search.substring(idPrefix.length)
-                : undefined,
-            })
+                userId: member.user.id,
+                undo: name === 'unlikeall',
+                id: search.startsWith(idPrefix)
+                  ? search.substring(idPrefix.length)
+                  : undefined,
+              })
               .send();
           }
           case 'likes':
           case 'likeslist': {
-            const userId = options['user'] as string ?? member.user.id;
+            const userId = (options['user'] as string) ?? member.user.id;
 
             const filter = options['filter-owned'] as boolean | undefined;
             const ownedBy = options['owned-by'] as string | undefined;
 
-            return user.likeslist({
-              token,
-              guildId,
-              userId,
-              index: 0,
-              nick: userId !== member.user.id,
-              filter,
-              ownedBy,
-            }).send();
+            return user
+              .likeslist({
+                token,
+                guildId,
+                userId,
+                index: 0,
+                nick: userId !== member.user.id,
+                filter,
+                ownedBy,
+              })
+              .send();
           }
           case 'found':
           case 'owned': {
             const title = options['title'] as string;
 
-            return search.mediaFound({
-              token,
-              guildId,
-              index: 0,
-              search: title,
-              userId: member.user.id,
-              id: title.startsWith(idPrefix)
-                ? title.substring(idPrefix.length)
-                : undefined,
-            })
+            return search
+              .mediaFound({
+                token,
+                guildId,
+                index: 0,
+                search: title,
+                userId: member.user.id,
+                id: title.startsWith(idPrefix)
+                  ? title.substring(idPrefix.length)
+                  : undefined,
+              })
               .send();
           }
           case 'trade':
@@ -581,25 +576,27 @@ export const handler = async (r: Request) => {
           case 'steal': {
             const search = options['name'] as string;
 
-            return steal.pre({
-              token,
-              guildId,
-              userId: member.user.id,
-              search,
-              id: search.startsWith(idPrefix)
-                ? search.substring(idPrefix.length)
-                : undefined,
-            })
+            return steal
+              .pre({
+                token,
+                guildId,
+                userId: member.user.id,
+                search,
+                id: search.startsWith(idPrefix)
+                  ? search.substring(idPrefix.length)
+                  : undefined,
+              })
               .setFlags(discord.MessageFlags.Ephemeral)
               .send();
           }
           case 'now':
           case 'tu': {
-            return (await user.now({
-              userId: member.user.id,
-              guildId,
-            }))
-              .send();
+            return (
+              await user.now({
+                userId: member.user.id,
+                guildId,
+              })
+            ).send();
           }
           case 'guaranteed':
           case 'gacha':
@@ -623,16 +620,18 @@ export const handler = async (r: Request) => {
 
             const nick = options['new_nick'] as string | undefined;
 
-            return user.nick({
-              nick,
-              token,
-              guildId,
-              search: name,
-              userId: member.user.id,
-              id: name.startsWith(idPrefix)
-                ? name.substring(idPrefix.length)
-                : undefined,
-            }).send();
+            return user
+              .nick({
+                nick,
+                token,
+                guildId,
+                search: name,
+                userId: member.user.id,
+                id: name.startsWith(idPrefix)
+                  ? name.substring(idPrefix.length)
+                  : undefined,
+              })
+              .send();
           }
           case 'image':
           case 'custom': {
@@ -640,41 +639,46 @@ export const handler = async (r: Request) => {
 
             const image = options['new_image'] as string | undefined;
 
-            return user.image({
-              image,
-              token,
-              guildId,
+            return user
+              .image({
+                image,
+                token,
+                guildId,
 
-              search: name,
-              userId: member.user.id,
-              id: name.startsWith(idPrefix)
-                ? name.substring(idPrefix.length)
-                : undefined,
-            }).send();
+                search: name,
+                userId: member.user.id,
+                id: name.startsWith(idPrefix)
+                  ? name.substring(idPrefix.length)
+                  : undefined,
+              })
+              .send();
           }
           case 'synthesize':
           case 'merge': {
             const target = options['target'] as number;
 
-            return merge.synthesize({
-              token,
-              guildId,
-              userId: member.user.id,
-              mode: 'target',
-              target,
-            }).send();
+            return merge
+              .synthesize({
+                token,
+                guildId,
+                userId: member.user.id,
+                mode: 'target',
+                target,
+              })
+              .send();
           }
           case 'automerge': {
-            // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'min':
               case 'max':
-                return merge.synthesize({
-                  token,
-                  guildId,
-                  userId: member.user.id,
-                  mode: subcommand,
-                }).send();
+                return merge
+                  .synthesize({
+                    token,
+                    guildId,
+                    userId: member.user.id,
+                    mode: subcommand,
+                  })
+                  .send();
               default:
                 break;
             }
@@ -685,20 +689,26 @@ export const handler = async (r: Request) => {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'guaranteed':
-                return shop.guaranteed({
-                  userId: member.user.id,
-                  stars: options['stars'] as number,
-                }).send();
+                return shop
+                  .guaranteed({
+                    userId: member.user.id,
+                    stars: options['stars'] as number,
+                  })
+                  .send();
               case 'normal':
-                return shop.normal({
-                  userId: member.user.id,
-                  amount: options['amount'] as number,
-                }).send();
+                return shop
+                  .normal({
+                    userId: member.user.id,
+                    amount: options['amount'] as number,
+                  })
+                  .send();
               case 'keys':
-                return shop.keys({
-                  userId: member.user.id,
-                  amount: options['amount'] as number,
-                }).send();
+                return shop
+                  .keys({
+                    userId: member.user.id,
+                    amount: options['amount'] as number,
+                  })
+                  .send();
               default:
                 break;
             }
@@ -710,27 +720,32 @@ export const handler = async (r: Request) => {
             switch (subcommand!) {
               default:
               case 'installed': {
-                return (await packs.pages({
-                  guildId,
-                  userId: member.user.id,
-                })).send();
+                return (
+                  await packs.pages({
+                    guildId,
+                    userId: member.user.id,
+                  })
+                ).send();
               }
               case 'install': {
                 const id = options['id'] as string;
 
-                return (await packs.install({
-                  id,
-                  guildId,
-                  userId: member.user.id,
-                }))
-                  .send();
+                return (
+                  await packs.install({
+                    id,
+                    guildId,
+                    userId: member.user.id,
+                  })
+                ).send();
               }
               case 'uninstall': {
-                return (await packs.uninstallDialog({
-                  guildId,
-                  userId: member.user.id,
-                  packId: options['id'] as string,
-                })).send();
+                return (
+                  await packs.uninstallDialog({
+                    guildId,
+                    userId: member.user.id,
+                    packId: options['id'] as string,
+                  })
+                ).send();
               }
             }
             break;
@@ -740,11 +755,13 @@ export const handler = async (r: Request) => {
             switch (subcommand!) {
               default:
               case 'options': {
-                return serverOptions.view({
-                  token,
-                  guildId,
-                  userId: member.user.id,
-                }).send();
+                return serverOptions
+                  .view({
+                    token,
+                    guildId,
+                    userId: member.user.id,
+                  })
+                  .send();
               }
             }
             break;
@@ -754,22 +771,23 @@ export const handler = async (r: Request) => {
           case 'guide':
           case 'wiki':
           case 'tuto': {
-            const index = options['page'] as number || 0;
+            const index = (options['page'] as number) || 0;
 
             return help.pages({ userId: member.user.id, index }).send();
           }
           case 'stats': {
             const character = options['name'] as string;
 
-            return stats.view({
-              token,
-              guildId,
-              character,
-              userId: member.user.id,
-            }).send();
+            return stats
+              .view({
+                token,
+                guildId,
+                character,
+                userId: member.user.id,
+              })
+              .send();
           }
           case 'skills': {
-            // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'showall': {
                 const category = options['category'] as SkillCategory;
@@ -781,13 +799,15 @@ export const handler = async (r: Request) => {
                 const skillKey = options['skill'] as SkillKey;
                 const character = options['character'] as string;
 
-                return _skills.preAcquire({
-                  token,
-                  skillKey,
-                  guildId,
-                  character,
-                  userId: member.user.id,
-                }).send();
+                return _skills
+                  .preAcquire({
+                    token,
+                    skillKey,
+                    guildId,
+                    character,
+                    userId: member.user.id,
+                  })
+                  .send();
               }
               default:
                 break;
@@ -799,23 +819,26 @@ export const handler = async (r: Request) => {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'tower': {
-                return tower.view({
-                  token,
-                  guildId,
-                  userId: member.user.id,
-                })
+                return tower
+                  .view({
+                    token,
+                    guildId,
+                    userId: member.user.id,
+                  })
                   .send();
               }
               case 'challenge': {
-                return battle.challengeTower({
-                  token,
-                  guildId,
-                  user: member.user,
-                })
+                return battle
+                  .challengeTower({
+                    token,
+                    guildId,
+                    user: member.user,
+                  })
                   .send();
               }
               // case 'friend':
-              default: { // default is used to respond to users context-menu "Battle" option
+              default: {
+                // default is used to respond to users context-menu "Battle" option
                 //   const targetId = options['versus'] as string ??
                 //     options['user'] as string;
                 break;
@@ -824,35 +847,40 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'reclear': {
-            return (await tower.reclear({
-              token,
-              guildId,
-              userId: member.user.id,
-            })).send();
+            return (
+              await tower.reclear({
+                token,
+                guildId,
+                userId: member.user.id,
+              })
+            ).send();
           }
           case 'history':
           case 'logs': {
-            const userId = options['user'] as string ?? member.user.id;
+            const userId = (options['user'] as string) ?? member.user.id;
 
-            return user.logs({
-              token,
-              guildId,
-              userId,
-              nick: userId !== member.user.id,
-            }).send();
+            return user
+              .logs({
+                token,
+                guildId,
+                userId,
+                nick: userId !== member.user.id,
+              })
+              .send();
           }
           case 'reward': {
-            // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'pulls': {
-                const targetId = options['user'] as string ?? member.user.id;
-                const amount = options['amount'] as number ?? 1;
+                const targetId = (options['user'] as string) ?? member.user.id;
+                const amount = (options['amount'] as number) ?? 1;
 
-                return reward.pulls({
-                  amount,
-                  targetId,
-                  userId: member.user.id,
-                }).send();
+                return reward
+                  .pulls({
+                    amount,
+                    targetId,
+                    userId: member.user.id,
+                  })
+                  .send();
               }
               default: {
                 break;
@@ -868,151 +896,141 @@ export const handler = async (r: Request) => {
       case discord.InteractionType.Component:
         switch (customType) {
           case 'media': {
-            // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return search.media({ id, guildId, token })
+            return search
+              .media({ id, guildId, token })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'character': {
-            // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const type = customValues![1];
 
-            return search.character({
-              id,
-              token,
-              guildId,
-              userId: member.user.id,
-            })
+            return search
+              .character({
+                id,
+                token,
+                guildId,
+                userId: member.user.id,
+              })
               .setType(
                 type === '1'
                   ? discord.MessageType.New
-                  : discord.MessageType.Update,
+                  : discord.MessageType.Update
               )
               .send();
           }
           case 'mcharacters': {
-            // deno-lint-ignore no-non-null-assertion
             const mediaId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return search.mediaCharacters({
-              token,
-              index,
-              userId: member.user.id,
-              guildId,
-              id: mediaId,
-            })
+            return search
+              .mediaCharacters({
+                token,
+                index,
+                userId: member.user.id,
+                guildId,
+                id: mediaId,
+              })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'list': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
             const mediaId = customValues?.[1] || undefined;
 
-            // deno-lint-ignore no-non-null-assertion
             const rating = parseInt(customValues![2]);
 
-            // deno-lint-ignore no-non-null-assertion
             const picture = customValues![3] === '1';
 
-            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![4]);
 
-            return user.list({
-              token,
-              index,
-              guildId,
-              userId,
-              rating,
-              id: mediaId,
-              picture,
-            })
+            return user
+              .list({
+                token,
+                index,
+                guildId,
+                userId,
+                rating,
+                id: mediaId,
+                picture,
+              })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'showcase': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return user.showcase({
-              token,
-              index,
-              guildId,
-              userId,
-            })
+            return user
+              .showcase({
+                token,
+                index,
+                guildId,
+                userId,
+              })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'like': {
-            // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return user.like({
-              id,
-              token,
-              guildId,
-              mention: true,
-              userId: member.user.id,
-              undo: false,
-            })
+            return user
+              .like({
+                id,
+                token,
+                guildId,
+                mention: true,
+                userId: member.user.id,
+                undo: false,
+              })
               .send();
           }
           case 'likes': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const filter = customValues![1] === '1';
 
-            // deno-lint-ignore no-non-null-assertion
             const ownedBy = customValues![2];
 
-            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![3]);
 
-            return user.likeslist({
-              index,
-              token,
-              userId,
-              guildId,
-              filter,
-              ownedBy,
-            })
+            return user
+              .likeslist({
+                index,
+                token,
+                userId,
+                guildId,
+                filter,
+                ownedBy,
+              })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'found': {
-            // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
-            // deno-lint-ignore no-non-null-assertion
+
             const index = parseInt(customValues![1]);
 
-            return search.mediaFound({
-              id,
-              token,
-              guildId,
-              userId: member.user.id,
-              index,
-            })
+            return search
+              .mediaFound({
+                id,
+                token,
+                guildId,
+                userId: member.user.id,
+                index,
+              })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'q':
           case 'pull':
           case 'gacha': {
-            // deno-lint-ignore no-non-null-assertion
             const stars = utils.parseInt(customValues![1]);
 
             return gacha
@@ -1023,63 +1041,70 @@ export const handler = async (r: Request) => {
                 guarantee: stars,
                 quiet: customType === 'q',
                 userId: member.user.id,
-              }).send();
+              })
+              .send();
           }
           case 'now': {
-            return (await user.now({
-              mention: true,
-              userId: member.user.id,
-              guildId,
-            })).send();
+            return (
+              await user.now({
+                mention: true,
+                userId: member.user.id,
+                guildId,
+              })
+            ).send();
           }
           case 'help': {
-            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return help.pages({ userId: member.user.id, index })
+            return help
+              .pages({ userId: member.user.id, index })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'buy': {
-            // deno-lint-ignore no-non-null-assertion
             const item = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
             const value = parseInt(customValues![2]);
 
             if (userId === member.user.id) {
               switch (item) {
                 case 'bguaranteed':
-                  return shop.guaranteed({
-                    userId: member.user.id,
-                    stars: value,
-                  })
+                  return shop
+                    .guaranteed({
+                      userId: member.user.id,
+                      stars: value,
+                    })
                     .setType(discord.MessageType.Update)
                     .send();
                 case 'guaranteed':
-                  return (await shop.confirmGuaranteed({
-                    userId: member.user.id,
-                    stars: value,
-                  }))
+                  return (
+                    await shop.confirmGuaranteed({
+                      userId: member.user.id,
+                      stars: value,
+                    })
+                  )
                     .setType(discord.MessageType.Update)
                     .send();
                 case 'keys':
-                  return (await shop.confirmKeys({
-                    guildId,
-                    userId: member.user.id,
-                    amount: value,
-                  }))
+                  return (
+                    await shop.confirmKeys({
+                      guildId,
+                      userId: member.user.id,
+                      amount: value,
+                    })
+                  )
                     .setType(discord.MessageType.Update)
                     .send();
                 case 'normal':
-                  return (await shop.confirmNormal({
-                    guildId,
-                    userId: member.user.id,
-                    amount: value,
-                  }))
+                  return (
+                    await shop.confirmNormal({
+                      guildId,
+                      userId: member.user.id,
+                      amount: value,
+                    })
+                  )
                     .setType(discord.MessageType.Update)
                     .send();
                 default:
@@ -1090,24 +1115,22 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'give': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const targetId = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
             const giveCharactersIds = customValues![2].split('&');
 
             if (userId === member.user.id) {
-              return trade.give({
-                token,
-                userId,
-                guildId,
+              return trade
+                .give({
+                  token,
+                  userId,
+                  guildId,
 
-                targetId: targetId,
-                giveCharactersIds,
-              })
+                  targetId: targetId,
+                  giveCharactersIds,
+                })
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1115,28 +1138,25 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'trade': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const targetId = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
             const giveCharactersIds = customValues![2].split('&');
 
-            // deno-lint-ignore no-non-null-assertion
             const takeCharactersIds = customValues![3].split('&');
 
             if (targetId === member.user.id) {
-              return trade.accepted({
-                token,
-                guildId,
+              return trade
+                .accepted({
+                  token,
+                  guildId,
 
-                userId,
-                targetId,
-                giveCharactersIds,
-                takeCharactersIds,
-              })
+                  userId,
+                  targetId,
+                  giveCharactersIds,
+                  takeCharactersIds,
+                })
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1144,20 +1164,19 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'synthesis': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const target = parseInt(customValues![1]);
 
             if (userId === member.user.id) {
-              return merge.confirmed({
-                token,
-                target,
-                guildId,
+              return merge
+                .confirmed({
+                  token,
+                  target,
+                  guildId,
 
-                userId: member.user.id,
-              })
+                  userId: member.user.id,
+                })
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1165,34 +1184,29 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'steal': {
-            // deno-lint-ignore no-non-null-assertion
             const targetUserId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const characterId = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
             const chance = parseInt(customValues![2]);
 
-            return steal.attempt({
-              token,
-              guildId,
-              targetUserId,
-              userId: member.user.id,
-              characterId,
-              pre: chance,
-            })
+            return steal
+              .attempt({
+                token,
+                guildId,
+                targetUserId,
+                userId: member.user.id,
+                characterId,
+                pre: chance,
+              })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'reply': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const characterId = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
             const characterName = customValues![2];
 
             if (userId === member.user.id) {
@@ -1213,35 +1227,34 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'stats': {
-            // deno-lint-ignore no-non-null-assertion
             const characterId = customValues![0];
 
-            return stats.view({
-              token,
-              guildId,
-              character: `${idPrefix}${characterId}`,
-              userId: member.user.id,
-            })
+            return stats
+              .view({
+                token,
+                guildId,
+                character: `${idPrefix}${characterId}`,
+                userId: member.user.id,
+              })
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'cacquire': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const characterId = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
             const skillKey = customValues![2] as SkillKey;
 
             if (userId === member.user.id) {
-              return (await _skills.acquire({
-                guildId,
-                characterId,
-                userId,
-                skillKey,
-              }))
+              return (
+                await _skills.acquire({
+                  guildId,
+                  characterId,
+                  userId,
+                  skillKey,
+                })
+              )
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1249,19 +1262,18 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'passign': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const characterId = customValues![1];
 
             if (userId === member.user.id) {
-              return party.assign({
-                token,
-                userId: member.user.id,
-                guildId,
-                id: characterId,
-              })
+              return party
+                .assign({
+                  token,
+                  userId: member.user.id,
+                  guildId,
+                  id: characterId,
+                })
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1269,10 +1281,8 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'sbattle': {
-            // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![1];
 
             if (userId === member.user.id) {
@@ -1286,61 +1296,62 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'skills': {
-            // deno-lint-ignore no-non-null-assertion
             const category = customValues![0] as SkillCategory;
 
-            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return _skills.all(index, category, locale)
+            return _skills
+              .all(index, category, locale)
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'treclear': {
-            return (await tower.reclear({
-              token,
-              guildId,
-              userId: member.user.id,
-            }))
+            return (
+              await tower.reclear({
+                token,
+                guildId,
+                userId: member.user.id,
+              })
+            )
               .setType(discord.MessageType.New)
               .send();
           }
           case 'tchallenge': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            return battle.challengeTower({ token, guildId, user: member.user })
+            return battle
+              .challengeTower({ token, guildId, user: member.user })
               .setType(
                 userId === member.user.id
                   ? discord.MessageType.Update
-                  : discord.MessageType.New,
+                  : discord.MessageType.New
               )
               .send();
           }
           case 'install': {
-            // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await packs.install({
-              id,
-              guildId,
-              userId: member.user.id,
-            }))
-              .send();
-          }
-          case 'uninstall': {
-            // deno-lint-ignore no-non-null-assertion
-            const id = customValues![0];
-
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![1];
-
-            if (userId === member.user.id) {
-              return (await packs.uninstall({
+            return (
+              await packs.install({
                 id,
                 guildId,
                 userId: member.user.id,
-              }))
+              })
+            ).send();
+          }
+          case 'uninstall': {
+            const id = customValues![0];
+
+            const userId = customValues![1];
+
+            if (userId === member.user.id) {
+              return (
+                await packs.uninstall({
+                  id,
+                  guildId,
+                  userId: member.user.id,
+                })
+              )
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1348,16 +1359,16 @@ export const handler = async (r: Request) => {
             throw new NoPermissionError();
           }
           case 'options': {
-            // deno-lint-ignore no-non-null-assertion
             const type = customValues![0];
 
             switch (type) {
               case 'dupes':
-                return serverOptions.invertDupes({
-                  token,
-                  guildId,
-                  userId: member.user.id,
-                })
+                return serverOptions
+                  .invertDupes({
+                    token,
+                    guildId,
+                    userId: member.user.id,
+                  })
                   .setType(discord.MessageType.Update)
                   .send();
               default:
@@ -1366,10 +1377,8 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'cancel': {
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const targetId = customValues![1];
 
             if (userId && !targetId && userId !== member.user.id) {
@@ -1377,32 +1386,32 @@ export const handler = async (r: Request) => {
             }
 
             if (
-              userId && targetId && ![userId, targetId].includes(member.user.id)
+              userId &&
+              targetId &&
+              ![userId, targetId].includes(member.user.id)
             ) {
               throw new NoPermissionError();
             }
 
             return new discord.Message()
               .setContent('')
-              .addEmbed(new discord.Embed().setDescription(
-                targetId === member.user.id
-                  ? i18n.get('declined', locale)
-                  : i18n.get('cancelled', locale),
-              ))
+              .addEmbed(
+                new discord.Embed().setDescription(
+                  targetId === member.user.id
+                    ? i18n.get('declined', locale)
+                    : i18n.get('cancelled', locale)
+                )
+              )
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'reward': {
-            // deno-lint-ignore no-non-null-assertion
             const item = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
             const userId = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
             const targetId = customValues![2];
 
-            // deno-lint-ignore no-non-null-assertion
             const amount = parseInt(customValues![3]);
 
             if (userId && userId !== member.user.id) {
@@ -1411,13 +1420,15 @@ export const handler = async (r: Request) => {
 
             switch (item) {
               case 'pulls': {
-                return (await reward.confirmPulls({
-                  amount,
-                  guildId,
-                  targetId,
-                  userId,
-                  token,
-                }))
+                return (
+                  await reward.confirmPulls({
+                    amount,
+                    guildId,
+                    targetId,
+                    userId,
+                    token,
+                  })
+                )
                   .setType(discord.MessageType.Defer)
                   .send();
               }
@@ -1435,7 +1446,6 @@ export const handler = async (r: Request) => {
     }
   } catch (err) {
     if (
-      // deno-lint-ignore no-explicit-any
       (err as any).response?.status === 404 ||
       (err as Error)?.message === '404' ||
       (err as Error).message?.toLowerCase?.() === 'not found'
@@ -1444,10 +1454,9 @@ export const handler = async (r: Request) => {
         .setContent('')
         .setFlags(discord.MessageFlags.Ephemeral)
         .addEmbed(
-          new discord.Embed().setDescription(
-            i18n.get('found-nothing', locale),
-          ),
-        ).send();
+          new discord.Embed().setDescription(i18n.get('found-nothing', locale))
+        )
+        .send();
     }
 
     if (err instanceof NonFetalError) {
@@ -1465,9 +1474,10 @@ export const handler = async (r: Request) => {
         .setFlags(discord.MessageFlags.Ephemeral)
         .addEmbed(
           new discord.Embed().setDescription(
-            i18n.get('invalid-permission', locale),
-          ),
-        ).send();
+            i18n.get('invalid-permission', locale)
+          )
+        )
+        .send();
     }
 
     if (!config.sentry) {
@@ -1481,39 +1491,64 @@ export const handler = async (r: Request) => {
     return discord.Message.internal(refId).send();
   }
 
-  return new discord.Message().setContent(
-    i18n.get('unimplemented', locale),
-  )
+  return new discord.Message()
+    .setContent(i18n.get('unimplemented', locale))
     .setFlags(discord.MessageFlags.Ephemeral)
     .send();
 };
 
-export async function start(): Promise<void> {
-  await initConfig();
+export default {
+  async fetch(
+    request: Request,
+    env?: Record<string, string>
+  ): Promise<Response> {
+    await initConfig(env);
 
-  utils.initSentry(config.sentry);
+    utils.initSentry(config.sentry);
 
-  utils.serve({
-    '/': handler,
-    '/api/user': communityAPI.user,
-    '/api/publish': communityAPI.publish,
-    '/api/popular': communityAPI.popular,
-    '/api/updated': communityAPI.lastUpdated,
-    '/api/pack/:packId+': communityAPI.pack,
-    '/api/search': communityAPI.search,
-    '/invite': () =>
-      Response.redirect(
-        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
-      ),
-    '/robots.txt': () => {
-      return new Response(
-        'User-agent: *\nDisallow: /',
-        { headers: { 'content-type': 'text/plain' } },
+    const url = new URL(request.url);
+
+    if (url.pathname === '/') {
+      return handler(request);
+    }
+
+    if (url.pathname === '/api/user') {
+      return communityAPI.user(request);
+    }
+
+    if (url.pathname === '/api/publish') {
+      return communityAPI.publish(request);
+    }
+
+    if (url.pathname === '/api/popular') {
+      return communityAPI.popular(request);
+    }
+
+    if (url.pathname === '/api/updated') {
+      return communityAPI.lastUpdated(request);
+    }
+
+    if (url.pathname.startsWith('/api/pack/')) {
+      const packId = url.pathname.substring('/api/pack/'.length);
+      return communityAPI.pack(request, packId);
+    }
+
+    if (url.pathname === '/api/search') {
+      return communityAPI.search(request);
+    }
+
+    if (url.pathname === '/invite') {
+      return Response.redirect(
+        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`
       );
-    },
-  });
-}
+    }
 
-if (import.meta.main) {
-  await start();
-}
+    if (url.pathname === '/robots.txt') {
+      return new Response('User-agent: *\nDisallow: /', {
+        headers: { 'content-type': 'text/plain' },
+      });
+    }
+
+    return new Response('Not Found', { status: 404 });
+  },
+};

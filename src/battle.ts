@@ -3,9 +3,9 @@ import packs from '~/src/packs.ts';
 import utils from '~/src/utils.ts';
 import i18n from '~/src/i18n.ts';
 
-import db, { Mongo } from '~/db/mod.ts';
+import db, { Mongo } from '~/db/index.ts';
 
-import * as dynImages from 'dyn-images';
+import * as dynImages from '@fable-community/dyn-images';
 
 import * as discord from '~/src/discord.ts';
 
@@ -28,7 +28,7 @@ import { NonFetalError } from '~/src/errors.ts';
 import type { SkillKey } from '~/src/types.ts';
 
 import type * as Schema from '~/db/schema.ts';
-import { ObjectId } from '~/db/mod.ts';
+import { ObjectId } from '~/db/index.ts';
 
 type UsedSkills = Partial<Record<SkillKey, boolean>>;
 
@@ -50,7 +50,11 @@ async function skipBattle(hexId: string): Promise<void> {
   }
 }
 
-function challengeTower({ token, guildId, user }: {
+function challengeTower({
+  token,
+  guildId,
+  user,
+}: {
   token: string;
   guildId: string;
   user: discord.User;
@@ -58,15 +62,15 @@ function challengeTower({ token, guildId, user }: {
   const locale = _user.cachedUsers[user.id]?.locale;
 
   if (!config.combat) {
-    throw new NonFetalError(
-      i18n.get('maintenance-combat', locale),
-    );
+    throw new NonFetalError(i18n.get('maintenance-combat', locale));
   }
 
   Promise.resolve()
     .then(async () => {
-      const { user: _user, ...inventory } = await db
-        .rechargeConsumables(guildId, user.id);
+      const { user: _user, ...inventory } = await db.rechargeConsumables(
+        guildId,
+        user.id
+      );
 
       const floor = inventory.floorsCleared + 1;
 
@@ -74,24 +78,21 @@ function challengeTower({ token, guildId, user }: {
         throw new NonFetalError(i18n.get('max-floor-cleared', locale));
       }
 
-      // deno-lint-ignore no-non-null-assertion
       if (inventory.availableKeys! <= 0) {
         return await new discord.Message()
           .addEmbed(
-            new discord.Embed()
-              .setDescription(i18n.get('combat-no-more-keys', locale)),
+            new discord.Embed().setDescription(
+              i18n.get('combat-no-more-keys', locale)
+            )
           )
           .addEmbed(
-            new discord.Embed()
-              .setDescription(
-                i18n.get(
-                  '+1-key',
-                  locale,
-                  `<t:${
-                    utils.rechargeKeysTimestamp(inventory.keysTimestamp)
-                  }:R>`,
-                ),
-              ),
+            new discord.Embed().setDescription(
+              i18n.get(
+                '+1-key',
+                locale,
+                `<t:${utils.rechargeKeysTimestamp(inventory.keysTimestamp)}:R>`
+              )
+            )
           )
           .patch(token);
       }
@@ -119,11 +120,13 @@ function challengeTower({ token, guildId, user }: {
         ids: party.map(({ characterId }) => characterId),
       });
 
-      const characters = party.map((member) =>
-        _characters.find(({ packId, id }) =>
-          member.characterId === `${packId}:${id}`
+      const characters = party
+        .map((member) =>
+          _characters.find(
+            ({ packId, id }) => member.characterId === `${packId}:${id}`
+          )
         )
-      ).filter(utils.nonNullable);
+        .filter(utils.nonNullable);
 
       if (!characters.length) {
         throw new NonFetalError(i18n.get('character-disabled', locale));
@@ -134,7 +137,7 @@ function challengeTower({ token, guildId, user }: {
       const enemyCharacter = await tower.getEnemyCharacter(
         floor,
         seed,
-        guildId,
+        guildId
       );
 
       const { winnerId, lastMessage } = await startCombat({
@@ -143,13 +146,14 @@ function challengeTower({ token, guildId, user }: {
         floor,
         token,
         locale,
-        party1: party.map((existing, idx) =>
-          new PartyMember({
-            existing,
-            character: characters[idx],
-            stats: getBattleStats(existing),
-            owner: 'party1',
-          })
+        party1: party.map(
+          (existing, idx) =>
+            new PartyMember({
+              existing,
+              character: characters[idx],
+              stats: getBattleStats(existing),
+              owner: 'party1',
+            })
         ),
         party2: [
           new PartyMember({
@@ -197,27 +201,25 @@ function challengeTower({ token, guildId, user }: {
   return discord.Message.spinner(true);
 }
 
-async function startCombat(
-  {
-    token,
-    user,
-    guildId,
-    target,
-    party1,
-    party2,
-    locale,
-    floor,
-  }: {
-    token: string;
-    user: discord.User;
-    guildId: string;
-    target?: discord.User;
-    party1: PartyMember[];
-    party2: PartyMember[];
-    locale: discord.AvailableLocales;
-    floor?: number;
-  },
-): Promise<{ winnerId?: string; lastMessage: discord.Message }> {
+async function startCombat({
+  token,
+  user,
+  guildId,
+  target,
+  party1,
+  party2,
+  locale,
+  floor,
+}: {
+  token: string;
+  user: discord.User;
+  guildId: string;
+  target?: discord.User;
+  party1: PartyMember[];
+  party2: PartyMember[];
+  locale: discord.AvailableLocales;
+  floor?: number;
+}): Promise<{ winnerId?: string; lastMessage: discord.Message }> {
   const mongo = new Mongo();
 
   try {
@@ -231,10 +233,9 @@ async function startCombat(
       throw new NonFetalError(i18n.get('combat-no-more-keys', locale));
     }
 
-    const { insertedId: battleId } = await mongo.battles().insertOne(
-      // deno-lint-ignore no-non-null-assertion
-      battleData!,
-    );
+    const { insertedId: battleId } = await mongo
+      .battles()
+      .insertOne(battleData!);
 
     // NOTE watch streams aren't supported in atlas serverless
     // https://www.mongodb.com/docs/atlas/app-services/reference/service-limitations/#serverless-instances
@@ -247,16 +248,15 @@ async function startCombat(
       return !!battleData;
     };
 
-    const message = new discord.Message()
-      .addComponents([
-        new discord.Component()
-          .setId(discord.join('sbattle', battleId.toString('hex'), user.id))
-          .setLabel(i18n.get('skip', locale)),
-      ]);
+    const message = new discord.Message().addComponents([
+      new discord.Component()
+        .setId(discord.join('sbattle', battleId.toString('hex'), user.id))
+        .setLabel(i18n.get('skip', locale)),
+    ]);
 
     if (floor) {
       message.addEmbed(
-        new discord.Embed().setTitle(`${i18n.get('floor', locale)} ${floor}`),
+        new discord.Embed().setTitle(`${i18n.get('floor', locale)} ${floor}`)
       );
     }
 
@@ -280,12 +280,12 @@ async function startCombat(
 
       const fastestCharacter = determineFastest(
         party1Character,
-        party2Character,
+        party2Character
       );
 
       const speedDiffPercent = calculateSpeedDiffPercent(
         party1Character,
-        party2Character,
+        party2Character
       );
 
       const extraTurnsBonus = calculateExtraTurns(speedDiffPercent);
@@ -309,9 +309,8 @@ async function startCombat(
         let receiving = turn === 'party1' ? party2Character : party1Character;
         const attacking = turn === 'party1' ? party1Character : party2Character;
 
-        const receivingUsedSkills = turn === 'party1'
-          ? party2UsedSkills
-          : party1UsedSkills;
+        const receivingUsedSkills =
+          turn === 'party1' ? party2UsedSkills : party1UsedSkills;
 
         const { stunned } = attacking.effects;
 
@@ -330,8 +329,8 @@ async function startCombat(
           locale,
         });
 
-        await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
-        await checkBattleData() && await message.patch(token);
+        (await checkBattleData()) && (await utils.sleep(MESSAGE_DELAY));
+        (await checkBattleData()) && (await message.patch(token));
 
         // sneak attack the backline if the attacking character has the skill
         if (attacking.canSneakAttack) {
@@ -351,8 +350,8 @@ async function startCombat(
             locale,
           });
 
-          await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
-          await checkBattleData() && await message.patch(token);
+          (await checkBattleData()) && (await utils.sleep(MESSAGE_DELAY));
+          (await checkBattleData()) && (await message.patch(token));
 
           delete attacking.effects.sneaky;
           delete receiving.effects.sneaky;
@@ -368,8 +367,8 @@ async function startCombat(
             locale,
           })
         ) {
-          await checkBattleData() && await utils.sleep(MESSAGE_DELAY);
-          await checkBattleData() && await message.patch(token);
+          (await checkBattleData()) && (await utils.sleep(MESSAGE_DELAY));
+          (await checkBattleData()) && (await message.patch(token));
         }
       }
     }
@@ -389,14 +388,14 @@ async function startCombat(
 
 function determineFastest(
   party1Character: PartyMember,
-  party2Character: PartyMember,
+  party2Character: PartyMember
 ): 'party1' | 'party2' {
   return party1Character.speed > party2Character.speed ? 'party1' : 'party2';
 }
 
 function calculateSpeedDiffPercent(
   party1Character: PartyMember,
-  party2Character: PartyMember,
+  party2Character: PartyMember
 ): number {
   let party1Speed = party1Character.speed;
   let party2Speed = party2Character.speed;
@@ -415,15 +414,19 @@ function calculateExtraTurns(speedDiffPercent: number): number {
   return Math.min(Math.floor(speedDiffPercent / 50), 2);
 }
 
-function prepRound(
-  { message, attacking, receiving, combo, locale }: {
-    combo: number;
-    message: discord.Message;
-    attacking: PartyMember;
-    receiving: PartyMember;
-    locale: discord.AvailableLocales;
-  },
-): void {
+function prepRound({
+  message,
+  attacking,
+  receiving,
+  combo,
+  locale,
+}: {
+  combo: number;
+  message: discord.Message;
+  attacking: PartyMember;
+  receiving: PartyMember;
+  locale: discord.AvailableLocales;
+}): void {
   const { stunned } = attacking.effects;
 
   message.clearEmbedsAndAttachments(1);
@@ -446,17 +449,21 @@ function prepRound(
   embeds.forEach(addEmbed);
 }
 
-function healRound(
-  { message, healing, receiving, receivingParty, receivingUsedSkills, locale }:
-    {
-      message: discord.Message;
-      healing: PartyMember;
-      receiving: PartyMember;
-      receivingParty: PartyMember[];
-      receivingUsedSkills: UsedSkills;
-      locale: discord.AvailableLocales;
-    },
-): boolean {
+function healRound({
+  message,
+  healing,
+  receiving,
+  receivingParty,
+  receivingUsedSkills,
+  locale,
+}: {
+  message: discord.Message;
+  healing: PartyMember;
+  receiving: PartyMember;
+  receivingParty: PartyMember[];
+  receivingUsedSkills: UsedSkills;
+  locale: discord.AvailableLocales;
+}): boolean {
   if (
     receiving.alive &&
     receiving.isHpBelowOrEquals(25) &&
@@ -464,17 +471,14 @@ function healRound(
   ) {
     const healers = receivingParty
       .filter((char) => char.skills.heal?.level)
-      .sort((a, b) =>
-        // deno-lint-ignore no-non-null-assertion
-        b.skills.heal!.level - a.skills.heal!.level
-      );
+      .sort((a, b) => b.skills.heal!.level - a.skills.heal!.level);
 
     if (healers.length) {
       const healer = healers[0];
 
       const skill = skills.heal.activation({
         attacking: healer,
-        // deno-lint-ignore no-non-null-assertion
+
         lvl: healer.skills.heal!.level,
       });
 
@@ -510,15 +514,19 @@ function healRound(
   return false;
 }
 
-function actionRound(
-  { message, attacking, receiving, combo, locale }: {
-    message: discord.Message;
-    attacking: PartyMember;
-    receiving: PartyMember;
-    combo: number;
-    locale: discord.AvailableLocales;
-  },
-): void {
+function actionRound({
+  message,
+  attacking,
+  receiving,
+  combo,
+  locale,
+}: {
+  message: discord.Message;
+  attacking: PartyMember;
+  receiving: PartyMember;
+  combo: number;
+  locale: discord.AvailableLocales;
+}): void {
   const subtitle: string[] = [];
 
   let damage = Math.max(attacking.attack, 1);
@@ -572,7 +580,7 @@ function actionRound(
     });
 
     if (skill.heal) {
-      attacking.heal(heal = skill.heal);
+      attacking.heal((heal = skill.heal));
     }
   }
 
@@ -666,20 +674,21 @@ const addEmbed = async ({
       [
         `## ${
           character?.existing?.nickname ??
-            packs.aliasToArray(character.character.name)[0]
+          packs.aliasToArray(character.character.name)[0]
         }${statusEmotes}`,
         state,
         subtitle?.length ? `*${subtitle?.join(' ')}*` : undefined,
-      ].filter(utils.nonNullable).join('\n'),
+      ]
+        .filter(utils.nonNullable)
+        .join('\n')
     )
     .setFooter({
       text: `${character.hp}/${character.maxHP}`,
     });
 
-  const thumbnail = await embed
-    .setThumbnailWithProxy({
-      url: character.existing?.image ?? character.character.images?.[0]?.url,
-    });
+  const thumbnail = await embed.setThumbnailWithProxy({
+    url: character.existing?.image ?? character.character.images?.[0]?.url,
+  });
 
   const left = Math.round((character.hp / character.maxHP) * 100);
   const _diff = Math.round((Math.abs(diff) / character.maxHP) * 100);
@@ -692,13 +701,11 @@ const addEmbed = async ({
     });
   }
 
-  message
-    .addEmbed(embed)
-    .addAttachment({
-      type: 'image/png',
-      filename: `${uuid}.png`,
-      arrayBuffer: dynImages.hp(left, diff < 0 ? -_diff : _diff).buffer,
-    });
+  message.addEmbed(embed).addAttachment({
+    type: 'image/png',
+    filename: `${uuid}.png`,
+    arrayBuffer: dynImages.hp(left, diff < 0 ? -_diff : _diff).buffer,
+  });
 };
 
 const battle = { challengeTower, skipBattle };

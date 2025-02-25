@@ -12,7 +12,7 @@ import config from '~/src/config.ts';
 
 import i18n from '~/src/i18n.ts';
 
-import db from '~/db/mod.ts';
+import db from '~/db/index.ts';
 
 import {
   Character,
@@ -48,15 +48,19 @@ type CharacterEmbed = {
   footer?: boolean;
 };
 
-function media(
-  { token, id, search, debug, guildId }: {
-    token: string;
-    id?: string;
-    search?: string;
-    debug?: boolean;
-    guildId: string;
-  },
-): discord.Message {
+function media({
+  token,
+  id,
+  search,
+  debug,
+  guildId,
+}: {
+  token: string;
+  id?: string;
+  search?: string;
+  debug?: boolean;
+  guildId: string;
+}): discord.Message {
   const locale = user.cachedGuilds[guildId]?.locale;
 
   packs
@@ -89,9 +93,10 @@ function media(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {
@@ -125,16 +130,14 @@ async function mediaMessage(media: Media): Promise<discord.Message> {
   // character embeds
   // sort characters by popularity
   await Promise.all(
-    media.characters?.edges
-      ?.slice(0, 2)
-      .map(async (edge) => {
-        const embed = await characterEmbed(message, edge.node, {
-          mode: 'thumbnail',
-          rating: false,
-        });
+    media.characters?.edges?.slice(0, 2).map(async (edge) => {
+      const embed = await characterEmbed(message, edge.node, {
+        mode: 'thumbnail',
+        rating: false,
+      });
 
-        message.addEmbed(embed);
-      }) ?? [],
+      message.addEmbed(embed);
+    }) ?? []
   );
 
   if (media.trailer?.site === 'youtube') {
@@ -146,62 +149,58 @@ async function mediaMessage(media: Media): Promise<discord.Message> {
   }
 
   // link components
-  media.externalLinks
-    ?.forEach((link) => {
-      if (externalUrlRegex.test(link.url)) {
-        const component = new discord.Component()
-          .setLabel(link.site)
-          .setUrl(link.url);
+  media.externalLinks?.forEach((link) => {
+    if (externalUrlRegex.test(link.url)) {
+      const component = new discord.Component()
+        .setLabel(link.site)
+        .setUrl(link.url);
 
-        linksGroup.push(component);
-      }
-    });
+      linksGroup.push(component);
+    }
+  });
 
   // view characters
   if (media?.characters?.edges.length) {
     linksGroup.push(
-      new discord.Component().setLabel('View Characters').setId(
-        'mcharacters',
-        `${media.packId}:${media.id}`,
-        '0',
-      ),
+      new discord.Component()
+        .setLabel('View Characters')
+        .setId('mcharacters', `${media.packId}:${media.id}`, '0')
     );
   }
 
   // relation components
   // sort media by popularity
-  media.relations?.edges
-    ?.slice(0, 4)
-    ?.forEach(({ node: media, relation }) => {
-      const label = packs.mediaToString({
-        media,
-        relation,
-      });
+  media.relations?.edges?.slice(0, 4)?.forEach(({ node: media, relation }) => {
+    const label = packs.mediaToString({
+      media,
+      relation,
+    });
 
-      // music links
+    // music links
+    if (
+      relation === MediaRelation.Other &&
+      media.format === MediaFormat.Music
+    ) {
       if (
-        relation === MediaRelation.Other && media.format === MediaFormat.Music
+        musicGroup.length < 3 &&
+        media.externalLinks?.[0]?.url &&
+        musicUrlRegex.test(media.externalLinks?.[0]?.url)
       ) {
-        if (
-          musicGroup.length < 3 &&
-          media.externalLinks?.[0]?.url &&
-          musicUrlRegex.test(media.externalLinks?.[0]?.url)
-        ) {
-          const component = new discord.Component()
-            .setLabel(label)
-            .setUrl(media.externalLinks[0].url);
-
-          musicGroup.push(component);
-        }
-        // relations buttons
-      } else {
         const component = new discord.Component()
           .setLabel(label)
-          .setId('media', `${media.packId}:${media.id}`);
+          .setUrl(media.externalLinks[0].url);
 
-        linksGroup.push(component);
+        musicGroup.push(component);
       }
-    });
+      // relations buttons
+    } else {
+      const component = new discord.Component()
+        .setLabel(label)
+        .setId('media', `${media.packId}:${media.id}`);
+
+      linksGroup.push(component);
+    }
+  });
 
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
@@ -211,7 +210,7 @@ async function mediaEmbed(
   media: Media | DisaggregatedMedia,
   options?: {
     mode?: 'thumbnail' | 'full';
-  },
+  }
 ): Promise<discord.Embed> {
   options ??= {
     mode: 'full',
@@ -237,10 +236,12 @@ async function mediaEmbed(
     message.addAttachment(attachment);
   }
 
-  const description = options.mode === 'thumbnail'
-    ? utils.truncate(utils.decodeDescription(media.description), 128)
-      ?.replaceAll('\n', ' ')
-    : utils.decodeDescription(media.description);
+  const description =
+    options.mode === 'thumbnail'
+      ? utils
+          .truncate(utils.decodeDescription(media.description), 128)
+          ?.replaceAll('\n', ' ')
+      : utils.decodeDescription(media.description);
 
   return embed
     .setTitle(titleWrapped)
@@ -249,7 +250,7 @@ async function mediaEmbed(
 }
 
 async function mediaDebugMessage(
-  media: Media | DisaggregatedMedia,
+  media: Media | DisaggregatedMedia
 ): Promise<discord.Message> {
   const titles = packs.aliasToArray(media.title);
 
@@ -283,23 +284,26 @@ async function mediaDebugMessage(
     url: media.images?.[0]?.url,
   });
 
-  return message
-    .addEmbed(embed)
-    .addAttachment(image);
+  return message.addEmbed(embed).addAttachment(image);
 }
 
-function character(
-  { token, guildId, userId, search, id, debug }: {
-    token: string;
-    guildId: string;
-    userId: string;
-    id?: string;
-    search?: string;
-    debug?: boolean;
-  },
-): discord.Message {
-  const locale = user.cachedGuilds[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
+function character({
+  token,
+  guildId,
+  userId,
+  search,
+  id,
+  debug,
+}: {
+  token: string;
+  guildId: string;
+  userId: string;
+  id?: string;
+  search?: string;
+  debug?: boolean;
+}): discord.Message {
+  const locale =
+    user.cachedGuilds[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -323,10 +327,7 @@ function character(
 
       const media = character.media?.edges?.[0]?.node;
 
-      if (
-        media &&
-        packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-      ) {
+      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
         throw new Error('404');
       }
 
@@ -349,9 +350,7 @@ function character(
       }
 
       message.insertComponents([
-        new discord.Component()
-          .setLabel('/like')
-          .setId(`like`, characterId),
+        new discord.Component().setLabel('/like').setId(`like`, characterId),
       ]);
 
       return await message.patch(token);
@@ -361,9 +360,10 @@ function character(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {
@@ -383,7 +383,7 @@ async function characterMessage(
   options?: CharacterEmbed & {
     externalLinks?: boolean;
     relations?: boolean | DisaggregatedMedia[];
-  },
+  }
 ): Promise<discord.Message> {
   options = {
     externalLinks: true,
@@ -399,14 +399,13 @@ async function characterMessage(
 
   // link components
   if (options.externalLinks) {
-    character.externalLinks
-      ?.forEach((link) => {
-        const component = new discord.Component()
-          .setLabel(link.site)
-          .setUrl(link.url);
+    character.externalLinks?.forEach((link) => {
+      const component = new discord.Component()
+        .setLabel(link.site)
+        .setUrl(link.url);
 
-        group.push(component);
-      });
+      group.push(component);
+    });
   }
 
   let relations: (Media | DisaggregatedMedia)[] = [];
@@ -417,10 +416,11 @@ async function characterMessage(
   if (Array.isArray(options.relations)) {
     relations = options.relations.slice(0, 1);
   } else if (
-    options.relations && character.media && 'edges' in character.media
+    options.relations &&
+    character.media &&
+    'edges' in character.media
   ) {
-    const edges = character.media.edges
-      .slice(0, 1);
+    const edges = character.media.edges.slice(0, 1);
 
     relations = edges.map(({ node }) => node);
   }
@@ -441,7 +441,7 @@ async function characterMessage(
 async function characterEmbed(
   message: discord.Message,
   character: Character | DisaggregatedCharacter,
-  options?: CharacterEmbed,
+  options?: CharacterEmbed
 ): Promise<discord.Embed> {
   options = {
     ...{
@@ -475,8 +475,7 @@ async function characterEmbed(
 
   const image = exists?.image ? { url: exists?.image } : character.images?.[0];
 
-  const alias = exists?.nickname ??
-    packs.aliasToArray(character.name)[0];
+  const alias = exists?.nickname ?? packs.aliasToArray(character.name)[0];
 
   const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
     ? 25
@@ -503,7 +502,7 @@ async function characterEmbed(
       const rating = new Rating({ stars: exists?.rating });
 
       embed.setDescription(
-        userIds ? `${userIds.join('')}\n\n${rating.emotes}` : rating.emotes,
+        userIds ? `${userIds.join('')}\n\n${rating.emotes}` : rating.emotes
       );
     } else if (userIds) {
       embed.setDescription(userIds.join(''));
@@ -518,22 +517,24 @@ async function characterEmbed(
     }
   }
 
-  const description = options.mode === 'thumbnail'
-    ? utils.truncate(utils.decodeDescription(character.description), 128)
-      ?.replaceAll('\n', ' ')
-    : utils.decodeDescription(character.description);
+  const description =
+    options.mode === 'thumbnail'
+      ? utils
+          .truncate(utils.decodeDescription(character.description), 128)
+          ?.replaceAll('\n', ' ')
+      : utils.decodeDescription(character.description);
 
   let mediaTitle: string | undefined = undefined;
 
   if (typeof options.media?.title === 'string') {
     mediaTitle = options.media.title;
   } else if (
-    options.media?.title && character.media && 'edges' in character.media &&
+    options.media?.title &&
+    character.media &&
+    'edges' in character.media &&
     character.media?.edges[0]
   ) {
-    mediaTitle = packs.aliasToArray(
-      character.media.edges[0].node.title,
-    )[0];
+    mediaTitle = packs.aliasToArray(character.media.edges[0].node.title)[0];
   }
 
   if (mediaTitle) {
@@ -547,30 +548,29 @@ async function characterEmbed(
     }
   } else {
     embed.addField({
-      name: !description || !options.description ||
-          (options.description && options.mode === 'thumbnail')
-        ? `${aliasWrapped}`
-        : `${aliasWrapped}\n${discord.empty}`,
+      name:
+        !description ||
+        !options.description ||
+        (options.description && options.mode === 'thumbnail')
+          ? `${aliasWrapped}`
+          : `${aliasWrapped}\n${discord.empty}`,
       value: options.description ? description : options.suffix,
     });
   }
 
   if (options.footer) {
-    embed.setFooter(
-      {
-        text: [
-          utils.capitalize(character.gender),
-          character.age,
-        ].filter(utils.nonNullable).join(', '),
-      },
-    );
+    embed.setFooter({
+      text: [utils.capitalize(character.gender), character.age]
+        .filter(utils.nonNullable)
+        .join(', '),
+    });
   }
 
   return embed;
 }
 
 async function characterDebugMessage(
-  character: Character,
+  character: Character
 ): Promise<discord.Message> {
   const media = character.media?.edges?.[0];
 
@@ -631,18 +631,23 @@ async function characterDebugMessage(
   return message.addEmbed(embed).addAttachment(image);
 }
 
-function mediaCharacters(
-  { token, search, id, userId, guildId, index }: {
-    token: string;
-    search?: string;
-    id?: string;
-    userId: string;
-    guildId: string;
-    index: number;
-  },
-): discord.Message {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
+function mediaCharacters({
+  token,
+  search,
+  id,
+  userId,
+  guildId,
+  index,
+}: {
+  token: string;
+  search?: string;
+  id?: string;
+  userId: string;
+  guildId: string;
+  index: number;
+}): discord.Message {
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
   packs
     .mediaCharacters({
@@ -662,13 +667,13 @@ function mediaCharacters(
         throw new NonFetalError(
           index > 0
             ? `${titles[0]} contains no more characters`
-            : `${titles[0]} contains no characters`,
+            : `${titles[0]} contains no characters`
         );
       }
 
       const existing = await db.findCharacter(
         guildId,
-        `${character.packId}:${character.id}`,
+        `${character.packId}:${character.id}`
       );
 
       // const [character, existing] = await Promise.all([
@@ -718,9 +723,10 @@ function mediaCharacters(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (err instanceof NonFetalError) {
@@ -741,23 +747,21 @@ function mediaCharacters(
   return discord.Message.spinner();
 }
 
-function mediaFound(
-  {
-    token,
-    index,
-    search,
-    id,
-    userId,
-    guildId,
-  }: {
-    token: string;
-    index: number;
-    guildId: string;
-    userId: string;
-    search?: string;
-    id?: string;
-  },
-): discord.Message {
+function mediaFound({
+  token,
+  index,
+  search,
+  id,
+  userId,
+  guildId,
+}: {
+  token: string;
+  index: number;
+  guildId: string;
+  userId: string;
+  search?: string;
+  id?: string;
+}): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
 
   packs
@@ -786,7 +790,7 @@ function mediaFound(
 
       const characters = await db.getMediaCharacters(
         guildId,
-        media.map(({ packId, id }) => `${packId}:${id}`),
+        media.map(({ packId, id }) => `${packId}:${id}`)
       );
 
       const chunks = utils.chunks(
@@ -801,7 +805,7 @@ function mediaFound(
 
           return b.rating - a.rating;
         }),
-        5,
+        5
       );
 
       const _characters = await packs.characters({
@@ -812,19 +816,16 @@ function mediaFound(
       for (let i = 0; i < _characters.length; i++) {
         const char = _characters[i];
 
-        // deno-lint-ignore no-non-null-assertion
-        const existing = chunks[index].find(({ characterId }) =>
-          characterId === `${char.packId}:${char.id}`
+        const existing = chunks[index].find(
+          ({ characterId }) => characterId === `${char.packId}:${char.id}`
         )!;
 
-        const _media = media.find(({ packId, id }) =>
-          `${packId}:${id}` === existing.mediaId
+        const _media = media.find(
+          ({ packId, id }) => `${packId}:${id}` === existing.mediaId
         );
 
         const mediaTitle = _media?.title
-          ? utils.wrap(
-            packs.aliasToArray(_media.title)[0],
-          )
+          ? utils.wrap(packs.aliasToArray(_media.title)[0])
           : undefined;
 
         if (
@@ -834,10 +835,11 @@ function mediaFound(
           continue;
         }
 
-        const name =
-          `${existing.rating}${discord.emotes.smolStar} ${`<@${existing?.userId}>`} ${
-            utils.wrap(packs.aliasToArray(char.name)[0])
-          }`;
+        const name = `${existing.rating}${
+          discord.emotes.smolStar
+        } ${`<@${existing?.userId}>`} ${utils.wrap(
+          packs.aliasToArray(char.name)[0]
+        )}`;
 
         embed.addField({
           inline: false,
@@ -847,11 +849,13 @@ function mediaFound(
       }
 
       if (embed.getFieldsCount() <= 0) {
-        message.addEmbed(embed.setDescription(
-          `No one has found any ${
-            packs.aliasToArray(parent.title)[0]
-          } characters`,
-        ));
+        message.addEmbed(
+          embed.setDescription(
+            `No one has found any ${
+              packs.aliasToArray(parent.title)[0]
+            } characters`
+          )
+        );
 
         return message.patch(token);
       }
@@ -871,9 +875,10 @@ function mediaFound(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
-            ),
-          ).patch(token);
+              'Found _nothing_ matching that query!'
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {

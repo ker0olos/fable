@@ -1,6 +1,6 @@
 import config from '~/src/config.ts';
 
-import db, { COSTS, MAX_KEYS, MAX_PULLS } from '~/db/mod.ts';
+import db, { COSTS, MAX_KEYS, MAX_PULLS } from '~/db/index.ts';
 
 import i18n from '~/src/i18n.ts';
 import utils from '~/src/utils.ts';
@@ -20,13 +20,19 @@ import {
   Media,
 } from '~/src/types.ts';
 
-const cachedGuilds: Record<string, {
-  locale: discord.AvailableLocales;
-}> = {};
+const cachedGuilds: Record<
+  string,
+  {
+    locale: discord.AvailableLocales;
+  }
+> = {};
 
-const cachedUsers: Record<string, {
-  locale: discord.AvailableLocales;
-}> = {};
+const cachedUsers: Record<
+  string,
+  {
+    locale: discord.AvailableLocales;
+  }
+> = {};
 
 async function now({
   userId,
@@ -37,8 +43,7 @@ async function now({
   guildId: string;
   mention?: boolean;
 }): Promise<discord.Message> {
-  const locale = cachedUsers[userId]?.locale ??
-    cachedGuilds[guildId]?.locale;
+  const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   const { user, ...inventory } = await db.rechargeConsumables(guildId, userId);
 
@@ -63,91 +68,81 @@ async function now({
 
   const showKeys = config.combat && utils.isWithin14Days(lastPVE);
 
-  const guarantees = Array.from(new Set(user.guarantees ?? []))
-    .sort((a, b) => b - a);
+  const guarantees = Array.from(new Set(user.guarantees ?? [])).sort(
+    (a, b) => b - a
+  );
 
   message.addEmbed(
     new discord.Embed()
       .setTitle(`**${availablePulls}**`)
-      .setDescription(`${
-        guarantees
-          .map((r) => `${r}${discord.emotes.smolStar}`)
-          .join('')
-      }`)
+      .setDescription(
+        `${guarantees.map((r) => `${r}${discord.emotes.smolStar}`).join('')}`
+      )
       .setFooter({
-        text: availablePulls === 1
-          ? i18n.get('available-pull', locale)
-          : i18n.get('available-pulls', locale),
-      }),
+        text:
+          availablePulls === 1
+            ? i18n.get('available-pull', locale)
+            : i18n.get('available-pulls', locale),
+      })
   );
 
   if (showKeys) {
     message.addEmbed(
-      new discord.Embed()
-        .setTitle(`**${availableKeys}**`)
-        .setFooter({
-          text: availableKeys === 1
+      new discord.Embed().setTitle(`**${availableKeys}**`).setFooter({
+        text:
+          availableKeys === 1
             ? i18n.get('available-key', locale)
             : i18n.get('available-keys', locale),
-        }),
+      })
     );
   }
 
   if (availableTokens) {
     message.addEmbed(
-      new discord.Embed()
-        .setTitle(`**${availableTokens}**`)
-        .setFooter({
-          text: availableTokens === 1
+      new discord.Embed().setTitle(`**${availableTokens}**`).setFooter({
+        text:
+          availableTokens === 1
             ? i18n.get('daily-token', locale)
             : i18n.get('daily-tokens', locale),
-        }),
+      })
     );
   }
 
   if (config.notice) {
     message.addEmbed(
-      new discord.Embed()
-        .setDescription(config.notice.replaceAll('\\n', '\n')),
+      new discord.Embed().setDescription(config.notice.replaceAll('\\n', '\n'))
     );
   }
 
   if (availablePulls < MAX_PULLS) {
     message.addEmbed(
-      new discord.Embed()
-        .setDescription(i18n.get('+1-pull', locale, `<t:${recharge}:R>`)),
+      new discord.Embed().setDescription(
+        i18n.get('+1-pull', locale, `<t:${recharge}:R>`)
+      )
     );
   }
 
   if (dailyTimestamp) {
     message.addEmbed(
-      new discord.Embed()
-        .setDescription(
-          i18n.get('+1-token', locale, `<t:${dailyTokenRecharge}:R>`),
-        ),
+      new discord.Embed().setDescription(
+        i18n.get('+1-token', locale, `<t:${dailyTokenRecharge}:R>`)
+      )
     );
   }
 
-  // deno-lint-ignore no-non-null-assertion
   if (showKeys && availableKeys! < MAX_KEYS) {
     message.addEmbed(
-      new discord.Embed()
-        .setDescription(
-          i18n.get('+1-key', locale, `<t:${keysRecharge}:R>`),
-        ),
+      new discord.Embed().setDescription(
+        i18n.get('+1-key', locale, `<t:${keysRecharge}:R>`)
+      )
     );
   }
 
   if (stealTimestamp) {
     message.addEmbed(
-      new discord.Embed()
-        .setDescription(
-          i18n.get(
-            'steal-cooldown-ends',
-            locale,
-            `<t:${stealRecharge}:R>`,
-          ),
-        ),
+      new discord.Embed().setDescription(
+        i18n.get('steal-cooldown-ends', locale, `<t:${stealRecharge}:R>`)
+      )
     );
   }
 
@@ -156,19 +151,14 @@ async function now({
   if (availablePulls > 0) {
     message.addComponents([
       // `/gacha` shortcut
-      new discord.Component()
-        .setId('gacha', userId)
-        .setLabel('/gacha'),
+      new discord.Component().setId('gacha', userId).setLabel('/gacha'),
     ]);
   }
 
-  // deno-lint-ignore no-non-null-assertion
   if (showKeys && floorsCleared && availableKeys! > 0) {
     message.addComponents([
       // `/reclear` shortcut
-      new discord.Component()
-        .setId('treclear', userId)
-        .setLabel('/reclear'),
+      new discord.Component().setId('treclear', userId).setLabel('/reclear'),
     ]);
   }
 
@@ -198,9 +188,7 @@ async function now({
   }
 
   if (mention) {
-    message
-      .setContent(`<@${userId}>`)
-      .setPing();
+    message.setContent(`<@${userId}>`).setPing();
   }
 
   return message;
@@ -221,8 +209,7 @@ function nick({
   search?: string;
   id?: string;
 }): discord.Message {
-  const locale = cachedUsers[userId]?.locale ??
-    cachedGuilds[guildId]?.locale;
+  const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -252,7 +239,7 @@ function nick({
           userId,
           guildId,
           characterId,
-          nick,
+          nick
         );
 
         if (!response) {
@@ -261,29 +248,22 @@ function nick({
 
         const name = packs.aliasToArray(character.name)[0];
 
-        const embed = await srch.characterEmbed(
-          message,
-          character,
-          {
-            footer: true,
-            rating: false,
-            mode: 'thumbnail',
-            description: false,
-            media: { title: true },
-            overwrite: { ...response, nickname: nick },
-          },
-        );
+        const embed = await srch.characterEmbed(message, character, {
+          footer: true,
+          rating: false,
+          mode: 'thumbnail',
+          description: false,
+          media: { title: true },
+          overwrite: { ...response, nickname: nick },
+        });
 
         message
           .addEmbed(
             new discord.Embed().setDescription(
-              !nick ? i18n.get('nickname-reset', locale, name) : i18n.get(
-                'nickname-changed',
-                locale,
-                name,
-                nick,
-              ),
-            ),
+              !nick
+                ? i18n.get('nickname-reset', locale, name)
+                : i18n.get('nickname-changed', locale, name, nick)
+            )
           )
           .addEmbed(embed);
 
@@ -296,9 +276,10 @@ function nick({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  i18n.get('character-hasnt-been-found', locale, names[0]),
-                ),
-              ).addComponents([
+                  i18n.get('character-hasnt-been-found', locale, names[0])
+                )
+              )
+              .addComponents([
                 new discord.Component()
                   .setId(`character`, characterId)
                   .setLabel('/character'),
@@ -309,13 +290,10 @@ function nick({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  i18n.get(
-                    'character-not-owned-by-you',
-                    locale,
-                    names[0],
-                  ),
-                ),
-              ).addComponents([
+                  i18n.get('character-not-owned-by-you', locale, names[0])
+                )
+              )
+              .addComponents([
                 new discord.Component()
                   .setId(`character`, characterId)
                   .setLabel('/character'),
@@ -331,9 +309,10 @@ function nick({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {
@@ -363,8 +342,7 @@ function image({
   search?: string;
   id?: string;
 }): discord.Message {
-  const locale = cachedUsers[userId]?.locale ??
-    cachedGuilds[guildId]?.locale;
+  const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -394,7 +372,7 @@ function image({
           userId,
           guildId,
           characterId,
-          image,
+          image
         );
 
         if (!response) {
@@ -403,29 +381,27 @@ function image({
 
         const name = packs.aliasToArray(character.name)[0];
 
-        const embed = await srch.characterEmbed(
-          message,
-          character,
-          {
-            footer: true,
-            rating: false,
-            description: false,
-            media: { title: true },
-            overwrite: { ...response, image },
-          },
-        );
+        const embed = await srch.characterEmbed(message, character, {
+          footer: true,
+          rating: false,
+          description: false,
+          media: { title: true },
+          overwrite: { ...response, image },
+        });
 
         message
           .addEmbed(
             new discord.Embed().setDescription(
-              !image ? i18n.get('image-reset', locale, name) : i18n.get(
-                'image-changed',
-                locale,
-                name,
-                // deno-lint-ignore no-non-null-assertion
-                image!,
-              ),
-            ),
+              !image
+                ? i18n.get('image-reset', locale, name)
+                : i18n.get(
+                    'image-changed',
+                    locale,
+                    name,
+
+                    image!
+                  )
+            )
           )
           .addEmbed(embed);
 
@@ -438,9 +414,10 @@ function image({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  i18n.get('character-hasnt-been-found', locale, names[0]),
-                ),
-              ).addComponents([
+                  i18n.get('character-hasnt-been-found', locale, names[0])
+                )
+              )
+              .addComponents([
                 new discord.Component()
                   .setId(`character`, characterId)
                   .setLabel('/character'),
@@ -451,13 +428,10 @@ function image({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  i18n.get(
-                    'character-not-owned-by-you',
-                    locale,
-                    names[0],
-                  ),
-                ),
-              ).addComponents([
+                  i18n.get('character-not-owned-by-you', locale, names[0])
+                )
+              )
+              .addComponents([
                 new discord.Component()
                   .setId(`character`, characterId)
                   .setLabel('/character'),
@@ -473,9 +447,10 @@ function image({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {
@@ -507,8 +482,7 @@ function like({
   search?: string;
   id?: string;
 }): discord.Message {
-  const locale = cachedUsers[userId]?.locale ??
-    cachedGuilds[guildId]?.locale;
+  const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -535,37 +509,24 @@ function like({
 
       try {
         const _ = !undo
-          ? await db.likeCharacter(
-            userId,
-            characterId,
-          )
-          : await db.unlikeCharacter(
-            userId,
-            characterId,
-          );
+          ? await db.likeCharacter(userId, characterId)
+          : await db.unlikeCharacter(userId, characterId);
 
-        message
-          .addEmbed(
-            new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
-          );
+        message.addEmbed(
+          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked')
+        );
 
         if (mention) {
-          message
-            .setContent(`<@${userId}>`)
-            .setPing();
+          message.setContent(`<@${userId}>`).setPing();
         }
 
-        const embed = await srch.characterEmbed(
-          message,
-          character,
-          {
-            footer: true,
-            description: false,
-            mode: 'thumbnail',
-            media: { title: true },
-            rating: true,
-          },
-        );
+        const embed = await srch.characterEmbed(message, character, {
+          footer: true,
+          description: false,
+          mode: 'thumbnail',
+          media: { title: true },
+          rating: true,
+        });
 
         message.addEmbed(embed);
 
@@ -587,9 +548,10 @@ function like({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {
@@ -619,8 +581,7 @@ function likeall({
   search?: string;
   id?: string;
 }): discord.Message {
-  const locale = cachedUsers[userId]?.locale ??
-    cachedGuilds[guildId]?.locale;
+  const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
@@ -635,19 +596,12 @@ function likeall({
 
       try {
         const _ = !undo
-          ? await db.likeMedia(
-            userId,
-            mediaId,
-          )
-          : await db.unlikeMedia(
-            userId,
-            mediaId,
-          );
+          ? await db.likeMedia(userId, mediaId)
+          : await db.unlikeMedia(userId, mediaId);
 
-        message
-          .addEmbed(
-            new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
-          );
+        message.addEmbed(
+          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked')
+        );
 
         const media = await packs.aggregate<Media>({
           guildId,
@@ -678,9 +632,10 @@ function likeall({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {
@@ -716,8 +671,7 @@ function list({
   nick?: boolean;
   picture?: boolean;
 }): discord.Message {
-  const locale = cachedUsers[userId]?.locale ??
-    cachedGuilds[guildId]?.locale;
+  const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   Promise.resolve()
     .then(async () => {
@@ -727,7 +681,7 @@ function list({
         guildId,
         userId,
         mongo,
-        true,
+        true
       );
 
       let characters = await db.getUserCharacters(userId, guildId, mongo, true);
@@ -753,8 +707,9 @@ function list({
       }
 
       if (search || id) {
-        const results = await packs
-          .media(id ? { ids: [id], guildId } : { search, guildId });
+        const results = await packs.media(
+          id ? { ids: [id], guildId } : { search, guildId }
+        );
 
         if (
           !results.length ||
@@ -789,8 +744,7 @@ function list({
             return b.rating - a.rating;
           });
       } else {
-        characters = characters
-          .sort((a, b) => b.rating - a.rating);
+        characters = characters.sort((a, b) => b.rating - a.rating);
       }
 
       if (picture) {
@@ -803,29 +757,22 @@ function list({
           guildId,
         });
 
-        const media = (await packs.aggregate<Character>({
-          character: _character[0],
-          guildId,
-        })).media?.edges?.[0]?.node;
+        const media = (
+          await packs.aggregate<Character>({
+            character: _character[0],
+            guildId,
+          })
+        ).media?.edges?.[0]?.node;
 
         const mediaTitle = media?.title
-          ? utils.wrap(
-            packs.aliasToArray(media.title)[0],
-          )
+          ? utils.wrap(packs.aliasToArray(media.title)[0])
           : undefined;
 
         if (
-          !_character[0] || (
-            media &&
-            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-          )
+          !_character[0] ||
+          (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
         ) {
-          embed.setDescription(
-            i18n.get(
-              'character-disabled',
-              locale,
-            ),
-          );
+          embed.setDescription(i18n.get('character-disabled', locale));
         } else {
           embed = await srch.characterEmbed(message, _character[0], {
             footer: false,
@@ -838,40 +785,40 @@ function list({
         const chunks = utils.chunks(characters, 5);
 
         if (!chunks.length) {
-          message.addEmbed(embed.setDescription(
-            nick
-              ? (media.length
-                ? i18n.get(
-                  'user-empty-media-collection',
-                  locale,
-                  `<@${userId}>`,
-                  packs.aliasToArray(media[0].title)[0],
-                )
-                : i18n.get(
-                  'user-empty-collection',
-                  locale,
-                  `<@${userId}>`,
-                  rating ? `${rating}${discord.emotes.smolStar}` : '',
-                ))
-              : (media.length
-                ? i18n.get(
-                  'you-empty-media-collection',
-                  locale,
-                  packs.aliasToArray(media[0].title)[0],
-                )
-                : i18n.get(
-                  'you-empty-collection',
-                  locale,
-                  rating ? `${rating}${discord.emotes.smolStar}` : '',
-                )),
-          ));
+          message.addEmbed(
+            embed.setDescription(
+              nick
+                ? media.length
+                  ? i18n.get(
+                      'user-empty-media-collection',
+                      locale,
+                      `<@${userId}>`,
+                      packs.aliasToArray(media[0].title)[0]
+                    )
+                  : i18n.get(
+                      'user-empty-collection',
+                      locale,
+                      `<@${userId}>`,
+                      rating ? `${rating}${discord.emotes.smolStar}` : ''
+                    )
+                : media.length
+                  ? i18n.get(
+                      'you-empty-media-collection',
+                      locale,
+                      packs.aliasToArray(media[0].title)[0]
+                    )
+                  : i18n.get(
+                      'you-empty-collection',
+                      locale,
+                      rating ? `${rating}${discord.emotes.smolStar}` : ''
+                    )
+            )
+          );
 
           if (!nick) {
             message.addComponents([
               // `/gacha` shortcut
-              new discord.Component()
-                .setId('gacha', userId)
-                .setLabel('/gacha'),
+              new discord.Component().setId('gacha', userId).setLabel('/gacha'),
             ]);
           }
 
@@ -885,55 +832,57 @@ function list({
           guildId,
         });
 
-        await Promise.all(chunks[index].map(async (existing) => {
-          // deno-lint-ignore no-non-null-assertion
-          const char = _characters.find((
-            { packId, id },
-          ) => (
-            existing.characterId === `${packId}:${id}`
-          ))!;
+        await Promise.all(
+          chunks[index].map(async (existing) => {
+            const char = _characters.find(
+              ({ packId, id }) => existing.characterId === `${packId}:${id}`
+            )!;
 
-          if (!char) {
-            return;
-          }
+            if (!char) {
+              return;
+            }
 
-          const media = (await packs.aggregate<Character>({
-            character: char,
-            guildId,
-          })).media?.edges?.[0]?.node;
+            const media = (
+              await packs.aggregate<Character>({
+                character: char,
+                guildId,
+              })
+            ).media?.edges?.[0]?.node;
 
-          const mediaTitle = media?.title
-            ? utils.wrap(
-              packs.aliasToArray(media.title)[0],
-            )
-            : undefined;
+            const mediaTitle = media?.title
+              ? utils.wrap(packs.aliasToArray(media.title)[0])
+              : undefined;
 
-          const name = `${existing.rating}${discord.emotes.smolStar}${
-            members.some((member) => Boolean(member) && member === existing._id)
-              ? discord.emotes.member
-              : user.likes?.some((like) =>
-                  like.characterId === existing.characterId ||
-                  like.mediaId === existing.mediaId
-                )
-              ? `${discord.emotes.liked}`
-              : ''
-          } ${
-            existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
-          }`;
+            const name = `${existing.rating}${discord.emotes.smolStar}${
+              members.some(
+                (member) => Boolean(member) && member === existing._id
+              )
+                ? discord.emotes.member
+                : user.likes?.some(
+                      (like) =>
+                        like.characterId === existing.characterId ||
+                        like.mediaId === existing.mediaId
+                    )
+                  ? `${discord.emotes.liked}`
+                  : ''
+            } ${
+              existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
+            }`;
 
-          if (
-            media &&
-            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-          ) {
-            return;
-          }
+            if (
+              media &&
+              packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+            ) {
+              return;
+            }
 
-          embed.addField({
-            inline: false,
-            name: mediaTitle ? mediaTitle : name,
-            value: mediaTitle ? name : undefined,
-          });
-        }));
+            embed.addField({
+              inline: false,
+              name: mediaTitle ? mediaTitle : name,
+              value: mediaTitle ? name : undefined,
+            });
+          })
+        );
       }
 
       await mongo.close();
@@ -945,7 +894,7 @@ function list({
           userId,
           media.length ? `${media[0].packId}:${media[0].id}` : '',
           `${rating ?? ''}`,
-          picture ? '1' : '',
+          picture ? '1' : ''
         ),
         total: length,
         message: message.addEmbed(embed),
@@ -958,9 +907,10 @@ function list({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale),
-            ),
-          ).patch(token);
+              i18n.get('found-nothing', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {
@@ -1021,24 +971,27 @@ function likeslist({
       const results = ownedBy
         ? await db.getUserCharacters(ownedBy, guildId)
         : await db.findCharacters(
-          guildId,
-          likes.map(({ characterId }) => characterId)
-            .filter(utils.nonNullable),
-        );
+            guildId,
+            likes
+              .map(({ characterId }) => characterId)
+              .filter(utils.nonNullable)
+          );
 
       // show only characters that are owned by specific user
       if (ownedBy) {
-        likes = results.map((character) => {
-          if (
-            likes.find((t) =>
-              t.characterId === character?.characterId ||
-              t.mediaId === character?.mediaId
-            )
-          ) {
-            // deno-lint-ignore no-non-null-assertion
-            return { characterId: character!.characterId };
-          }
-        }).filter(Boolean) as { characterId: string }[];
+        likes = results
+          .map((character) => {
+            if (
+              likes.find(
+                (t) =>
+                  t.characterId === character?.characterId ||
+                  t.mediaId === character?.mediaId
+              )
+            ) {
+              return { characterId: character!.characterId };
+            }
+          })
+          .filter(Boolean) as { characterId: string }[];
         // filter out characters that are owned by the user
       } else if (filter) {
         likes = likes.filter((like, i) => {
@@ -1051,27 +1004,29 @@ function likeslist({
       const [characters, media] = await Promise.all([
         await packs.characters({
           guildId,
-          ids: chunks[index]?.map(({ characterId }) => characterId)
+          ids: chunks[index]
+            ?.map(({ characterId }) => characterId)
             .filter(utils.nonNullable),
         }),
         await packs.media({
           guildId,
-          ids: chunks[index]?.map(({ mediaId }) => mediaId)
+          ids: chunks[index]
+            ?.map(({ mediaId }) => mediaId)
             .filter(utils.nonNullable),
         }),
       ]);
 
       if (!chunks.length) {
         if (index > 0) {
-          embed.setDescription(
-            'This page is empty',
-          );
+          embed.setDescription('This page is empty');
         } else {
-          message.addEmbed(embed.setDescription(
-            nick
-              ? i18n.get('user-empty-likeslist', locale, `<@${userId}>`)
-              : i18n.get('you-empty-likeslist', locale),
-          ));
+          message.addEmbed(
+            embed.setDescription(
+              nick
+                ? i18n.get('user-empty-likeslist', locale, `<@${userId}>`)
+                : i18n.get('you-empty-likeslist', locale)
+            )
+          );
 
           return message.patch(token);
         }
@@ -1079,19 +1034,16 @@ function likeslist({
 
       await Promise.all(
         chunks[index].map(async (like) => {
-          // deno-lint-ignore no-non-null-assertion
-          const character = characters.find((
-            { packId, id },
-          ) => (
-            like.characterId === `${packId}:${id}`
-          ))!;
+          const character = characters.find(
+            ({ packId, id }) => like.characterId === `${packId}:${id}`
+          )!;
 
           if (!character) {
             return;
           }
 
-          const existing = results.find((r) =>
-            r?.characterId === `${character.packId}:${character.id}`
+          const existing = results.find(
+            (r) => r?.characterId === `${character.packId}:${character.id}`
           );
 
           const char = await packs.aggregate<Character>({
@@ -1100,15 +1052,12 @@ function likeslist({
             end: 1,
           });
 
-          const rating = existing?.rating ??
-            Rating.fromCharacter(char).stars;
+          const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
 
           const media = char.media?.edges?.[0]?.node;
 
           const mediaTitle = media?.title
-            ? utils.wrap(
-              packs.aliasToArray(media.title)[0],
-            )
+            ? utils.wrap(packs.aliasToArray(media.title)[0])
             : undefined;
 
           const name = `${rating}${discord.emotes.smolStar} ${
@@ -1127,7 +1076,7 @@ function likeslist({
             name: mediaTitle ? mediaTitle : name,
             value: mediaTitle ? name : undefined,
           });
-        }),
+        })
       );
 
       media.forEach((media) => {
@@ -1167,8 +1116,8 @@ function sum({
   token,
   userId,
   guildId,
-  // nick,
-}: {
+}: // nick,
+{
   token: string;
   userId: string;
   guildId: string;
@@ -1184,7 +1133,7 @@ function sum({
         guildId,
         userId,
         mongo,
-        true,
+        true
       );
 
       const likesCharactersIds = user.likes
@@ -1199,7 +1148,7 @@ function sum({
         userId,
         guildId,
         mongo,
-        true,
+        true
       );
 
       const partyIds = [
@@ -1244,26 +1193,23 @@ function sum({
         sum[r] += 1;
       });
 
-      [1, 2, 3, 4, 5].forEach(
-        (n) =>
-          description.push(
-            // deno-lint-ignore prefer-ascii
-            `${n}${discord.emotes.smolStar} — **${sum[n]} ${sum[n] === 1
-                ? i18n.get('character', locale)
-                : i18n.get('characters', locale)
-              // deno-lint-ignore prefer-ascii
-            }** — ${sumProtected[n]} ${discord.emotes.liked}(${
-              sum[n] - sumProtected[n]
-            })`,
-          ),
+      [1, 2, 3, 4, 5].forEach((n) =>
+        description.push(
+          `${n}${discord.emotes.smolStar} — **${sum[n]} ${
+            sum[n] === 1
+              ? i18n.get('character', locale)
+              : i18n.get('characters', locale)
+          }** — ${sumProtected[n]} ${discord.emotes.liked}(${
+            sum[n] - sumProtected[n]
+          })`
+        )
       );
 
       embed.setDescription(description.join('\n'));
 
       await mongo.close();
 
-      new discord.Message()
-        .addEmbed(embed).patch(token);
+      new discord.Message().addEmbed(embed).patch(token);
     })
     .catch(async (err) => {
       if (!config.sentry) {
@@ -1291,8 +1237,7 @@ function showcase({
   guildId: string;
   nick?: boolean;
 }): discord.Message {
-  const locale = cachedUsers[userId]?.locale ??
-    cachedGuilds[guildId]?.locale;
+  const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   Promise.resolve()
     .then(async () => {
@@ -1309,11 +1254,11 @@ function showcase({
         userId,
         guildId,
         mongo,
-        true,
+        true
       );
 
-      user.likes?.forEach(({ mediaId }) =>
-        mediaId && (likedMedia[mediaId] = true)
+      user.likes?.forEach(
+        ({ mediaId }) => mediaId && (likedMedia[mediaId] = true)
       );
 
       characters.forEach(({ mediaId, characterId }) => {
@@ -1321,28 +1266,26 @@ function showcase({
         ownedMedia[mediaId].push(characterId);
       });
 
-      let media = await packs.media({
+      let media = (await packs.media({
         guildId,
-        ids: [
-          ...Object.keys(likedMedia),
-          ...Object.keys(ownedMedia),
-        ],
-      }) as DisaggregatedMedia[];
+        ids: [...Object.keys(likedMedia), ...Object.keys(ownedMedia)],
+      })) as DisaggregatedMedia[];
 
       media = media
         .map((media) => {
           const mediaId = `${media.packId}:${media.id}`;
 
           // filter background characters
-          media.characters = media.characters?.filter(({ role }) =>
-            role !== CharacterRole.Background
-          ) ?? [];
+          media.characters =
+            media.characters?.filter(
+              ({ role }) => role !== CharacterRole.Background
+            ) ?? [];
 
           // filter background characters from owned character
           ownedMedia[mediaId] = ownedMedia[mediaId]?.filter((id) => {
-            // deno-lint-ignore no-non-null-assertion
-            const edge = media.characters!.find(({ characterId }) =>
-              packs.ensureId(characterId, media.packId) === id
+            const edge = media.characters!.find(
+              ({ characterId }) =>
+                packs.ensureId(characterId, media.packId) === id
             );
 
             return edge && edge.role !== CharacterRole.Background;
@@ -1365,7 +1308,7 @@ function showcase({
 
         const anyIncludes = list.some((id) => likedMedia[id] || false);
 
-        if (anyIncludes) list.forEach((id) => likedMedia[id] = true);
+        if (anyIncludes) list.forEach((id) => (likedMedia[id] = true));
       });
 
       // sort by liked then owned amount
@@ -1391,20 +1334,17 @@ function showcase({
         const message = new discord.Message();
 
         message.addEmbed(
-          new discord.Embed()
-            .setDescription(
-              nick
-                ? i18n.get('user-empty-collection', locale, `<@${userId}>`, '')
-                : i18n.get('you-empty-collection', locale, ''),
-            ),
+          new discord.Embed().setDescription(
+            nick
+              ? i18n.get('user-empty-collection', locale, `<@${userId}>`, '')
+              : i18n.get('you-empty-collection', locale, '')
+          )
         );
 
         if (!nick) {
           message.addComponents([
             // `/gacha` shortcut
-            new discord.Component()
-              .setId('gacha', userId)
-              .setLabel('/gacha'),
+            new discord.Component().setId('gacha', userId).setLabel('/gacha'),
           ]);
         }
 
@@ -1413,7 +1353,7 @@ function showcase({
 
       const mediaAllOwned = await db.getMediaCharacters(
         guildId,
-        chunks[index].map(({ packId, id }) => `${packId}:${id}`),
+        chunks[index].map(({ packId, id }) => `${packId}:${id}`)
       );
 
       await mongo.close();
@@ -1426,29 +1366,32 @@ function showcase({
         const liked = likedMedia[id] || false;
 
         const owned = ownedMedia[id]?.length ?? 0;
-        // deno-lint-ignore no-non-null-assertion
+
         const total = media.characters!.length;
 
         const percent = Math.round((owned / total) * 100);
 
-        // deno-lint-ignore prefer-ascii
         let formatted = `${percent}% — ${owned} / ${total}`;
 
         // TODO TEST
-        const ownedByOthers = mediaAllOwned.filter((character) =>
-          character.mediaId === id &&
-          // deno-lint-ignore no-non-null-assertion
-          media.characters!.some(({ characterId }) =>
-            // TODO TEST
-            packs.ensureId(characterId, media.packId) === character.characterId
-          ) &&
-          character.userId !== userId
+        const ownedByOthers = mediaAllOwned.filter(
+          (character) =>
+            character.mediaId === id &&
+            media.characters!.some(
+              ({ characterId }) =>
+                // TODO TEST
+                packs.ensureId(characterId, media.packId) ===
+                character.characterId
+            ) &&
+            character.userId !== userId
         );
 
         if (ownedByOthers.length) {
-          formatted = `${
-            i18n.get('owned-by-others', locale, ownedByOthers.length)
-          }\n${formatted}`;
+          formatted = `${i18n.get(
+            'owned-by-others',
+            locale,
+            ownedByOthers.length
+          )}\n${formatted}`;
         } else if (percent >= 100) {
           formatted = `~~${formatted}~~`;
         }
@@ -1460,8 +1403,7 @@ function showcase({
         });
       });
 
-      const message = new discord.Message()
-        .addEmbed(embed);
+      const message = new discord.Message().addEmbed(embed);
 
       return discord.Message.page({
         index,
@@ -1497,15 +1439,15 @@ function logs({
   guildId: string;
   nick?: boolean;
 }): discord.Message {
-  const locale = cachedUsers[userId]?.locale ??
-    cachedGuilds[guildId]?.locale;
+  const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   Promise.resolve()
     .then(async () => {
       const message = new discord.Message();
 
-      const characters = (await db.getUserCharacters(userId, guildId))
-        .slice(-10);
+      const characters = (await db.getUserCharacters(userId, guildId)).slice(
+        -10
+      );
 
       const names: string[] = [];
 
@@ -1514,15 +1456,12 @@ function logs({
         ids: characters.map(({ characterId }) => characterId),
       });
 
-      characters.toReversed().forEach((existing) => {
-        const char = results.find(({ packId, id }) =>
-          `${packId}:${id}` === existing.characterId
+      characters.reverse().forEach((existing) => {
+        const char = results.find(
+          ({ packId, id }) => `${packId}:${id}` === existing.characterId
         );
 
-        if (
-          !char ||
-          packs.isDisabled(existing.mediaId, guildId)
-        ) {
+        if (!char || packs.isDisabled(existing.mediaId, guildId)) {
           return;
         }
 
@@ -1535,19 +1474,17 @@ function logs({
 
       if (names.length <= 0) {
         message.addEmbed(
-          new discord.Embed()
-            .setDescription(
-              nick
-                ? i18n.get('user-empty-collection', locale, `<@${userId}>`, '')
-                : i18n.get('you-empty-collection', locale, ''),
-            ),
+          new discord.Embed().setDescription(
+            nick
+              ? i18n.get('user-empty-collection', locale, `<@${userId}>`, '')
+              : i18n.get('you-empty-collection', locale, '')
+          )
         );
 
         return message.patch(token);
       }
 
-      message.addEmbed(new discord.Embed()
-        .setDescription(names.join('\n')));
+      message.addEmbed(new discord.Embed().setDescription(names.join('\n')));
 
       return message.patch(token);
     })

@@ -6,40 +6,43 @@ import config from '~/src/config.ts';
 
 import * as discord from '~/src/discord.ts';
 
-import db, { COSTS } from '~/db/mod.ts';
+import db, { COSTS } from '~/db/index.ts';
 
 import { NonFetalError } from '~/src/errors.ts';
 
-function normal(
-  { userId, amount }: { userId: string; amount: number },
-): discord.Message {
+function normal({
+  userId,
+  amount,
+}: {
+  userId: string;
+  amount: number;
+}): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
 
   if (!config.shop) {
-    throw new NonFetalError(
-      i18n.get('maintenance-shop', locale),
-    );
+    throw new NonFetalError(i18n.get('maintenance-shop', locale));
   }
 
   const message = new discord.Message();
 
   message.addEmbed(
-    new discord.Embed()
-      .setDescription(
-        i18n.get(
-          'spent-tokens-normal',
-          locale,
-          amount,
-          amount > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
-          discord.emotes.remove,
-        ),
-      ),
+    new discord.Embed().setDescription(
+      i18n.get(
+        'spent-tokens-normal',
+        locale,
+        amount,
+        amount > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
+        discord.emotes.remove
+      )
+    )
   );
 
   message.addComponents([
-    new discord.Component().setId('buy', 'normal', userId, `${amount}`)
+    new discord.Component()
+      .setId('buy', 'normal', userId, `${amount}`)
       .setLabel(i18n.get('confirm', locale)),
-    new discord.Component().setId('cancel', userId)
+    new discord.Component()
+      .setId('cancel', userId)
       .setStyle(discord.ButtonStyle.Red)
       .setLabel(i18n.get('cancel', locale)),
   ]);
@@ -47,7 +50,11 @@ function normal(
   return message;
 }
 
-async function confirmNormal({ userId, guildId, amount }: {
+async function confirmNormal({
+  userId,
+  guildId,
+  amount,
+}: {
   userId: string;
   guildId: string;
   amount: number;
@@ -59,24 +66,21 @@ async function confirmNormal({ userId, guildId, amount }: {
 
     const message = new discord.Message();
 
-    message
-      .addEmbed(new discord.Embed().setDescription(
+    message.addEmbed(
+      new discord.Embed().setDescription(
         i18n.get(
           'you-bought-pulls',
           locale,
           amount,
           amount > 1 ? i18n.get('pulls', locale) : i18n.get('pull', locale),
-          discord.emotes.add,
-        ),
-      ));
+          discord.emotes.add
+        )
+      )
+    );
 
     message.addComponents([
-      new discord.Component()
-        .setId('gacha', userId)
-        .setLabel('/gacha'),
-      new discord.Component()
-        .setId('q', userId)
-        .setLabel('/q'),
+      new discord.Component().setId('gacha', userId).setLabel('/gacha'),
+      new discord.Component().setId('q', userId).setLabel('/q'),
     ]);
 
     return message;
@@ -85,16 +89,16 @@ async function confirmNormal({ userId, guildId, amount }: {
 
     const diff = amount - availableTokens;
 
-    return new discord.Message()
-      .addEmbed(new discord.Embed()
-        .setDescription(
-          i18n.get(
-            'you-need-more-tokens',
-            locale,
-            diff,
-            diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
-          ),
-        ));
+    return new discord.Message().addEmbed(
+      new discord.Embed().setDescription(
+        i18n.get(
+          'you-need-more-tokens',
+          locale,
+          diff,
+          diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale)
+        )
+      )
+    );
   }
 }
 
@@ -108,37 +112,33 @@ function guaranteed({
   const locale = user.cachedUsers[userId]?.locale;
 
   if (!config.shop) {
-    throw new NonFetalError(
-      i18n.get('maintenance-shop', locale),
-    );
+    throw new NonFetalError(i18n.get('maintenance-shop', locale));
   }
 
   const message = new discord.Message();
 
-  const cost = stars === 5
-    ? COSTS.FIVE
-    : stars === 4
-    ? COSTS.FOUR
-    : COSTS.THREE;
+  const cost =
+    stars === 5 ? COSTS.FIVE : stars === 4 ? COSTS.FOUR : COSTS.THREE;
 
   message.addEmbed(
-    new discord.Embed()
-      .setDescription(
-        i18n.get(
-          'spent-tokens-guaranteed',
-          locale,
-          cost,
-          discord.emotes.remove,
-          `${stars}${discord.emotes.smolStar}`,
-          discord.emotes.add,
-        ),
-      ),
+    new discord.Embed().setDescription(
+      i18n.get(
+        'spent-tokens-guaranteed',
+        locale,
+        cost,
+        discord.emotes.remove,
+        `${stars}${discord.emotes.smolStar}`,
+        discord.emotes.add
+      )
+    )
   );
 
   message.addComponents([
-    new discord.Component().setId('buy', 'guaranteed', userId, `${stars}`)
+    new discord.Component()
+      .setId('buy', 'guaranteed', userId, `${stars}`)
       .setLabel('Confirm'),
-    new discord.Component().setId('cancel', userId)
+    new discord.Component()
+      .setId('cancel', userId)
       .setStyle(discord.ButtonStyle.Red)
       .setLabel('Cancel'),
   ]);
@@ -160,16 +160,17 @@ async function confirmGuaranteed({
 
     const message = new discord.Message();
 
-    message
-      .addEmbed(new discord.Embed().setDescription(
+    message.addEmbed(
+      new discord.Embed().setDescription(
         i18n.get(
           'you-bought-guarantee',
           locale,
           stars,
           discord.emotes.smolStar,
-          discord.emotes.add,
-        ),
-      ));
+          discord.emotes.add
+        )
+      )
+    );
 
     message.addComponents([
       new discord.Component()
@@ -179,59 +180,59 @@ async function confirmGuaranteed({
 
     return message;
   } catch {
-    const cost = stars === 5
-      ? COSTS.FIVE
-      : stars === 4
-      ? COSTS.FOUR
-      : COSTS.THREE;
+    const cost =
+      stars === 5 ? COSTS.FIVE : stars === 4 ? COSTS.FOUR : COSTS.THREE;
 
     const { availableTokens } = await db.getUser(userId);
 
     const diff = cost - availableTokens;
 
-    return new discord.Message()
-      .addEmbed(new discord.Embed()
-        .setDescription(
-          i18n.get(
-            'you-need-more-tokens',
-            locale,
-            diff,
-            diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
-          ),
-        ));
+    return new discord.Message().addEmbed(
+      new discord.Embed().setDescription(
+        i18n.get(
+          'you-need-more-tokens',
+          locale,
+          diff,
+          diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale)
+        )
+      )
+    );
   }
 }
 
-function keys(
-  { userId, amount }: { userId: string; amount: number },
-): discord.Message {
+function keys({
+  userId,
+  amount,
+}: {
+  userId: string;
+  amount: number;
+}): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
 
   if (!config.shop) {
-    throw new NonFetalError(
-      i18n.get('maintenance-shop', locale),
-    );
+    throw new NonFetalError(i18n.get('maintenance-shop', locale));
   }
 
   const message = new discord.Message();
 
   message.addEmbed(
-    new discord.Embed()
-      .setDescription(
-        i18n.get(
-          'spent-tokens-normal',
-          locale,
-          amount,
-          amount > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
-          discord.emotes.remove,
-        ),
-      ),
+    new discord.Embed().setDescription(
+      i18n.get(
+        'spent-tokens-normal',
+        locale,
+        amount,
+        amount > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
+        discord.emotes.remove
+      )
+    )
   );
 
   message.addComponents([
-    new discord.Component().setId('buy', 'keys', userId, `${amount}`)
+    new discord.Component()
+      .setId('buy', 'keys', userId, `${amount}`)
       .setLabel(i18n.get('confirm', locale)),
-    new discord.Component().setId('cancel', userId)
+    new discord.Component()
+      .setId('cancel', userId)
       .setStyle(discord.ButtonStyle.Red)
       .setLabel(i18n.get('cancel', locale)),
   ]);
@@ -239,7 +240,11 @@ function keys(
   return message;
 }
 
-async function confirmKeys({ userId, guildId, amount }: {
+async function confirmKeys({
+  userId,
+  guildId,
+  amount,
+}: {
   userId: string;
   guildId: string;
   amount: number;
@@ -251,25 +256,26 @@ async function confirmKeys({ userId, guildId, amount }: {
 
     const message = new discord.Message();
 
-    message
-      .addEmbed(new discord.Embed().setDescription(
+    message.addEmbed(
+      new discord.Embed().setDescription(
         i18n.get(
           'you-bought-pulls',
           locale,
           amount,
-          (amount > 1 ? i18n.get('keys', locale) : i18n.get('key', locale))
-            .toLocaleLowerCase(),
-          discord.emotes.add,
-        ),
-      ));
+          (amount > 1
+            ? i18n.get('keys', locale)
+            : i18n.get('key', locale)
+          ).toLocaleLowerCase(),
+          discord.emotes.add
+        )
+      )
+    );
 
     message.addComponents([
       new discord.Component()
         .setId('tchallenge', userId)
         .setLabel('/bt challenge'),
-      new discord.Component()
-        .setId('treclear', userId)
-        .setLabel('/reclear'),
+      new discord.Component().setId('treclear', userId).setLabel('/reclear'),
     ]);
 
     return message;
@@ -278,16 +284,16 @@ async function confirmKeys({ userId, guildId, amount }: {
 
     const diff = amount - availableTokens;
 
-    return new discord.Message()
-      .addEmbed(new discord.Embed()
-        .setDescription(
-          i18n.get(
-            'you-need-more-tokens',
-            locale,
-            diff,
-            diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
-          ),
-        ));
+    return new discord.Message().addEmbed(
+      new discord.Embed().setDescription(
+        i18n.get(
+          'you-need-more-tokens',
+          locale,
+          diff,
+          diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale)
+        )
+      )
+    );
   }
 }
 

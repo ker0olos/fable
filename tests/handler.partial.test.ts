@@ -1,8 +1,6 @@
-// deno-lint-ignore-file no-explicit-any
-
-import { assertEquals } from '$std/assert/mod.ts';
-
-import { assertSpyCall, stub } from '$std/testing/mock.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unsafe-optional-chaining */
+import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import * as discord from '~/src/discord.ts';
 
@@ -13,12 +11,14 @@ import { handler } from '~/src/interactions.ts';
 
 import packs from '~/src/packs.ts';
 
-import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
-
 config.global = true;
 
-Deno.test('media suggestions', async (test) => {
-  await test.step('search', async () => {
+describe('media suggestions', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('search', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -27,27 +27,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'search',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -63,60 +71,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('anime', async () => {
+  it('anime', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -125,27 +124,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'anime',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -161,60 +168,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('manga', async () => {
+  it('manga', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -223,27 +221,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'manga',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -259,60 +265,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('media', async () => {
+  it('media', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -321,27 +318,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'media',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -357,60 +362,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('series', async () => {
+  it('series', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -419,27 +415,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'series',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -455,60 +459,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('found', async () => {
+  it('found', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -517,27 +512,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'found',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -553,60 +556,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('owned', async () => {
+  it('owned', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -615,27 +609,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'owned',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -651,60 +653,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('likeall', async () => {
+  it('likeall', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -713,27 +706,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'likeall',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -749,60 +750,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('unlikeall', async () => {
+  it('unlikeall', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -811,27 +803,35 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'unlikeall',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -847,60 +847,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('collection media', async () => {
+  it('collection media', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -909,31 +900,41 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'collection',
-        options: [{
-          type: 1,
-          name: 'media',
-          options: [{
-            name: 'title',
-            value: 'title',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'media',
+            options: [
+              {
+                name: 'title',
+                value: 'title',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -949,60 +950,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('coll media', async () => {
+  it('coll media', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1011,31 +1003,41 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'coll',
-        options: [{
-          type: 1,
-          name: 'media',
-          options: [{
-            name: 'title',
-            value: 'title',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'media',
+            options: [
+              {
+                name: 'title',
+                value: 'title',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1051,60 +1053,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('mm media', async () => {
+  it('mm media', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1113,31 +1106,41 @@ Deno.test('media suggestions', async (test) => {
 
       data: {
         name: 'mm',
-        options: [{
-          type: 1,
-          name: 'media',
-          options: [{
-            name: 'title',
-            value: 'title',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'media',
+            options: [
+              {
+                name: 'title',
+                value: 'title',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1153,60 +1156,51 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('no media format', async () => {
+  it('no media format', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1214,27 +1208,35 @@ Deno.test('media suggestions', async (test) => {
       guild_id: 'guild_id',
       data: {
         name: 'search',
-        options: [{
-          name: 'title',
-          value: 'title',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'title',
+            value: 'title',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
+    const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
+      {
         id: 'packId:id',
         title: ['english title'],
         popularity: 1,
-      }] as any));
+      },
+    ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1250,62 +1252,53 @@ Deno.test('media suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'title',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'title',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english title',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english title',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 });
 
-Deno.test('character suggestions', async (test) => {
-  await test.step('character', async () => {
+describe('character suggestions', () => {
+  it('character', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1313,32 +1306,38 @@ Deno.test('character suggestions', async (test) => {
       guild_id: 'guild_id',
       data: {
         name: 'character',
-        options: [{
-          name: 'name',
-          value: 'name',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'name',
+            value: 'name',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1354,60 +1353,51 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('trade (take parameter)', async () => {
+  it('trade (take parameter)', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1416,32 +1406,38 @@ Deno.test('character suggestions', async (test) => {
 
       data: {
         name: 'trade',
-        options: [{
-          name: 'give',
-          value: 'give',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'give',
+            value: 'give',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1457,59 +1453,50 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'give',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'give',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('trade (give parameter)', async () => {
+  it('trade (give parameter)', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1518,35 +1505,42 @@ Deno.test('character suggestions', async (test) => {
 
       data: {
         name: 'trade',
-        options: [{
-          name: 'give',
-          value: 'give',
-        }, {
-          name: 'take',
-          value: 'take',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'give',
+            value: 'give',
+          },
+          {
+            name: 'take',
+            value: 'take',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1562,59 +1556,50 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'take',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'take',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('offer', async () => {
+  it('offer', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1623,32 +1608,38 @@ Deno.test('character suggestions', async (test) => {
 
       data: {
         name: 'offer',
-        options: [{
-          name: 'give',
-          value: 'give',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'give',
+            value: 'give',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1664,59 +1655,50 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'give',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'give',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('give', async () => {
+  it('give', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1725,32 +1707,38 @@ Deno.test('character suggestions', async (test) => {
 
       data: {
         name: 'give',
-        options: [{
-          name: 'give',
-          value: 'give',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'give',
+            value: 'give',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1766,59 +1754,50 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'give',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'give',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('gift', async () => {
+  it('gift', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1827,32 +1806,38 @@ Deno.test('character suggestions', async (test) => {
 
       data: {
         name: 'gift',
-        options: [{
-          name: 'give',
-          value: 'give',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'give',
+            value: 'give',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1868,59 +1853,50 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'give',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'give',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('steal', async () => {
+  it('steal', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1929,32 +1905,38 @@ Deno.test('character suggestions', async (test) => {
 
       data: {
         name: 'steal',
-        options: [{
-          name: 'name',
-          value: 'name',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'name',
+            value: 'name',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1970,59 +1952,50 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('like', async () => {
+  it('like', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2031,32 +2004,38 @@ Deno.test('character suggestions', async (test) => {
 
       data: {
         name: 'like',
-        options: [{
-          name: 'name',
-          value: 'name',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'name',
+            value: 'name',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2072,60 +2051,51 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('unlike', async () => {
+  it('unlike', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2134,32 +2104,38 @@ Deno.test('character suggestions', async (test) => {
 
       data: {
         name: 'unlike',
-        options: [{
-          name: 'name',
-          value: 'name',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'name',
+            value: 'name',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2175,60 +2151,51 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('character', async () => {
+  it('character', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2236,32 +2203,38 @@ Deno.test('character suggestions', async (test) => {
       guild_id: 'guild_id',
       data: {
         name: 'stats',
-        options: [{
-          name: 'name',
-          value: 'name',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'name',
+            value: 'name',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2277,60 +2250,51 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('no media relation', async () => {
+  it('no media relation', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2338,31 +2302,37 @@ Deno.test('character suggestions', async (test) => {
       guild_id: 'guild_id',
       data: {
         name: 'character',
-        options: [{
-          name: 'name',
-          value: 'name',
-          focused: true,
-        }],
+        options: [
+          {
+            name: 'name',
+            value: 'name',
+            focused: true,
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2378,60 +2348,51 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('skills acquire', async () => {
+  it('skills acquire', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2439,36 +2400,44 @@ Deno.test('character suggestions', async (test) => {
       guild_id: 'guild_id',
       data: {
         name: 'skills',
-        options: [{
-          type: 1,
-          name: 'acquire',
-          options: [{
-            name: 'character',
-            value: 'name',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'acquire',
+            options: [
+              {
+                name: 'character',
+                value: 'name',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2484,60 +2453,51 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('skills upgrade', async () => {
+  it('skills upgrade', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2545,36 +2505,44 @@ Deno.test('character suggestions', async (test) => {
       guild_id: 'guild_id',
       data: {
         name: 'skills',
-        options: [{
-          type: 1,
-          name: 'upgrade',
-          options: [{
-            name: 'character',
-            value: 'name',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'upgrade',
+            options: [
+              {
+                name: 'character',
+                value: 'name',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2590,62 +2558,53 @@ Deno.test('character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 });
 
-Deno.test('party assign character suggestions', async (test) => {
-  await test.step('party assign', async () => {
+describe('party assign character suggestions', () => {
+  it('party assign', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2659,36 +2618,44 @@ Deno.test('party assign character suggestions', async (test) => {
       },
       data: {
         name: 'party',
-        options: [{
-          type: 1,
-          name: 'assign',
-          options: [{
-            name: 'name',
-            value: 'name',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'assign',
+            options: [
+              {
+                name: 'name',
+                value: 'name',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2704,60 +2671,51 @@ Deno.test('party assign character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('team assign', async () => {
+  it('team assign', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2771,36 +2729,44 @@ Deno.test('party assign character suggestions', async (test) => {
       },
       data: {
         name: 'team',
-        options: [{
-          type: 1,
-          name: 'assign',
-          options: [{
-            name: 'name',
-            value: 'name',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'assign',
+            options: [
+              {
+                name: 'name',
+                value: 'name',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2816,60 +2782,51 @@ Deno.test('party assign character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('p assign', async () => {
+  it('p assign', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2883,36 +2840,44 @@ Deno.test('party assign character suggestions', async (test) => {
       },
       data: {
         name: 'p',
-        options: [{
-          type: 1,
-          name: 'assign',
-          options: [{
-            name: 'name',
-            value: 'name',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'assign',
+            options: [
+              {
+                name: 'name',
+                value: 'name',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
-    const searchStub = stub(
-      packs,
-      '_searchManyCharacters',
-      () =>
-        Promise.resolve([{
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
           id: 'packId:id',
           name: ['english name'],
           mediaTitle: ['anime title'],
           popularity: 1,
-        }] as any),
-    );
+        },
+      ] as any);
 
     config.publicKey = 'publicKey';
 
@@ -2928,62 +2893,53 @@ Deno.test('party assign character suggestions', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(searchStub, 0, {
-        args: [{
-          search: 'name',
-          guildId: 'guild_id',
-        }],
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'english name (anime title)',
-            value: 'id=packId:id',
-          }],
+          choices: [
+            {
+              name: 'english name (anime title)',
+              value: 'id=packId:id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      searchStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 });
 
-Deno.test('community packs', async (test) => {
-  await test.step('uninstall', async () => {
+describe('community packs', () => {
+  it('uninstall', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2992,38 +2948,42 @@ Deno.test('community packs', async (test) => {
 
       data: {
         name: 'packs',
-        options: [{
-          type: 1,
-          name: 'uninstall',
-          options: [{
-            name: 'id',
-            value: 'id',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'uninstall',
+            options: [
+              {
+                name: 'id',
+                value: 'id',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const listStub = stub(
-      packs,
-      'all',
-      () =>
-        Promise.resolve([
-          {
-            manifest: {
-              id: 'id',
-              title: 'title',
-            },
-          } as any,
-        ]),
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
     );
+
+    const listStub = vi.spyOn(packs, 'all').mockResolvedValue([
+      {
+        manifest: {
+          id: 'id',
+          title: 'title',
+        },
+      } as any,
+    ]);
 
     config.publicKey = 'publicKey';
 
@@ -3039,60 +2999,51 @@ Deno.test('community packs', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(listStub, 0, {
-        args: [{
-          guildId: 'guild_id',
-          filter: true,
-        }],
+      expect(listStub).toHaveBeenCalledWith({
+        guildId: 'guild_id',
+        filter: true,
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
-          choices: [{
-            name: 'title',
-            value: 'id',
-          }],
+          choices: [
+            {
+              name: 'title',
+              value: 'id',
+            },
+          ],
         },
       });
     } finally {
       delete config.publicKey;
-
-      listStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('sort by title', async () => {
+  it('sort by title', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3101,50 +3052,54 @@ Deno.test('community packs', async (test) => {
 
       data: {
         name: 'packs',
-        options: [{
-          type: 1,
-          name: 'uninstall',
-          options: [{
-            name: 'id',
-            value: 'titl',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'uninstall',
+            options: [
+              {
+                name: 'id',
+                value: 'titl',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const listStub = stub(
-      packs,
-      'all',
-      () =>
-        Promise.resolve([
-          {
-            manifest: {
-              id: 'id535245',
-              title: 'title',
-            },
-          } as any,
-          {
-            manifest: {
-              id: 'id998943894',
-              title: 'name',
-            },
-          } as any,
-          {
-            manifest: {
-              id: 'id424535',
-              title: 'alias',
-            },
-          } as any,
-        ]),
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
     );
+
+    const listStub = vi.spyOn(packs, 'all').mockResolvedValue([
+      {
+        manifest: {
+          id: 'id535245',
+          title: 'title',
+        },
+      } as any,
+      {
+        manifest: {
+          id: 'id998943894',
+          title: 'name',
+        },
+      } as any,
+      {
+        manifest: {
+          id: 'id424535',
+          title: 'alias',
+        },
+      } as any,
+    ]);
 
     config.publicKey = 'publicKey';
 
@@ -3160,42 +3115,35 @@ Deno.test('community packs', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(listStub, 0, {
-        args: [{
-          guildId: 'guild_id',
-          filter: true,
-        }],
+      expect(listStub).toHaveBeenCalledWith({
+        guildId: 'guild_id',
+        filter: true,
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
           choices: [
@@ -3216,14 +3164,10 @@ Deno.test('community packs', async (test) => {
       });
     } finally {
       delete config.publicKey;
-
-      listStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('sort by id', async () => {
+  it('sort by id', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3232,41 +3176,45 @@ Deno.test('community packs', async (test) => {
 
       data: {
         name: 'packs',
-        options: [{
-          type: 1,
-          name: 'uninstall',
-          options: [{
-            name: 'id',
-            value: 'titl',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'uninstall',
+            options: [
+              {
+                name: 'id',
+                value: 'titl',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const listStub = stub(
-      packs,
-      'all',
-      () =>
-        Promise.resolve([
-          {
-            manifest: { id: 'name' },
-          } as any,
-          {
-            manifest: { id: 'title' },
-          } as any,
-          {
-            manifest: { id: 'alias' },
-          } as any,
-        ]),
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
     );
+
+    const listStub = vi.spyOn(packs, 'all').mockResolvedValue([
+      {
+        manifest: { id: 'name' },
+      } as any,
+      {
+        manifest: { id: 'title' },
+      } as any,
+      {
+        manifest: { id: 'alias' },
+      } as any,
+    ]);
 
     config.publicKey = 'publicKey';
 
@@ -3282,42 +3230,35 @@ Deno.test('community packs', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertSpyCall(listStub, 0, {
-        args: [{
-          guildId: 'guild_id',
-          filter: true,
-        }],
+      expect(listStub).toHaveBeenCalledWith({
+        guildId: 'guild_id',
+        filter: true,
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      assertEquals(json, {
+      expect(json).toEqual({
         type: 8,
         data: {
           choices: [
@@ -3338,16 +3279,12 @@ Deno.test('community packs', async (test) => {
       });
     } finally {
       delete config.publicKey;
-
-      listStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 });
 
-Deno.test('skills', async (test) => {
-  await test.step('acquire', async (test) => {
+describe('skills', () => {
+  it('acquire', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3355,24 +3292,33 @@ Deno.test('skills', async (test) => {
       guild_id: 'guild_id',
       data: {
         name: 'skills',
-        options: [{
-          type: 1,
-          name: 'acquire',
-          options: [{
-            name: 'skill',
-            value: 'crit',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'acquire',
+            options: [
+              {
+                name: 'skill',
+                value: 'crit',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
     config.publicKey = 'publicKey';
 
@@ -3388,44 +3334,36 @@ Deno.test('skills', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      await assertMonochromeSnapshot(test, json);
+      expect(json).toMatchSnapshot();
     } finally {
       delete config.publicKey;
-
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 
-  await test.step('upgrade', async (test) => {
+  it('upgrade', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3433,24 +3371,33 @@ Deno.test('skills', async (test) => {
       guild_id: 'guild_id',
       data: {
         name: 'skills',
-        options: [{
-          type: 1,
-          name: 'upgrade',
-          options: [{
-            name: 'skill',
-            value: 'crit',
-            focused: true,
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'upgrade',
+            options: [
+              {
+                name: 'skill',
+                value: 'crit',
+                focused: true,
+              },
+            ],
+          },
+        ],
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
 
     config.publicKey = 'publicKey';
 
@@ -3466,40 +3413,32 @@ Deno.test('skills', async (test) => {
 
       const response = await handler(request);
 
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
       });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
       });
 
-      assertEquals(response?.ok, true);
-      assertEquals(response?.redirected, false);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
 
-      assertEquals(response?.status, 200);
-      assertEquals(response?.statusText, 'OK');
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
 
       const json = JSON.parse(
-        // deno-lint-ignore no-non-null-assertion
-        (await response?.formData()).get('payload_json')!.toString(),
+        (await response?.formData()).get('payload_json')!.toString()
       );
 
-      await assertMonochromeSnapshot(test, json);
+      expect(json).toMatchSnapshot();
     } finally {
       delete config.publicKey;
-
-      validateStub.restore();
-      signatureStub.restore();
     }
   });
 });

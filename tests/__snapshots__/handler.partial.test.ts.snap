@@ -1,101 +1,101 @@
-export const snapshot = {};
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-snapshot[`skills > acquire 1`] = `
+exports[`skills > acquire 1`] = `
 {
-  "type": 8,
   "data": {
     "choices": [
       {
         "name": "Critical Hit",
-        "value": "crit"
+        "value": "crit",
       },
       {
         "name": "Enraged",
-        "value": "enrage"
+        "value": "enrage",
       },
       {
         "name": "Stun",
-        "value": "stun"
+        "value": "stun",
       },
       {
         "name": "Chain Attack",
-        "value": "chain"
+        "value": "chain",
       },
       {
         "name": "Lifesteal",
-        "value": "lifesteal"
+        "value": "lifesteal",
       },
       {
         "name": "Speed Boost",
-        "value": "speed"
+        "value": "speed",
       },
       {
         "name": "Sneak Attack",
-        "value": "grab"
+        "value": "grab",
       },
       {
         "name": "Emergency Healing",
-        "value": "heal"
+        "value": "heal",
       },
       {
         "name": "Defense Boost",
-        "value": "defense"
+        "value": "defense",
       },
       {
         "name": "Slow Debuff",
-        "value": "slow"
-      }
-    ]
-  }
+        "value": "slow",
+      },
+    ],
+  },
+  "type": 8,
 }
 `;
 
-snapshot[`skills > upgrade 1`] = `
+exports[`skills > upgrade 1`] = `
 {
-  "type": 8,
   "data": {
     "choices": [
       {
         "name": "Critical Hit",
-        "value": "crit"
+        "value": "crit",
       },
       {
         "name": "Enraged",
-        "value": "enrage"
+        "value": "enrage",
       },
       {
         "name": "Stun",
-        "value": "stun"
+        "value": "stun",
       },
       {
         "name": "Chain Attack",
-        "value": "chain"
+        "value": "chain",
       },
       {
         "name": "Lifesteal",
-        "value": "lifesteal"
+        "value": "lifesteal",
       },
       {
         "name": "Speed Boost",
-        "value": "speed"
+        "value": "speed",
       },
       {
         "name": "Sneak Attack",
-        "value": "grab"
+        "value": "grab",
       },
       {
         "name": "Emergency Healing",
-        "value": "heal"
+        "value": "heal",
       },
       {
         "name": "Defense Boost",
-        "value": "defense"
+        "value": "defense",
       },
       {
         "name": "Slow Debuff",
-        "value": "slow"
-      }
-    ]
-  }
+        "value": "slow",
+      },
+    ],
+  },
+  "type": 8,
 }
 `;

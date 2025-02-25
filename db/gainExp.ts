@@ -1,4 +1,4 @@
-import { Mongo, type ObjectId } from '~/db/mod.ts';
+import { Mongo, type ObjectId } from '~/db/index.ts';
 
 import { getFloorExp } from '~/src/tower.ts';
 
@@ -25,7 +25,7 @@ export const experienceToNextLevel = (level?: number): number => {
 export function distributeNewStats(
   combat: Schema.CharacterCombat,
   newStatPoints: number,
-  levelUp: number,
+  levelUp: number
 ): Schema.CharacterCombat {
   const { baseStats } = combat;
 
@@ -43,8 +43,8 @@ export function distributeNewStats(
   let distributedDefense = Math.round(newStatPoints * defensePercentage);
   let distributedSpeed = Math.round(newStatPoints * speedPercentage);
 
-  let distributedSum = distributedAttack + distributedDefense +
-    distributedSpeed;
+  let distributedSum =
+    distributedAttack + distributedDefense + distributedSpeed;
 
   while (distributedSum > newStatPoints) {
     if (
@@ -61,8 +61,7 @@ export function distributeNewStats(
       distributedSpeed -= 1;
     }
 
-    distributedSum = distributedAttack + distributedDefense +
-      distributedSpeed;
+    distributedSum = distributedAttack + distributedDefense + distributedSpeed;
   }
 
   while (distributedSum < newStatPoints) {
@@ -80,8 +79,7 @@ export function distributeNewStats(
       distributedSpeed += 1;
     }
 
-    distributedSum = distributedAttack + distributedDefense +
-      distributedSpeed;
+    distributedSum = distributedAttack + distributedDefense + distributedSpeed;
   }
 
   combat.curStats.attack += distributedAttack;
@@ -98,7 +96,7 @@ export async function gainExp(
   guildId: string,
   floor: number,
   party: ObjectId[],
-  keys: number,
+  keys: number
 ): Promise<Status[]> {
   const db = new Mongo();
 
@@ -123,23 +121,23 @@ export async function gainExp(
           lastPVE: new Date(),
         },
       },
-      { session },
+      { session }
     );
 
     if (inventory.modifiedCount <= 0) {
       throw new Error();
     }
 
-    const characters = await db.characters().find(
-      { _id: { $in: party } },
-    ).toArray();
+    const characters = await db
+      .characters()
+      .find({ _id: { $in: party } })
+      .toArray();
 
     if (party.length !== characters.length) {
       throw new Error();
     }
 
-    const expGained = getFloorExp(Math.max(floor, 1)) *
-      Math.max(keys, 1);
+    const expGained = getFloorExp(Math.max(floor, 1)) * Math.max(keys, 1);
 
     status = characters.map((character) => {
       const status: Status = {
@@ -199,7 +197,7 @@ export async function gainExp(
         character.combat = distributeNewStats(
           character.combat,
           status.statPoints,
-          status.levelUp,
+          status.levelUp
         );
       }
 

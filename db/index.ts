@@ -91,7 +91,6 @@ import type {
 export class Mongo {
   #client: MongoClient;
 
-  // deno-lint-ignore no-non-null-assertion
   constructor(url = config.mongoUri!) {
     this.#client = new MongoClient(url, {
       retryWrites: true,
@@ -135,7 +134,6 @@ export class Mongo {
     return this.#client.db('default').collection('battles');
   }
 
-  // deno-lint-ignore explicit-function-return-type
   public get anime() {
     return {
       media: (): Collection<DisaggregatedMedia> => {

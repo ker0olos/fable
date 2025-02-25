@@ -1,46 +1,7 @@
-// deno-lint-ignore-file explicit-function-return-type
-
-import { green, yellow } from '$std/fmt/colors.ts';
-
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
-
-import { start } from '~/src/interactions.ts';
-
-import { ensureIndexes } from '~/db/_ensureIndexes.ts';
-
-let mongod: MongoMemoryReplSet;
-
 const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-
-if (import.meta.main) {
-  const isRemote = Deno.args.includes('--remote');
-
-  if (!isRemote) {
-    await startMongod();
-    await sleep(500);
-    await ensureIndexes();
-  } else {
-    console.log(yellow('Using the production database, be careful!'));
-  }
-
-  await start();
-
-  await tunnel();
-}
-
-async function startMongod() {
-  mongod = await MongoMemoryReplSet.create({
-    replSet: { storageEngine: 'ephemeralForTest' },
-  });
-
-  const uri = mongod.getUri();
-
-  console.log(green(uri));
-
-  Deno.env.set('MONGO_URI', uri);
-}
+const green = (text: string) => `\x1b[32m${text}\x1b[0m`;
 
 async function tunnel() {
   try {
@@ -71,3 +32,5 @@ async function tunnel() {
     console.error(err);
   }
 }
+
+tunnel();

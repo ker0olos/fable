@@ -1,14 +1,11 @@
-// deno-lint-ignore-file no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, test, expect, vi, afterEach } from 'vitest';
 
-import { assertSnapshot } from '$std/testing/snapshot.ts';
-import { stub } from '$std/testing/mock.ts';
-
-import searchIndex from '~/search-index/mod.ts';
-
+import searchIndex from '~/search-index-mod/mod.ts';
 import packs from '~/src/packs.ts';
 
 const toString = async (
-  characters: ReturnType<typeof searchIndex.searchCharacters>,
+  characters: ReturnType<typeof searchIndex.searchCharacters>
 ) => {
   const results = await characters;
   return results.map((c) => ({
@@ -22,9 +19,7 @@ const toString = async (
   }));
 };
 
-const toString2 = async (
-  media: ReturnType<typeof searchIndex.searchMedia>,
-) => {
+const toString2 = async (media: ReturnType<typeof searchIndex.searchMedia>) => {
   const results = await media;
   return results.map((m) => ({
     id: m.id,
@@ -33,102 +28,68 @@ const toString2 = async (
   }));
 };
 
-Deno.test('characters search', async (test) => {
-  await test.step('aqua', async (test) => {
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
-    try {
-      await assertSnapshot(
-        test,
-        await toString(searchIndex.searchCharacters('aqua', '')),
-      );
-    } finally {
-      listStub.restore();
-    }
+describe('characters search', () => {
+  test('aqua', async () => {
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
+
+    expect(
+      await toString(searchIndex.searchCharacters('aqua', ''))
+    ).toMatchSnapshot();
   });
 
-  await test.step('megumin', async (test) => {
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+  test('megumin', async () => {
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    try {
-      await assertSnapshot(
-        test,
-        await toString(searchIndex.searchCharacters('megumin', '')),
-      );
-    } finally {
-      listStub.restore();
-    }
+    expect(
+      await toString(searchIndex.searchCharacters('megumin', ''))
+    ).toMatchSnapshot();
   });
 
-  await test.step('sayuri haruno', async (test) => {
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+  test('sayuri haruno', async () => {
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    try {
-      await assertSnapshot(
-        test,
-        await toString(searchIndex.searchCharacters('sayuri haruno', '')),
-      );
-    } finally {
-      listStub.restore();
-    }
+    expect(
+      await toString(searchIndex.searchCharacters('sayuri haruno', ''))
+    ).toMatchSnapshot();
   });
 
-  await test.step('jahy', async (test) => {
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+  test('jahy', async () => {
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    try {
-      await assertSnapshot(
-        test,
-        await toString(searchIndex.searchCharacters('jahy', '')),
-      );
-    } finally {
-      listStub.restore();
-    }
+    expect(
+      await toString(searchIndex.searchCharacters('jahy', ''))
+    ).toMatchSnapshot();
   });
 
-  // await test.step('konosuba', async (test) => {
-  //   const listStub = stub(packs, 'all', () =>
-  //     Promise.resolve([
-  //       { manifest: { id: 'anilist' } },
-  //     ] as any));
+  // test('konosuba', async () => {
+  //   vi.spyOn(packs, 'all').mockResolvedValue([{ manifest: { id: 'anilist' } }] as any);
 
-  //   try {
-  //     await assertSnapshot(
-  //       test,
-  //       await toString(searchIndex.searchCharacters('konosuba', '')),
-  //     );
-  //   } finally {
-  //     listStub.restore();
-  //   }
+  //   expect(
+  //     await toString(searchIndex.searchCharacters('konosuba', ''))
+  //   ).toMatchSnapshot();
   // });
 });
 
-Deno.test('media search', async (test) => {
-  await test.step('konosuba', async (test) => {
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+describe('media search', () => {
+  test('konosuba', async () => {
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    try {
-      await assertSnapshot(
-        test,
-        await toString2(searchIndex.searchMedia('konosuba', '')),
-      );
-    } finally {
-      listStub.restore();
-    }
+    expect(
+      await toString2(searchIndex.searchMedia('konosuba', ''))
+    ).toMatchSnapshot();
   });
 });

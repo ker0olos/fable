@@ -1,7 +1,9 @@
 {
   "files.exclude": {
     ".git": true,
-    "**/__snapshots__": true
+    "node_modules": true,
+    ".wrangler": true,
+    "__snapshots__": true
   },
   "discord.enabled": true,
   "discord.buttonEnabled": true,
@@ -9,22 +11,29 @@
   "discord.buttonUrl": "https://discord.com/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot",
   //
   "editor.tabSize": 2,
-  "editor.formatOnSave": true,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    ".env.example": ".env",
-    "README.md": "LICENSE,.gitignore,ToS.md,Policy.md"
+    ".env.example": ".env,.dev.vars",
+    "package.json": "package-lock.json,.prettierrc,eslint.config.mjs",
+    "README.md": "LICENSE,.gitignore,ToS.md,Policy.md",
+    "*.ts": "${capture}.test.ts"
   },
   //
-  "deno.lint": true,
-  "deno.enable": true,
-  "deno.config": "deno.json",
-  //
-  "[typescript]": { "editor.defaultFormatter": "denoland.vscode-deno" },
-  "[typescriptreact]": { "editor.defaultFormatter": "denoland.vscode-deno" },
-  "[jsonc]": { "editor.defaultFormatter": "denoland.vscode-deno" },
-  "[markdown]": { "editor.defaultFormatter": "denoland.vscode-deno" },
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.configPath": ".prettierrc",
   //
   "yaml.schemas": {
     "https://json.schemastore.org/github-workflow.json": "file://.github/workflows/deploy.yml"

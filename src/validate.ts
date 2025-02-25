@@ -1,30 +1,16 @@
-// deno-lint-ignore-file no-explicit-any
+import { Ajv } from 'ajv';
 
-import Ajv from 'ajv';
+import { prettify } from 'awesome-ajv-errors';
 
-import { prettify } from 'awesome-ajv';
+import alias from '~/json/alias.json';
 
-import { AssertionError } from '$std/assert/mod.ts';
+import image from '~/json/image.json';
 
-import alias from '~/json/alias.json' with {
-  type: 'json',
-};
+import media from '~/json/media.json';
 
-import image from '~/json/image.json' with {
-  type: 'json',
-};
+import character from '~/json/character.json';
 
-import media from '~/json/media.json' with {
-  type: 'json',
-};
-
-import character from '~/json/character.json' with {
-  type: 'json',
-};
-
-import index from '~/json/schema.json' with {
-  type: 'json',
-};
+import index from '~/json/schema.json';
 
 import { Manifest } from '~/src/types.ts';
 
@@ -53,17 +39,18 @@ export const assertValidManifest = (data: Manifest) => {
     .compile(index);
 
   if (!validate(data)) {
-    throw new AssertionError(prettify(validate, {
-      bigNumbers: false,
-      data,
-    }));
+    throw new Error(
+      prettify(validate, {
+        bigNumbers: false,
+        data,
+      })
+    );
   }
 };
 
 export default (data: Manifest) => {
   data = purgeReservedProps(data);
 
-  // deno-lint-ignore ban-ts-comment
   //@ts-ignore
   index.additionalProperties = false;
 

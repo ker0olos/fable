@@ -1,19 +1,11 @@
-// deno-lint-ignore-file no-explicit-any
-
-import { assert, assertEquals, assertRejects } from '$std/assert/mod.ts';
-
-import { assertSpyCalls, stub } from '$std/testing/mock.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import validate from '~/src/validate.ts';
-
 import utils from '~/src/utils.ts';
-
 import packs from '~/src/packs.ts';
-
 import config from '~/src/config.ts';
-
-import db from '~/db/mod.ts';
-
+import db from '~/db/index.ts';
 import * as Schema from '~/db/schema.ts';
 
 import {
@@ -29,139 +21,107 @@ import {
 
 import { NonFetalError } from '~/src/errors.ts';
 
-Deno.test('list', async (test) => {
-  await test.step('normal', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => ({ packs: [] }) as any,
-    );
+describe('packs', () => {
+  // Reset all mocks and restore original implementations after each test
+  afterEach(() => {
+    vi.restoreAllMocks();
+    packs.cachedGuilds = {};
+  });
 
-    try {
+  describe('list', () => {
+    it('normal', async () => {
+      vi.spyOn(db, 'getGuild').mockResolvedValue({ packs: [] } as any);
+
       const list = await packs.all({ guildId: '0' });
 
-      assertEquals(list.length, 0);
-    } finally {
-      getGuildStub.restore();
-
-      delete packs.cachedGuilds['0'];
-    }
+      expect(list.length).toBe(0);
+    });
   });
-});
 
-Deno.test('reserved ids', () => {
-  const getGuildStub = stub(
-    db,
-    'getGuild',
-    () => ({ packs: [] }) as any,
-  );
+  describe('reserved ids', () => {
+    it('checks for reserved ids', () => {
+      vi.spyOn(db, 'getGuild').mockResolvedValue({ packs: [] } as any);
 
-  try {
-    ['anilist', 'fable'].forEach((id) => {
-      assertEquals(validate({ id }), {
-        errors: [`${id} is a reserved id`],
+      ['anilist', 'fable'].forEach((id) => {
+        expect(validate({ id })).toEqual({
+          errors: [`${id} is a reserved id`],
+        });
       });
     });
-  } finally {
-    getGuildStub.restore();
-
-    delete packs.cachedGuilds['0'];
-  }
-});
-
-Deno.test('disabled', async (test) => {
-  await test.step('disabled media', () => {
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [],
-        options: { dupes: true },
-        disables: new Map([['another-pack:1', true]]),
-      },
-    };
-
-    try {
-      assert(packs.isDisabled('another-pack:1', 'guild_id'));
-    } finally {
-      packs.cachedGuilds = {};
-    }
   });
 
-  await test.step('none', () => {
-    const pack: Schema.Pack = { _id: '_', manifest: { id: 'pack-id' } } as any;
+  describe('disabled', () => {
+    it('disabled media', () => {
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [],
+          options: { dupes: true },
+          disables: new Map([['another-pack:1', true]]),
+        },
+      };
 
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
+      expect(packs.isDisabled('another-pack:1', 'guild_id')).toBe(true);
+    });
 
-    try {
-      assert(!packs.isDisabled('another-pack:1', 'guild_id'));
-    } finally {
-      packs.cachedGuilds = {};
-    }
+    it('none', () => {
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: { id: 'pack-id' },
+      } as any;
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(packs.isDisabled('another-pack:1', 'guild_id')).toBe(false);
+    });
   });
-});
 
-Deno.test('media character', async (test) => {
-  await test.step('anilist (id)', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'anilist',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-      characters: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: '2',
-            packId: 'anilist',
-            name: {
-              english: 'name',
+  describe('media character', () => {
+    it('anilist (id)', async () => {
+      const media: Media = {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'title',
+        },
+        characters: {
+          edges: [
+            {
+              role: CharacterRole.Main,
+              node: {
+                id: '2',
+                packId: 'anilist',
+                name: {
+                  english: 'name',
+                },
+              },
             },
-          },
-        }],
-      } as any,
-    };
+          ],
+        } as any,
+      };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([
         { manifest: { id: 'anilist' } },
-      ] as any));
+      ] as any);
+      vi.spyOn(packs, 'media').mockResolvedValue([media]);
+      vi.spyOn(packs, 'characters').mockResolvedValue([]);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve([media]),
-    );
-
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
       const result = await packs.mediaCharacters({
         id: 'anilist:1',
         guildId: 'guild_id',
         index: 0,
       });
 
-      assertEquals(result, {
+      expect(result).toEqual({
         total: 1,
         next: false,
         media: {
@@ -196,59 +156,43 @@ Deno.test('media character', async (test) => {
           },
         },
       });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-    }
-  });
+    });
 
-  await test.step('anilist (title)', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'anilist',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-      characters: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: '2',
-            name: {
-              full: 'name',
+    it('anilist (title)', async () => {
+      const media: Media = {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'title',
+        },
+        characters: {
+          edges: [
+            {
+              role: CharacterRole.Main,
+              node: {
+                id: '2',
+                name: {
+                  full: 'name',
+                },
+              },
             },
-          },
-        }],
-      } as any,
-    };
+          ],
+        } as any,
+      };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => (undefined as any),
-    );
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'searchOneMedia').mockResolvedValue(media);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const listStub = stub(
-      packs,
-      'searchOneMedia',
-      () => Promise.resolve(media),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
       const result = await packs.mediaCharacters({
         search: 'title',
         guildId: 'guild_id',
         index: 0,
       });
 
-      assertEquals(result, {
+      expect(result).toEqual({
         total: 1,
         next: false,
         media: {
@@ -281,71 +225,62 @@ Deno.test('media character', async (test) => {
           },
         } as any,
       });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
+    });
 
-  await test.step('pack', async () => {
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [{
-            id: '1',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'title',
-            },
-            characters: [{
-              role: CharacterRole.Main,
-              characterId: '2',
-            }],
-          }],
+    it('pack', async () => {
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [
+              {
+                id: '1',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+                characters: [
+                  {
+                    role: CharacterRole.Main,
+                    characterId: '2',
+                  },
+                ],
+              },
+            ],
+          },
+          characters: {
+            new: [
+              {
+                id: '2',
+                name: {
+                  english: 'name',
+                },
+              },
+            ],
+          },
         },
-        characters: {
-          new: [{
-            id: '2',
-            name: {
-              english: 'name',
-            },
-          }],
+      } as any;
+
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
         },
-      },
-    } as any;
+      };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
       const result = await packs.mediaCharacters({
         id: 'pack-id:1',
         guildId: 'guild_id',
         index: 0,
       });
 
-      assertEquals(result, {
+      expect(result).toEqual({
         total: 1,
         next: false,
         media: {
@@ -383,60 +318,47 @@ Deno.test('media character', async (test) => {
           },
         },
       });
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
+    });
 
-  await test.step('pack with no characters', async () => {
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [{
-            id: '1',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'title',
-            },
-            characters: [],
-          }],
+    it('pack with no characters', async () => {
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [
+              {
+                id: '1',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+                characters: [],
+              },
+            ],
+          },
         },
-      },
-    } as any;
+      } as any;
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
 
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
       const result = await packs.mediaCharacters({
         id: 'pack-id:1',
         guildId: 'guild_id',
         index: 0,
       });
 
-      assertEquals(result, {
+      expect(result).toEqual({
         total: 0,
         next: false,
         role: undefined,
@@ -457,99 +379,91 @@ Deno.test('media character', async (test) => {
           },
         },
       });
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
+    });
   });
-});
 
-Deno.test('aggregate media', async (test) => {
-  await test.step('aggregate from pack', async () => {
-    const parent: DisaggregatedMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media parent',
-      },
-    };
-
-    const character: DisaggregatedCharacter = {
-      id: '2',
-      name: {
-        english: 'character name',
-      },
-    };
-
-    const child: DisaggregatedMedia = {
-      id: '1',
-      packId: 'test',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media child',
-      },
-      relations: [{
-        relation: MediaRelation.Parent,
-        mediaId: 'pack-id:1',
-      }],
-      characters: [{
-        role: CharacterRole.Main,
-        characterId: 'pack-id:2',
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [parent],
+  describe('aggregate media', () => {
+    it('aggregate from pack', async () => {
+      const parent: DisaggregatedMedia = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media parent',
         },
-        characters: {
-          new: [character],
+      };
+
+      const character: DisaggregatedCharacter = {
+        id: '2',
+        name: {
+          english: 'character name',
         },
-      },
-    } as any;
+      };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+      const child: DisaggregatedMedia = {
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media child',
+        },
+        relations: [
+          {
+            relation: MediaRelation.Parent,
+            mediaId: 'pack-id:1',
+          },
+        ],
+        characters: [
+          {
+            role: CharacterRole.Main,
+            characterId: 'pack-id:2',
+          },
+        ],
+      };
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [parent],
+          },
+          characters: {
+            new: [character],
+          },
+        },
+      } as any;
 
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
+      const fetchStub = vi
+        .spyOn(utils, 'fetchWithRetry')
+        .mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
 
-    try {
-      assertEquals(
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(
         await packs.aggregate<Media>({
           guildId: 'guild_id',
           media: child,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'media child',
-          },
-          relations: {
-            edges: [{
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media child',
+        },
+        relations: {
+          edges: [
+            {
               relation: MediaRelation.Parent,
               node: {
                 id: '1',
@@ -560,10 +474,12 @@ Deno.test('aggregate media', async (test) => {
                   english: 'media parent',
                 },
               },
-            }],
-          },
-          characters: {
-            edges: [{
+            },
+          ],
+        },
+        characters: {
+          edges: [
+            {
               role: CharacterRole.Main,
               node: {
                 id: '2',
@@ -572,477 +488,166 @@ Deno.test('aggregate media', async (test) => {
                   english: 'character name',
                 },
               },
-            }],
-          },
-        },
-      );
-
-      assertSpyCalls(fetchStub, 0);
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('referring to the same media more than once (anilist)', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'anilist',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media parent',
-      },
-    };
-
-    const child: DisaggregatedMedia = {
-      id: '1',
-      packId: 'test',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media child',
-      },
-      relations: [{
-        relation: MediaRelation.Parent,
-        mediaId: 'anilist:1',
-      }, {
-        relation: MediaRelation.SpinOff,
-        mediaId: 'anilist:1',
-      }],
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const mediaStub = stub(
-      packs,
-      'findById',
-      () => Promise.resolve({ 'anilist:1': media }),
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      assertEquals(
-        await packs.aggregate<Media>({
-          guildId: 'guild_id',
-          media: child,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'media child',
-          },
-          relations: {
-            edges: [{
-              relation: MediaRelation.Parent,
-              node: {
-                id: '1',
-                packId: 'anilist',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media parent',
-                },
-              },
-            }, {
-              relation: MediaRelation.SpinOff,
-              node: {
-                id: '1',
-                packId: 'anilist',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media parent',
-                },
-              },
-            }],
-          },
-          characters: {
-            edges: [],
-          },
-        },
-      );
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      mediaStub.restore();
-    }
-  });
-
-  await test.step('referring to the same media more than once (packs)', async () => {
-    const media: DisaggregatedMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media parent',
-      },
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [media],
-        },
-      },
-    } as any;
-
-    const child: DisaggregatedMedia = {
-      id: '1',
-      packId: 'test',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media child',
-      },
-      relations: [{
-        relation: MediaRelation.Parent,
-        mediaId: 'pack-id:1',
-      }, {
-        relation: MediaRelation.SpinOff,
-        mediaId: 'pack-id:1',
-      }],
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
-        await packs.aggregate<Media>({
-          guildId: 'guild_id',
-          media: child,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'media child',
-          },
-          relations: {
-            edges: [{
-              relation: MediaRelation.Parent,
-              node: {
-                id: '1',
-                packId: 'pack-id',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media parent',
-                },
-              },
-            }, {
-              relation: MediaRelation.SpinOff,
-              node: {
-                id: '1',
-                packId: 'pack-id',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media parent',
-                },
-              },
-            }],
-          },
-          characters: {
-            edges: [],
-          },
-        },
-      );
-
-      assertSpyCalls(fetchStub, 0);
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('referring to a character as a media', async () => {
-    const media: DisaggregatedMedia = {
-      id: '1',
-      packId: 'test',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-      relations: [{
-        relation: MediaRelation.Adaptation,
-        mediaId: 'pack-id:1',
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        characters: {
-          new: [{
-            id: '1',
-            name: {
-              english: 'character name',
             },
-          }],
+          ],
         },
-      },
-    } as any;
+      });
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+      expect(fetchStub).not.toHaveBeenCalled();
+    });
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
+    it('referring to the same media more than once (anilist)', async () => {
+      const media: Media = {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media parent',
+        },
+      };
 
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
-        await packs.aggregate<Media>({
-          guildId: 'guild_id',
-          media,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'title',
+      const child: DisaggregatedMedia = {
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media child',
+        },
+        relations: [
+          {
+            relation: MediaRelation.Parent,
+            mediaId: 'anilist:1',
           },
-          relations: {
-            edges: [],
+          {
+            relation: MediaRelation.SpinOff,
+            mediaId: 'anilist:1',
           },
-          characters: {
-            edges: [],
-          },
-        },
-      );
+        ],
+      };
 
-      assertSpyCalls(fetchStub, 0);
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('referring to a non-existing ids', async () => {
-    const media: DisaggregatedMedia = {
-      id: '1',
-      packId: 'test',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-      relations: [{
-        relation: MediaRelation.Prequel,
-        mediaId: 'anilist:1',
-      }],
-      characters: [{
-        role: CharacterRole.Main,
-        characterId: 'pack-id:1',
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [],
-        },
-        characters: {
-          new: [],
-        },
-      },
-    } as any;
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const mediaStub = stub(
-      packs,
-      'findById',
-      () => Promise.resolve({}),
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'findById').mockResolvedValue({ 'anilist:1': media });
+      vi.spyOn(packs, 'all').mockResolvedValue([
         { manifest: { id: 'anilist' } },
-      ] as any));
+      ] as any);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
-        await packs.aggregate<Media>({
-          guildId: 'guild_id',
-          media,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'title',
-          },
-          relations: {
-            edges: [],
-          },
-          characters: {
-            edges: [],
-          },
-        },
-      );
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-      mediaStub.restore();
-    }
-  });
-
-  await test.step('referring to the same pack', async () => {
-    const parent: DisaggregatedMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media parent',
-      },
-    };
-
-    const spinoff: DisaggregatedMedia = {
-      id: '2',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media spinoff',
-      },
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [parent, spinoff],
-        },
-      },
-    } as any;
-
-    const child: DisaggregatedMedia = {
-      id: '3',
-      packId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media child',
-      },
-      relations: [{
-        relation: MediaRelation.Parent,
-        mediaId: 'pack-id:1',
-      }, {
-        relation: MediaRelation.SpinOff,
-        mediaId: '2',
-      }],
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
+      expect(
         await packs.aggregate<Media>({
           guildId: 'guild_id',
           media: child,
-        }),
-        {
-          id: '3',
-          packId: 'pack-id',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'media child',
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media child',
+        },
+        relations: {
+          edges: [
+            {
+              relation: MediaRelation.Parent,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
+              },
+            },
+            {
+              relation: MediaRelation.SpinOff,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
+              },
+            },
+          ],
+        },
+        characters: {
+          edges: [],
+        },
+      });
+    });
+
+    it('referring to the same media more than once (packs)', async () => {
+      const media: DisaggregatedMedia = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media parent',
+        },
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [media],
           },
-          relations: {
-            edges: [{
+        },
+      } as any;
+
+      const child: DisaggregatedMedia = {
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media child',
+        },
+        relations: [
+          {
+            relation: MediaRelation.Parent,
+            mediaId: 'pack-id:1',
+          },
+          {
+            relation: MediaRelation.SpinOff,
+            mediaId: 'pack-id:1',
+          },
+        ],
+      };
+
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: child,
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media child',
+        },
+        relations: {
+          edges: [
+            {
               relation: MediaRelation.Parent,
               node: {
                 id: '1',
@@ -1053,7 +658,254 @@ Deno.test('aggregate media', async (test) => {
                   english: 'media parent',
                 },
               },
-            }, {
+            },
+            {
+              relation: MediaRelation.SpinOff,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
+              },
+            },
+          ],
+        },
+        characters: {
+          edges: [],
+        },
+      });
+    });
+
+    it('referring to a character as a media', async () => {
+      const media: DisaggregatedMedia = {
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'title',
+        },
+        relations: [
+          {
+            relation: MediaRelation.Adaptation,
+            mediaId: 'pack-id:1',
+          },
+        ],
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          characters: {
+            new: [
+              {
+                id: '1',
+                name: {
+                  english: 'character name',
+                },
+              },
+            ],
+          },
+        },
+      } as any;
+
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media,
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'title',
+        },
+        relations: {
+          edges: [],
+        },
+        characters: {
+          edges: [],
+        },
+      });
+    });
+
+    it('referring to a non-existing ids', async () => {
+      const media: DisaggregatedMedia = {
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'title',
+        },
+        relations: [
+          {
+            relation: MediaRelation.Prequel,
+            mediaId: 'anilist:1',
+          },
+        ],
+        characters: [
+          {
+            role: CharacterRole.Main,
+            characterId: 'pack-id:1',
+          },
+        ],
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [],
+          },
+          characters: {
+            new: [],
+          },
+        },
+      } as any;
+
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'findById').mockResolvedValue({});
+      vi.spyOn(packs, 'all').mockResolvedValue([
+        { manifest: { id: 'anilist' } },
+      ] as any);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media,
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'title',
+        },
+        relations: {
+          edges: [],
+        },
+        characters: {
+          edges: [],
+        },
+      });
+    });
+
+    it('referring to the same pack', async () => {
+      const parent: DisaggregatedMedia = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media parent',
+        },
+      };
+
+      const spinoff: DisaggregatedMedia = {
+        id: '2',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media spinoff',
+        },
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [parent, spinoff],
+          },
+        },
+      } as any;
+
+      const child: DisaggregatedMedia = {
+        id: '3',
+        packId: 'pack-id',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media child',
+        },
+        relations: [
+          {
+            relation: MediaRelation.Parent,
+            mediaId: 'pack-id:1',
+          },
+          {
+            relation: MediaRelation.SpinOff,
+            mediaId: '2',
+          },
+        ],
+      };
+
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: child,
+        })
+      ).toEqual({
+        id: '3',
+        packId: 'pack-id',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media child',
+        },
+        relations: {
+          edges: [
+            {
+              relation: MediaRelation.Parent,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
+              },
+            },
+            {
               relation: MediaRelation.SpinOff,
               node: {
                 id: '2',
@@ -1064,96 +916,84 @@ Deno.test('aggregate media', async (test) => {
                   english: 'media spinoff',
                 },
               },
-            }],
+            },
+          ],
+        },
+        characters: {
+          edges: [],
+        },
+      });
+    });
+
+    it('no recursive aggregation', async () => {
+      const spinoff: DisaggregatedMedia = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media spinoff',
+        },
+        relations: [
+          {
+            mediaId: 'test:1',
+            relation: MediaRelation.SpinOff,
           },
-          characters: {
-            edges: [],
+        ],
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [spinoff],
           },
         },
-      );
+      } as any;
 
-      assertSpyCalls(fetchStub, 0);
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('no recursive aggregation', async () => {
-    const spinoff: DisaggregatedMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media spinoff',
-      },
-      relations: [{
-        mediaId: 'test:1',
-        relation: MediaRelation.SpinOff,
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [spinoff],
+      const adaptation: DisaggregatedMedia = {
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media adaptation',
         },
-      },
-    } as any;
+        relations: [
+          {
+            relation: MediaRelation.Adaptation,
+            mediaId: 'pack-id:1',
+          },
+        ],
+      };
 
-    const adaptation: DisaggregatedMedia = {
-      id: '1',
-      packId: 'test',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media adaptation',
-      },
-      relations: [{
-        relation: MediaRelation.Adaptation,
-        mediaId: 'pack-id:1',
-      }],
-    };
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
+      expect(
         await packs.aggregate<Media>({
           guildId: 'guild_id',
           media: adaptation,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'media adaptation',
-          },
-          relations: {
-            edges: [{
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media adaptation',
+        },
+        relations: {
+          edges: [
+            {
               relation: MediaRelation.Adaptation,
               node: {
                 id: '1',
@@ -1163,658 +1003,561 @@ Deno.test('aggregate media', async (test) => {
                 title: {
                   english: 'media spinoff',
                 },
-                relations: [{
-                  mediaId: 'test:1',
-                  relation: MediaRelation.SpinOff,
-                }] as any,
+                relations: [
+                  {
+                    mediaId: 'test:1',
+                    relation: MediaRelation.SpinOff,
+                  },
+                ] as any,
               },
-            }],
-          },
-          characters: {
-            edges: [],
-          },
-        },
-      );
-
-      assertSpyCalls(fetchStub, 0);
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('already aggregated', async () => {
-    const media: Media = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-      relations: {
-        edges: [{
-          relation: MediaRelation.Sequel,
-          node: {
-            id: '2',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'sequel',
             },
-          },
-        }],
-      },
-      characters: {
-        edges: [{
-          role: CharacterRole.Supporting,
-          node: {
-            id: '3',
-            name: {
-              english: 'character name',
-            },
-          },
-        }],
-      },
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      assertEquals(
-        await packs.aggregate<Media>({
-          guildId: 'guild_id',
-          media,
-        }),
-        media,
-      );
-
-      assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
-
-  await test.step('empty', async () => {
-    const media: Media = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      assertEquals(
-        await packs.aggregate<Media>({
-          guildId: 'guild_id',
-          media,
-        }),
-        {
-          ...media,
-          relations: {
-            edges: [],
-          },
-          characters: {
-            edges: [],
-          },
-        },
-      );
-
-      assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 2);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
-});
-
-Deno.test('aggregate characters', async (test) => {
-  await test.step('aggregate from anilist', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'anilist',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media',
-      },
-    };
-
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      packId: 'test',
-      name: {
-        english: 'full name',
-      },
-      media: [{
-        role: CharacterRole.Main,
-        mediaId: 'anilist:1',
-      }],
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const mediaStub = stub(
-      packs,
-      'findById',
-      () => Promise.resolve({ 'anilist:1': media }),
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      assertEquals(
-        await packs.aggregate<Character>({
-          guildId: 'guild_id',
-          character,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          name: {
-            english: 'full name',
-          },
-          media: {
-            edges: [{
-              role: CharacterRole.Main,
-              node: {
-                id: '1',
-                packId: 'anilist',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media',
-                },
-              },
-            }],
-          },
-        },
-      );
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      mediaStub.restore();
-    }
-  });
-
-  await test.step('aggregate from pack', async () => {
-    const media: DisaggregatedMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media',
-      },
-    };
-
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      packId: 'test',
-      name: {
-        english: 'full name',
-      },
-      media: [{
-        role: CharacterRole.Main,
-        mediaId: 'pack-id:1',
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [media],
-        },
-      },
-    } as any;
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
-        await packs.aggregate<Character>({
-          guildId: 'guild_id',
-          character,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          name: {
-            english: 'full name',
-          },
-          media: {
-            edges: [{
-              role: CharacterRole.Main,
-              node: {
-                id: '1',
-                packId: 'pack-id',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media',
-                },
-              },
-            }],
-          },
-        },
-      );
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      packs.cachedGuilds = {};
-    }
-  });
-
-  await test.step('referring to the same media more than once (anilist)', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'anilist',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media',
-      },
-    };
-
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      packId: 'test',
-      name: {
-        english: 'full name',
-      },
-      media: [{
-        role: CharacterRole.Main,
-        mediaId: 'anilist:1',
-      }, {
-        role: CharacterRole.Supporting,
-        mediaId: 'anilist:1',
-      }],
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const mediaStub = stub(
-      packs,
-      'findById',
-      () => Promise.resolve({ 'anilist:1': media }),
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      assertEquals(
-        await packs.aggregate<Character>({
-          guildId: 'guild_id',
-          character,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          name: {
-            english: 'full name',
-          },
-          media: {
-            edges: [{
-              role: CharacterRole.Main,
-              node: {
-                id: '1',
-                packId: 'anilist',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media',
-                },
-              },
-            }, {
-              role: CharacterRole.Supporting,
-              node: {
-                id: '1',
-                packId: 'anilist',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media',
-                },
-              },
-            }],
-          },
-        },
-      );
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      mediaStub.restore();
-    }
-  });
-
-  await test.step('referring to the same media more than once (packs)', async () => {
-    const media: DisaggregatedMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media',
-      },
-    };
-
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      packId: 'test',
-      name: {
-        english: 'full name',
-      },
-      media: [{
-        role: CharacterRole.Main,
-        mediaId: 'pack-id:1',
-      }, {
-        role: CharacterRole.Supporting,
-        mediaId: 'pack-id:1',
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [media],
-        },
-      },
-    } as any;
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
-        await packs.aggregate<Character>({
-          guildId: 'guild_id',
-          character,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          name: {
-            english: 'full name',
-          },
-          media: {
-            edges: [{
-              role: CharacterRole.Main,
-              node: {
-                id: '1',
-                packId: 'pack-id',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media',
-                },
-              },
-            }, {
-              role: CharacterRole.Supporting,
-              node: {
-                id: '1',
-                packId: 'pack-id',
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'media',
-                },
-              },
-            }],
-          },
-        },
-      );
-
-      assertSpyCalls(fetchStub, 0);
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('referring to a non-existing ids', async () => {
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      packId: 'test',
-      name: {
-        english: 'full name',
-      },
-      media: [{
-        role: CharacterRole.Main,
-        mediaId: 'anilist:1',
-      }, {
-        role: CharacterRole.Main,
-        mediaId: 'pack-id:1',
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [],
+          ],
         },
         characters: {
-          new: [],
+          edges: [],
         },
-      },
-    } as any;
+      });
+    });
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+    it('already aggregated', async () => {
+      const media: Media = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'title',
+        },
+        relations: {
+          edges: [
+            {
+              relation: MediaRelation.Sequel,
+              node: {
+                id: '2',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'sequel',
+                },
+              },
+            },
+          ],
+        },
+        characters: {
+          edges: [
+            {
+              role: CharacterRole.Supporting,
+              node: {
+                id: '3',
+                name: {
+                  english: 'character name',
+                },
+              },
+            },
+          ],
+        },
+      };
 
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+      const fetchStub = vi
+        .spyOn(utils, 'fetchWithRetry')
+        .mockResolvedValue(undefined as any);
+      const listStub = vi.spyOn(packs, 'all').mockResolvedValue([]);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    const mediaStub = stub(
-      packs,
-      'findById',
-      () => Promise.resolve({ character }),
-    );
-
-    try {
-      assertEquals(
-        await packs.aggregate<Character>({
+      expect(
+        await packs.aggregate<Media>({
           guildId: 'guild_id',
-          character,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          name: {
-            english: 'full name',
-          },
-          media: {
-            edges: [],
-          },
+          media,
+        })
+      ).toEqual(media);
+
+      expect(fetchStub).not.toHaveBeenCalled();
+      expect(listStub).not.toHaveBeenCalled();
+    });
+
+    it('empty', async () => {
+      const media: Media = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'title',
         },
-      );
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-      mediaStub.restore();
-    }
+      };
+
+      const fetchStub = vi
+        .spyOn(utils, 'fetchWithRetry')
+        .mockResolvedValue(undefined as any);
+      const listStub = vi.spyOn(packs, 'all').mockResolvedValue([]);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+
+      expect(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media,
+        })
+      ).toEqual({
+        ...media,
+        relations: {
+          edges: [],
+        },
+        characters: {
+          edges: [],
+        },
+      });
+
+      expect(fetchStub).not.toHaveBeenCalled();
+      expect(listStub).toHaveBeenCalledTimes(2);
+    });
   });
 
-  await test.step('referring to the same pack', async () => {
-    const character: DisaggregatedCharacter = {
-      id: '3',
-      packId: 'pack-id',
-      name: {
-        english: 'full name',
-      },
-      media: [{
-        role: CharacterRole.Main,
-        mediaId: 'pack-id:1',
-      }, {
-        role: CharacterRole.Main,
-        mediaId: '2',
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [{
-            id: '1',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'media 1',
-            },
-          }, {
-            id: '2',
-            type: MediaType.Manga,
-            format: MediaFormat.Manga,
-            title: {
-              english: 'media 2',
-            },
-          }],
+  describe('aggregate characters', () => {
+    it('aggregate from anilist', async () => {
+      const media: Media = {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media',
         },
-      },
-    } as any;
+      };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+      const character: DisaggregatedCharacter = {
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:1',
+          },
+        ],
+      };
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'findById').mockResolvedValue({ 'anilist:1': media });
+      vi.spyOn(packs, 'all').mockResolvedValue([
+        { manifest: { id: 'anilist' } },
+      ] as any);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
+      expect(
         await packs.aggregate<Character>({
           guildId: 'guild_id',
           character,
-        }),
-        {
-          id: '3',
-          packId: 'pack-id',
-          name: {
-            english: 'full name',
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: {
+          edges: [
+            {
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    it('aggregate from pack', async () => {
+      const media: DisaggregatedMedia = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media',
+        },
+      };
+
+      const character: DisaggregatedCharacter = {
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'pack-id:1',
           },
+        ],
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
           media: {
-            edges: [{
+            new: [media],
+          },
+        },
+      } as any;
+
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: {
+          edges: [
+            {
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    it('referring to the same media more than once (anilist)', async () => {
+      const media: Media = {
+        id: '1',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media',
+        },
+      };
+
+      const character: DisaggregatedCharacter = {
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:1',
+          },
+          {
+            role: CharacterRole.Supporting,
+            mediaId: 'anilist:1',
+          },
+        ],
+      };
+
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'findById').mockResolvedValue({ 'anilist:1': media });
+      vi.spyOn(packs, 'all').mockResolvedValue([
+        { manifest: { id: 'anilist' } },
+      ] as any);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+
+      expect(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: {
+          edges: [
+            {
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
+              },
+            },
+            {
+              role: CharacterRole.Supporting,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    it('referring to the same media more than once (packs)', async () => {
+      const media: DisaggregatedMedia = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media',
+        },
+      };
+
+      const character: DisaggregatedCharacter = {
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'pack-id:1',
+          },
+          {
+            role: CharacterRole.Supporting,
+            mediaId: 'pack-id:1',
+          },
+        ],
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [media],
+          },
+        },
+      } as any;
+
+      const fetchStub = vi
+        .spyOn(utils, 'fetchWithRetry')
+        .mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: {
+          edges: [
+            {
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
+              },
+            },
+            {
+              role: CharacterRole.Supporting,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      expect(fetchStub).not.toHaveBeenCalled();
+    });
+
+    it('referring to a non-existing ids', async () => {
+      const character: DisaggregatedCharacter = {
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:1',
+          },
+          {
+            role: CharacterRole.Main,
+            mediaId: 'pack-id:1',
+          },
+        ],
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [],
+          },
+          characters: {
+            new: [],
+          },
+        },
+      } as any;
+
+      vi.spyOn(utils, 'fetchWithRetry').mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([
+        { manifest: { id: 'anilist' } },
+      ] as any);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      vi.spyOn(packs, 'findById').mockResolvedValue({ character });
+
+      expect(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: {
+          edges: [],
+        },
+      });
+    });
+
+    it('referring to the same pack', async () => {
+      const character: DisaggregatedCharacter = {
+        id: '3',
+        packId: 'pack-id',
+        name: {
+          english: 'full name',
+        },
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'pack-id:1',
+          },
+          {
+            role: CharacterRole.Main,
+            mediaId: '2',
+          },
+        ],
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [
+              {
+                id: '1',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media 1',
+                },
+              },
+              {
+                id: '2',
+                type: MediaType.Manga,
+                format: MediaFormat.Manga,
+                title: {
+                  english: 'media 2',
+                },
+              },
+            ],
+          },
+        },
+      } as any;
+
+      const fetchStub = vi
+        .spyOn(utils, 'fetchWithRetry')
+        .mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
+
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
+        },
+      };
+
+      expect(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        })
+      ).toEqual({
+        id: '3',
+        packId: 'pack-id',
+        name: {
+          english: 'full name',
+        },
+        media: {
+          edges: [
+            {
               role: CharacterRole.Main,
               node: {
                 id: '1',
@@ -1825,7 +1568,8 @@ Deno.test('aggregate characters', async (test) => {
                   english: 'media 1',
                 },
               },
-            }, {
+            },
+            {
               role: CharacterRole.Main,
               node: {
                 id: '2',
@@ -1836,89 +1580,81 @@ Deno.test('aggregate characters', async (test) => {
                   english: 'media 2',
                 },
               },
-            }],
+            },
+          ],
+        },
+      });
+
+      expect(fetchStub).not.toHaveBeenCalled();
+    });
+
+    it('no recursive aggregation', async () => {
+      const media: DisaggregatedMedia = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {
+          english: 'media',
+        },
+        relations: [
+          {
+            mediaId: 'test:1',
+            relation: MediaRelation.SpinOff,
+          },
+        ],
+      };
+
+      const character: DisaggregatedCharacter = {
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'pack-id:1',
+          },
+        ],
+      };
+
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          media: {
+            new: [media],
           },
         },
-      );
+      } as any;
 
-      assertSpyCalls(fetchStub, 0);
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
+      const fetchStub = vi
+        .spyOn(utils, 'fetchWithRetry')
+        .mockResolvedValue(undefined as any);
+      vi.spyOn(packs, 'all').mockResolvedValue([pack]);
 
-  await test.step('no recursive aggregation', async () => {
-    const media: DisaggregatedMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'media',
-      },
-      relations: [{
-        mediaId: 'test:1',
-        relation: MediaRelation.SpinOff,
-      }],
-    };
-
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      packId: 'test',
-      name: {
-        english: 'full name',
-      },
-      media: [{
-        role: CharacterRole.Main,
-        mediaId: 'pack-id:1',
-      }],
-    };
-
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        media: {
-          new: [media],
+      packs.cachedGuilds = {
+        guild_id: {
+          packs: [pack],
+          options: { dupes: true },
+          disables: new Map(),
         },
-      },
-    } as any;
+      };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    packs.cachedGuilds = {
-      'guild_id': {
-        packs: [pack],
-        options: { dupes: true },
-        disables: new Map(),
-      },
-    };
-
-    try {
-      assertEquals(
+      expect(
         await packs.aggregate<Character>({
           guildId: 'guild_id',
           character,
-        }),
-        {
-          id: '1',
-          packId: 'test',
-          name: {
-            english: 'full name',
-          },
-          media: {
-            edges: [{
+        })
+      ).toEqual({
+        id: '1',
+        packId: 'test',
+        name: {
+          english: 'full name',
+        },
+        media: {
+          edges: [
+            {
               role: CharacterRole.Main,
               node: {
                 id: '1',
@@ -1928,332 +1664,273 @@ Deno.test('aggregate characters', async (test) => {
                 title: {
                   english: 'media',
                 },
-                relations: [{
-                  mediaId: 'test:1',
-                  relation: MediaRelation.SpinOff,
-                }] as any,
+                relations: [
+                  {
+                    mediaId: 'test:1',
+                    relation: MediaRelation.SpinOff,
+                  },
+                ] as any,
               },
-            }],
-          },
-        },
-      );
-
-      assertSpyCalls(fetchStub, 0);
-    } finally {
-      packs.cachedGuilds = {};
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('already aggregated', async () => {
-    const character: Character = {
-      id: '1',
-      name: {
-        english: 'full name',
-      },
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: '2',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'media',
             },
-          },
-        }],
-      },
-    };
+          ],
+        },
+      });
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+      expect(fetchStub).not.toHaveBeenCalled();
+    });
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    it('already aggregated', async () => {
+      const character: Character = {
+        id: '1',
+        name: {
+          english: 'full name',
+        },
+        media: {
+          edges: [
+            {
+              role: CharacterRole.Main,
+              node: {
+                id: '2',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
+              },
+            },
+          ],
+        },
+      };
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+      const fetchStub = vi
+        .spyOn(utils, 'fetchWithRetry')
+        .mockResolvedValue(undefined as any);
+      const listStub = vi.spyOn(packs, 'all').mockResolvedValue([]);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    try {
-      assertEquals(
+      expect(
         await packs.aggregate<Character>({
           guildId: 'guild_id',
           character,
-        }),
-        character,
-      );
+        })
+      ).toEqual(character);
 
-      assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
+      expect(fetchStub).not.toHaveBeenCalled();
+      expect(listStub).not.toHaveBeenCalled();
+    });
 
-  await test.step('empty', async () => {
-    const character: Character = {
-      id: '1',
-      name: {
-        english: 'full name',
-      },
-    };
+    it('empty', async () => {
+      const character: Character = {
+        id: '1',
+        name: {
+          english: 'full name',
+        },
+      };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+      const fetchStub = vi
+        .spyOn(utils, 'fetchWithRetry')
+        .mockResolvedValue(undefined as any);
+      const listStub = vi.spyOn(packs, 'all').mockResolvedValue([]);
+      vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      assertEquals(
+      expect(
         await packs.aggregate<Character>({
           guildId: 'guild_id',
           character,
-        }),
-        {
-          ...character,
-          media: {
-            edges: [],
-          },
+        })
+      ).toEqual({
+        ...character,
+        media: {
+          edges: [],
         },
-      );
+      });
 
-      assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
+      expect(fetchStub).not.toHaveBeenCalled();
+      expect(listStub).toHaveBeenCalledTimes(1);
+    });
   });
-});
 
-Deno.test('titles to array', async (test) => {
-  await test.step('all titles', () => {
-    const alias = packs.aliasToArray({
-      romaji: 'romaji',
-      native: 'native',
-      english: 'english',
+  describe('titles to array', () => {
+    it('all titles', () => {
+      const alias = packs.aliasToArray({
+        romaji: 'romaji',
+        native: 'native',
+        english: 'english',
+      });
+
+      expect(alias).toEqual(['english', 'romaji', 'native']);
     });
 
-    assertEquals(alias, [
-      'english',
-      'romaji',
-      'native',
-    ]);
-  });
+    it('missing 1 title', () => {
+      const alias = packs.aliasToArray({
+        romaji: '',
+        native: 'native',
+        english: 'english',
+      });
 
-  await test.step('missing 1 title', () => {
-    const alias = packs.aliasToArray({
-      romaji: '',
-      native: 'native',
-      english: 'english',
+      expect(alias).toEqual(['english', 'native']);
     });
-
-    assertEquals(alias, [
-      'english',
-      'native',
-    ]);
   });
-});
 
-Deno.test('/installed packs', async (test) => {
-  await test.step('normal', async () => {
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        author: 'author',
-        id: 'pack_id',
-        description: 'description',
-        image: 'image',
-      },
-    } as any;
+  describe('/installed packs', () => {
+    it('normal', async () => {
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          author: 'author',
+          id: 'pack_id',
+          description: 'description',
+          image: 'image',
+        },
+      } as any;
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack, pack]),
-    );
+      const listStub = vi.spyOn(packs, 'all').mockResolvedValue([pack, pack]);
 
-    config.packsUrl = 'http://localhost:8080/packs';
-    config.communityPacks = true;
+      config.packsUrl = 'http://localhost:8080/packs';
+      config.communityPacks = true;
 
-    try {
       const message = await packs.pages({
         userId: 'user_id',
         guildId: 'guild_id',
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description:
-              '1. [`pack_id`](http://localhost:8080/packs/pack_id)\n' +
-              '2. [`pack_id`](http://localhost:8080/packs/pack_id)',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '1. [`pack_id`](http://localhost:8080/packs/pack_id)\n' +
+                '2. [`pack_id`](http://localhost:8080/packs/pack_id)',
+            },
+          ],
         },
       });
-    } finally {
+
       delete config.communityPacks;
       delete config.packsUrl;
 
-      listStub.restore();
-    }
-  });
+      listStub.mockRestore();
+    });
 
-  await test.step('use title and id ', async () => {
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        title: 'Title',
-      },
-    } as any;
+    it('use title and id', async () => {
+      const pack: Schema.Pack = {
+        _id: '_',
+        manifest: {
+          id: 'pack-id',
+          title: 'Title',
+        },
+      } as any;
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
+      const listStub = vi.spyOn(packs, 'all').mockResolvedValue([pack]);
 
-    config.packsUrl = 'http://localhost:8080/packs';
-    config.communityPacks = true;
+      config.packsUrl = 'http://localhost:8080/packs';
+      config.communityPacks = true;
 
-    try {
       const message = await packs.pages({
         userId: 'user_id',
         guildId: 'guild_id',
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description:
-              '1. [Title | `pack-id`](http://localhost:8080/packs/pack-id)',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '1. [Title | `pack-id`](http://localhost:8080/packs/pack-id)',
+            },
+          ],
         },
       });
-    } finally {
+
       delete config.communityPacks;
       delete config.packsUrl;
 
-      listStub.restore();
-    }
-  });
+      listStub.mockRestore();
+    });
 
-  await test.step('no packs installed', async () => {
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    it('no packs installed', async () => {
+      const listStub = vi.spyOn(packs, 'all').mockResolvedValue([]);
 
-    config.communityPacks = true;
+      config.communityPacks = true;
 
-    try {
       const message = await packs.pages({
         userId: 'user_id',
         guildId: 'guild_id',
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description: "Server doesn't have any installed packs",
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: "Server doesn't have any installed packs",
+            },
+          ],
         },
       });
-    } finally {
+
       delete config.communityPacks;
 
-      listStub.restore();
-    }
-  });
+      listStub.mockRestore();
+    });
 
-  await test.step('under maintenance', async () => {
-    config.communityPacks = false;
+    it('under maintenance', async () => {
+      config.communityPacks = false;
 
-    try {
-      await assertRejects(
-        () =>
-          packs.pages({
-            userId: 'user_id',
-            guildId: 'guild_id',
-          }),
-        NonFetalError,
-        'Community Packs are under maintenance, try again later!',
+      await expect(
+        packs.pages({
+          userId: 'user_id',
+          guildId: 'guild_id',
+        })
+      ).rejects.toThrow(
+        new NonFetalError(
+          'Community Packs are under maintenance, try again later!'
+        )
       );
-    } finally {
+
       delete config.communityPacks;
-    }
+    });
   });
-});
 
-Deno.test('/packs install', async (test) => {
-  await test.step('normal', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+  describe('/packs install', () => {
+    it('normal', async () => {
+      const getGuildStub = vi
+        .spyOn(db, 'getGuild')
+        .mockResolvedValue('guild' as any);
 
-    const addPackStub = stub(
-      db,
-      'addPack',
-      () =>
-        Promise.resolve({
-          _id: '_',
-          manifest: {
-            author: 'author',
-            id: 'pack_id',
-            description: 'description',
-            url: 'url',
-            image: 'image',
-          },
-        } as any),
-    );
+      const addPackStub = vi.spyOn(db, 'addPack').mockResolvedValue({
+        _id: '_',
+        manifest: {
+          author: 'author',
+          id: 'pack_id',
+          description: 'description',
+          url: 'url',
+          image: 'image',
+        },
+      } as any);
 
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-    config.communityPacks = true;
+      config.appId = 'app_id';
+      config.origin = 'http://localhost:8000';
+      config.communityPacks = true;
 
-    try {
       const message = await packs.install({
         id: 'pack_id',
         guildId: 'guild_id',
         userId: 'user_id',
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
@@ -2277,146 +1954,116 @@ Deno.test('/packs install', async (test) => {
           ],
         },
       });
-    } finally {
+
       delete config.communityPacks;
       delete config.appId;
       delete config.origin;
 
-      getGuildStub.restore();
-      addPackStub.restore();
-    }
-  });
+      getGuildStub.mockRestore();
+      addPackStub.mockRestore();
+    });
 
-  await test.step('private pack', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    it('private pack', async () => {
+      const getGuildStub = vi
+        .spyOn(db, 'getGuild')
+        .mockResolvedValue('guild' as any);
 
-    const addPackStub = stub(
-      db,
-      'addPack',
-      () => {
+      const addPackStub = vi.spyOn(db, 'addPack').mockImplementation(() => {
         throw new Error('PACK_PRIVATE');
-      },
-    );
+      });
 
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-    config.communityPacks = true;
+      config.appId = 'app_id';
+      config.origin = 'http://localhost:8000';
+      config.communityPacks = true;
 
-    try {
-      await assertRejects(
-        async () =>
-          await packs.install({
-            id: 'pack_id',
-            guildId: 'guild_id',
-            userId: 'user_id',
-          }),
-        Error,
-        'PACK_PRIVATE',
-      );
-    } finally {
+      await expect(
+        packs.install({
+          id: 'pack_id',
+          guildId: 'guild_id',
+          userId: 'user_id',
+        })
+      ).rejects.toThrow(new Error('PACK_PRIVATE'));
+
       delete config.communityPacks;
       delete config.appId;
       delete config.origin;
 
-      getGuildStub.restore();
-      addPackStub.restore();
-    }
-  });
+      getGuildStub.mockRestore();
+      addPackStub.mockRestore();
+    });
 
-  await test.step('not found', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    it('not found', async () => {
+      const getGuildStub = vi
+        .spyOn(db, 'getGuild')
+        .mockResolvedValue('guild' as any);
 
-    const addPackStub = stub(
-      db,
-      'addPack',
-      () => {
+      const addPackStub = vi.spyOn(db, 'addPack').mockImplementation(() => {
         throw new Error('PACK_NOT_FOUND');
-      },
-    );
+      });
 
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-    config.communityPacks = true;
+      config.appId = 'app_id';
+      config.origin = 'http://localhost:8000';
+      config.communityPacks = true;
 
-    try {
-      await assertRejects(
-        async () =>
-          await packs.install({
-            id: 'pack_id',
-            guildId: 'guild_id',
-            userId: 'user_id',
-          }),
-        Error,
-        'PACK_NOT_FOUND',
-      );
-    } finally {
+      await expect(
+        packs.install({
+          id: 'pack_id',
+          guildId: 'guild_id',
+          userId: 'user_id',
+        })
+      ).rejects.toThrow(new Error('PACK_NOT_FOUND'));
+
       delete config.communityPacks;
       delete config.appId;
       delete config.origin;
 
-      getGuildStub.restore();
-      addPackStub.restore();
-    }
-  });
+      getGuildStub.mockRestore();
+      addPackStub.mockRestore();
+    });
 
-  await test.step('under maintenance', async () => {
-    await assertRejects(
-      () =>
+    it('under maintenance', async () => {
+      await expect(
         packs.install({
           guildId: 'guild_id',
           userId: 'user_id',
           id: 'pack_id',
-        }),
-      NonFetalError,
-      'Community Packs are under maintenance, try again later!',
-    );
+        })
+      ).rejects.toThrow(
+        new NonFetalError(
+          'Community Packs are under maintenance, try again later!'
+        )
+      );
+    });
   });
-});
 
-Deno.test('/packs uninstall', async (test) => {
-  await test.step('normal', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+  describe('/packs uninstall', () => {
+    it('normal', async () => {
+      const getGuildStub = vi
+        .spyOn(db, 'getGuild')
+        .mockResolvedValue('guild' as any);
 
-    const removePackStub = stub(
-      db,
-      'removePack',
-      () =>
-        Promise.resolve({
-          _id: '_',
-          manifest: {
-            author: 'author',
-            id: 'pack_id',
-            description: 'description',
-            url: 'url',
-            image: 'image',
-          },
-        } as any),
-    );
+      const removePackStub = vi.spyOn(db, 'removePack').mockResolvedValue({
+        _id: '_',
+        manifest: {
+          author: 'author',
+          id: 'pack_id',
+          description: 'description',
+          url: 'url',
+          image: 'image',
+        },
+      } as any);
 
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-    config.communityPacks = true;
+      config.appId = 'app_id';
+      config.origin = 'http://localhost:8000';
+      config.communityPacks = true;
 
-    try {
       const message = await packs.uninstall({
         id: 'pack_id',
         guildId: 'guild_id',
         userId: 'user_id',
       });
 
-      assertEquals(message.json(), {
+      expect(message.json()).toEqual({
         type: 4,
         data: {
           attachments: [],
@@ -2444,112 +2091,93 @@ Deno.test('/packs uninstall', async (test) => {
           ],
         },
       });
-    } finally {
+
       delete config.communityPacks;
       delete config.appId;
       delete config.origin;
 
-      getGuildStub.restore();
-      removePackStub.restore();
-    }
-  });
+      getGuildStub.mockRestore();
+      removePackStub.mockRestore();
+    });
 
-  await test.step('under maintenance', async () => {
-    config.communityPacks = false;
+    it('under maintenance', async () => {
+      config.communityPacks = false;
 
-    try {
-      await assertRejects(
-        () =>
-          packs.uninstall({
-            id: 'pack_id',
-            guildId: 'guild_id',
-            userId: 'user_id',
-          }),
-        NonFetalError,
-        'Community Packs are under maintenance, try again later!',
+      await expect(
+        packs.uninstall({
+          id: 'pack_id',
+          guildId: 'guild_id',
+          userId: 'user_id',
+        })
+      ).rejects.toThrow(
+        new NonFetalError(
+          'Community Packs are under maintenance, try again later!'
+        )
       );
-    } finally {
+
       delete config.communityPacks;
-    }
-  });
+    });
 
-  await test.step('not found', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    it('not found', async () => {
+      const getGuildStub = vi
+        .spyOn(db, 'getGuild')
+        .mockResolvedValue('guild' as any);
 
-    const removePackStub = stub(
-      db,
-      'removePack',
-      () => {
-        throw new Error('PACK_NOT_FOUND');
-      },
-    );
+      const removePackStub = vi
+        .spyOn(db, 'removePack')
+        .mockImplementation(() => {
+          throw new Error('PACK_NOT_FOUND');
+        });
 
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-    config.communityPacks = true;
+      config.appId = 'app_id';
+      config.origin = 'http://localhost:8000';
+      config.communityPacks = true;
 
-    try {
-      await assertRejects(
-        async () =>
-          await packs.uninstall({
-            id: 'pack_id',
-            guildId: 'guild_id',
-            userId: 'user_id',
-          }),
-        Error,
-        'PACK_NOT_FOUND',
-      );
-    } finally {
+      await expect(
+        packs.uninstall({
+          id: 'pack_id',
+          guildId: 'guild_id',
+          userId: 'user_id',
+        })
+      ).rejects.toThrow(new Error('PACK_NOT_FOUND'));
+
       delete config.communityPacks;
       delete config.appId;
       delete config.origin;
 
-      getGuildStub.restore();
-      removePackStub.restore();
-    }
-  });
+      getGuildStub.mockRestore();
+      removePackStub.mockRestore();
+    });
 
-  await test.step('not installed', async () => {
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    it('not installed', async () => {
+      const getGuildStub = vi
+        .spyOn(db, 'getGuild')
+        .mockResolvedValue('guild' as any);
 
-    const removePackStub = stub(
-      db,
-      'removePack',
-      () => {
-        throw new Error('PACK_NOT_INSTALLED');
-      },
-    );
+      const removePackStub = vi
+        .spyOn(db, 'removePack')
+        .mockImplementation(() => {
+          throw new Error('PACK_NOT_INSTALLED');
+        });
 
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-    config.communityPacks = true;
+      config.appId = 'app_id';
+      config.origin = 'http://localhost:8000';
+      config.communityPacks = true;
 
-    try {
-      await assertRejects(
-        async () =>
-          await packs.uninstall({
-            id: 'pack_id',
-            guildId: 'guild_id',
-            userId: 'user_id',
-          }),
-        Error,
-        'PACK_NOT_INSTALLED',
-      );
-    } finally {
+      await expect(
+        packs.uninstall({
+          id: 'pack_id',
+          guildId: 'guild_id',
+          userId: 'user_id',
+        })
+      ).rejects.toThrow(new Error('PACK_NOT_INSTALLED'));
+
       delete config.communityPacks;
       delete config.appId;
       delete config.origin;
 
-      getGuildStub.restore();
-      removePackStub.restore();
-    }
+      getGuildStub.mockRestore();
+      removePackStub.mockRestore();
+    });
   });
 });

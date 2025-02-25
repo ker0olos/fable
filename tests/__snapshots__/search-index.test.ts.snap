@@ -1,11 +1,11 @@
-export const snapshot = {};
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-snapshot[`characters search > aqua 1`] = `
+exports[`characters search > aqua 1`] = `
 [
   {
-    id: "anilist:89362",
-    mediaId: "anilist:21202",
-    mediaTitle: [
+    "id": "anilist:89362",
+    "mediaId": "anilist:21202",
+    "mediaTitle": [
       "KONOSUBA -God's blessing on this wonderful world!",
       "Kono Subarashii Sekai ni Shukufuku wo!",
       "この素晴らしい世界に祝福を！",
@@ -16,18 +16,18 @@ snapshot[`characters search > aqua 1`] = `
       "ขอให้โชคดีมีชัยในโลกแฟนตาซี!",
       "Konosuba : Une explosion dans ce monde merveilleux !",
     ],
-    name: [
+    "name": [
       "Aqua",
       "アクア",
     ],
-    popularity: 386465,
-    rating: 4,
-    role: "MAIN",
+    "popularity": 386465,
+    "rating": 4,
+    "role": "MAIN",
   },
   {
-    id: "anilist:183885",
-    mediaId: "anilist:150672",
-    mediaTitle: [
+    "id": "anilist:183885",
+    "mediaId": "anilist:150672",
+    "mediaTitle": [
       "Oshi No Ko",
       "[Oshi no Ko]",
       "【推しの子】",
@@ -42,20 +42,20 @@ snapshot[`characters search > aqua 1`] = `
       "我推的孩子",
       "【최애의 아이】",
     ],
-    name: [
+    "name": [
       "Aquamarine Hoshino",
       "星野アクアマリン",
       "Aqua",
       "Prodigy Baby",
     ],
-    popularity: 194339,
-    rating: 3,
-    role: "MAIN",
+    "popularity": 194339,
+    "rating": 3,
+    "role": "MAIN",
   },
   {
-    id: "anilist:302601",
-    mediaId: "anilist:154965",
-    mediaTitle: [
+    "id": "anilist:302601",
+    "mediaId": "anilist:154965",
+    "mediaTitle": [
       "My Love Story with Yamada-kun at Lv999",
       "Yamada-kun to Lv999 no Koi wo Suru",
       "山田くんとLv999の恋をする",
@@ -68,36 +68,36 @@ snapshot[`characters search > aqua 1`] = `
       "Mon histoire d'amour avec Yamada à Lv999",
       "和山田談場 Lv999 的戀愛",
     ],
-    name: [
+    "name": [
       "Shikkoku no Aqua",
       "漆黒のアクア",
     ],
-    popularity: 114199,
-    rating: 1,
-    role: "BACKGROUND",
+    "popularity": 114199,
+    "rating": 1,
+    "role": "BACKGROUND",
   },
   {
-    id: "anilist:62609",
-    mediaId: "anilist:11759",
-    mediaTitle: [
+    "id": "anilist:62609",
+    "mediaId": "anilist:11759",
+    "mediaTitle": [
       "Accel World",
       "アクセル・ワールド",
       "Accelerated World",
     ],
-    name: [
+    "name": [
       "Akira Himi",
       "氷見あきら",
       "Aqua Current",
       "アクア・カレント",
     ],
-    popularity: 107519,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 107519,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:247460",
-    mediaId: "anilist:125206",
-    mediaTitle: [
+    "id": "anilist:247460",
+    "mediaId": "anilist:125206",
+    "mediaTitle": [
       "TSUKIMICHI -Moonlit Fantasy-",
       "Tsuki ga Michibiku Isekai Douchuu",
       "月が導く異世界道中",
@@ -106,100 +106,100 @@ snapshot[`characters search > aqua 1`] = `
       "月光下的异世界之旅",
       "Благословлённое лунным светом приключение в другом мире",
     ],
-    name: [
+    "name": [
       "Aqua",
       "アクア",
     ],
-    popularity: 100044,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 100044,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:223874",
-    mediaId: "anilist:2156",
-    mediaTitle: [
+    "id": "anilist:223874",
+    "mediaId": "anilist:2156",
+    "mediaTitle": [
       "Bakugan Battle Brawlers",
       "爆丸バトルブローラーズ",
       "Bakugan: Młodzi wojownicy",
     ],
-    name: [
+    "name": [
       "Aqua Predator",
       "アクアプレデター",
       "Aquos Preyas",
     ],
-    popularity: 22024,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 22024,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:206959",
-    mediaId: "anilist:113666",
-    mediaTitle: [
+    "id": "anilist:206959",
+    "mediaId": "anilist:113666",
+    "mediaTitle": [
       "FFF-Class Trashero",
       "FFF Geum Gwansimyongsa",
       "FFF급 관심용사",
       "FFF级勇士求关注",
       "FFF-Class Trash hero",
     ],
-    name: [
+    "name": [
       "Aqua",
     ],
-    popularity: 17579,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 17579,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:3157",
-    mediaId: "anilist:521",
-    mediaTitle: [
+    "id": "anilist:3157",
+    "mediaId": "anilist:521",
+    "mediaTitle": [
       "Mermaid Melody: Pichi Pichi Pitch",
       "マーメイドメロディー ぴちぴちピッチ",
     ],
-    name: [
+    "name": [
       "Hanon Houshou",
       "宝生波音",
       "Aqua Pearl Mermaid Princess",
       "Hanon Hosho",
     ],
-    popularity: 14145,
-    rating: 1,
-    role: "MAIN",
+    "popularity": 14145,
+    "rating": 1,
+    "role": "MAIN",
   },
   {
-    id: "anilist:3165",
-    mediaId: "anilist:521",
-    mediaTitle: [
+    "id": "anilist:3165",
+    "mediaId": "anilist:521",
+    "mediaTitle": [
       "Mermaid Melody: Pichi Pichi Pitch",
       "マーメイドメロディー ぴちぴちピッチ",
     ],
-    name: [
+    "name": [
       "Aqua Regina",
       "アクア・レジーナ様",
     ],
-    popularity: 14145,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 14145,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:329113",
-    mediaId: "anilist:218",
-    mediaTitle: [
+    "id": "anilist:329113",
+    "mediaId": "anilist:218",
+    "mediaTitle": [
       "Martian Successor Nadesico",
       "Kidou Senkan Nadesico",
       "機動戦艦ナデシコ",
     ],
-    name: [
+    "name": [
       "Aqua Crimson",
       "アクア·クリムゾン",
     ],
-    popularity: 12462,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 12462,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:169497",
-    mediaId: "anilist:118123",
-    mediaTitle: [
+    "id": "anilist:169497",
+    "mediaId": "anilist:118123",
+    "mediaTitle": [
       "Holo no Graffiti",
       "ホロのぐらふぃてぃ",
       "Hologra 3D Short Animation",
@@ -208,7 +208,7 @@ snapshot[`characters search > aqua 1`] = `
       "Hololive",
       "הולולייב",
     ],
-    name: [
+    "name": [
       "Aqua Minato",
       "湊あくあ",
       "Dai Tenshi Aqua",
@@ -216,31 +216,31 @@ snapshot[`characters search > aqua 1`] = `
       "Baqua",
       "Aqu-tan",
     ],
-    popularity: 11227,
-    rating: 1,
-    role: "MAIN",
+    "popularity": 11227,
+    "rating": 1,
+    "role": "MAIN",
   },
   {
-    id: "anilist:130382",
-    mediaId: "anilist:98231",
-    mediaTitle: [
+    "id": "anilist:130382",
+    "mediaId": "anilist:98231",
+    "mediaTitle": [
       "Yu-Gi-Oh! VRAINS",
       "Yu☆Gi☆Oh! VRAINS",
       "遊☆戯☆王VRAINS",
     ],
-    name: [
+    "name": [
       "Aqua",
       "アクア",
       "Water Ignis",
     ],
-    popularity: 10201,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 10201,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:18095",
-    mediaId: "anilist:738",
-    mediaTitle: [
+    "id": "anilist:18095",
+    "mediaId": "anilist:738",
+    "mediaTitle": [
       "Marchen Awakens Romance",
       "MÄR",
       "メル",
@@ -248,66 +248,66 @@ snapshot[`characters search > aqua 1`] = `
       "MAR-Heaven",
       "MÄR Heaven",
     ],
-    name: [
+    "name": [
       "Aqua",
     ],
-    popularity: 8489,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 8489,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:4840",
-    mediaId: "anilist:100661",
-    mediaTitle: [
+    "id": "anilist:4840",
+    "mediaId": "anilist:100661",
+    "mediaTitle": [
       "HUGtto! Precure",
       "HUGっと！プリキュア",
       "Hugtto! Pretty Cure",
       "Hug tto! Precure",
     ],
-    name: [
+    "name": [
       "Karen Minazuki",
       "水無月かれん",
       "Cure Aqua (キュアアクア)",
     ],
-    popularity: 7582,
-    rating: 1,
-    role: "BACKGROUND",
+    "popularity": 7582,
+    "rating": 1,
+    "role": "BACKGROUND",
   },
   {
-    id: "anilist:153617",
-    mediaId: "anilist:6008",
-    mediaTitle: [
+    "id": "anilist:153617",
+    "mediaId": "anilist:6008",
+    "mediaTitle": [
       "Jewelpet",
       "ジュエルペット",
       "Jewel Pet",
     ],
-    name: [
+    "name": [
       "Aqua",
       "アクア",
     ],
-    popularity: 3769,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 3769,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:340919",
-    mediaId: "anilist:154195",
-    mediaTitle: [
+    "id": "anilist:340919",
+    "mediaId": "anilist:154195",
+    "mediaTitle": [
       "Grendizer U",
       "グレンダイザーU",
     ],
-    name: [
+    "name": [
       "Teronna Aqua Vega",
       "テロンナ • アクア • ベガ",
     ],
-    popularity: 3032,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 3032,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:31301",
-    mediaId: "anilist:3051",
-    mediaTitle: [
+    "id": "anilist:31301",
+    "mediaId": "anilist:3051",
+    "mediaTitle": [
       "Yes! Precure 5: Kagami no Kuni no Miracle Daibouken!",
       "Yes! プリキュア５ 鏡の国のミラクル大冒険！",
       "Eiga Yes! Pretty Cure 5: Kagami no Kuni no Miracle Daibouken!",
@@ -315,18 +315,18 @@ snapshot[`characters search > aqua 1`] = `
       "Yes! Pretty Cure 5 the Movie: The Mirror Kingdom's Miraculous Adventure!",
       "Yes! Pretty Cure 5 - Le Pretty Cure nel Regno degli Specchi",
     ],
-    name: [
+    "name": [
       "Dark Aqua",
       "ダークアクア",
     ],
-    popularity: 2260,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 2260,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:35850",
-    mediaId: "anilist:8937",
-    mediaTitle: [
+    "id": "anilist:35850",
+    "mediaId": "anilist:8937",
+    "mediaTitle": [
       "A Certain Magical Index II",
       "Toaru Majutsu no Index II",
       "とある魔術の禁書目録II",
@@ -338,38 +338,38 @@ snapshot[`characters search > aqua 1`] = `
       "Cấm thư ma thuật Index II",
       "Daftar Sihir Terlarang II",
     ],
-    name: [
+    "name": [
       "William Orwell",
       "ウィリアム＝オルウェル",
       "Acqua of the Back",
       "Flere210",
       "後方のアックア",
     ],
-    popularity: 83410,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 83410,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:122432",
-    mediaId: "anilist:21517",
-    mediaTitle: [
+    "id": "anilist:122432",
+    "mediaId": "anilist:21517",
+    "mediaTitle": [
       "Love Tyrant",
       "Renai Boukun",
       "恋愛暴君",
       "The very lovely tyrant of love♥",
     ],
-    name: [
+    "name": [
       "Akua Aino",
       "藍野あくあ",
     ],
-    popularity: 71328,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 71328,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:18866",
-    mediaId: "anilist:10080",
-    mediaTitle: [
+    "id": "anilist:18866",
+    "mediaId": "anilist:10080",
+    "mediaTitle": [
       "The World God Only Knows II",
       "Kami nomi zo Shiru Sekai II",
       "神のみぞ知るセカイⅡ",
@@ -377,19 +377,19 @@ snapshot[`characters search > aqua 1`] = `
       "Kaminomi II",
       "The World God Only Knows 2",
     ],
-    name: [
+    "name": [
       "Haqua du Lot Herminium",
       "ハクア・ド・ロット・ヘルミニウム",
       "Haq-chan",
     ],
-    popularity: 64447,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 64447,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:37096",
-    mediaId: "anilist:8086",
-    mediaTitle: [
+    "id": "anilist:37096",
+    "mediaId": "anilist:8086",
+    "mediaTitle": [
       "The Legend of the Legendary Heroes",
       "Densetsu no Yuusha no Densetsu",
       "伝説の勇者の伝説",
@@ -399,55 +399,55 @@ snapshot[`characters search > aqua 1`] = `
       "LOLH",
       "传说的勇者的传说",
     ],
-    name: [
+    "name": [
       "Arua",
       "アルア",
     ],
-    popularity: 43652,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 43652,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:227577",
-    mediaId: "anilist:113290",
-    mediaTitle: [
+    "id": "anilist:227577",
+    "mediaId": "anilist:113290",
+    "mediaTitle": [
       "Scissor Seven Season 2",
       "Wu Liuqi: Zui Qiang Faxingshi",
       "伍六七之最强发型师",
       "Killer Seven Season 2",
       "Киллер с ножницами 2",
     ],
-    name: [
+    "name": [
       "Chiya",
       "赤牙",
       "Redtooth",
       "Aquan (阿权)",
       "Crimson Fang",
     ],
-    popularity: 19179,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 19179,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:232854",
-    mediaId: "anilist:110810",
-    mediaTitle: [
+    "id": "anilist:232854",
+    "mediaId": "anilist:110810",
+    "mediaTitle": [
       "Kandagawa Jet Girls",
       "Kandagawa JET GIRLS",
       "神田川JET GIRLS",
     ],
-    name: [
+    "name": [
       "Akua Manjou",
       "万条あくあ",
     ],
-    popularity: 12501,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 12501,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:31949",
-    mediaId: "anilist:33403",
-    mediaTitle: [
+    "id": "anilist:31949",
+    "mediaId": "anilist:33403",
+    "mediaTitle": [
       "Rosario+Vampire: Season II",
       "Rosario to Vampire: Season II",
       "ロザリオとバンパイア SeasonⅡ",
@@ -455,43 +455,500 @@ snapshot[`characters search > aqua 1`] = `
       "Rosario+Vampire - Tılsımlı Kolye ve Vampir - Sezon 2",
       "Rosario to Vampire II",
     ],
-    name: [
+    "name": [
       "Akua Shuzen",
       "朱染 亞愛",
       "Black Devil",
     ],
-    popularity: 11747,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 11747,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:326120",
-    mediaId: "anilist:164857",
-    mediaTitle: [
+    "id": "anilist:326120",
+    "mediaId": "anilist:164857",
+    "mediaTitle": [
       "Surviving the Game as a Barbarian",
       "Game Sok Babarian-euro Saranamgi",
       "게임 속 바바리안으로 살아남기",
       "Surviving The Game as a Barbarian",
       "เอาชีวิตรอดในเกมฉบับคนเถื่อน",
     ],
-    name: [
+    "name": [
       "Arua Raven",
       "아루아 레이븐",
       "Aru",
     ],
-    popularity: 8140,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 8140,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
 ]
 `;
 
-snapshot[`characters search > megumin 1`] = `
+exports[`characters search > jahy 1`] = `
 [
   {
-    id: "anilist:89361",
-    mediaId: "anilist:21202",
-    mediaTitle: [
+    "id": "anilist:124618",
+    "mediaId": "anilist:132456",
+    "mediaTitle": [
+      "The Great Jahy Will Not Be Defeated!",
+      "Jahy-sama wa Kujikenai!",
+      "ジャヒー様はくじけない！",
+      "ท่านปีศาจจาฮี ชีวิตนี้ไม่มีถอย!",
+      "Niepokonana Jahy",
+    ],
+    "name": [
+      "Jahy",
+      "ジャヒー",
+      "Hy-chan",
+      "Ja-ko",
+      "Sweet-hy",
+      "Best-hy",
+    ],
+    "popularity": 66461,
+    "rating": 3,
+    "role": "MAIN",
+  },
+  {
+    "id": "anilist:257292",
+    "mediaId": "anilist:111764",
+    "mediaTitle": [
+      "Maou no Musume wa Yasashi Sugiru!!",
+      "魔王の娘は優しすぎる!!",
+      "The Demon King’s Daughter is too kind",
+    ],
+    "name": [
+      "Jahy",
+      "ジャヒー",
+    ],
+    "popularity": 5171,
+    "rating": 1,
+    "role": "MAIN",
+  },
+  {
+    "id": "anilist:299038",
+    "mediaId": "anilist:21",
+    "mediaTitle": [
+      "ONE PIECE",
+      "ワンピース",
+      "海贼王",
+      "וואן פיס",
+      "ون بيس",
+      "วันพีซ",
+      "Vua Hải Tặc",
+      "All'arrembaggio!",
+      "Tutti all'arrembaggio!",
+      "Ντρέηκ, το Κυνήγι του Θησαυρού",
+    ],
+    "name": [
+      "Saint Jaygarcia Saturn",
+      "ジェイガルシア・サターン聖",
+      "Jaygarcia Saturn",
+      "Jay Garcia Saturn",
+      "Saturn",
+    ],
+    "popularity": 523387,
+    "rating": 4,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:23080",
+    "mediaId": "anilist:1735",
+    "mediaTitle": [
+      "Naruto: Shippuden",
+      "NARUTO: Shippuuden",
+      "NARUTO -ナルト- 疾風伝",
+      "Naruto Shippuuden",
+      "Naruto Shippuden",
+      "נארוטו שיפודן",
+      "火影忍者 疾风传",
+      "นารูโตะ ตำนานวายุสลาตัน",
+      "ناروتو شيبودن",
+    ],
+    "name": [
+      "Jei",
+      "ジェイ",
+      "Jay",
+    ],
+    "popularity": 456856,
+    "rating": 4,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:306519",
+    "mediaId": "anilist:105398",
+    "mediaTitle": [
+      "Solo Leveling",
+      "Na Honjaman Level Up",
+      "나 혼자만 레벨업",
+      "I Level Up Alone",
+      "Only I Level Up",
+      "俺だけレベルアップな件",
+      "我獨自升級",
+      "Тільки я візьму новий рівень",
+      "Ore dake Level Up na Ken",
+    ],
+    "name": [
+      "Jay Mills",
+      "제이밀스",
+    ],
+    "popularity": 207751,
+    "rating": 1,
+    "role": "BACKGROUND",
+  },
+  {
+    "id": "anilist:9476",
+    "mediaId": "anilist:20574",
+    "mediaTitle": [
+      "Hi Score Girl",
+      "ハイスコアガール",
+    ],
+    "name": [
+      "Dee Jay",
+      "ディージェイ",
+    ],
+    "popularity": 58142,
+    "rating": 1,
+    "role": "BACKGROUND",
+  },
+  {
+    "id": "anilist:288290",
+    "mediaId": "anilist:125828",
+    "mediaTitle": [
+      "Sakamoto Days",
+      "SAKAMOTO DAYS",
+      "Дни Сакамото",
+      "SAKAMOTO DAYS 坂本日常",
+    ],
+    "name": [
+      "Yanaya Shi",
+      "ヤナヤ・ツー",
+      "Jay Erk",
+      "Kill Baby (キルベイビー)",
+    ],
+    "popularity": 52895,
+    "rating": 2,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:83649",
+    "mediaId": "anilist:30564",
+    "mediaTitle": [
+      "Gantz",
+      "GANTZ",
+      "ガンツ",
+      "Gantz/Osaka",
+    ],
+    "name": [
+      "Jay Jay",
+      "ジェイジェイ",
+      "JJ",
+    ],
+    "popularity": 52740,
+    "rating": 2,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:83925",
+    "mediaId": "anilist:12431",
+    "mediaTitle": [
+      "Space Brothers",
+      "Uchuu Kyoudai",
+      "宇宙兄弟",
+      "Uchu Kyodai",
+      "Space Bros",
+    ],
+    "name": [
+      "Brian Jay",
+    ],
+    "popularity": 39838,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:126850",
+    "mediaId": "anilist:12431",
+    "mediaTitle": [
+      "Space Brothers",
+      "Uchuu Kyoudai",
+      "宇宙兄弟",
+      "Uchu Kyodai",
+      "Space Bros",
+    ],
+    "name": [
+      "Eddie Jay",
+    ],
+    "popularity": 39838,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:249142",
+    "mediaId": "anilist:138060",
+    "mediaTitle": [
+      "Star Wars: Visions",
+      "スター・ウォーズ：ビジョンズ",
+      "Star Wars ビジョンズ",
+      "Gwiezdne wojny: Wizje",
+    ],
+    "name": [
+      "Jay",
+      "ジェイ",
+    ],
+    "popularity": 32957,
+    "rating": 1,
+    "role": "MAIN",
+  },
+  {
+    "id": "anilist:137282",
+    "mediaId": "anilist:86099",
+    "mediaTitle": [
+      "Wind Breaker",
+      "윈드브레이커",
+    ],
+    "name": [
+      "Ja-Hyeon Jo",
+      "조자현",
+      "Ja-Hyun Jo",
+      "Jay Jo",
+      "Lord Jay",
+      "Lord Of The Bike",
+      "God of Drifting",
+      "Super Rookie",
+    ],
+    "popularity": 31142,
+    "rating": 1,
+    "role": "MAIN",
+  },
+  {
+    "id": "anilist:140381",
+    "mediaId": "anilist:86848",
+    "mediaTitle": [
+      "Lookism",
+      "Oemojisangjuui",
+      "외모지상주의",
+      "外見至上主義",
+      "APARI3NCIAS",
+    ],
+    "name": [
+      "Jae-Yeol Hong",
+      "홍재열",
+      "Jay Hong",
+    ],
+    "popularity": 29409,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:174317",
+    "mediaId": "anilist:119174",
+    "mediaTitle": [
+      "The Boxer",
+      "더 복서",
+      "El boxeador",
+      "ザ・ボクサー",
+      "拳击手",
+    ],
+    "name": [
+      "Jay",
+      "인재",
+      "Injae",
+    ],
+    "popularity": 27447,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:314605",
+    "mediaId": "anilist:158530",
+    "mediaTitle": [
+      "The Gene of AI",
+      "AI no Idenshi",
+      "AIの遺電子",
+      "Ген ИИ",
+    ],
+    "name": [
+      "Jay",
+      "ジェイ",
+    ],
+    "popularity": 13449,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:321372",
+    "mediaId": "anilist:170935",
+    "mediaTitle": [
+      "GREAT PRETENDER razbliuto",
+      "GREAT PRETENDER: razbliuto",
+      "グレートプリテンダー ラズブリウト",
+      "グレプリrazbliuto",
+      "GrePre razbliuto",
+    ],
+    "name": [
+      "Pinjue Jiang",
+      "江品爵",
+      "Jay (ジェイ)",
+      "Chiang P'in Chüeh",
+    ],
+    "popularity": 12867,
+    "rating": 1,
+    "role": "MAIN",
+  },
+  {
+    "id": "anilist:176280",
+    "mediaId": "anilist:100341",
+    "mediaTitle": [
+      "LAST HOPE",
+      "Juushinki Pandora",
+      "重神機パンドーラ",
+      "الأمل الأخير",
+      "重神机潘多拉",
+    ],
+    "name": [
+      "Jay Yun",
+      "ジェイ・ユン",
+    ],
+    "popularity": 9426,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:6525",
+    "mediaId": "anilist:548",
+    "mediaTitle": [
+      "Sky Blue",
+      "Wonderful Days",
+      "원더풀 데이즈",
+      "Tage der Hoffnung",
+    ],
+    "name": [
+      "Jay",
+      "ジェイ",
+    ],
+    "popularity": 5271,
+    "rating": 1,
+    "role": "MAIN",
+  },
+  {
+    "id": "anilist:135722",
+    "mediaId": "anilist:100083",
+    "mediaTitle": [
+      "Butlers x Battlers",
+      "Butlers: Chitose Momotose Monogatari",
+      "Butlers～千年百年物語～",
+    ],
+    "name": [
+      "Kouma Jinguuji",
+      "神宮司高馬",
+      "ジェイ",
+      "Jay",
+    ],
+    "popularity": 4749,
+    "rating": 1,
+    "role": "MAIN",
+  },
+  {
+    "id": "anilist:3945",
+    "mediaId": "anilist:447",
+    "mediaTitle": [
+      "Knight Hunters",
+      "Weiß kreuz",
+      "Weiß kreuz　ヴァイス　クロイツ",
+      "Weiss Kreuz",
+      "White Cross",
+    ],
+    "name": [
+      "Farfarello",
+      "ファルファレロ",
+      "Jei",
+      "Jay",
+    ],
+    "popularity": 2853,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:37036",
+    "mediaId": "anilist:2705",
+    "mediaTitle": [
+      "Bakusou Kyoudai Let's & Go!!",
+      "爆走兄弟レッツ＆ゴー!!",
+      "Bakuso Kyodai Let's & Go",
+      "The Racing Brothers",
+      "سابق ولاحق",
+    ],
+    "name": [
+      "J",
+      "Jay",
+    ],
+    "popularity": 2486,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:13248",
+    "mediaId": "anilist:2592",
+    "mediaTitle": [
+      "Kimera",
+      "祈明羅",
+      "Ki*Me*Ra",
+    ],
+    "name": [
+      "Jay",
+    ],
+    "popularity": 1880,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+  {
+    "id": "anilist:18764",
+    "mediaId": "anilist:34218",
+    "mediaTitle": [
+      "Megami Ibunroku: Persona",
+      "女神異聞録ペルソナ",
+      "Shin Megami Tensei: Persona",
+      "Persona - Be Your True Mind",
+      "Megami Inbun Roku Persona",
+      "女神異聞録 ～ペルソナ～ BE YOUR TRUE MIND",
+    ],
+    "name": [
+      "Naoya Toudou",
+      "藤堂尚也",
+      "Nao",
+      "Boy With The Pierced Ear",
+      "Jihei Suzakuin",
+      "Jay",
+    ],
+    "popularity": 1785,
+    "rating": 1,
+    "role": "MAIN",
+  },
+  {
+    "id": "anilist:31227",
+    "mediaId": "anilist:101178",
+    "mediaTitle": [
+      "Voogie's Angel",
+      "Dennou Sentai Voogie's★Angel",
+      "電脳戦隊ヴギィ'ズ★エンジェル",
+    ],
+    "name": [
+      "Jay Burst",
+    ],
+    "popularity": 1124,
+    "rating": 1,
+    "role": "SUPPORTING",
+  },
+]
+`;
+
+exports[`characters search > megumin 1`] = `
+[
+  {
+    "id": "anilist:89361",
+    "mediaId": "anilist:21202",
+    "mediaTitle": [
       "KONOSUBA -God's blessing on this wonderful world!",
       "Kono Subarashii Sekai ni Shukufuku wo!",
       "この素晴らしい世界に祝福を！",
@@ -502,20 +959,20 @@ snapshot[`characters search > megumin 1`] = `
       "ขอให้โชคดีมีชัยในโลกแฟนตาซี!",
       "Konosuba : Une explosion dans ce monde merveilleux !",
     ],
-    name: [
+    "name": [
       "Megumin",
       "めぐみん",
       "Crazy Explosion Girl",
       "Psycho Girl",
     ],
-    popularity: 386465,
-    rating: 4,
-    role: "MAIN",
+    "popularity": 386465,
+    "rating": 4,
+    "role": "MAIN",
   },
   {
-    id: "anilist:120654",
-    mediaId: "anilist:21699",
-    mediaTitle: [
+    "id": "anilist:120654",
+    "mediaId": "anilist:21699",
+    "mediaTitle": [
       "KONOSUBA -God's blessing on this wonderful world! 2",
       "Kono Subarashii Sekai ni Shukufuku wo! 2",
       "この素晴らしい世界に祝福を！2",
@@ -526,7 +983,7 @@ snapshot[`characters search > megumin 1`] = `
       "ขอให้โชคดีมีชัยในโลกแฟนตาซี! ภาค 2",
       "Konosuba : Une explosion dans ce monde merveilleux !",
     ],
-    name: [
+    "name": [
       "Chomusuke",
       "ちょむすけ",
       "Kuro (クロ)",
@@ -534,14 +991,14 @@ snapshot[`characters search > megumin 1`] = `
       "Megumin (めぐみん)",
       "Ink",
     ],
-    popularity: 285051,
-    rating: 3,
-    role: "SUPPORTING",
+    "popularity": 285051,
+    "rating": 3,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:121471",
-    mediaId: "anilist:21685",
-    mediaTitle: [
+    "id": "anilist:121471",
+    "mediaId": "anilist:21685",
+    "mediaTitle": [
       "Eromanga Sensei",
       "エロマンガ先生",
       "Ero Manga Sensei",
@@ -549,19 +1006,19 @@ snapshot[`characters search > megumin 1`] = `
       "น้องสาวของผมคืออาจารย์เอโรมังงะ",
       "埃罗芒阿老师",
     ],
-    name: [
+    "name": [
       "Megumi Jinno",
       "神野めぐみ",
       "Megumin",
     ],
-    popularity: 150935,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 150935,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:126635",
-    mediaId: "anilist:113415",
-    mediaTitle: [
+    "id": "anilist:126635",
+    "mediaId": "anilist:113415",
+    "mediaTitle": [
       "JUJUTSU KAISEN",
       "Jujutsu Kaisen",
       "呪術廻戦",
@@ -574,19 +1031,19 @@ snapshot[`characters search > megumin 1`] = `
       "Магическая битва",
       "咒術迴戰",
     ],
-    name: [
+    "name": [
       "Megumi Fushiguro",
       "伏黒恵",
       "Sea Urchin Head",
     ],
-    popularity: 669084,
-    rating: 5,
-    role: "MAIN",
+    "popularity": 669084,
+    "rating": 5,
+    "role": "MAIN",
   },
   {
-    id: "anilist:76026",
-    mediaId: "anilist:20923",
-    mediaTitle: [
+    "id": "anilist:76026",
+    "mediaId": "anilist:20923",
+    "mediaTitle": [
       "Food Wars!",
       "Shokugeki no Souma",
       "食戟のソーマ",
@@ -595,7 +1052,7 @@ snapshot[`characters search > megumin 1`] = `
       "食戟之灵",
       "ยอดนักปรุงโซมะ",
     ],
-    name: [
+    "name": [
       "Megumi Tadokoro",
       "田所恵",
       "Dunce",
@@ -603,14 +1060,14 @@ snapshot[`characters search > megumin 1`] = `
       "Légumes Zashiki-warashi",
       "Légumes Yuki-ko",
     ],
-    popularity: 319537,
-    rating: 4,
-    role: "MAIN",
+    "popularity": 319537,
+    "rating": 4,
+    "role": "MAIN",
   },
   {
-    id: "anilist:319096",
-    mediaId: "anilist:145064",
-    mediaTitle: [
+    "id": "anilist:319096",
+    "mediaId": "anilist:145064",
+    "mediaTitle": [
       "JUJUTSU KAISEN Season 2",
       "Jujutsu Kaisen 2nd Season",
       "呪術廻戦 第2期",
@@ -624,19 +1081,19 @@ snapshot[`characters search > megumin 1`] = `
       "2جوجوتسو كايسن ",
       "Jujutsu Kaisen: Shibuya Incident",
     ],
-    name: [
+    "name": [
       "Megumi no Haha",
       "恵の母",
       "Megumi's Mother",
     ],
-    popularity: 266287,
-    rating: 1,
-    role: "BACKGROUND",
+    "popularity": 266287,
+    "rating": 1,
+    "role": "BACKGROUND",
   },
   {
-    id: "anilist:15870",
-    mediaId: "anilist:105334",
-    mediaTitle: [
+    "id": "anilist:15870",
+    "mediaId": "anilist:105334",
+    "mediaTitle": [
       "Fruits Basket (2019)",
       "Fruits Basket: 1st Season",
       "フルーツバスケット 1st Season",
@@ -648,18 +1105,18 @@ snapshot[`characters search > megumin 1`] = `
       "水果篮子（2019）",
       "เสน่ห์สาวข้าวปั้น",
     ],
-    name: [
+    "name": [
       "Megumi Hanajima",
       "花島恵",
     ],
-    popularity: 232285,
-    rating: 3,
-    role: "SUPPORTING",
+    "popularity": 232285,
+    "rating": 3,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:23344",
-    mediaId: "anilist:5680",
-    mediaTitle: [
+    "id": "anilist:23344",
+    "mediaId": "anilist:5680",
+    "mediaTitle": [
       "K-ON!",
       "けいおん!",
       "Keion",
@@ -668,18 +1125,18 @@ snapshot[`characters search > megumin 1`] = `
       "케이온!",
       "轻音少女",
     ],
-    name: [
+    "name": [
       "Megumi Sokabe",
       "曽我部恵",
     ],
-    popularity: 214143,
-    rating: 3,
-    role: "SUPPORTING",
+    "popularity": 214143,
+    "rating": 3,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:135872",
-    mediaId: "anilist:21595",
-    mediaTitle: [
+    "id": "anilist:135872",
+    "mediaId": "anilist:21595",
+    "mediaTitle": [
       "Haven't You Heard? I'm Sakamoto",
       "Sakamoto desu ga?",
       "坂本ですが?",
@@ -687,18 +1144,18 @@ snapshot[`characters search > megumin 1`] = `
       "เทพศาสตร์ซากาโมโต้",
       "Gak Pernah Dengar Nama Aku Sakamoto?",
     ],
-    name: [
+    "name": [
       "Megumi Fujita",
       "藤田恵",
     ],
-    popularity: 149764,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 149764,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:11941",
-    mediaId: "anilist:1210",
-    mediaTitle: [
+    "id": "anilist:11941",
+    "mediaId": "anilist:1210",
+    "mediaTitle": [
       "Welcome to the N-H-K",
       "NHK ni Youkoso!",
       "N・H・Kにようこそ！",
@@ -707,18 +1164,18 @@ snapshot[`characters search > megumin 1`] = `
       "欢迎加入NHK！",
       "Bienvenue dans la NHK",
     ],
-    name: [
+    "name": [
       "Megumi Kobayashi",
       "小林恵",
     ],
-    popularity: 141423,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 141423,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:88748",
-    mediaId: "anilist:20657",
-    mediaTitle: [
+    "id": "anilist:88748",
+    "mediaId": "anilist:20657",
+    "mediaTitle": [
       "Saekano: How to Raise a Boring Girlfriend",
       "Saenai Heroine no Sodatekata",
       "冴えない彼女の育てかた",
@@ -726,20 +1183,20 @@ snapshot[`characters search > megumin 1`] = `
       "路人女主的养成方法",
       "วิธีปั้นสาวบ้านให้มาเป็นนางเอกของผม",
     ],
-    name: [
+    "name": [
       "Megumi Katou",
       "加藤恵",
       "Megumi Kano",
       "Meguri",
     ],
-    popularity: 137783,
-    rating: 3,
-    role: "MAIN",
+    "popularity": 137783,
+    "rating": 3,
+    "role": "MAIN",
   },
   {
-    id: "anilist:124552",
-    mediaId: "anilist:99426",
-    mediaTitle: [
+    "id": "anilist:124552",
+    "mediaId": "anilist:99426",
+    "mediaTitle": [
       "A Place Further Than the Universe",
       "Sora yori mo Tooi Basho",
       "宇宙よりも遠い場所",
@@ -751,73 +1208,73 @@ snapshot[`characters search > megumin 1`] = `
       "ตามหัวใจไปสุดขอบฟ้า",
       "ดินแดนที่ห่างไกลยิ่งกว่าอวกาศ",
     ],
-    name: [
+    "name": [
       "Megumi Takahashi",
       "高橋めぐみ",
       "Megu",
       "@megu_chann",
     ],
-    popularity: 132523,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 132523,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:34010",
-    mediaId: "anilist:245",
-    mediaTitle: [
+    "id": "anilist:34010",
+    "mediaId": "anilist:245",
+    "mediaTitle": [
       "GTO: Great Teacher Onizuka",
       "GTO",
       "グレート・ティーチャー・オニヅカ",
       "GTO - The Animation",
     ],
-    name: [
+    "name": [
       "Megumi Hoshino",
       "星野めぐみ",
     ],
-    popularity: 126071,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 126071,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:34122",
-    mediaId: "anilist:245",
-    mediaTitle: [
+    "id": "anilist:34122",
+    "mediaId": "anilist:245",
+    "mediaTitle": [
       "GTO: Great Teacher Onizuka",
       "GTO",
       "グレート・ティーチャー・オニヅカ",
       "GTO - The Animation",
     ],
-    name: [
+    "name": [
       "Megumi Asakura",
       "浅倉恵",
     ],
-    popularity: 126071,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 126071,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:46399",
-    mediaId: "anilist:14289",
-    mediaTitle: [
-      'Say "I love you".',
+    "id": "anilist:46399",
+    "mediaId": "anilist:14289",
+    "mediaTitle": [
+      "Say "I love you".",
       "Sukitte Ii na yo.",
       "好きっていいなよ。",
       "Suki-tte Ii na yo.",
       "Sukinayo",
     ],
-    name: [
+    "name": [
       "Megumi Kitagawa",
       "北川めぐみ",
       "Megu (めぐ)",
     ],
-    popularity: 122919,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 122919,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:131590",
-    mediaId: "anilist:16742",
-    mediaTitle: [
+    "id": "anilist:131590",
+    "mediaId": "anilist:16742",
+    "mediaTitle": [
       "WataMote: No Matter How I Look At It, It's You Guys' Fault I'm Not Popular!",
       "Watashi ga Motenai no wa Dou Kangaetemo Omaera ga Warui!",
       "私がモテないのはどう考えてもお前らが悪い!",
@@ -825,103 +1282,103 @@ snapshot[`characters search > megumin 1`] = `
       "It's Not My Fault That I'm Not Popular!",
       "WataMote",
     ],
-    name: [
+    "name": [
       "Megumi Imae",
       "今江恵美",
     ],
-    popularity: 120315,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 120315,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:248881",
-    mediaId: "anilist:17729",
-    mediaTitle: [
+    "id": "anilist:248881",
+    "mediaId": "anilist:17729",
+    "mediaTitle": [
       "The Fruit of Grisaia",
       "Grisaia no Kajitsu",
       "グリザイアの果実",
       "Le Fruit De La Grisaia",
     ],
-    name: [
+    "name": [
       "Megumi Komori",
       "古森めぐみ",
     ],
-    popularity: 112919,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 112919,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:132713",
-    mediaId: "anilist:98478",
-    mediaTitle: [
+    "id": "anilist:132713",
+    "mediaId": "anilist:98478",
+    "mediaTitle": [
       "March comes in like a lion Season 2",
       "3-gatsu no Lion 2",
       "３月のライオン 2",
       "Sangatsu no Lion 2",
       "מרץ מגיע כאריה 2",
     ],
-    name: [
+    "name": [
       "Megumi Takagi",
       "高城めぐみ",
     ],
-    popularity: 108888,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 108888,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:58573",
-    mediaId: "anilist:11759",
-    mediaTitle: [
+    "id": "anilist:58573",
+    "mediaId": "anilist:11759",
+    "mediaTitle": [
       "Accel World",
       "アクセル・ワールド",
       "Accelerated World",
     ],
-    name: [
+    "name": [
       "Megumi Wakamiya",
       "若宮恵",
       "Orchid Oracle",
     ],
-    popularity: 107519,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 107519,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:89055",
-    mediaId: "anilist:20754",
-    mediaTitle: [
+    "id": "anilist:89055",
+    "mediaId": "anilist:20754",
+    "mediaTitle": [
       "SCHOOL-LIVE!",
       "Gakkou Gurashi!",
       "がっこうぐらし!",
     ],
-    name: [
+    "name": [
       "Megumi Sakura",
       "佐倉慈",
       "Megu-nee",
     ],
-    popularity: 101548,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 101548,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:7581",
-    mediaId: "anilist:7724",
-    mediaTitle: [
+    "id": "anilist:7581",
+    "mediaId": "anilist:7724",
+    "mediaTitle": [
       "Shiki",
       "屍鬼",
       "Corpse Demon",
     ],
-    name: [
+    "name": [
       "Megumi Shimizu",
       "清水恵",
     ],
-    popularity: 100166,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 100166,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:209481",
-    mediaId: "anilist:125428",
-    mediaTitle: [
+    "id": "anilist:209481",
+    "mediaId": "anilist:125428",
+    "mediaTitle": [
       "High-Rise Invasion",
       "Tenkuu Shinpan",
       "天空侵犯",
@@ -931,52 +1388,52 @@ snapshot[`characters search > megumin 1`] = `
       "หน้ากากเดนนรก",
       "Invasión en las Alturas",
     ],
-    name: [
+    "name": [
       "Megumi Saito",
       "齋藤めぐみ",
     ],
-    popularity: 98612,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 98612,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:77803",
-    mediaId: "anilist:10800",
-    mediaTitle: [
+    "id": "anilist:77803",
+    "mediaId": "anilist:10800",
+    "mediaTitle": [
       "Chihayafuru",
       "ちはやふる",
       "Chihayafull",
     ],
-    name: [
+    "name": [
       "Megumi Suda",
       "須田恵美",
     ],
-    popularity: 97826,
-    rating: 1,
-    role: "BACKGROUND",
+    "popularity": 97826,
+    "rating": 1,
+    "role": "BACKGROUND",
   },
   {
-    id: "anilist:32315",
-    mediaId: "anilist:6114",
-    mediaTitle: [
+    "id": "anilist:32315",
+    "mediaId": "anilist:6114",
+    "mediaTitle": [
       "Rainbow",
       "RAINBOW: Nisha Rokubou no Shichinin",
       "RAINBOW -二舎六房の七人-",
       "Rainbow: The Seven From Compound Two, Cell Six",
     ],
-    name: [
+    "name": [
       "Megumi Yokosuka",
       "横須賀メグ",
       "Meg",
     ],
-    popularity: 72178,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 72178,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:151",
-    mediaId: "anilist:45",
-    mediaTitle: [
+    "id": "anilist:151",
+    "mediaId": "anilist:45",
+    "mediaTitle": [
       "Rurouni Kenshin",
       "Rurouni Kenshin: Meiji Kenkaku Romantan",
       "るろうに剣心 -明治剣客浪漫譚-",
@@ -987,7 +1444,7 @@ snapshot[`characters search > megumin 1`] = `
       "Lãng khách Kenshin",
       "רורואוני קנשין",
     ],
-    name: [
+    "name": [
       "Megumi Takani",
       "高荷恵",
       "Fox Lady",
@@ -995,35 +1452,35 @@ snapshot[`characters search > megumin 1`] = `
       "Opium Woman",
       "Medicine Chest",
     ],
-    popularity: 71301,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 71301,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
 ]
 `;
 
-snapshot[`characters search > sayuri haruno 1`] = `
+exports[`characters search > sayuri haruno 1`] = `
 [
   {
-    id: "anilist:135734",
-    mediaId: "anilist:20813",
-    mediaTitle: [
+    "id": "anilist:135734",
+    "mediaId": "anilist:20813",
+    "mediaTitle": [
       "Bonjour♪Sweet Love Patisserie",
       "Bonjour♪ Koiaji Pâtisserie",
       "Bonjour♪恋味パティスリー",
     ],
-    name: [
+    "name": [
       "Sayuri Haruno",
       "春野小百合",
     ],
-    popularity: 10377,
-    rating: 1,
-    role: "MAIN",
+    "popularity": 10377,
+    "rating": 1,
+    "role": "MAIN",
   },
   {
-    id: "anilist:145",
-    mediaId: "anilist:20",
-    mediaTitle: [
+    "id": "anilist:145",
+    "mediaId": "anilist:20",
+    "mediaTitle": [
       "Naruto",
       "NARUTO",
       "NARUTO -ナルト-",
@@ -1033,18 +1490,18 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "นารูโตะ นินจาจอมคาถา",
       "Наруто",
     ],
-    name: [
+    "name": [
       "Sakura Haruno",
       "春野サクラ",
     ],
-    popularity: 536323,
-    rating: 5,
-    role: "MAIN",
+    "popularity": 536323,
+    "rating": 5,
+    "role": "MAIN",
   },
   {
-    id: "anilist:67289",
-    mediaId: "anilist:20",
-    mediaTitle: [
+    "id": "anilist:67289",
+    "mediaId": "anilist:20",
+    "mediaTitle": [
       "Naruto",
       "NARUTO",
       "NARUTO -ナルト-",
@@ -1054,18 +1511,18 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "นารูโตะ นินจาจอมคาถา",
       "Наруто",
     ],
-    name: [
+    "name": [
       "Mebuki Haruno",
       "春野メブキ",
     ],
-    popularity: 536323,
-    rating: 4,
-    role: "SUPPORTING",
+    "popularity": 536323,
+    "rating": 4,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:67287",
-    mediaId: "anilist:1735",
-    mediaTitle: [
+    "id": "anilist:67287",
+    "mediaId": "anilist:1735",
+    "mediaTitle": [
       "Naruto: Shippuden",
       "NARUTO: Shippuuden",
       "NARUTO -ナルト- 疾風伝",
@@ -1076,33 +1533,33 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "นารูโตะ ตำนานวายุสลาตัน",
       "ناروتو شيبودن",
     ],
-    name: [
+    "name": [
       "Kizashi Haruno",
       "春野キザシ",
     ],
-    popularity: 456856,
-    rating: 4,
-    role: "SUPPORTING",
+    "popularity": 456856,
+    "rating": 4,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:58855",
-    mediaId: "anilist:11111",
-    mediaTitle: [
+    "id": "anilist:58855",
+    "mediaId": "anilist:11111",
+    "mediaTitle": [
       "Another",
       "アナザー",
     ],
-    name: [
+    "name": [
       "Sayuri Kakinuma",
       "柿沼小百合",
     ],
-    popularity: 299720,
-    rating: 3,
-    role: "SUPPORTING",
+    "popularity": 299720,
+    "rating": 3,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:79589",
-    mediaId: "anilist:14813",
-    mediaTitle: [
+    "id": "anilist:79589",
+    "mediaId": "anilist:14813",
+    "mediaTitle": [
       "My Teen Romantic Comedy SNAFU",
       "Yahari Ore no Seishun Love Come wa Machigatteiru.",
       "やはり俺の青春ラブコメはまちがっている。",
@@ -1112,19 +1569,19 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "我的青春恋爱物语果然有问题",
       "กะแล้วชีวิตรักวัยรุ่นของผมมันต้องไม่สดใสเลยสักนิด",
     ],
-    name: [
+    "name": [
       "Haruno Yukinoshita",
       "雪ノ下陽乃",
       "Harunon",
     ],
-    popularity: 280075,
-    rating: 3,
-    role: "SUPPORTING",
+    "popularity": 280075,
+    "rating": 3,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:135249",
-    mediaId: "anilist:20829",
-    mediaTitle: [
+    "id": "anilist:135249",
+    "mediaId": "anilist:20829",
+    "mediaTitle": [
       "Seraph of the End: Vampire Reign",
       "Owari no Seraph",
       "終わりのセラフ",
@@ -1132,18 +1589,18 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "Seraph of the End: El Reino de los Vampiros",
       "เทวทูตแห่งโลกมืด",
     ],
-    name: [
+    "name": [
       "Sayuri  Hanayori",
       "花依小百合",
     ],
-    popularity: 247151,
-    rating: 3,
-    role: "SUPPORTING",
+    "popularity": 247151,
+    "rating": 3,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:283247",
-    mediaId: "anilist:113813",
-    mediaTitle: [
+    "id": "anilist:283247",
+    "mediaId": "anilist:113813",
+    "mediaTitle": [
       "Rent-a-Girlfriend",
       "Kanojo, Okarishimasu",
       "彼女、お借りします",
@@ -1152,19 +1609,19 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "สะดุดรักยัยแฟนเช่า",
       "Pacar Sewaan",
     ],
-    name: [
+    "name": [
       "Sayuri Ichinose",
       "一ノ瀬小百合",
       "Sayuri Ootori (鳳小百合)",
     ],
-    popularity: 236784,
-    rating: 3,
-    role: "SUPPORTING",
+    "popularity": 236784,
+    "rating": 3,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:10529",
-    mediaId: "anilist:102883",
-    mediaTitle: [
+    "id": "anilist:10529",
+    "mediaId": "anilist:102883",
+    "mediaTitle": [
       "JoJo's Bizarre Adventure: Golden Wind",
       "JoJo no Kimyou na Bouken: Ougon no Kaze",
       "ジョジョの奇妙な冒険 黄金の風",
@@ -1173,71 +1630,71 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "Le Bizzarre Avventure Di GioGio: Vento Aureo",
       "مغامرات جوجو العجيبة: الرياح الذهبية",
     ],
-    name: [
+    "name": [
       "Giorno Giovanna",
       "ジョルノ・ジョバァーナ",
       "GioGio",
       "Haruno Shiobana",
     ],
-    popularity: 221976,
-    rating: 4,
-    role: "MAIN",
+    "popularity": 221976,
+    "rating": 4,
+    "role": "MAIN",
   },
   {
-    id: "anilist:79163",
-    mediaId: "anilist:20458",
-    mediaTitle: [
+    "id": "anilist:79163",
+    "mediaId": "anilist:20458",
+    "mediaTitle": [
       "The Irregular at Magic High School",
       "Mahouka Koukou no Rettousei",
       "魔法科高校の劣等生",
       "พี่น้องปริศนาโรงเรียนมหาเวท",
     ],
-    name: [
+    "name": [
       "Sayuri Shiba",
       "司波小百合",
     ],
-    popularity: 196124,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 196124,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:138142",
-    mediaId: "anilist:21679",
-    mediaTitle: [
+    "id": "anilist:138142",
+    "mediaId": "anilist:21679",
+    "mediaTitle": [
       "Bungo Stray Dogs 2",
       "Bungou Stray Dogs 2nd Season",
       "文豪ストレイドッグス 第2シーズン",
       "Bungou Stray Dogs (2016)",
       "คณะประพันธกรจรจัด ภาค 2",
     ],
-    name: [
+    "name": [
       "Kirako Haruno",
       "春野綺羅子",
     ],
-    popularity: 188459,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 188459,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:187683",
-    mediaId: "anilist:114888",
-    mediaTitle: [
+    "id": "anilist:187683",
+    "mediaId": "anilist:114888",
+    "mediaTitle": [
       "The Millionaire Detective - Balance: UNLIMITED",
       "Fugou Keiji: Balance:UNLIMITED",
       "富豪刑事 Balance:UNLIMITED",
     ],
-    name: [
+    "name": [
       "Sayuri Kanbe",
       "神戸小百合",
     ],
-    popularity: 134843,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 134843,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:156472",
-    mediaId: "anilist:107693",
-    mediaTitle: [
+    "id": "anilist:156472",
+    "mediaId": "anilist:107693",
+    "mediaTitle": [
       "Welcome to Demon School! Iruma-kun",
       "Mairimashita! Iruma-kun",
       "魔入りました！入間くん",
@@ -1245,50 +1702,50 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "入间同学入魔了！",
       "อิรุมะคุง พจญในแดนปีศาจ!",
     ],
-    name: [
+    "name": [
       "Haruno",
       "ハルノ",
     ],
-    popularity: 112559,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 112559,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:77591",
-    mediaId: "anilist:16417",
-    mediaTitle: [
+    "id": "anilist:77591",
+    "mediaId": "anilist:16417",
+    "mediaTitle": [
       "Tamako Market",
       "たまこまーけっと",
     ],
-    name: [
+    "name": [
       "Sayuri Yumoto",
       "湯本さゆり",
     ],
-    popularity: 102177,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 102177,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:23683",
-    mediaId: "anilist:7674",
-    mediaTitle: [
+    "id": "anilist:23683",
+    "mediaId": "anilist:7674",
+    "mediaTitle": [
       "Bakuman.",
       "バクマン。",
       "Бакуман.",
     ],
-    name: [
+    "name": [
       "Miyuki Azuki",
       "亜豆美雪",
       "Miyuki Haruno",
     ],
-    popularity: 98873,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 98873,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:239452",
-    mediaId: "anilist:114065",
-    mediaTitle: [
+    "id": "anilist:239452",
+    "mediaId": "anilist:114065",
+    "mediaTitle": [
       "Remake Our Life!",
       "Bokutachi no Remake",
       "ぼくたちのリメイク",
@@ -1297,35 +1754,35 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "ย้อนเวลา รีเมคชีวิต",
       "Ремейк нашей жизни!",
     ],
-    name: [
+    "name": [
       "Sayuri Jishouji",
       "慈照寺さゆり",
     ],
-    popularity: 81401,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 81401,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:55843",
-    mediaId: "anilist:12291",
-    mediaTitle: [
+    "id": "anilist:55843",
+    "mediaId": "anilist:12291",
+    "mediaTitle": [
       "Place to Place",
       "Acchi Kocchi",
       "あっちこっち",
     ],
-    name: [
+    "name": [
       "Hime Haruno",
       "春野姫",
       "Himecchi",
     ],
-    popularity: 60058,
-    rating: 3,
-    role: "MAIN",
+    "popularity": 60058,
+    "rating": 3,
+    "role": "MAIN",
   },
   {
-    id: "anilist:178525",
-    mediaId: "anilist:235",
-    mediaTitle: [
+    "id": "anilist:178525",
+    "mediaId": "anilist:235",
+    "mediaTitle": [
       "Case Closed",
       "Meitantei Conan",
       "名探偵コナン",
@@ -1341,54 +1798,54 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "ยอดนักสืบจิ๋วโคนัน",
       "Thám Tử Lừng Danh Conan",
     ],
-    name: [
+    "name": [
       "Sayuri Matsumoto",
       "松本小百合",
     ],
-    popularity: 59615,
-    rating: 1,
-    role: "BACKGROUND",
+    "popularity": 59615,
+    "rating": 1,
+    "role": "BACKGROUND",
   },
   {
-    id: "anilist:120458",
-    mediaId: "anilist:21714",
-    mediaTitle: [
+    "id": "anilist:120458",
+    "mediaId": "anilist:21714",
+    "mediaTitle": [
       "FLIP FLAPPERS",
       "Flip Flappers",
       "フリップフラッパーズ",
       "轻拍翻转小魔女",
       "Flip Flappers: Fantazja kontra świat",
     ],
-    name: [
+    "name": [
       "Sayuri",
       "サユリ",
     ],
-    popularity: 55181,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 55181,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:146441",
-    mediaId: "anilist:20771",
-    mediaTitle: [
+    "id": "anilist:146441",
+    "mediaId": "anilist:20771",
+    "mediaTitle": [
       "Shomin Sample",
-      'Ore ga Ojou-sama Gakkou ni "Shomin Sample" Toshite Gets-Sareta Ken',
+      "Ore ga Ojou-sama Gakkou ni "Shomin Sample" Toshite Gets-Sareta Ken",
       "俺がお嬢様学校に「庶民サンプル」としてゲッツされた件",
       "นายสามัญชนจอมกวน ป่วนหัวใจยัยคุณหนูไฮโซ",
-      \`Story in Which I Was Kidnapped by a Young Lady's School to be a "Sample of the Common People"\`,
+      "Story in Which I Was Kidnapped by a Young Lady's School to be a "Sample of the Common People"",
     ],
-    name: [
+    "name": [
       "Sayuri Kimachi",
       "来待早百合",
     ],
-    popularity: 52640,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 52640,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:89416",
-    mediaId: "anilist:18689",
-    mediaTitle: [
+    "id": "anilist:89416",
+    "mediaId": "anilist:18689",
+    "mediaTitle": [
       "Ace of the Diamond",
       "Diamond no Ace",
       "ダイヤのA",
@@ -1396,33 +1853,33 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "Ace of Diamond",
       "Daiya no A",
     ],
-    name: [
+    "name": [
       "Haruno Yoshikawa",
       "吉川春乃",
     ],
-    popularity: 51885,
-    rating: 2,
-    role: "SUPPORTING",
+    "popularity": 51885,
+    "rating": 2,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:151126",
-    mediaId: "anilist:101239",
-    mediaTitle: [
+    "id": "anilist:151126",
+    "mediaId": "anilist:101239",
+    "mediaTitle": [
       "Ahiru no Sora",
       "あひるの空",
     ],
-    name: [
+    "name": [
       "Sayuri Wakamori",
       "若森さゆり",
     ],
-    popularity: 48928,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 48928,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:44328",
-    mediaId: "anilist:10568",
-    mediaTitle: [
+    "id": "anilist:44328",
+    "mediaId": "anilist:10568",
+    "mediaTitle": [
       "Heaven's Memo Pad",
       "Kamisama no Memochou",
       "神様のメモ帳",
@@ -1433,18 +1890,18 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "Kamisama no Memo-chou: It's the Only NEET Thing to Do.",
       "ผ่าคดีลับนักสืบนีท",
     ],
-    name: [
+    "name": [
       "Sayuri Kuroda",
       "黒田 小百合",
     ],
-    popularity: 43728,
-    rating: 1,
-    role: "SUPPORTING",
+    "popularity": 43728,
+    "rating": 1,
+    "role": "SUPPORTING",
   },
   {
-    id: "anilist:148966",
-    mediaId: "anilist:155963",
-    mediaTitle: [
+    "id": "anilist:148966",
+    "mediaId": "anilist:155963",
+    "mediaTitle": [
       "Hokkaido Gals Are Super Adorable!",
       "Dosanko Gal wa Namara Menkoi",
       "道産子ギャルはなまらめんこい",
@@ -1456,19 +1913,19 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "Девчонки с Хоккайдо просто чума!",
       "غارو هوكّاديو ظريفات جدّاً",
     ],
-    name: [
+    "name": [
       "Sayuri Akino",
       "秋野沙友理",
       "Sayurin",
     ],
-    popularity: 42467,
-    rating: 1,
-    role: "MAIN",
+    "popularity": 42467,
+    "rating": 1,
+    "role": "MAIN",
   },
   {
-    id: "anilist:3902",
-    mediaId: "anilist:433",
-    mediaTitle: [
+    "id": "anilist:3902",
+    "mediaId": "anilist:433",
+    "mediaTitle": [
       "The Place Promised in Our Early Days",
       "Kumo no Mukou, Yakusoku no Basho",
       "雲のむこう、約束の場所",
@@ -1479,479 +1936,22 @@ snapshot[`characters search > sayuri haruno 1`] = `
       "เหนือเมฆา ที่แห่งสัญญาของเรา",
       "Oltre le nuvole, il luogo promessoci",
     ],
-    name: [
+    "name": [
       "Sayuri Sawatari",
     ],
-    popularity: 40889,
-    rating: 1,
-    role: "MAIN",
+    "popularity": 40889,
+    "rating": 1,
+    "role": "MAIN",
   },
 ]
 `;
 
-snapshot[`characters search > jahy 1`] = `
+exports[`media search > konosuba 1`] = `
 [
   {
-    id: "anilist:124618",
-    mediaId: "anilist:132456",
-    mediaTitle: [
-      "The Great Jahy Will Not Be Defeated!",
-      "Jahy-sama wa Kujikenai!",
-      "ジャヒー様はくじけない！",
-      "ท่านปีศาจจาฮี ชีวิตนี้ไม่มีถอย!",
-      "Niepokonana Jahy",
-    ],
-    name: [
-      "Jahy",
-      "ジャヒー",
-      "Hy-chan",
-      "Ja-ko",
-      "Sweet-hy",
-      "Best-hy",
-    ],
-    popularity: 66461,
-    rating: 3,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:257292",
-    mediaId: "anilist:111764",
-    mediaTitle: [
-      "Maou no Musume wa Yasashi Sugiru!!",
-      "魔王の娘は優しすぎる!!",
-      "The Demon King’s Daughter is too kind",
-    ],
-    name: [
-      "Jahy",
-      "ジャヒー",
-    ],
-    popularity: 5171,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:299038",
-    mediaId: "anilist:21",
-    mediaTitle: [
-      "ONE PIECE",
-      "ワンピース",
-      "海贼王",
-      "וואן פיס",
-      "ون بيس",
-      "วันพีซ",
-      "Vua Hải Tặc",
-      "All'arrembaggio!",
-      "Tutti all'arrembaggio!",
-      "Ντρέηκ, το Κυνήγι του Θησαυρού",
-    ],
-    name: [
-      "Saint Jaygarcia Saturn",
-      "ジェイガルシア・サターン聖",
-      "Jaygarcia Saturn",
-      "Jay Garcia Saturn",
-      "Saturn",
-    ],
-    popularity: 523387,
-    rating: 4,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:23080",
-    mediaId: "anilist:1735",
-    mediaTitle: [
-      "Naruto: Shippuden",
-      "NARUTO: Shippuuden",
-      "NARUTO -ナルト- 疾風伝",
-      "Naruto Shippuuden",
-      "Naruto Shippuden",
-      "נארוטו שיפודן",
-      "火影忍者 疾风传",
-      "นารูโตะ ตำนานวายุสลาตัน",
-      "ناروتو شيبودن",
-    ],
-    name: [
-      "Jei",
-      "ジェイ",
-      "Jay",
-    ],
-    popularity: 456856,
-    rating: 4,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:306519",
-    mediaId: "anilist:105398",
-    mediaTitle: [
-      "Solo Leveling",
-      "Na Honjaman Level Up",
-      "나 혼자만 레벨업",
-      "I Level Up Alone",
-      "Only I Level Up",
-      "俺だけレベルアップな件",
-      "我獨自升級",
-      "Тільки я візьму новий рівень",
-      "Ore dake Level Up na Ken",
-    ],
-    name: [
-      "Jay Mills",
-      "제이밀스",
-    ],
-    popularity: 207751,
-    rating: 1,
-    role: "BACKGROUND",
-  },
-  {
-    id: "anilist:9476",
-    mediaId: "anilist:20574",
-    mediaTitle: [
-      "Hi Score Girl",
-      "ハイスコアガール",
-    ],
-    name: [
-      "Dee Jay",
-      "ディージェイ",
-    ],
-    popularity: 58142,
-    rating: 1,
-    role: "BACKGROUND",
-  },
-  {
-    id: "anilist:288290",
-    mediaId: "anilist:125828",
-    mediaTitle: [
-      "Sakamoto Days",
-      "SAKAMOTO DAYS",
-      "Дни Сакамото",
-      "SAKAMOTO DAYS 坂本日常",
-    ],
-    name: [
-      "Yanaya Shi",
-      "ヤナヤ・ツー",
-      "Jay Erk",
-      "Kill Baby (キルベイビー)",
-    ],
-    popularity: 52895,
-    rating: 2,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:83649",
-    mediaId: "anilist:30564",
-    mediaTitle: [
-      "Gantz",
-      "GANTZ",
-      "ガンツ",
-      "Gantz/Osaka",
-    ],
-    name: [
-      "Jay Jay",
-      "ジェイジェイ",
-      "JJ",
-    ],
-    popularity: 52740,
-    rating: 2,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:83925",
-    mediaId: "anilist:12431",
-    mediaTitle: [
-      "Space Brothers",
-      "Uchuu Kyoudai",
-      "宇宙兄弟",
-      "Uchu Kyodai",
-      "Space Bros",
-    ],
-    name: [
-      "Brian Jay",
-    ],
-    popularity: 39838,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:126850",
-    mediaId: "anilist:12431",
-    mediaTitle: [
-      "Space Brothers",
-      "Uchuu Kyoudai",
-      "宇宙兄弟",
-      "Uchu Kyodai",
-      "Space Bros",
-    ],
-    name: [
-      "Eddie Jay",
-    ],
-    popularity: 39838,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:249142",
-    mediaId: "anilist:138060",
-    mediaTitle: [
-      "Star Wars: Visions",
-      "スター・ウォーズ：ビジョンズ",
-      "Star Wars ビジョンズ",
-      "Gwiezdne wojny: Wizje",
-    ],
-    name: [
-      "Jay",
-      "ジェイ",
-    ],
-    popularity: 32957,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:137282",
-    mediaId: "anilist:86099",
-    mediaTitle: [
-      "Wind Breaker",
-      "윈드브레이커",
-    ],
-    name: [
-      "Ja-Hyeon Jo",
-      "조자현",
-      "Ja-Hyun Jo",
-      "Jay Jo",
-      "Lord Jay",
-      "Lord Of The Bike",
-      "God of Drifting",
-      "Super Rookie",
-    ],
-    popularity: 31142,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:140381",
-    mediaId: "anilist:86848",
-    mediaTitle: [
-      "Lookism",
-      "Oemojisangjuui",
-      "외모지상주의",
-      "外見至上主義",
-      "APARI3NCIAS",
-    ],
-    name: [
-      "Jae-Yeol Hong",
-      "홍재열",
-      "Jay Hong",
-    ],
-    popularity: 29409,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:174317",
-    mediaId: "anilist:119174",
-    mediaTitle: [
-      "The Boxer",
-      "더 복서",
-      "El boxeador",
-      "ザ・ボクサー",
-      "拳击手",
-    ],
-    name: [
-      "Jay",
-      "인재",
-      "Injae",
-    ],
-    popularity: 27447,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:314605",
-    mediaId: "anilist:158530",
-    mediaTitle: [
-      "The Gene of AI",
-      "AI no Idenshi",
-      "AIの遺電子",
-      "Ген ИИ",
-    ],
-    name: [
-      "Jay",
-      "ジェイ",
-    ],
-    popularity: 13449,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:321372",
-    mediaId: "anilist:170935",
-    mediaTitle: [
-      "GREAT PRETENDER razbliuto",
-      "GREAT PRETENDER: razbliuto",
-      "グレートプリテンダー ラズブリウト",
-      "グレプリrazbliuto",
-      "GrePre razbliuto",
-    ],
-    name: [
-      "Pinjue Jiang",
-      "江品爵",
-      "Jay (ジェイ)",
-      "Chiang P'in Chüeh",
-    ],
-    popularity: 12867,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:176280",
-    mediaId: "anilist:100341",
-    mediaTitle: [
-      "LAST HOPE",
-      "Juushinki Pandora",
-      "重神機パンドーラ",
-      "الأمل الأخير",
-      "重神机潘多拉",
-    ],
-    name: [
-      "Jay Yun",
-      "ジェイ・ユン",
-    ],
-    popularity: 9426,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:6525",
-    mediaId: "anilist:548",
-    mediaTitle: [
-      "Sky Blue",
-      "Wonderful Days",
-      "원더풀 데이즈",
-      "Tage der Hoffnung",
-    ],
-    name: [
-      "Jay",
-      "ジェイ",
-    ],
-    popularity: 5271,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:135722",
-    mediaId: "anilist:100083",
-    mediaTitle: [
-      "Butlers x Battlers",
-      "Butlers: Chitose Momotose Monogatari",
-      "Butlers～千年百年物語～",
-    ],
-    name: [
-      "Kouma Jinguuji",
-      "神宮司高馬",
-      "ジェイ",
-      "Jay",
-    ],
-    popularity: 4749,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:3945",
-    mediaId: "anilist:447",
-    mediaTitle: [
-      "Knight Hunters",
-      "Weiß kreuz",
-      "Weiß kreuz　ヴァイス　クロイツ",
-      "Weiss Kreuz",
-      "White Cross",
-    ],
-    name: [
-      "Farfarello",
-      "ファルファレロ",
-      "Jei",
-      "Jay",
-    ],
-    popularity: 2853,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:37036",
-    mediaId: "anilist:2705",
-    mediaTitle: [
-      "Bakusou Kyoudai Let's & Go!!",
-      "爆走兄弟レッツ＆ゴー!!",
-      "Bakuso Kyodai Let's & Go",
-      "The Racing Brothers",
-      "سابق ولاحق",
-    ],
-    name: [
-      "J",
-      "Jay",
-    ],
-    popularity: 2486,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:13248",
-    mediaId: "anilist:2592",
-    mediaTitle: [
-      "Kimera",
-      "祈明羅",
-      "Ki*Me*Ra",
-    ],
-    name: [
-      "Jay",
-    ],
-    popularity: 1880,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-  {
-    id: "anilist:18764",
-    mediaId: "anilist:34218",
-    mediaTitle: [
-      "Megami Ibunroku: Persona",
-      "女神異聞録ペルソナ",
-      "Shin Megami Tensei: Persona",
-      "Persona - Be Your True Mind",
-      "Megami Inbun Roku Persona",
-      "女神異聞録 ～ペルソナ～ BE YOUR TRUE MIND",
-    ],
-    name: [
-      "Naoya Toudou",
-      "藤堂尚也",
-      "Nao",
-      "Boy With The Pierced Ear",
-      "Jihei Suzakuin",
-      "Jay",
-    ],
-    popularity: 1785,
-    rating: 1,
-    role: "MAIN",
-  },
-  {
-    id: "anilist:31227",
-    mediaId: "anilist:101178",
-    mediaTitle: [
-      "Voogie's Angel",
-      "Dennou Sentai Voogie's★Angel",
-      "電脳戦隊ヴギィ'ズ★エンジェル",
-    ],
-    name: [
-      "Jay Burst",
-    ],
-    popularity: 1124,
-    rating: 1,
-    role: "SUPPORTING",
-  },
-]
-`;
-
-snapshot[`media search > konosuba 1`] = `
-[
-  {
-    id: "anilist:21202",
-    popularity: 386465,
-    title: [
+    "id": "anilist:21202",
+    "popularity": 386465,
+    "title": [
       "KONOSUBA -God's blessing on this wonderful world!",
       "Kono Subarashii Sekai ni Shukufuku wo!",
       "この素晴らしい世界に祝福を！",
@@ -1964,9 +1964,9 @@ snapshot[`media search > konosuba 1`] = `
     ],
   },
   {
-    id: "anilist:21699",
-    popularity: 285051,
-    title: [
+    "id": "anilist:21699",
+    "popularity": 285051,
+    "title": [
       "KONOSUBA -God's blessing on this wonderful world! 2",
       "Kono Subarashii Sekai ni Shukufuku wo! 2",
       "この素晴らしい世界に祝福を！2",
@@ -1979,9 +1979,9 @@ snapshot[`media search > konosuba 1`] = `
     ],
   },
   {
-    id: "anilist:102976",
-    popularity: 177870,
-    title: [
+    "id": "anilist:102976",
+    "popularity": 177870,
+    "title": [
       "KONOSUBA -God's blessing on this wonderful world!- Legend of Crimson",
       "Kono Subarashii Sekai ni Shukufuku wo! Kurenai Densetsu",
       "この素晴らしい世界に祝福を！紅伝説",
@@ -1991,9 +1991,9 @@ snapshot[`media search > konosuba 1`] = `
     ],
   },
   {
-    id: "anilist:21574",
-    popularity: 97164,
-    title: [
+    "id": "anilist:21574",
+    "popularity": 97164,
+    "title": [
       "KONOSUBA -God's blessing on this wonderful world!: God's Blessings On This Wonderful Choker!",
       "Kono Subarashii Sekai ni Shukufuku wo!: Kono Subarashii Choker ni Shukufuku wo!",
       "この素晴らしい世界に祝福を！ この素晴らしいチョーカーに祝福を!",
@@ -2002,9 +2002,9 @@ snapshot[`media search > konosuba 1`] = `
     ],
   },
   {
-    id: "anilist:136804",
-    popularity: 94548,
-    title: [
+    "id": "anilist:136804",
+    "popularity": 94548,
+    "title": [
       "KONOSUBA -God's Blessing on This Wonderful World! 3",
       "Kono Subarashii Sekai ni Shukufuku wo! 3",
       "この素晴らしい世界に祝福を! 3",
@@ -2013,9 +2013,9 @@ snapshot[`media search > konosuba 1`] = `
     ],
   },
   {
-    id: "anilist:97996",
-    popularity: 86025,
-    title: [
+    "id": "anilist:97996",
+    "popularity": 86025,
+    "title": [
       "KONOSUBA -God's blessing on this wonderful world! 2: God's Blessings on These Wonderful Works of Art!",
       "Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!",
       "この素晴らしい世界に祝福を！ 2 この素晴らしい芸術に祝福を!",
@@ -2025,9 +2025,9 @@ snapshot[`media search > konosuba 1`] = `
     ],
   },
   {
-    id: "anilist:150075",
-    popularity: 81884,
-    title: [
+    "id": "anilist:150075",
+    "popularity": 81884,
+    "title": [
       "KONOSUBA -An Explosion on This Wonderful World!",
       "Kono Subarashii Sekai ni Bakuen wo!",
       "この素晴らしい世界に爆焔を！",
@@ -2037,18 +2037,18 @@ snapshot[`media search > konosuba 1`] = `
     ],
   },
   {
-    id: "anilist:181244",
-    popularity: 7264,
-    title: [
+    "id": "anilist:181244",
+    "popularity": 7264,
+    "title": [
       "Kono Subarashii Sekai ni Shukufuku wo! 3 OVA",
       "この素晴らしい世界に祝福を！３ OVA",
       "KONOSUBA -God's blessing on this wonderful world! 3 OVA",
     ],
   },
   {
-    id: "anilist:85702",
-    popularity: 8385,
-    title: [
+    "id": "anilist:85702",
+    "popularity": 8385,
+    "title": [
       "Konosuba: God's Blessing on This Wonderful World!",
       "Kono Subarashii Sekai ni Shukufuku wo!",
       "この素晴らしい世界に祝福を!",
@@ -2059,9 +2059,9 @@ snapshot[`media search > konosuba 1`] = `
     ],
   },
   {
-    id: "anilist:97080",
-    popularity: 3270,
-    title: [
+    "id": "anilist:97080",
+    "popularity": 3270,
+    "title": [
       "Konosuba: An Explosion on This Wonderful World!",
       "Kono Subarashii Sekai ni Bakuen wo!",
       "この素晴らしい世界に爆焔を！",

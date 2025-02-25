@@ -1,10 +1,5 @@
-// deno-lint-ignore-file no-explicit-any
-
-import { assertEquals } from '$std/assert/mod.ts';
-
-import { FakeTime } from '$std/testing/time.ts';
-
-import { stub } from '$std/testing/mock.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import utils from '~/src/utils.ts';
 
@@ -13,12 +8,18 @@ import party from '~/src/party.ts';
 
 import config from '~/src/config.ts';
 
-import db from '~/db/mod.ts';
+import db from '~/db/index.ts';
 
 import { Character, Media, MediaType } from '~/src/types.ts';
 
-Deno.test('/party view', async (test) => {
-  await test.step('normal', async () => {
+describe('/party view', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete config.appId;
+    delete config.origin;
+  });
+
+  it('normal', async () => {
     const media: Media[] = [
       {
         id: '0',
@@ -68,232 +69,198 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    vi.useFakeTimers();
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
 
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
 
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {
-            member1: {
-              characterId: 'anilist:1',
-              mediaId: 'anilist:0',
-              rating: 1,
-              combat: {
-                level: 1,
-              },
-            },
-            member2: {
-              characterId: 'anilist:2',
-              mediaId: 'anilist:0',
-              rating: 2,
-              combat: {
-                level: 2,
-              },
-            },
-            member3: {
-              characterId: 'anilist:3',
-              mediaId: 'anilist:0',
-              rating: 3,
-              combat: {
-                level: 3,
-              },
-            },
-            member4: {
-              characterId: 'anilist:4',
-              mediaId: 'anilist:0',
-              rating: 4,
-              combat: {
-                level: 4,
-              },
-            },
-            member5: {
-              characterId: 'anilist:5',
-              mediaId: 'anilist:0',
-              rating: 5,
-              combat: {
-                level: 5,
-              },
-            },
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {
+        member1: {
+          characterId: 'anilist:1',
+          mediaId: 'anilist:0',
+          rating: 1,
+          combat: {
+            level: 1,
           },
-        }) as any,
-    );
+        },
+        member2: {
+          characterId: 'anilist:2',
+          mediaId: 'anilist:0',
+          rating: 2,
+          combat: {
+            level: 2,
+          },
+        },
+        member3: {
+          characterId: 'anilist:3',
+          mediaId: 'anilist:0',
+          rating: 3,
+          combat: {
+            level: 3,
+          },
+        },
+        member4: {
+          characterId: 'anilist:4',
+          mediaId: 'anilist:0',
+          rating: 4,
+          combat: {
+            level: 4,
+          },
+        },
+        member5: {
+          characterId: 'anilist:5',
+          mediaId: 'anilist:0',
+          rating: 5,
+          combat: {
+            level: 5,
+          },
+        },
+      },
+    } as any);
 
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve(media),
-    );
+    vi.spyOn(packs, 'media').mockResolvedValue(media);
 
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = party.view({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
+    const message = party.view({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [
+        { filename: 'default.webp', id: '0' },
+        { filename: 'default.webp', id: '1' },
+        { filename: 'default.webp', id: '2' },
+        { filename: 'default.webp', id: '3' },
+        { filename: 'default.webp', id: '4' },
+      ],
+      embeds: [
         {
-          components: [],
-          attachments: [
-            { filename: 'default.webp', id: '0' },
-            { filename: 'default.webp', id: '1' },
-            { filename: 'default.webp', id: '2' },
-            { filename: 'default.webp', id: '3' },
-            { filename: 'default.webp', id: '4' },
-          ],
-          embeds: [
+          type: 'rich',
+          fields: [
             {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 1**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 2**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 2' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 3**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 3' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 4**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 4' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 5**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 5' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+              name: 'title',
+              value: '**name 1**',
             },
           ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      listStub.restore();
-      fetchStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getInventoryStub.restore();
-    }
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 2**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 2' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 3**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 3' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 4**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 4' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 5**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 5' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+        },
+      ],
+    });
   });
 
-  await test.step('custom', async () => {
+  it('custom', async () => {
     const media: Media[] = [
       {
         id: '0',
@@ -343,228 +310,193 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    vi.useFakeTimers();
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
 
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
 
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {
-            member1: {
-              characterId: 'anilist:1',
-              mediaId: 'anilist:0',
-              rating: 1,
-              nickname: 'nickname 1',
-              image: 'image 1',
-            },
-            member2: {
-              characterId: 'anilist:2',
-              mediaId: 'anilist:0',
-              rating: 2,
-              nickname: 'nickname 2',
-              image: 'image 2',
-            },
-            member3: {
-              characterId: 'anilist:3',
-              mediaId: 'anilist:0',
-              rating: 3,
-              nickname: 'nickname 3',
-              image: 'image 3',
-            },
-            member4: {
-              characterId: 'anilist:4',
-              mediaId: 'anilist:0',
-              rating: 4,
-              nickname: 'nickname 4',
-              image: 'image 4',
-            },
-            member5: {
-              characterId: 'anilist:5',
-              mediaId: 'anilist:0',
-              rating: 5,
-              nickname: 'nickname 5',
-              image: 'image 5',
-            },
-          },
-        }) as any,
-    );
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {
+        member1: {
+          characterId: 'anilist:1',
+          mediaId: 'anilist:0',
+          rating: 1,
+          nickname: 'nickname 1',
+          image: 'image 1',
+        },
+        member2: {
+          characterId: 'anilist:2',
+          mediaId: 'anilist:0',
+          rating: 2,
+          nickname: 'nickname 2',
+          image: 'image 2',
+        },
+        member3: {
+          characterId: 'anilist:3',
+          mediaId: 'anilist:0',
+          rating: 3,
+          nickname: 'nickname 3',
+          image: 'image 3',
+        },
+        member4: {
+          characterId: 'anilist:4',
+          mediaId: 'anilist:0',
+          rating: 4,
+          nickname: 'nickname 4',
+          image: 'image 4',
+        },
+        member5: {
+          characterId: 'anilist:5',
+          mediaId: 'anilist:0',
+          rating: 5,
+          nickname: 'nickname 5',
+          image: 'image 5',
+        },
+      },
+    } as any);
 
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve(media),
-    );
+    vi.spyOn(packs, 'media').mockResolvedValue(media);
 
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = party.view({
-        userId: 'user_id',
-        guildId: 'guild_id',
+    const message = party.view({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
 
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [
+        { filename: 'image1.webp', id: '0' },
+        { filename: 'image2.webp', id: '1' },
+        { filename: 'image3.webp', id: '2' },
+        { filename: 'image4.webp', id: '3' },
+        { filename: 'image5.webp', id: '4' },
+      ],
+      embeds: [
         {
-          components: [],
-          attachments: [
-            { filename: 'image1.webp', id: '0' },
-            { filename: 'image2.webp', id: '1' },
-            { filename: 'image3.webp', id: '2' },
-            { filename: 'image4.webp', id: '3' },
-            { filename: 'image5.webp', id: '4' },
-          ],
-          embeds: [
+          type: 'rich',
+          fields: [
             {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 1**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image1.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 2**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image2.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 3**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image3.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 4**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image4.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 5**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image5.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+              name: 'title',
+              value: '**nickname 1**',
             },
           ],
+          thumbnail: {
+            url: 'attachment://image1.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      listStub.restore();
-      fetchStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getInventoryStub.restore();
-    }
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 2**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image2.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 3**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image3.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 4**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image4.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 5**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image5.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+        },
+      ],
+    });
   });
 
-  await test.step('unassigned members', async () => {
+  it('unassigned members', async () => {
     const media: Media[] = [
       {
         id: '0',
@@ -614,191 +546,151 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    vi.useFakeTimers();
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
 
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {
-            member1: {
-              characterId: 'anilist:1',
-              mediaId: 'anilist:0',
-              rating: 1,
-            },
-            member2: {
-              characterId: 'anilist:2',
-              mediaId: 'anilist:0',
-              rating: 2,
-            },
-            member5: {
-              characterId: 'anilist:5',
-              mediaId: 'anilist:0',
-              rating: 5,
-            },
-          },
-        }) as any,
-    );
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {
+        member1: {
+          characterId: 'anilist:1',
+          mediaId: 'anilist:0',
+          rating: 1,
+        },
+        member2: {
+          characterId: 'anilist:2',
+          mediaId: 'anilist:0',
+          rating: 2,
+        },
+        member5: {
+          characterId: 'anilist:5',
+          mediaId: 'anilist:0',
+          rating: 5,
+        },
+      },
+    } as any);
 
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve(media),
-    );
+    vi.spyOn(packs, 'media').mockResolvedValue(media);
 
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = party.view({
-        userId: 'user_id',
-        guildId: 'guild_id',
+    const message = party.view({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
 
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [
+        { filename: 'default.webp', id: '0' },
+        { filename: 'default.webp', id: '1' },
+        { filename: 'default.webp', id: '2' },
+      ],
+      embeds: [
         {
-          components: [],
-          attachments: [
-            { filename: 'default.webp', id: '0' },
-            { filename: 'default.webp', id: '1' },
-            { filename: 'default.webp', id: '2' },
-          ],
-          embeds: [
+          type: 'rich',
+          fields: [
             {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 1**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 2**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              description: 'Unassigned',
-            },
-            {
-              type: 'rich',
-              description: 'Unassigned',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 5**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+              name: 'title',
+              value: '**name 1**',
             },
           ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      listStub.restore();
-      fetchStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getGuildStub.restore();
-      getInventoryStub.restore();
-    }
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 2**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          description: 'Unassigned',
+        },
+        {
+          type: 'rich',
+          description: 'Unassigned',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 5**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+        },
+      ],
+    });
   });
 
-  await test.step('disabled media', async () => {
+  it('disabled media', async () => {
     const media: Media = {
       id: '0',
       packId: 'anilist',
@@ -846,169 +738,134 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    vi.useFakeTimers();
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
+
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {
+        member1: {
+          characterId: 'anilist:1',
+          mediaId: 'anilist:0',
+          rating: 1,
+        },
+        member2: {
+          characterId: 'anilist:2',
+          mediaId: 'anilist:0',
+          rating: 2,
+        },
+        member3: {
+          characterId: 'anilist:3',
+          mediaId: 'anilist:0',
+          rating: 3,
+        },
+        member4: {
+          characterId: 'anilist:4',
+          mediaId: 'anilist:0',
+          rating: 4,
+        },
+        member5: {
+          characterId: 'anilist:5',
+          mediaId: 'anilist:0',
+          rating: 5,
+        },
+      },
+    } as any);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
+
+    vi.spyOn(packs, 'isDisabled').mockImplementation(
+      (id) => id === 'anilist:0'
     );
 
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+    vi.spyOn(packs, 'media').mockResolvedValue([media]);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {
-            member1: {
-              characterId: 'anilist:1',
-              mediaId: 'anilist:0',
-              rating: 1,
-            },
-            member2: {
-              characterId: 'anilist:2',
-              mediaId: 'anilist:0',
-              rating: 2,
-            },
-            member3: {
-              characterId: 'anilist:3',
-              mediaId: 'anilist:0',
-              rating: 3,
-            },
-            member4: {
-              characterId: 'anilist:4',
-              mediaId: 'anilist:0',
-              rating: 4,
-            },
-            member5: {
-              characterId: 'anilist:5',
-              mediaId: 'anilist:0',
-              rating: 5,
-            },
-          },
-        }) as any,
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      (id) => id === 'anilist:0',
-    );
-
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve([media]),
-    );
-
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = party.view({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
+    const message = party.view({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
         {
-          embeds: [
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-          ],
-          components: [],
-          attachments: [],
+          type: 'rich',
+          description: 'This character was removed or disabled',
         },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getGuildStub.restore();
-      getInventoryStub.restore();
-    }
+        {
+          type: 'rich',
+          description: 'This character was removed or disabled',
+        },
+        {
+          type: 'rich',
+          description: 'This character was removed or disabled',
+        },
+        {
+          type: 'rich',
+          description: 'This character was removed or disabled',
+        },
+        {
+          type: 'rich',
+          description: 'This character was removed or disabled',
+        },
+      ],
+      components: [],
+      attachments: [],
+    });
   });
 });
 
-Deno.test('/party assign', async (test) => {
-  await test.step('normal', async () => {
+describe('/party assign', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete config.appId;
+    delete config.origin;
+  });
+
+  it('normal', async () => {
     const characters: Character[] = [
       {
         id: '1',
@@ -1019,155 +876,118 @@ Deno.test('/party assign', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    vi.useFakeTimers();
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
 
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
-    const assignCharacterStub = stub(
-      db,
-      'assignCharacter',
-      () =>
-        ({
-          id: 'anilist:1',
-          mediaId: 'anilist:0',
-          rating: 2,
-        }) as any,
-    );
+    vi.spyOn(db, 'assignCharacter').mockReturnValue({
+      id: 'anilist:1',
+      mediaId: 'anilist:0',
+      rating: 2,
+    } as any);
 
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve([]),
-    );
+    vi.spyOn(packs, 'media').mockResolvedValue([]);
 
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = party.assign({
-        spot: 1,
-        token: 'test_token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-        id: 'anilist:1',
-      });
+    const message = party.assign({
+      spot: 1,
+      token: 'test_token',
+      userId: 'user_id',
+      guildId: 'guild_id',
+      id: 'anilist:1',
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
         {
-          embeds: [
+          type: 'rich',
+          description: 'Assigned',
+        },
+        {
+          type: 'rich',
+          fields: [
             {
-              type: 'rich',
-              description: 'Assigned',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'name 1',
-                  value: '\u200B',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              name: 'name 1',
+              value: '\u200B',
             },
           ],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'character=anilist:1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'stats=anilist:1',
-                label: '/stats',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          attachments: [{ filename: 'default.webp', id: '0' }],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getGuildStub.restore();
-      assignCharacterStub.restore();
-    }
+      ],
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              custom_id: 'character=anilist:1',
+              label: '/character',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'stats=anilist:1',
+              label: '/stats',
+              style: 2,
+              type: 2,
+            },
+          ],
+        },
+      ],
+      attachments: [{ filename: 'default.webp', id: '0' }],
+    });
   });
 
-  await test.step('custom', async () => {
+  it('custom', async () => {
     const characters: Character[] = [
       {
         id: '1',
@@ -1178,157 +998,946 @@ Deno.test('/party assign', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    vi.useFakeTimers();
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
+
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+
+    vi.spyOn(db, 'assignCharacter').mockReturnValue({
+      id: 'anilist:1',
+      mediaId: 'anilist:0',
+      rating: 2,
+      nickname: 'nickname',
+      image: 'image',
+    } as any);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
+
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+
+    vi.spyOn(packs, 'media').mockResolvedValue([]);
+
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = party.assign({
+      spot: 1,
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'anilist:1',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
     );
 
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
+        {
+          type: 'rich',
+          description: 'Assigned',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'nickname',
+              value: '\u200B',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image.webp',
+          },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+      ],
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              custom_id: 'character=anilist:1',
+              label: '/character',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'stats=anilist:1',
+              label: '/stats',
+              style: 2,
+              type: 2,
+            },
+          ],
+        },
+      ],
+      attachments: [{ filename: 'image.webp', id: '0' }],
+    });
+  });
+
+  it('character not found', async () => {
+    const characters: Character[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'name 1',
+        },
+      },
+    ];
+
+    vi.useFakeTimers();
+
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
+
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+
+    vi.spyOn(db, 'assignCharacter').mockImplementation(() => {
+      throw new Error('CHARACTER_NOT_FOUND');
+    });
+
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
+
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+
+    vi.spyOn(packs, 'media').mockResolvedValue([]);
+
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = party.assign({
+      spot: 1,
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'anilist:1',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
     );
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
+        {
+          type: 'rich',
+          description: "name 1 hasn't been found by anyone yet",
+        },
+      ],
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              custom_id: 'character=anilist:1',
+              label: '/character',
+              style: 2,
+              type: 2,
+            },
+          ],
+        },
+      ],
+      attachments: [],
+    });
+  });
+});
+
+describe('/party swap', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete config.appId;
+    delete config.origin;
+  });
+
+  it('normal', async () => {
+    const media: Media[] = [
+      {
+        id: '0',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
+    const characters: Character[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'name 1',
+        },
+      },
+      {
+        id: '2',
+        packId: 'anilist',
+        name: {
+          english: 'name 2',
+        },
+      },
+      {
+        id: '3',
+        packId: 'anilist',
+        name: {
+          english: 'name 3',
+        },
+      },
+      {
+        id: '4',
+        packId: 'anilist',
+        name: {
+          english: 'name 4',
+        },
+      },
+      {
+        id: '5',
+        packId: 'anilist',
+        name: {
+          english: 'name 5',
+        },
+      },
+    ];
+
+    vi.useFakeTimers();
+
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
+
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {
+        member1: {
+          characterId: 'anilist:2',
+          mediaId: 'anilist:0',
+          rating: 2,
+        },
+        member2: {
+          characterId: 'anilist:1',
+          mediaId: 'anilist:0',
+          rating: 1,
+        },
+        member3: {
+          characterId: 'anilist:3',
+          mediaId: 'anilist:0',
+          rating: 3,
+        },
+        member4: {
+          characterId: 'anilist:4',
+          mediaId: 'anilist:0',
+          rating: 4,
+        },
+        member5: {
+          characterId: 'anilist:5',
+          mediaId: 'anilist:0',
+          rating: 5,
+        },
+      },
+    } as any);
+
+    vi.spyOn(db, 'swapSpots').mockReturnValue({} as any);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
+
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+
+    vi.spyOn(packs, 'media').mockResolvedValue(media);
+
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = party.swap({
+      a: 1,
+      b: 2,
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
     );
 
-    const assignCharacterStub = stub(
-      db,
-      'assignCharacter',
-      () =>
-        ({
-          id: 'anilist:1',
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [
+        { filename: 'default.webp', id: '0' },
+        { filename: 'default.webp', id: '1' },
+        { filename: 'default.webp', id: '2' },
+        { filename: 'default.webp', id: '3' },
+        { filename: 'default.webp', id: '4' },
+      ],
+      embeds: [
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 1**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 2**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 3**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 4**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**name 5**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+        },
+      ],
+    });
+  });
+
+  it('custom', async () => {
+    const media: Media[] = [
+      {
+        id: '0',
+        packId: 'anilist',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
+    const characters: Character[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'name 1',
+        },
+      },
+      {
+        id: '2',
+        packId: 'anilist',
+        name: {
+          english: 'name 2',
+        },
+      },
+      {
+        id: '3',
+        packId: 'anilist',
+        name: {
+          english: 'name 3',
+        },
+      },
+      {
+        id: '4',
+        packId: 'anilist',
+        name: {
+          english: 'name 4',
+        },
+      },
+      {
+        id: '5',
+        packId: 'anilist',
+        name: {
+          english: 'name 5',
+        },
+      },
+    ];
+
+    vi.useFakeTimers();
+
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
+
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {
+        member1: {
+          characterId: 'anilist:2',
+          mediaId: 'anilist:0',
+          rating: 2,
+          nickname: 'nickname 2',
+          image: 'image 2',
+        },
+        member2: {
+          characterId: 'anilist:1',
+          mediaId: 'anilist:0',
+          rating: 1,
+          nickname: 'nickname 1',
+          image: 'image 1',
+        },
+        member3: {
+          characterId: 'anilist:3',
+          mediaId: 'anilist:0',
+          rating: 3,
+          nickname: 'nickname 3',
+          image: 'image 3',
+        },
+        member4: {
+          characterId: 'anilist:4',
+          mediaId: 'anilist:0',
+          rating: 4,
+          nickname: 'nickname 4',
+          image: 'image 4',
+        },
+        member5: {
+          characterId: 'anilist:5',
+          mediaId: 'anilist:0',
+          rating: 5,
+          nickname: 'nickname 5',
+          image: 'image 5',
+        },
+      },
+    } as any);
+
+    vi.spyOn(db, 'swapSpots').mockReturnValue({} as any);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
+
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+
+    vi.spyOn(packs, 'media').mockResolvedValue(media);
+
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = party.swap({
+      a: 1,
+      b: 2,
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [
+        { filename: 'image1.webp', id: '0' },
+        { filename: 'image2.webp', id: '1' },
+        { filename: 'image3.webp', id: '2' },
+        { filename: 'image4.webp', id: '3' },
+        { filename: 'image5.webp', id: '4' },
+      ],
+      embeds: [
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 1**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image1.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 2**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image2.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 3**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image3.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 4**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image4.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'title',
+              value: '**nickname 5**',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://image5.webp',
+          },
+          footer: { text: 'LVL 1' },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+        },
+      ],
+    });
+  });
+});
+
+describe('/party remove', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete config.appId;
+    delete config.origin;
+  });
+
+  it('normal', async () => {
+    const characters: Character[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'name 1',
+        },
+      },
+    ];
+
+    vi.useFakeTimers();
+
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
+
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {
+        member1: {
+          characterId: 'anilist:1',
+          mediaId: 'anilist:0',
+          rating: 2,
+        },
+      },
+    } as any);
+
+    vi.spyOn(db, 'unassignCharacter').mockReturnValue({} as any);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
+
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+
+    vi.spyOn(packs, 'media').mockResolvedValue([]);
+
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = party.remove({
+      spot: 1,
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'attachment://spinner3.gif',
+            },
+          },
+        ],
+      },
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
+        {
+          type: 'rich',
+          description: 'Removed',
+        },
+        {
+          type: 'rich',
+          fields: [
+            {
+              name: 'name 1',
+              value: '\u200B',
+            },
+          ],
+          thumbnail: {
+            url: 'attachment://default.webp',
+          },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+        },
+      ],
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              custom_id: 'character=anilist:1',
+              label: '/character',
+              style: 2,
+              type: 2,
+            },
+          ],
+        },
+      ],
+      attachments: [{ filename: 'default.webp', id: '0' }],
+    });
+  });
+
+  it('custom', async () => {
+    const characters: Character[] = [
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'name 1',
+        },
+      },
+    ];
+
+    vi.useFakeTimers();
+
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
+
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
+
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {
+        member1: {
+          characterId: 'anilist:1',
           mediaId: 'anilist:0',
           rating: 2,
           nickname: 'nickname',
           image: 'image',
-        }) as any,
-    );
+        },
+      },
+    } as any);
 
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+    vi.spyOn(db, 'unassignCharacter').mockReturnValue({} as any);
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve([]),
-    );
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
+    vi.spyOn(packs, 'media').mockResolvedValue([]);
+
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = party.assign({
-        spot: 1,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'anilist:1',
-      });
+    const message = party.remove({
+      spot: 1,
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
         {
-          embeds: [
+          type: 'rich',
+          description: 'Removed',
+        },
+        {
+          type: 'rich',
+          fields: [
             {
-              type: 'rich',
-              description: 'Assigned',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'nickname',
-                  value: '\u200B',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image.webp',
-              },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              name: 'nickname',
+              value: '\u200B',
             },
           ],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'character=anilist:1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'stats=anilist:1',
-                label: '/stats',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          attachments: [{ filename: 'image.webp', id: '0' }],
+          thumbnail: {
+            url: 'attachment://image.webp',
+          },
+          description:
+            '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getGuildStub.restore();
-      assignCharacterStub.restore();
-    }
+      ],
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              custom_id: 'character=anilist:1',
+              label: '/character',
+              style: 2,
+              type: 2,
+            },
+          ],
+        },
+      ],
+      attachments: [{ filename: 'image.webp', id: '0' }],
+    });
   });
 
-  await test.step('character not found', async () => {
+  it('empty spot', async () => {
     const characters: Character[] = [
       {
         id: '1',
@@ -1339,1126 +1948,90 @@ Deno.test('/party assign', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    vi.useFakeTimers();
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
 
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
 
-    const getGuildStub = stub(
-      db,
-      'getGuild',
-      () => 'guild' as any,
-    );
+    vi.spyOn(db, 'getInventory').mockReturnValue({ party: {} } as any);
 
-    const assignCharacterStub = stub(
-      db,
-      'assignCharacter',
-      () => {
-        throw new Error('CHARACTER_NOT_FOUND');
-      },
-    );
+    vi.spyOn(db, 'unassignCharacter').mockReturnValue(undefined as any);
 
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve([]),
-    );
+    vi.spyOn(packs, 'media').mockResolvedValue([]);
 
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = party.assign({
-        spot: 1,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        id: 'anilist:1',
-      });
+    const message = party.remove({
+      spot: 1,
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      embeds: [
         {
-          embeds: [
-            {
-              type: 'rich',
-              description: "name 1 hasn't been found by anyone yet",
-            },
-          ],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'character=anilist:1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          attachments: [],
+          type: 'rich',
+          description:
+            'There was no character assigned to this spot of the party',
         },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getGuildStub.restore();
-      assignCharacterStub.restore();
-    }
+      ],
+      components: [],
+      attachments: [],
+    });
   });
 });
 
-Deno.test('/party swap', async (test) => {
-  await test.step('normal', async () => {
-    const media: Media[] = [
-      {
-        id: '0',
-        packId: 'anilist',
-        type: MediaType.Anime,
-        title: {
-          english: 'title',
-        },
-      },
-    ];
-
-    const characters: Character[] = [
-      {
-        id: '1',
-        packId: 'anilist',
-        name: {
-          english: 'name 1',
-        },
-      },
-      {
-        id: '2',
-        packId: 'anilist',
-        name: {
-          english: 'name 2',
-        },
-      },
-      {
-        id: '3',
-        packId: 'anilist',
-        name: {
-          english: 'name 3',
-        },
-      },
-      {
-        id: '4',
-        packId: 'anilist',
-        name: {
-          english: 'name 4',
-        },
-      },
-      {
-        id: '5',
-        packId: 'anilist',
-        name: {
-          english: 'name 5',
-        },
-      },
-    ];
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {
-            member1: {
-              characterId: 'anilist:2',
-              mediaId: 'anilist:0',
-              rating: 2,
-            },
-            member2: {
-              characterId: 'anilist:1',
-              mediaId: 'anilist:0',
-              rating: 1,
-            },
-            member3: {
-              characterId: 'anilist:3',
-              mediaId: 'anilist:0',
-              rating: 3,
-            },
-            member4: {
-              characterId: 'anilist:4',
-              mediaId: 'anilist:0',
-              rating: 4,
-            },
-            member5: {
-              characterId: 'anilist:5',
-              mediaId: 'anilist:0',
-              rating: 5,
-            },
-          },
-        }) as any,
-    );
-
-    const swapSpotsStub = stub(
-      db,
-      'swapSpots',
-      () => ({}) as any,
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve(media),
-    );
-
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = party.swap({
-        a: 1,
-        b: 2,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          components: [],
-          attachments: [
-            { filename: 'default.webp', id: '0' },
-            { filename: 'default.webp', id: '1' },
-            { filename: 'default.webp', id: '2' },
-            { filename: 'default.webp', id: '3' },
-            { filename: 'default.webp', id: '4' },
-          ],
-          embeds: [
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 1**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 2**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 3**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 4**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**name 5**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getInventoryStub.restore();
-      swapSpotsStub.restore();
-    }
+describe('/party clear', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete config.appId;
+    delete config.origin;
   });
 
-  await test.step('custom', async () => {
-    const media: Media[] = [
-      {
-        id: '0',
-        packId: 'anilist',
-        type: MediaType.Anime,
-        title: {
-          english: 'title',
-        },
-      },
-    ];
-
-    const characters: Character[] = [
-      {
-        id: '1',
-        packId: 'anilist',
-        name: {
-          english: 'name 1',
-        },
-      },
-      {
-        id: '2',
-        packId: 'anilist',
-        name: {
-          english: 'name 2',
-        },
-      },
-      {
-        id: '3',
-        packId: 'anilist',
-        name: {
-          english: 'name 3',
-        },
-      },
-      {
-        id: '4',
-        packId: 'anilist',
-        name: {
-          english: 'name 4',
-        },
-      },
-      {
-        id: '5',
-        packId: 'anilist',
-        name: {
-          english: 'name 5',
-        },
-      },
-    ];
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {
-            member1: {
-              characterId: 'anilist:2',
-              mediaId: 'anilist:0',
-              rating: 2,
-              nickname: 'nickname 2',
-              image: 'image 2',
-            },
-            member2: {
-              characterId: 'anilist:1',
-              mediaId: 'anilist:0',
-              rating: 1,
-              nickname: 'nickname 1',
-              image: 'image 1',
-            },
-            member3: {
-              characterId: 'anilist:3',
-              mediaId: 'anilist:0',
-              rating: 3,
-              nickname: 'nickname 3',
-              image: 'image 3',
-            },
-            member4: {
-              characterId: 'anilist:4',
-              mediaId: 'anilist:0',
-              rating: 4,
-              nickname: 'nickname 4',
-              image: 'image 4',
-            },
-            member5: {
-              characterId: 'anilist:5',
-              mediaId: 'anilist:0',
-              rating: 5,
-              nickname: 'nickname 5',
-              image: 'image 5',
-            },
-          },
-        }) as any,
-    );
-
-    const swapSpotsStub = stub(
-      db,
-      'swapSpots',
-      () => ({}) as any,
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve(media),
-    );
-
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = party.swap({
-        a: 1,
-        b: 2,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          components: [],
-          attachments: [
-            { filename: 'image1.webp', id: '0' },
-            { filename: 'image2.webp', id: '1' },
-            { filename: 'image3.webp', id: '2' },
-            { filename: 'image4.webp', id: '3' },
-            { filename: 'image5.webp', id: '4' },
-          ],
-          embeds: [
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 1**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image1.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 2**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image2.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 3**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image3.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 4**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image4.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'title',
-                  value: '**nickname 5**',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image5.webp',
-              },
-              footer: { text: 'LVL 1' },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getInventoryStub.restore();
-      swapSpotsStub.restore();
-    }
-  });
-});
-
-Deno.test('/party remove', async (test) => {
-  await test.step('normal', async () => {
-    const characters: Character[] = [
-      {
-        id: '1',
-        packId: 'anilist',
-        name: {
-          english: 'name 1',
-        },
-      },
-    ];
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {
-            member1: {
-              characterId: 'anilist:1',
-              mediaId: 'anilist:0',
-              rating: 2,
-            },
-          },
-        }) as any,
-    );
-
-    const unassignCharacterStub = stub(
-      db,
-      'unassignCharacter',
-      () => ({}) as any,
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve([]),
-    );
-
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = party.remove({
-        spot: 1,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [
-            {
-              type: 'rich',
-              description: 'Removed',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'name 1',
-                  value: '\u200B',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://default.webp',
-              },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-          ],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'character=anilist:1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          attachments: [{ filename: 'default.webp', id: '0' }],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getInventoryStub.restore();
-      unassignCharacterStub.restore();
-    }
-  });
-
-  await test.step('custom', async () => {
-    const characters: Character[] = [
-      {
-        id: '1',
-        packId: 'anilist',
-        name: {
-          english: 'name 1',
-        },
-      },
-    ];
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {
-            member1: {
-              characterId: 'anilist:1',
-              mediaId: 'anilist:0',
-              rating: 2,
-              nickname: 'nickname',
-              image: 'image',
-            },
-          },
-        }) as any,
-    );
-
-    const unassignCharacterStub = stub(
-      db,
-      'unassignCharacter',
-      () => ({}) as any,
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve([]),
-    );
-
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = party.remove({
-        spot: 1,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [
-            {
-              type: 'rich',
-              description: 'Removed',
-            },
-            {
-              type: 'rich',
-              fields: [
-                {
-                  name: 'nickname',
-                  value: '\u200B',
-                },
-              ],
-              thumbnail: {
-                url: 'attachment://image.webp',
-              },
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            },
-          ],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'character=anilist:1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          attachments: [{ filename: 'image.webp', id: '0' }],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getInventoryStub.restore();
-      unassignCharacterStub.restore();
-    }
-  });
-
-  await test.step('empty spot', async () => {
-    const characters: Character[] = [
-      {
-        id: '1',
-        packId: 'anilist',
-        name: {
-          english: 'name 1',
-        },
-      },
-    ];
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
-
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
-
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () => ({ party: {} }) as any,
-    );
-
-    const unassignCharacterStub = stub(
-      db,
-      'unassignCharacter',
-      () => undefined as any,
-    );
-
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve([]),
-    );
-
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = party.remove({
-        spot: 1,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'attachment://spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                'There was no character assigned to this spot of the party',
-            },
-          ],
-          components: [],
-          attachments: [],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-
-      getUserStub.restore();
-      getInventoryStub.restore();
-      unassignCharacterStub.restore();
-
-      mediaStub.restore();
-      charactersStub.restore();
-    }
-  });
-});
-
-Deno.test('/party clear', async (test) => {
-  await test.step('normal', async () => {
+  it('normal', async () => {
     const media: Media[] = [
       {
         id: '0',
@@ -2480,133 +2053,94 @@ Deno.test('/party clear', async (test) => {
       },
     ];
 
-    const timeStub = new FakeTime();
+    vi.useFakeTimers();
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => undefined as any,
-    );
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValue(undefined as any);
 
-    const getUserStub = stub(
-      db,
-      'getUser',
-      () => 'user' as any,
-    );
+    vi.spyOn(db, 'getUser').mockReturnValue('user' as any);
 
-    const clearPartyStub = stub(
-      db,
-      'clearParty',
-      () => Promise.resolve(),
-    );
+    vi.spyOn(db, 'clearParty').mockResolvedValue();
 
-    const getInventoryStub = stub(
-      db,
-      'getInventory',
-      () =>
-        ({
-          party: {},
-        }) as any,
-    );
+    vi.spyOn(db, 'getInventory').mockReturnValue({
+      party: {},
+    } as any);
 
-    const listStub = stub(packs, 'all', () =>
-      Promise.resolve([
-        { manifest: { id: 'anilist' } },
-      ] as any));
+    vi.spyOn(packs, 'all').mockResolvedValue([
+      { manifest: { id: 'anilist' } },
+    ] as any);
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
-    const mediaStub = stub(
-      packs,
-      'media',
-      () => Promise.resolve(media),
-    );
+    vi.spyOn(packs, 'media').mockResolvedValue(media);
 
-    const charactersStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve(characters),
-    );
+    vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    try {
-      const message = party.clear({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
+    const message = party.clear({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+    });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [{ filename: 'spinner3.gif', id: '0' }],
-          embeds: [{
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        embeds: [
+          {
             type: 'rich',
             image: {
               url: 'attachment://spinner3.gif',
             },
-          }],
-        },
-      });
+          },
+        ],
+      },
+    });
 
-      await timeStub.runMicrotasks();
+    await vi.runAllTimersAsync();
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+    expect(fetchStub.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
 
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+    expect(fetchStub.mock.calls[0][1]?.method).toBe('PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      components: [],
+      attachments: [],
+      embeds: [
         {
-          components: [],
-          attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              description: 'Unassigned',
-            },
-            {
-              type: 'rich',
-              description: 'Unassigned',
-            },
-            {
-              type: 'rich',
-              description: 'Unassigned',
-            },
-            {
-              type: 'rich',
-              description: 'Unassigned',
-            },
-            {
-              type: 'rich',
-              description: 'Unassigned',
-            },
-          ],
+          type: 'rich',
+          description: 'Unassigned',
         },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-      mediaStub.restore();
-      charactersStub.restore();
-      getUserStub.restore();
-      getInventoryStub.restore();
-      clearPartyStub.restore();
-    }
+        {
+          type: 'rich',
+          description: 'Unassigned',
+        },
+        {
+          type: 'rich',
+          description: 'Unassigned',
+        },
+        {
+          type: 'rich',
+          description: 'Unassigned',
+        },
+        {
+          type: 'rich',
+          description: 'Unassigned',
+        },
+      ],
+    });
   });
 });

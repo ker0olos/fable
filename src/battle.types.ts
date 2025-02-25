@@ -27,7 +27,12 @@ export class PartyMember {
   owner: 'party1' | 'party2';
   effects: StatusEffects;
 
-  constructor({ character, stats, existing, owner }: {
+  constructor({
+    character,
+    stats,
+    existing,
+    owner,
+  }: {
     character: Character | DisaggregatedCharacter;
     stats: CharacterBattleStats;
     existing?: Schema.Character;
@@ -175,7 +180,7 @@ export class PartyMember {
 }
 
 export const getBattleStats = (
-  char: Schema.Character,
+  char: Schema.Character
 ): CharacterBattleStats => {
   return {
     skills: char.combat?.skills ?? {},

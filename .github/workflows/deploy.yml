@@ -1,4 +1,4 @@
-name: deno
+name: nodejs
 
 on:
   push:
@@ -10,56 +10,54 @@ on:
     branches: [main]
 
 jobs:
-  fmt:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.x
-      - run: deno fmt --check
-
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
+      - uses: actions/setup-node@v3
         with:
-          deno-version: v2.x
-      - run: deno lint
+          node-version: "20.x"
+      - run: npm install
+      - run: npm run lint
+
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+      - run: npm install
+      - run: npm run check
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
+      - uses: actions/setup-node@v3
         with:
-          deno-version: v2.x
-      - run: deno test -A --coverage=cov_profile --no-check
-      - run: deno coverage cov_profile --lcov --output=lcov.info
-      - uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          node-version: "20.x"
+      - run: npm install
+      - run: npm run test
 
-  deploy:
-    if: github.event_name == 'push' # event push only runs on main
-    runs-on: ubuntu-latest
-    needs:
-      - test
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.x
+  # deploy:
+  #   if: github.event_name == 'push' # event push only runs on main
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - test
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: "20.x"
+  #     - run: deno run -A db/_ensureIndexes.ts
+  #       env:
+  #         MONGO_URI: ${{ secrets.MONGO_URI }}
 
-      - run: deno run -A db/_ensureIndexes.ts
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-
-      - uses: denoland/deployctl@v1
-        with:
-          project: ${{ secrets.DENO_ID }}
-          entrypoint: src/interactions.ts
+  #     - uses: denoland/deployctl@v1
+  #       with:
+  #         project: ${{ secrets.DENO_ID }}
+  #         entrypoint: src/interactions.ts

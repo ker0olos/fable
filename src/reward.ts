@@ -4,43 +4,40 @@ import i18n from '~/src/i18n.ts';
 
 import * as discord from '~/src/discord.ts';
 
-import db from '~/db/mod.ts';
+import db from '~/db/index.ts';
 
-function pulls(
-  { userId, targetId, amount }: {
-    userId: string;
-    targetId: string;
-    amount: number;
-  },
-): discord.Message {
+function pulls({
+  userId,
+  targetId,
+  amount,
+}: {
+  userId: string;
+  targetId: string;
+  amount: number;
+}): discord.Message {
   const locale = user.cachedUsers[userId]?.locale;
 
   const message = new discord.Message();
 
   message.addEmbed(
-    new discord.Embed()
-      .setDescription(
-        i18n.get(
-          'admin-reward',
-          locale,
-          `<@${targetId}>`,
-          amount,
-          amount > 1 ? i18n.get('pulls', locale) : i18n.get('pull', locale),
-          discord.emotes.add,
-        ),
-      ),
+    new discord.Embed().setDescription(
+      i18n.get(
+        'admin-reward',
+        locale,
+        `<@${targetId}>`,
+        amount,
+        amount > 1 ? i18n.get('pulls', locale) : i18n.get('pull', locale),
+        discord.emotes.add
+      )
+    )
   );
 
   message.addComponents([
-    new discord.Component().setId(
-      'reward',
-      'pulls',
-      userId,
-      targetId,
-      `${amount}`,
-    )
+    new discord.Component()
+      .setId('reward', 'pulls', userId, targetId, `${amount}`)
       .setLabel(i18n.get('confirm', locale)),
-    new discord.Component().setId('cancel', userId)
+    new discord.Component()
+      .setId('cancel', userId)
       .setStyle(discord.ButtonStyle.Red)
       .setLabel(i18n.get('cancel', locale)),
   ]);
@@ -48,7 +45,13 @@ function pulls(
   return message;
 }
 
-async function confirmPulls({ userId, targetId, guildId, amount, token }: {
+async function confirmPulls({
+  userId,
+  targetId,
+  guildId,
+  amount,
+  token,
+}: {
   userId: string;
   targetId: string;
   guildId: string;
@@ -61,31 +64,33 @@ async function confirmPulls({ userId, targetId, guildId, amount, token }: {
 
   const message = new discord.Message();
 
-  message
-    .addEmbed(new discord.Embed().setDescription(
+  message.addEmbed(
+    new discord.Embed().setDescription(
       i18n.get(
         'rewarded-pulls',
         locale,
         `<@${targetId}>`,
         amount,
         amount > 1 ? i18n.get('pulls', locale) : i18n.get('pull', locale),
-        discord.emotes.add,
-      ),
-    ));
+        discord.emotes.add
+      )
+    )
+  );
 
   const newMessage = new discord.Message().setContent(`<@${targetId}>`);
 
-  newMessage
-    .addEmbed(new discord.Embed().setDescription(
+  newMessage.addEmbed(
+    new discord.Embed().setDescription(
       i18n.get(
         'got-rewarded-pulls',
         locale,
         `<@${userId}>`,
         amount,
         amount > 1 ? i18n.get('pulls', locale) : i18n.get('pull', locale),
-        discord.emotes.add,
-      ),
-    ));
+        discord.emotes.add
+      )
+    )
+  );
 
   message.patch(token).then(() => {
     newMessage.followup(token);

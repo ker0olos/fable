@@ -1,4 +1,4 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 export const COSTS = {
   THREE: 4,
@@ -6,19 +6,15 @@ export const COSTS = {
   FIVE: 28,
 };
 
-export async function addTokens(
-  userId: string,
-  amount: number,
-): Promise<void> {
+export async function addTokens(userId: string, amount: number): Promise<void> {
   const db = new Mongo();
 
   try {
     await db.connect();
 
-    await db.users().updateOne(
-      { discordId: userId },
-      { $inc: { availableTokens: amount } },
-    );
+    await db
+      .users()
+      .updateOne({ discordId: userId }, { $inc: { availableTokens: amount } });
   } finally {
     await db.close();
   }
@@ -28,7 +24,7 @@ export async function addPulls(
   userId: string,
   guildId: string,
   amount: number,
-  free: boolean = false,
+  free: boolean = false
 ): Promise<void> {
   const db = new Mongo();
 
@@ -40,20 +36,22 @@ export async function addPulls(
     session.startTransaction();
 
     if (!free) {
-      const { modifiedCount } = await db.users().updateOne({
-        discordId: userId,
-        availableTokens: { $gte: amount },
-      }, { $inc: { availableTokens: -amount } });
+      const { modifiedCount } = await db.users().updateOne(
+        {
+          discordId: userId,
+          availableTokens: { $gte: amount },
+        },
+        { $inc: { availableTokens: -amount } }
+      );
 
       if (!modifiedCount) {
         throw new Error('INSUFFICIENT_TOKENS');
       }
     }
 
-    await db.inventories().updateOne(
-      { userId, guildId },
-      { $inc: { availablePulls: amount } },
-    );
+    await db
+      .inventories()
+      .updateOne({ userId, guildId }, { $inc: { availablePulls: amount } });
 
     await session.commitTransaction();
   } catch (err) {
@@ -73,26 +71,26 @@ export async function addPulls(
 
 export async function addGuarantee(
   userId: string,
-  guarantee: number,
+  guarantee: number
 ): Promise<void> {
-  const cost = guarantee === 5
-    ? COSTS.FIVE
-    : guarantee === 4
-    ? COSTS.FOUR
-    : COSTS.THREE;
+  const cost =
+    guarantee === 5 ? COSTS.FIVE : guarantee === 4 ? COSTS.FOUR : COSTS.THREE;
 
   const db = new Mongo();
 
   try {
     await db.connect();
 
-    const { modifiedCount } = await db.users().updateOne({
-      discordId: userId,
-      availableTokens: { $gte: cost },
-    }, {
-      $push: { guarantees: guarantee },
-      $inc: { availableTokens: -cost },
-    });
+    const { modifiedCount } = await db.users().updateOne(
+      {
+        discordId: userId,
+        availableTokens: { $gte: cost },
+      },
+      {
+        $push: { guarantees: guarantee },
+        $inc: { availableTokens: -cost },
+      }
+    );
 
     if (!modifiedCount) {
       throw new Error('INSUFFICIENT_TOKENS');
@@ -105,7 +103,7 @@ export async function addGuarantee(
 export async function addKeys(
   userId: string,
   guildId: string,
-  amount: number,
+  amount: number
 ): Promise<void> {
   const db = new Mongo();
 
@@ -116,19 +114,21 @@ export async function addKeys(
 
     session.startTransaction();
 
-    const { modifiedCount } = await db.users().updateOne({
-      discordId: userId,
-      availableTokens: { $gte: amount },
-    }, { $inc: { availableTokens: -amount } });
+    const { modifiedCount } = await db.users().updateOne(
+      {
+        discordId: userId,
+        availableTokens: { $gte: amount },
+      },
+      { $inc: { availableTokens: -amount } }
+    );
 
     if (!modifiedCount) {
       throw new Error('INSUFFICIENT_TOKENS');
     }
 
-    await db.inventories().updateOne(
-      { userId, guildId },
-      { $inc: { availableKeys: amount } },
-    );
+    await db
+      .inventories()
+      .updateOne({ userId, guildId }, { $inc: { availableKeys: amount } });
 
     await session.commitTransaction();
   } catch (err) {

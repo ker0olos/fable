@@ -1,4 +1,4 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 import config from '~/src/config.ts';
 
@@ -7,16 +7,14 @@ import type { WithId } from 'mongodb';
 import type * as Schema from '~/db/schema.ts';
 
 export async function invertDupes(
-  guildId: string,
+  guildId: string
 ): Promise<WithId<Schema.Guild>> {
   const db = new Mongo();
 
   try {
     await db.connect();
 
-    const guild = await db.guilds().findOne(
-      { discordId: guildId },
-    );
+    const guild = await db.guilds().findOne({ discordId: guildId });
 
     if (!guild) {
       throw new Error();
@@ -30,7 +28,7 @@ export async function invertDupes(
       { discordId: guildId },
       {
         $set: { options: guild.options },
-      },
+      }
     );
 
     return guild;
