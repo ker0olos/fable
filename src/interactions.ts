@@ -11,14 +11,10 @@ import gacha from '~/src/gacha.ts';
 import trade from '~/src/trade.ts';
 import steal from '~/src/steal.ts';
 import shop from '~/src/shop.ts';
-import stats from '~/src/stats.ts';
-import battle from '~/src/battle.ts';
-import tower from '~/src/tower.ts';
+
 import help from '~/src/help.ts';
 import reward from '~/src/reward.ts';
 import serverOptions from '~/src/serverOptions.ts';
-
-import _skills, { skills } from '~/src/skills.ts';
 
 import merge from '~/src/merge.ts';
 
@@ -27,8 +23,6 @@ import * as communityAPI from '~/src/communityAPI.ts';
 import config, { initConfig } from '~/src/config.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
-
-import type { SkillCategory, SkillKey } from '~/src/types.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -152,7 +146,7 @@ export const handler = async (r: Request) => {
           const message = new discord.Message(discord.MessageType.Suggestions);
 
           if (search) {
-            const results = await packs._searchManyMedia({
+            const results = await packs.searchManyMedia({
               search,
               guildId,
             });
@@ -186,25 +180,22 @@ export const handler = async (r: Request) => {
             'like',
             'unlike',
             'stats',
-          ].includes(name) ||
-          (name === 'skills' &&
-            ['acquire', 'upgrade'].includes(subcommand!) &&
-            focused === 'character')
+          ].includes(name)
         ) {
           const search = options[focused!] as string;
 
           const message = new discord.Message(discord.MessageType.Suggestions);
 
           if (search) {
-            const results = await packs._searchManyCharacters({
+            const results = await packs.searchManyCharacters({
               search,
               guildId,
             });
 
             results.forEach((character) => {
               message.addSuggestions({
-                name: character.mediaTitle?.length
-                  ? `${character.name[0]} (${character.mediaTitle[0]})`
+                name: character.media?.[0]?.media?.title
+                  ? `${character.name[0]} (${character.media[0].media.title})`
                   : character.name[0],
                 value: `${idPrefix}${character.id}`,
               });
@@ -216,83 +207,34 @@ export const handler = async (r: Request) => {
 
         // suggest installed community packs
         if (name === 'packs' && ['uninstall'].includes(subcommand!)) {
-          const id = options[focused!] as string;
-
           const message = new discord.Message(discord.MessageType.Suggestions);
 
-          let list = await packs.all({
-            filter: true,
-            guildId,
-          });
+          let list = await packs.all({ guildId });
 
           const distance: Record<string, number> = {};
 
           // sort suggestion based on distance
-          list.forEach(({ manifest }) => {
-            const d = utils.distance(manifest.id, id);
+          list.forEach(({ title, id }) => {
+            const d = utils.distance(id, id);
 
-            if (manifest.title) {
-              const d2 = utils.distance(manifest.title, id);
+            if (title) {
+              const d2 = utils.distance(title, id);
 
               if (d < d2) {
-                distance[manifest.id] = d2;
+                distance[id] = d2;
                 return;
               }
             }
 
-            distance[manifest.id] = d;
+            distance[id] = d;
           });
 
-          list = list.sort(
-            (a, b) => distance[b.manifest.id] - distance[a.manifest.id]
-          );
+          list = list.sort((a, b) => distance[b.id] - distance[a.id]);
 
-          list?.forEach(({ manifest }) => {
+          list?.forEach(({ title, id }) => {
             message.addSuggestions({
-              name: `${manifest.title ?? manifest.id}`,
-              value: manifest.id,
-            });
-          });
-
-          return message.send();
-        }
-
-        // suggest acquirable character skills
-        if (
-          name === 'skills' &&
-          ['acquire', 'upgrade'].includes(subcommand!) &&
-          focused === 'skill'
-        ) {
-          const name = options[focused!] as string;
-
-          const message = new discord.Message(discord.MessageType.Suggestions);
-
-          const distance: Record<string, number> = {};
-
-          let _skills = Object.entries(skills);
-
-          // sort suggestion based on distance
-          _skills.forEach(([skillKey, skill]) => {
-            const skillName = i18n.get(skill.key, locale);
-
-            const d = utils.distance(skill.key, name);
-            const d2 = utils.distance(skillName, name);
-
-            if (d > d2) {
-              distance[skillKey] = d2;
-            } else {
-              distance[skillKey] = d;
-            }
-          });
-
-          _skills = _skills.sort((a, b) => distance[b[0]] - distance[a[0]]);
-
-          _skills?.forEach(([skillKey, skill]) => {
-            const skillName = i18n.get(skill.key, locale);
-
-            message.addSuggestions({
-              name: skillName,
-              value: skillKey,
+              name: `${title ?? id}`,
+              value: id,
             });
           });
 
@@ -702,13 +644,6 @@ export const handler = async (r: Request) => {
                     amount: options['amount'] as number,
                   })
                   .send();
-              case 'keys':
-                return shop
-                  .keys({
-                    userId: member.user.id,
-                    amount: options['amount'] as number,
-                  })
-                  .send();
               default:
                 break;
             }
@@ -774,86 +709,6 @@ export const handler = async (r: Request) => {
             const index = (options['page'] as number) || 0;
 
             return help.pages({ userId: member.user.id, index }).send();
-          }
-          case 'stats': {
-            const character = options['name'] as string;
-
-            return stats
-              .view({
-                token,
-                guildId,
-                character,
-                userId: member.user.id,
-              })
-              .send();
-          }
-          case 'skills': {
-            switch (subcommand!) {
-              case 'showall': {
-                const category = options['category'] as SkillCategory;
-
-                return _skills.all(0, category, locale).send();
-              }
-              case 'upgrade':
-              case 'acquire': {
-                const skillKey = options['skill'] as SkillKey;
-                const character = options['character'] as string;
-
-                return _skills
-                  .preAcquire({
-                    token,
-                    skillKey,
-                    guildId,
-                    character,
-                    userId: member.user.id,
-                  })
-                  .send();
-              }
-              default:
-                break;
-            }
-            break;
-          }
-          case 'bt':
-          case 'battle': {
-            //deno-lint-ignore no-non-null-assertion
-            switch (subcommand!) {
-              case 'tower': {
-                return tower
-                  .view({
-                    token,
-                    guildId,
-                    userId: member.user.id,
-                  })
-                  .send();
-              }
-              case 'challenge': {
-                return battle
-                  .challengeTower({
-                    token,
-                    guildId,
-                    user: member.user,
-                  })
-                  .send();
-              }
-              // case 'friend':
-              default: {
-                // default is used to respond to users context-menu "Battle" option
-                //   const targetId = options['versus'] as string ??
-                //     options['user'] as string;
-                break;
-              }
-            }
-            break;
-          }
-          case 'reclear': {
-            return (
-              await tower.reclear({
-                token,
-                guildId,
-                userId: member.user.id,
-              })
-            ).send();
           }
           case 'history':
           case 'logs': {
@@ -1087,16 +942,6 @@ export const handler = async (r: Request) => {
                   )
                     .setType(discord.MessageType.Update)
                     .send();
-                case 'keys':
-                  return (
-                    await shop.confirmKeys({
-                      guildId,
-                      userId: member.user.id,
-                      amount: value,
-                    })
-                  )
-                    .setType(discord.MessageType.Update)
-                    .send();
                 case 'normal':
                   return (
                     await shop.confirmNormal({
@@ -1202,65 +1047,6 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'reply': {
-            const userId = customValues![0];
-
-            const characterId = customValues![1];
-
-            const characterName = customValues![2];
-
-            if (userId === member.user.id) {
-              return new discord.Message(discord.MessageType.Modal)
-                .setId('reply', userId, characterId)
-                .setTitle(i18n.get('reply-to', locale, characterName))
-                .addComponents([
-                  new discord.Component(discord.ComponentType.TextInput)
-                    .setId('message')
-                    .setLabel(i18n.get('message', locale))
-                    .setMinLength(1)
-                    .setMaxLength(2048)
-                    .setStyle(2),
-                ])
-                .send();
-            }
-
-            throw new NoPermissionError();
-          }
-          case 'stats': {
-            const characterId = customValues![0];
-
-            return stats
-              .view({
-                token,
-                guildId,
-                character: `${idPrefix}${characterId}`,
-                userId: member.user.id,
-              })
-              .setType(discord.MessageType.Update)
-              .send();
-          }
-          case 'cacquire': {
-            const userId = customValues![0];
-
-            const characterId = customValues![1];
-
-            const skillKey = customValues![2] as SkillKey;
-
-            if (userId === member.user.id) {
-              return (
-                await _skills.acquire({
-                  guildId,
-                  characterId,
-                  userId,
-                  skillKey,
-                })
-              )
-                .setType(discord.MessageType.Update)
-                .send();
-            }
-
-            throw new NoPermissionError();
-          }
           case 'passign': {
             const userId = customValues![0];
 
@@ -1279,54 +1065,6 @@ export const handler = async (r: Request) => {
             }
 
             throw new NoPermissionError();
-          }
-          case 'sbattle': {
-            const id = customValues![0];
-
-            const userId = customValues![1];
-
-            if (userId === member.user.id) {
-              battle.skipBattle(id);
-
-              return discord.Message.spinner(true)
-                .setType(discord.MessageType.Update)
-                .send();
-            }
-
-            throw new NoPermissionError();
-          }
-          case 'skills': {
-            const category = customValues![0] as SkillCategory;
-
-            const index = parseInt(customValues![1]);
-
-            return _skills
-              .all(index, category, locale)
-              .setType(discord.MessageType.Update)
-              .send();
-          }
-          case 'treclear': {
-            return (
-              await tower.reclear({
-                token,
-                guildId,
-                userId: member.user.id,
-              })
-            )
-              .setType(discord.MessageType.New)
-              .send();
-          }
-          case 'tchallenge': {
-            const userId = customValues![0];
-
-            return battle
-              .challengeTower({ token, guildId, user: member.user })
-              .setType(
-                userId === member.user.id
-                  ? discord.MessageType.Update
-                  : discord.MessageType.New
-              )
-              .send();
           }
           case 'install': {
             const id = customValues![0];
@@ -1446,6 +1184,7 @@ export const handler = async (r: Request) => {
     }
   } catch (err) {
     if (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (err as any).response?.status === 404 ||
       (err as Error)?.message === '404' ||
       (err as Error).message?.toLowerCase?.() === 'not found'
@@ -1498,11 +1237,8 @@ export const handler = async (r: Request) => {
 };
 
 export default {
-  async fetch(
-    request: Request,
-    env?: Record<string, string>
-  ): Promise<Response> {
-    await initConfig(env);
+  async fetch(request: Request): Promise<Response> {
+    await initConfig();
 
     utils.initSentry(config.sentry);
 

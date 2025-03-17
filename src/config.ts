@@ -1,7 +1,6 @@
 const config: {
   appId?: string;
   publicKey?: string;
-  mongoUri?: string;
   packsUrl?: string;
   sentry?: string;
   origin?: string;
@@ -15,14 +14,11 @@ const config: {
   communityPacks?: boolean;
   communityPacksMaintainerAPI?: boolean;
   communityPacksBrowseAPI?: boolean;
-  combat?: boolean;
   //
-  defaultServerDupes?: boolean;
   disableImagesProxy?: boolean;
 } = {
   appId: undefined,
   publicKey: undefined,
-  mongoUri: undefined,
   packsUrl: undefined,
   sentry: undefined,
   origin: undefined,
@@ -33,25 +29,18 @@ const config: {
   stealing: undefined,
   synthesis: undefined,
   shop: undefined,
-  communityPacks: undefined,
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
-  combat: undefined,
   //
   disableImagesProxy: undefined,
-  defaultServerDupes: undefined,
 };
 
-export async function initConfig(env?: Record<string, string>): Promise<void> {
-  if (env) process.env = { ...process.env, ...env };
-
+export async function initConfig(): Promise<void> {
   config.sentry = process.env.SENTRY_DSN;
 
   config.appId = process.env.APP_ID;
 
   config.publicKey = process.env.PUBLIC_KEY;
-
-  config.mongoUri = process.env.MONGO_URI;
 
   config.packsUrl = process.env.PACKS_URL;
 
@@ -72,9 +61,6 @@ export async function initConfig(env?: Record<string, string>): Promise<void> {
 
   config.shop = !('SHOP' in process.env) || process.env.SHOP === '1';
 
-  config.communityPacks =
-    !('COMMUNITY_PACKS' in process.env) || process.env.COMMUNITY_PACKS === '1';
-
   config.communityPacksMaintainerAPI =
     !('COMMUNITY_PACKS_MAINTAINER_API' in process.env) ||
     process.env.COMMUNITY_PACKS_MAINTAINER_API === '1';
@@ -83,11 +69,8 @@ export async function initConfig(env?: Record<string, string>): Promise<void> {
     !('COMMUNITY_PACKS_BROWSE_API' in process.env) ||
     process.env.COMMUNITY_PACKS_BROWSE_API === '1';
 
-  config.combat = !('COMBAT' in process.env) || process.env.COMBAT === '1';
-
   //
   config.disableImagesProxy = process.env.DISABLE_IMAGES_PROXY === '1';
-  config.defaultServerDupes = process.env.DEFAULT_SERVER_DUPES === '1';
 
   config.origin = undefined;
 }

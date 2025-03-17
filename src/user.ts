@@ -1,24 +1,16 @@
 import config from '~/src/config.ts';
 
-import db, { COSTS, MAX_KEYS, MAX_PULLS } from '~/db/index.ts';
+import db, { COSTS, MAX_PULLS } from '~/db/index.ts';
 
 import i18n from '~/src/i18n.ts';
 import utils from '~/src/utils.ts';
 import packs from '~/src/packs.ts';
 
-import Rating from '~/src/rating.ts';
-
 import { default as srch } from '~/src/search.ts';
 
 import * as discord from '~/src/discord.ts';
 
-import {
-  Character,
-  CharacterRole,
-  DisaggregatedCharacter,
-  DisaggregatedMedia,
-  Media,
-} from '~/src/types.ts';
+import { PackCharacter, PackMedia, CHARACTER_ROLE } from '~/src/types.ts';
 
 const cachedGuilds: Record<
   string,
@@ -47,26 +39,17 @@ async function now({
 
   const { user, ...inventory } = await db.rechargeConsumables(guildId, userId);
 
-  const {
-    availablePulls,
-    keysTimestamp,
-    availableKeys,
-    stealTimestamp,
-    rechargeTimestamp,
-    lastPVE,
-    floorsCleared,
-  } = inventory;
+  const { availablePulls, stealTimestamp, rechargeTimestamp } = inventory;
 
   const { dailyTimestamp, availableTokens } = user;
 
   const message = new discord.Message();
 
-  const recharge = utils.rechargeTimestamp(rechargeTimestamp);
+  const recharge = utils.rechargeTimestamp(rechargeTimestamp || undefined);
   const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
-  const keysRecharge = utils.rechargeKeysTimestamp(keysTimestamp);
-  const stealRecharge = utils.rechargeStealTimestamp(stealTimestamp);
-
-  const showKeys = config.combat && utils.isWithin14Days(lastPVE);
+  const stealRecharge = utils.rechargeStealTimestamp(
+    stealTimestamp || undefined
+  );
 
   const guarantees = Array.from(new Set(user.guarantees ?? [])).sort(
     (a, b) => b - a
@@ -85,17 +68,6 @@ async function now({
             : i18n.get('available-pulls', locale),
       })
   );
-
-  if (showKeys) {
-    message.addEmbed(
-      new discord.Embed().setTitle(`**${availableKeys}**`).setFooter({
-        text:
-          availableKeys === 1
-            ? i18n.get('available-key', locale)
-            : i18n.get('available-keys', locale),
-      })
-    );
-  }
 
   if (availableTokens) {
     message.addEmbed(
@@ -130,14 +102,6 @@ async function now({
     );
   }
 
-  if (showKeys && availableKeys! < MAX_KEYS) {
-    message.addEmbed(
-      new discord.Embed().setDescription(
-        i18n.get('+1-key', locale, `<t:${keysRecharge}:R>`)
-      )
-    );
-  }
-
   if (stealTimestamp) {
     message.addEmbed(
       new discord.Embed().setDescription(
@@ -152,13 +116,6 @@ async function now({
     message.addComponents([
       // `/gacha` shortcut
       new discord.Component().setId('gacha', userId).setLabel('/gacha'),
-    ]);
-  }
-
-  if (showKeys && floorsCleared && availableKeys! > 0) {
-    message.addComponents([
-      // `/reclear` shortcut
-      new discord.Component().setId('treclear', userId).setLabel('/reclear'),
     ]);
   }
 
@@ -213,26 +170,22 @@ function nick({
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
-    .then(async (results: (Character | DisaggregatedCharacter)[]) => {
+    .then(async (results: PackCharacter[]) => {
       if (!results.length) {
         throw new Error('404');
       }
 
-      const character = await packs.aggregate<Character>({
-        guildId,
-        character: results[0],
-        end: 1,
-      });
+      const character = results[0];
 
-      const media = character.media?.edges?.[0]?.node;
+      const media = character.media?.[0]?.media;
 
-      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
+      if (media && packs.isDisabled(media.id, guildId)) {
         throw new Error('404');
       }
 
       const message = new discord.Message();
 
-      const characterId = `${results[0].packId}:${results[0].id}`;
+      const characterId = results[0].id;
 
       try {
         const response = await db.setCharacterNickname(
@@ -246,7 +199,7 @@ function nick({
           throw new Error('404');
         }
 
-        const name = packs.aliasToArray(character.name)[0];
+        const name = character.name;
 
         const embed = await srch.characterEmbed(message, character, {
           footer: true,
@@ -269,7 +222,7 @@ function nick({
 
         return message.patch(token);
       } catch (err) {
-        const names = packs.aliasToArray(results[0].name);
+        const names = results[0].name;
 
         switch ((err as Error).message) {
           case 'CHARACTER_NOT_FOUND': {
@@ -346,26 +299,22 @@ function image({
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
-    .then(async (results: (Character | DisaggregatedCharacter)[]) => {
+    .then(async (results: PackCharacter[]) => {
       if (!results.length) {
         throw new Error('404');
       }
 
-      const character = await packs.aggregate<Character>({
-        guildId,
-        character: results[0],
-        end: 1,
-      });
+      const character = results[0];
 
-      const media = character.media?.edges?.[0]?.node;
+      const media = character.media?.[0]?.media;
 
-      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
+      if (media && packs.isDisabled(media.id, guildId)) {
         throw new Error('404');
       }
 
       const message = new discord.Message();
 
-      const characterId = `${results[0].packId}:${results[0].id}`;
+      const characterId = results[0].id;
 
       try {
         const response = await db.setCharacterImage(
@@ -379,7 +328,7 @@ function image({
           throw new Error('404');
         }
 
-        const name = packs.aliasToArray(character.name)[0];
+        const name = character.name;
 
         const embed = await srch.characterEmbed(message, character, {
           footer: true,
@@ -407,14 +356,14 @@ function image({
 
         return message.patch(token);
       } catch (err) {
-        const names = packs.aliasToArray(results[0].name);
+        const name = results[0].name;
 
         switch ((err as Error).message) {
           case 'CHARACTER_NOT_FOUND': {
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  i18n.get('character-hasnt-been-found', locale, names[0])
+                  i18n.get('character-hasnt-been-found', locale, name)
                 )
               )
               .addComponents([
@@ -428,7 +377,7 @@ function image({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  i18n.get('character-not-owned-by-you', locale, names[0])
+                  i18n.get('character-not-owned-by-you', locale, name[0])
                 )
               )
               .addComponents([
@@ -486,62 +435,56 @@ function like({
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
-    .then(async (results: (Character | DisaggregatedCharacter)[]) => {
+    .then(async (results: PackCharacter[]) => {
       if (!results.length) {
         throw new Error('404');
       }
 
-      const character = await packs.aggregate<Character>({
-        guildId,
-        character: results[0],
-        end: 1,
-      });
+      const character = results[0];
 
-      const media = character.media?.edges?.[0]?.node;
+      const media = character.media?.[0]?.media;
 
-      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
+      if (media && packs.isDisabled(media.id, guildId)) {
         throw new Error('404');
       }
 
       const message = new discord.Message();
 
-      const characterId = `${character.packId}:${character.id}`;
+      const characterId = character.id;
 
-      try {
-        const _ = !undo
-          ? await db.likeCharacter(userId, characterId)
-          : await db.unlikeCharacter(userId, characterId);
-
-        message.addEmbed(
-          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked')
-        );
-
-        if (mention) {
-          message.setContent(`<@${userId}>`).setPing();
-        }
-
-        const embed = await srch.characterEmbed(message, character, {
-          footer: true,
-          description: false,
-          mode: 'thumbnail',
-          media: { title: true },
-          rating: true,
-        });
-
-        message.addEmbed(embed);
-
-        if (!undo) {
-          message.addComponents([
-            new discord.Component()
-              .setId(`character`, characterId)
-              .setLabel('/character'),
-          ]);
-        }
-
-        return message.patch(token);
-      } catch (err) {
-        throw err;
+      if (!undo) {
+        await db.likeCharacter(userId, characterId);
+      } else {
+        await db.unlikeCharacter(userId, characterId);
       }
+
+      message.addEmbed(
+        new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked')
+      );
+
+      if (mention) {
+        message.setContent(`<@${userId}>`).setPing();
+      }
+
+      const embed = await srch.characterEmbed(message, character, {
+        footer: true,
+        description: false,
+        mode: 'thumbnail',
+        media: { title: true },
+        rating: true,
+      });
+
+      message.addEmbed(embed);
+
+      if (!undo) {
+        message.addComponents([
+          new discord.Component()
+            .setId(`character`, characterId)
+            .setLabel('/character'),
+        ]);
+      }
+
+      return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -585,47 +528,42 @@ function likeall({
 
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
-    .then(async (results: (Media | DisaggregatedMedia)[]) => {
+    .then(async (results: PackMedia[]) => {
       if (!results.length) {
         throw new Error('404');
       }
 
       const message = new discord.Message();
 
-      const mediaId = `${results[0].packId}:${results[0].id}`;
+      const mediaId = results[0].id;
 
-      try {
-        const _ = !undo
-          ? await db.likeMedia(userId, mediaId)
-          : await db.unlikeMedia(userId, mediaId);
-
-        message.addEmbed(
-          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked')
-        );
-
-        const media = await packs.aggregate<Media>({
-          guildId,
-          media: results[0],
-        });
-
-        const embed = await srch.mediaEmbed(message, media, {
-          mode: 'thumbnail',
-        });
-
-        message.addEmbed(embed);
-
-        if (!undo) {
-          message.addComponents([
-            new discord.Component()
-              .setId(`media`, mediaId)
-              .setLabel(`/${media.type.toString().toLowerCase()}`),
-          ]);
-        }
-
-        return message.patch(token);
-      } catch (err) {
-        throw err;
+      if (!undo) {
+        await db.likeMedia(userId, mediaId);
+      } else {
+        await db.unlikeMedia(userId, mediaId);
       }
+
+      message.addEmbed(
+        new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked')
+      );
+
+      const media = results[0];
+
+      const embed = await srch.mediaEmbed(message, media, {
+        mode: 'thumbnail',
+      });
+
+      message.addEmbed(embed);
+
+      if (!undo) {
+        message.addComponents([
+          new discord.Component()
+            .setId(`media`, mediaId)
+            .setLabel(`/${media.type.toString().toLowerCase()}`),
+        ]);
+      }
+
+      return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -675,16 +613,9 @@ function list({
 
   Promise.resolve()
     .then(async () => {
-      const mongo = await db.newMongo().connect();
+      const { user, ...inventory } = await db.getInventory(guildId, userId);
 
-      const { user, ...inventory } = await db.getInventory(
-        guildId,
-        userId,
-        mongo,
-        true
-      );
-
-      let characters = await db.getUserCharacters(userId, guildId, mongo, true);
+      let characters = await db.getUserCharacters(userId, guildId);
 
       let length = 0;
 
@@ -693,14 +624,14 @@ function list({
       const message = new discord.Message();
 
       const members = [
-        inventory.party.member1Id,
-        inventory.party.member2Id,
-        inventory.party.member3Id,
-        inventory.party.member4Id,
-        inventory.party.member5Id,
+        inventory.partyMember1Id,
+        inventory.partyMember2Id,
+        inventory.partyMember3Id,
+        inventory.partyMember4Id,
+        inventory.partyMember5Id,
       ];
 
-      let media: Media[] = [];
+      const media: PackMedia[] = [];
 
       if (rating) {
         characters = characters.filter((char) => char.rating === rating);
@@ -711,24 +642,16 @@ function list({
           id ? { ids: [id], guildId } : { search, guildId }
         );
 
-        if (
-          !results.length ||
-          packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
-        ) {
+        if (!results.length || packs.isDisabled(results[0].id, guildId)) {
           throw new Error('404');
         }
 
-        const parent = await packs.aggregate<Media>({
-          guildId,
-          media: results[0],
-        });
+        const parent = results[0];
 
-        media = [
+        const relationsIds = [
           parent,
-          ...(parent.relations?.edges?.map(({ node }) => node) ?? []),
-        ];
-
-        const relationsIds = media.map(({ packId, id }) => `${packId}:${id}`);
+          ...(parent.media?.map(({ node }) => node) ?? []),
+        ].map(({ id }) => id);
 
         characters = characters
           .filter((char) => relationsIds.includes(char.mediaId))
@@ -757,21 +680,13 @@ function list({
           guildId,
         });
 
-        const media = (
-          await packs.aggregate<Character>({
-            character: _character[0],
-            guildId,
-          })
-        ).media?.edges?.[0]?.node;
+        const media = _character[0].media?.[0]?.media;
 
         const mediaTitle = media?.title
-          ? utils.wrap(packs.aliasToArray(media.title)[0])
+          ? utils.wrap(media.title[0])
           : undefined;
 
-        if (
-          !_character[0] ||
-          (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
-        ) {
+        if (!_character[0] || (media && packs.isDisabled(media.id, guildId))) {
           embed.setDescription(i18n.get('character-disabled', locale));
         } else {
           embed = await srch.characterEmbed(message, _character[0], {
@@ -793,7 +708,7 @@ function list({
                       'user-empty-media-collection',
                       locale,
                       `<@${userId}>`,
-                      packs.aliasToArray(media[0].title)[0]
+                      media[0].title
                     )
                   : i18n.get(
                       'user-empty-collection',
@@ -805,7 +720,7 @@ function list({
                   ? i18n.get(
                       'you-empty-media-collection',
                       locale,
-                      packs.aliasToArray(media[0].title)[0]
+                      media[0].title
                     )
                   : i18n.get(
                       'you-empty-collection',
@@ -835,27 +750,22 @@ function list({
         await Promise.all(
           chunks[index].map(async (existing) => {
             const char = _characters.find(
-              ({ packId, id }) => existing.characterId === `${packId}:${id}`
+              ({ id }) => existing.characterId === id
             )!;
 
             if (!char) {
               return;
             }
 
-            const media = (
-              await packs.aggregate<Character>({
-                character: char,
-                guildId,
-              })
-            ).media?.edges?.[0]?.node;
+            const media = char.media?.[0]?.media;
 
             const mediaTitle = media?.title
-              ? utils.wrap(packs.aliasToArray(media.title)[0])
+              ? utils.wrap(media.title)
               : undefined;
 
             const name = `${existing.rating}${discord.emotes.smolStar}${
               members.some(
-                (member) => Boolean(member) && member === existing._id
+                (member) => Boolean(member) && member === existing.characterId
               )
                 ? discord.emotes.member
                 : user.likes?.some(
@@ -865,14 +775,9 @@ function list({
                     )
                   ? `${discord.emotes.liked}`
                   : ''
-            } ${
-              existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
-            }`;
+            } ${existing.nickname ?? utils.wrap(char.name)}`;
 
-            if (
-              media &&
-              packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-            ) {
+            if (media && packs.isDisabled(media.id, guildId)) {
               return;
             }
 
@@ -885,14 +790,12 @@ function list({
         );
       }
 
-      await mongo.close();
-
       return discord.Message.page({
         index,
         type: 'list',
         target: discord.join(
           userId,
-          media.length ? `${media[0].packId}:${media[0].id}` : '',
+          media.length ? media[0].id : '',
           `${rating ?? ''}`,
           picture ? '1' : ''
         ),
@@ -952,7 +855,8 @@ function likeslist({
 
       const message = new discord.Message();
 
-      let likes = user.likes ?? [];
+      const likes = user.likes ?? [];
+      const filtered: { characterId?: string; mediaId?: string }[] = [];
 
       // sort so that all media likes are in the bottom of the list
       likes.sort((a, b) => {
@@ -979,27 +883,30 @@ function likeslist({
 
       // show only characters that are owned by specific user
       if (ownedBy) {
-        likes = results
-          .map((character) => {
-            if (
-              likes.find(
-                (t) =>
-                  t.characterId === character?.characterId ||
-                  t.mediaId === character?.mediaId
-              )
-            ) {
-              return { characterId: character!.characterId };
-            }
-          })
-          .filter(Boolean) as { characterId: string }[];
+        results.forEach((character) => {
+          if (
+            likes.find(
+              (t) =>
+                t.characterId === character?.characterId ||
+                t.mediaId === character?.mediaId
+            )
+          ) {
+            filtered.push({ characterId: character!.characterId });
+          }
+        });
         // filter out characters that are owned by the user
       } else if (filter) {
-        likes = likes.filter((like, i) => {
-          return like.characterId && results[i]?.userId !== userId;
+        likes.forEach((like) => {
+          if (like.characterId)
+            filtered.push({ characterId: like.characterId });
         });
+      } else {
+        filtered.push(
+          ...(likes as { characterId?: string; mediaId?: string }[])
+        );
       }
 
-      const chunks = utils.chunks(likes, 5);
+      const chunks = utils.chunks(filtered, 5);
 
       const [characters, media] = await Promise.all([
         await packs.characters({
@@ -1035,39 +942,28 @@ function likeslist({
       await Promise.all(
         chunks[index].map(async (like) => {
           const character = characters.find(
-            ({ packId, id }) => like.characterId === `${packId}:${id}`
+            ({ id }) => like.characterId === id
           )!;
 
           if (!character) {
             return;
           }
 
-          const existing = results.find(
-            (r) => r?.characterId === `${character.packId}:${character.id}`
-          );
+          const existing = results.find((r) => r?.characterId === character.id);
 
-          const char = await packs.aggregate<Character>({
-            guildId,
-            character,
-            end: 1,
-          });
+          const char = character;
 
-          const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
+          const rating = existing?.rating ?? char.rating;
 
-          const media = char.media?.edges?.[0]?.node;
+          const media = char.media?.[0]?.media;
 
-          const mediaTitle = media?.title
-            ? utils.wrap(packs.aliasToArray(media.title)[0])
-            : undefined;
+          const mediaTitle = media?.title ? utils.wrap(media.title) : undefined;
 
           const name = `${rating}${discord.emotes.smolStar} ${
             existing ? `<@${existing?.userId}> ` : ''
-          }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
+          }${utils.wrap(char.name)}`;
 
-          if (
-            media &&
-            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-          ) {
+          if (media && packs.isDisabled(media.id, guildId)) {
             return;
           }
 
@@ -1080,7 +976,7 @@ function likeslist({
       );
 
       media.forEach((media) => {
-        const title = utils.wrap(packs.aliasToArray(media.title)[0]);
+        const title = utils.wrap(media.title);
 
         embed.addField({
           inline: false,
@@ -1127,14 +1023,7 @@ function sum({
 
   Promise.resolve()
     .then(async () => {
-      const mongo = await db.newMongo().connect();
-
-      const { user, party } = await db.getInventory(
-        guildId,
-        userId,
-        mongo,
-        true
-      );
+      const { user, ...inventory } = await db.getInventory(guildId, userId);
 
       const likesCharactersIds = user.likes
         ?.map(({ characterId }) => characterId)
@@ -1144,19 +1033,14 @@ function sum({
         ?.map(({ mediaId }) => mediaId)
         .filter(utils.nonNullable);
 
-      const characters = await db.getUserCharacters(
-        userId,
-        guildId,
-        mongo,
-        true
-      );
+      const characters = await db.getUserCharacters(userId, guildId);
 
       const partyIds = [
-        party.member1?.characterId,
-        party.member2?.characterId,
-        party.member3?.characterId,
-        party.member4?.characterId,
-        party.member5?.characterId,
+        inventory.partyMember1Id,
+        inventory.partyMember2Id,
+        inventory.partyMember3Id,
+        inventory.partyMember4Id,
+        inventory.partyMember5Id,
       ];
 
       const embed = new discord.Embed();
@@ -1207,8 +1091,6 @@ function sum({
 
       embed.setDescription(description.join('\n'));
 
-      await mongo.close();
-
       new discord.Message().addEmbed(embed).patch(token);
     })
     .catch(async (err) => {
@@ -1246,16 +1128,9 @@ function showcase({
       const likedMedia: Record<string, boolean> = {};
       const ownedMedia: Record<string, string[]> = {};
 
-      const mongo = await db.newMongo().connect();
+      const user = await db.getUser(userId);
 
-      const user = await db.getUser(userId, mongo, true);
-
-      const characters = await db.getUserCharacters(
-        userId,
-        guildId,
-        mongo,
-        true
-      );
+      const characters = await db.getUserCharacters(userId, guildId);
 
       user.likes?.forEach(
         ({ mediaId }) => mediaId && (likedMedia[mediaId] = true)
@@ -1266,29 +1141,28 @@ function showcase({
         ownedMedia[mediaId].push(characterId);
       });
 
-      let media = (await packs.media({
+      let media = await packs.media({
         guildId,
         ids: [...Object.keys(likedMedia), ...Object.keys(ownedMedia)],
-      })) as DisaggregatedMedia[];
+      });
 
       media = media
         .map((media) => {
-          const mediaId = `${media.packId}:${media.id}`;
+          const mediaId = media.id;
 
           // filter background characters
           media.characters =
             media.characters?.filter(
-              ({ role }) => role !== CharacterRole.Background
+              ({ role }) => role !== CHARACTER_ROLE.BACKGROUND
             ) ?? [];
 
           // filter background characters from owned character
           ownedMedia[mediaId] = ownedMedia[mediaId]?.filter((id) => {
             const edge = media.characters!.find(
-              ({ characterId }) =>
-                packs.ensureId(characterId, media.packId) === id
+              ({ nodeId }) => packs.ensureId(nodeId, media.packId) === id
             );
 
-            return edge && edge.role !== CharacterRole.Background;
+            return edge && edge.role !== CHARACTER_ROLE.BACKGROUND;
           });
 
           return media;
@@ -1300,9 +1174,9 @@ function showcase({
       // and add them into the liked media list
       media.forEach((media) => {
         const list = [
-          `${media.packId}:${media.id}`,
-          ...(media.relations ?? []).map(({ mediaId }) =>
-            packs.ensureId(mediaId, media.packId)
+          media.id,
+          ...(media.media ?? []).map(({ nodeId }) =>
+            packs.ensureId(nodeId, media.packId)
           ),
         ];
 
@@ -1313,8 +1187,8 @@ function showcase({
 
       // sort by liked then owned amount
       media.sort((a, b) => {
-        const aId = `${a.packId}:${a.id}`;
-        const bId = `${b.packId}:${b.id}`;
+        const aId = a.id;
+        const bId = b.id;
 
         const aLiked = likedMedia[aId] || false;
         const bLiked = likedMedia[bId] || false;
@@ -1353,15 +1227,13 @@ function showcase({
 
       const mediaAllOwned = await db.getMediaCharacters(
         guildId,
-        chunks[index].map(({ packId, id }) => `${packId}:${id}`)
+        chunks[index].map(({ id }) => id)
       );
 
-      await mongo.close();
-
       chunks[index].forEach((media) => {
-        const id = `${media.packId}:${media.id}`;
+        const id = media.id;
 
-        const title = packs.aliasToArray(media.title)[0];
+        const title = media.title;
 
         const liked = likedMedia[id] || false;
 
@@ -1378,10 +1250,9 @@ function showcase({
           (character) =>
             character.mediaId === id &&
             media.characters!.some(
-              ({ characterId }) =>
+              ({ nodeId }) =>
                 // TODO TEST
-                packs.ensureId(characterId, media.packId) ===
-                character.characterId
+                packs.ensureId(nodeId, media.packId) === character.characterId
             ) &&
             character.userId !== userId
         );
@@ -1457,16 +1328,14 @@ function logs({
       });
 
       characters.reverse().forEach((existing) => {
-        const char = results.find(
-          ({ packId, id }) => `${packId}:${id}` === existing.characterId
-        );
+        const char = results.find(({ id }) => id === existing.characterId);
 
         if (!char || packs.isDisabled(existing.mediaId, guildId)) {
           return;
         }
 
         const name = `${existing.rating}${discord.emotes.smolStar} ${
-          existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
+          existing.nickname ?? utils.wrap(char.name)
         } <t:${utils.normalTimestamp(existing.createdAt)}:R>`;
 
         names.push(name);

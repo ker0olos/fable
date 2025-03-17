@@ -1,38 +1,23 @@
-import { Mongo } from '~/db/index.ts';
+import prisma from '~/prisma/index.ts';
 
-import config from '~/src/config.ts';
+export async function invertDupes(guildId: string) {
+  const options = await prisma.options.findUnique({
+    where: { guildId },
+  });
 
-import type { WithId } from 'mongodb';
+  const { guild, ...updatedOptions } = await prisma.options.upsert({
+    include: { guild: true },
+    where: { guildId },
+    create: {
+      guildId,
+      dupes: false,
+    },
+    update: {
+      dupes: {
+        set: !(options?.dupes ?? true),
+      },
+    },
+  });
 
-import type * as Schema from '~/db/schema.ts';
-
-export async function invertDupes(
-  guildId: string
-): Promise<WithId<Schema.Guild>> {
-  const db = new Mongo();
-
-  try {
-    await db.connect();
-
-    const guild = await db.guilds().findOne({ discordId: guildId });
-
-    if (!guild) {
-      throw new Error();
-    }
-
-    guild.options ??= { dupes: config.defaultServerDupes ?? true };
-
-    guild.options.dupes = !guild.options.dupes;
-
-    await db.guilds().updateOne(
-      { discordId: guildId },
-      {
-        $set: { options: guild.options },
-      }
-    );
-
-    return guild;
-  } finally {
-    await db.close();
-  }
+  return { ...guild, options: updatedOptions };
 }

@@ -9,7 +9,6 @@ import {
   RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
-  RECHARGE_KEYS_MINS,
 } from '~/db/index.ts';
 
 import { PARTY_PROTECTION_PERIOD } from '~/src/steal.ts';
@@ -158,32 +157,6 @@ function pages({
           ].join('\n')
         )
     ),
-    new discord.Message().addEmbed(
-      new discord.Embed()
-        .setAuthor({ name: i18n.get('help-page10-title', locale) })
-        .setDescription(
-          [
-            i18n.get('help-page10-starting-points', locale),
-            '',
-            i18n.get('help-page10-stats-rng', locale),
-            '',
-            i18n.get('help-page10-attack', locale),
-            '',
-            i18n.get('help-page10-defense', locale),
-            '',
-            i18n.get('help-page10-speed', locale),
-            '',
-            i18n.get('help-page10-tower', locale),
-            '',
-            i18n.get('help-page10-reclear', locale),
-            '',
-            i18n.get('help-page10-distribution', locale),
-            '',
-            i18n.get('help-page10-keys', locale, RECHARGE_KEYS_MINS),
-            discord.empty,
-          ].join('\n')
-        )
-    ),
     new discord.Message()
       .addComponents([
         new discord.Component()
@@ -293,13 +266,6 @@ function pages({
             `- \`/steal\`: _${i18n.get('/steal', locale)}_`,
             `- \`/trade\` \`/offer\`: _${i18n.get('/trade', locale)}_`,
             `- \`/give\` \`/gift\`: _${i18n.get('/give', locale)}_`,
-            '',
-            `- \`/battle tower\`: _${i18n.get('/battle tower', locale)}_`,
-            `- \`/battle challenge\`: _${i18n.get(
-              '/battle challenge',
-              locale
-            )}_`,
-            `- \`/reclear\`: _${i18n.get('/reclear', locale)}_`,
           ].join('\n')
         )
     ),

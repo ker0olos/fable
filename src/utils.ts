@@ -1,13 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mime from 'mime';
 import nacl from 'tweetnacl';
-import { basename, extname } from 'path';
+import { nanoid } from 'nanoid';
 
-import {
-  captureException as _captureException,
-  init as _initSentry,
-} from '@sentry/node';
-
-import { readFile } from 'fs/promises';
+// import { init as _initSentry, captureException as _captureException} from '@sentry/node';
 
 import { distance as levenshtein } from 'fastest-levenshtein';
 
@@ -15,7 +11,6 @@ import { proxy as _proxy } from '@fable-community/images-proxy';
 
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
-  RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
 } from '~/db/index.ts';
@@ -105,7 +100,7 @@ export async function validateRequest(
     terms[request.method]?.params &&
     terms[request.method].params!.length > 0
   ) {
-    const requestParams = [];
+    const requestParams: string[] = [];
 
     const { searchParams } = new URL(request.url);
 
@@ -131,7 +126,8 @@ export async function validateRequest(
     terms[request.method].headers!.length > 0
   ) {
     // Collect the headers into an array.
-    const requestHeaderKeys = [];
+    const requestHeaderKeys: string[] = [];
+
     for (const header of request.headers.keys()) {
       requestHeaderKeys.push(header);
     }
@@ -175,24 +171,6 @@ export async function validateRequest(
   return { body };
 }
 
-function nanoid(size = 16): string {
-  return crypto.getRandomValues(new Uint8Array(size)).reduce((id, byte) => {
-    byte &= 63;
-    if (byte < 36) {
-      // `0-9a-z`
-      id += byte.toString(36);
-    } else if (byte < 62) {
-      // `A-Z`
-      id += (byte - 26).toString(36).toLowerCase();
-    } else if (byte > 62) {
-      id += '-';
-    } else {
-      id += '_';
-    }
-    return id;
-  }, '');
-}
-
 function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
@@ -211,7 +189,7 @@ function shuffle<T>(array: T[], seed?: string): void {
   const rng = seed ? () => new LehmerRNG(seed).nextFloat() : Math.random;
 
   for (
-    let i = 0, length = array.length, swap = 0, temp = null;
+    let i = 0, length = array.length, swap = 0, temp: T | null = null;
     i < length;
     i++
   ) {
@@ -261,7 +239,7 @@ function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
     throw new Error(`Sum of ${chances} is ${sum} when it should be 100`);
   }
 
-  const _ = [];
+  const _: number[] = [];
 
   for (let i = 0; i < chances.length; i++) {
     // if chance is 5 - add 5 items to the array
@@ -450,17 +428,6 @@ function rechargeDailyTimestamp(v?: Date): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeKeysTimestamp(v?: Date): string {
-  const parsed = v ?? new Date();
-
-  parsed.setMinutes(parsed.getMinutes() + RECHARGE_KEYS_MINS);
-
-  const ts = parsed.getTime();
-
-  // discord uses seconds not milliseconds
-  return Math.floor(ts / 1000).toString();
-}
-
 function rechargeStealTimestamp(v?: Date): string {
   const parsed = v ?? new Date();
 
@@ -482,20 +449,6 @@ function diffInHours(a: Date, b: Date): number {
 
 function diffInMinutes(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 60000);
-}
-
-function captureException(
-  err: Error,
-  opts?: {
-    extra?: any;
-  }
-): string {
-  return _captureException(err, {
-    extra: {
-      ...(err.cause ?? {}),
-      ...(opts?.extra ?? {}),
-    },
-  });
 }
 
 function nonNullable<T>(value: T): value is NonNullable<T> {
@@ -542,7 +495,23 @@ function getDayOfWeek(): DayOfWeek {
 }
 
 function initSentry(dsn?: string): void {
-  if (dsn) _initSentry({ dsn });
+  // if (dsn) _initSentry({ dsn });
+}
+
+function captureException(err: Error, extra?: { extra: any }) {
+  // return _captureException(err, extra);
+  return '';
+}
+
+function basename(path: string): string {
+  path = path.replace(/\/*$/, '');
+  return path.split('/').pop() || '';
+}
+
+function extname(path: string): string {
+  const base = basename(path);
+  const dotIndex = base.lastIndexOf('.');
+  return dotIndex < 0 ? '' : base.slice(dotIndex);
 }
 
 async function proxy(url?: string, size?: ImageSize): Promise<Attachment> {
@@ -570,7 +539,7 @@ async function proxy(url?: string, size?: ImageSize): Promise<Attachment> {
 
   return {
     filename: asciiFilename,
-    arrayBuffer: file.image,
+    arrayBuffer: Buffer.from(file.image),
     type: file.format,
   };
 }
@@ -609,7 +578,6 @@ const utils = {
   normalTimestamp,
   rechargeTimestamp,
   rechargeDailyTimestamp,
-  rechargeKeysTimestamp,
   rechargeStealTimestamp,
   rng,
   shuffle,

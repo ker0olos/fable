@@ -33,6 +33,9 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
   "prettier.configPath": ".prettierrc",
   //
   "yaml.schemas": {

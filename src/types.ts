@@ -1,232 +1,103 @@
-import type { Keys } from '~/src/i18n.ts';
+import {
+  Prisma,
+  CHARACTER_ROLE,
+  MEDIA_FORMAT,
+  MEDIA_RELATION,
+  MEDIA_TYPE,
+} from '@prisma/client';
 
-import type { AcquiredCharacterSkill, CharacterStats } from '~/db/schema.ts';
-
-import { skills } from '~/src/skills.ts';
-
-import type { PartyMember } from '~/src/battle.types.ts';
-
-export type Modify<T, R> = Omit<T, keyof R> & R;
-
-export enum MediaType {
-  Anime = 'ANIME',
-  Manga = 'MANGA',
-  Other = 'OTHER',
-}
-
-export enum MediaFormat {
-  TV = 'TV',
-  TvShort = 'TV_SHORT',
-  Movie = 'MOVIE',
-  Special = 'SPECIAL',
-  OVA = 'OVA',
-  ONA = 'ONA',
-  Music = 'MUSIC',
-  Manga = 'MANGA',
-  Novel = 'NOVEL',
-  OneShot = 'ONE_SHOT',
-  VideoGame = 'VIDEO_GAME',
-}
-
-export enum MediaRelation {
-  Adaptation = 'ADAPTATION',
-  Prequel = 'PREQUEL',
-  Sequel = 'SEQUEL',
-  Parent = 'PARENT',
-  Contains = 'CONTAINS',
-  SideStory = 'SIDE_STORY',
-  // Character = 'CHARACTER',
-  // Summary = 'SUMMARY',
-  // Alternative = 'ALTERNATIVE',
-  SpinOff = 'SPIN_OFF',
-  Other = 'OTHER',
-  // Source = 'SOURCE',
-  // Compilation = 'COMPILATION',
-}
-
-export enum CharacterRole {
-  Main = 'MAIN',
-  Supporting = 'SUPPORTING',
-  Background = 'BACKGROUND',
-}
-
-export type Alias = {
-  english?: string;
-  romaji?: string;
-  native?: string;
-  alternative?: string[];
-};
-
-export type Image = {
-  url: string;
-  artist?: {
-    username: string;
-    url?: string;
+type User = Prisma.UserGetPayload<{
+  include: {
+    likes: true;
   };
-};
+}>;
 
-export type MediaEdge = { node: Media; relation?: MediaRelation };
-export type CharacterEdge = { node: Character; role?: CharacterRole };
-export type CharacterMediaEdge = { node: Media; role?: CharacterRole };
-
-export interface Media {
-  id: string;
-  title: Alias;
-  type: MediaType;
-  packId?: string;
-  added?: string;
-  updated?: string;
-  format?: MediaFormat;
-  description?: string;
-  popularity?: number;
-  images?: Image[];
-  externalLinks?: {
-    site: string;
-    url: string;
-  }[];
-  trailer?: {
-    id: string;
-    site: string;
+type Pack = Prisma.PackGetPayload<{
+  include: {
+    owner: true;
+    maintainers: true;
+    characters: {
+      include: {
+        externalLinks: true;
+        media: {
+          include: {
+            media: { include: { externalLinks: true } };
+            node: { include: { externalLinks: true } };
+          };
+        };
+      };
+    };
+    media: {
+      include: {
+        externalLinks: true;
+        media: {
+          include: {
+            node: { include: { externalLinks: true } };
+          };
+        };
+        characters: {
+          include: {
+            node: { include: { externalLinks: true } };
+            media: { include: { externalLinks: true } };
+          };
+        };
+      };
+    };
   };
-  relations?: {
-    edges: MediaEdge[];
-  };
-  characters?: {
-    edges: CharacterEdge[];
-  };
-}
+}>;
 
-export type DisaggregatedMedia = Modify<
-  Media,
-  {
-    relations?: {
-      relation: MediaRelation;
-      mediaId: string;
-    }[];
-    characters?: {
-      role: CharacterRole;
-      characterId: string;
-    }[];
-  }
->;
-
-export interface Character {
-  id: string;
-  name: Alias;
-  packId?: string;
-  added?: string;
-  updated?: string;
-  description?: string;
-  popularity?: number;
-  gender?: string;
-  age?: string;
-  images?: Image[];
-  externalLinks?: {
-    site: string;
-    url: string;
-  }[];
-  media?: {
-    edges: CharacterMediaEdge[];
+type Character = Prisma.CharacterGetPayload<{
+  include: {
+    inventory: true;
+    user: true;
   };
-}
+}>;
 
-export type DisaggregatedCharacter = Modify<
+type PackCharacter = Prisma.PackCharacterGetPayload<{
+  include: {
+    media: {
+      include: { media: true };
+    };
+    externalLinks: true;
+  };
+}>;
+
+type PackMedia = Prisma.PackMediaGetPayload<{
+  include: {
+    characters: {
+      include: {
+        media: {
+          include: { externalLinks: true };
+        };
+        node: {
+          include: { externalLinks: true };
+        };
+      };
+    };
+    media: {
+      include: {
+        node: {
+          include: { externalLinks: true };
+        };
+      };
+    };
+    externalLinks: true;
+  };
+}>;
+
+type Guild = Prisma.GuildGetPayload<{
+  include: { options: true };
+}>;
+
+export {
+  User,
+  Pack,
+  Guild,
   Character,
-  {
-    media?: {
-      role: CharacterRole;
-      mediaId: string;
-    }[];
-  }
->;
-
-export type Pool = {
-  [key: string]: {
-    ALL: { id: string; mediaId: string; rating: number }[];
-    [CharacterRole.Main]: { id: string; mediaId: string; rating: number }[];
-    [CharacterRole.Supporting]: {
-      id: string;
-      mediaId: string;
-      rating: number;
-    }[];
-    [CharacterRole.Background]: {
-      id: string;
-      mediaId: string;
-      rating: number;
-    }[];
-  };
+  PackCharacter,
+  PackMedia,
+  CHARACTER_ROLE,
+  MEDIA_FORMAT,
+  MEDIA_RELATION,
+  MEDIA_TYPE,
 };
-
-export interface Manifest {
-  id: string;
-  title?: string;
-  description?: string;
-  author?: string;
-  image?: string;
-  url?: string;
-  nsfw?: boolean;
-  webhookUrl?: string;
-  private?: boolean;
-  maintainers?: string[];
-  conflicts?: string[];
-  media?: {
-    new?: DisaggregatedMedia[];
-  };
-  characters?: {
-    new?: DisaggregatedCharacter[];
-  };
-}
-
-// Combat
-
-export type SkillKey = keyof typeof skills;
-
-export type CharacterBattleStats = CharacterStats & {
-  skills: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
-  hp: number;
-  maxHP: number;
-};
-
-export interface SkillOutput {
-  damage?: number;
-  heal?: number;
-  stun?: boolean;
-}
-
-export const skillCategories = [
-  'buff',
-  'debuff',
-  'support',
-  'offensive',
-  'heal',
-] as const;
-
-export type SkillCategory = (typeof skillCategories)[number];
-
-export interface CharacterSkill {
-  key: Keys;
-  descKey: Keys;
-  max: number;
-
-  categories: SkillCategory[];
-
-  cost: number;
-
-  activation?: (args: {
-    lvl: number;
-    attacking: PartyMember;
-    receiving?: PartyMember;
-    damage?: number;
-    combo?: number;
-  }) => SkillOutput;
-
-  stats: CharacterAdditionalStat[];
-}
-
-export interface CharacterAdditionalStat {
-  key: Keys;
-  scale?: number[];
-  factor?: number;
-  prefix?: string;
-  suffix?: string;
-}

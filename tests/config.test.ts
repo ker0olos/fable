@@ -34,9 +34,7 @@ describe('Config', () => {
     process.env.COMMUNITY_PACKS = '1';
     process.env.COMMUNITY_PACKS_MAINTAINER_API = '1';
     process.env.COMMUNITY_PACKS_BROWSE_API = '1';
-    process.env.COMBAT = '1';
     process.env.DISABLE_IMAGES_PROXY = '1';
-    process.env.DEFAULT_SERVER_DUPES = '1';
 
     await initConfig();
 
@@ -56,9 +54,7 @@ describe('Config', () => {
       communityPacks: true,
       communityPacksMaintainerAPI: true,
       communityPacksBrowseAPI: true,
-      combat: true,
       disableImagesProxy: true,
-      defaultServerDupes: true,
     });
   });
 
@@ -88,9 +84,7 @@ describe('Config', () => {
       communityPacks: true,
       communityPacksMaintainerAPI: true,
       communityPacksBrowseAPI: true,
-      combat: true,
       disableImagesProxy: false,
-      defaultServerDupes: false,
       config: undefined,
     });
   });
@@ -111,9 +105,7 @@ describe('Config', () => {
     process.env.COMMUNITY_PACKS = '0';
     process.env.COMMUNITY_PACKS_MAINTAINER_API = '0';
     process.env.COMMUNITY_PACKS_BROWSE_API = '0';
-    process.env.COMBAT = '0';
     process.env.DISABLE_IMAGES_PROXY = '0';
-    process.env.DEFAULT_SERVER_DUPES = '0';
 
     await initConfig();
 
@@ -133,9 +125,7 @@ describe('Config', () => {
       communityPacks: false,
       communityPacksMaintainerAPI: false,
       communityPacksBrowseAPI: false,
-      combat: false,
       disableImagesProxy: false,
-      defaultServerDupes: false,
       config: undefined,
     });
   });

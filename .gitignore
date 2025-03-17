@@ -2,3 +2,4 @@
 .dev.vars
 .wrangler
 node_modules
+db/migrate/*.json

@@ -2,11 +2,9 @@ import config from '~/src/config.ts';
 
 import utils from '~/src/utils.ts';
 
-import validate, { purgeReservedProps } from '~/src/validate.ts';
-
 import db from '~/db/index.ts';
 
-import type { Manifest } from '~/src/types.ts';
+import type { Pack } from '~/src/types.ts';
 
 export async function user(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -47,13 +45,10 @@ export async function user(req: Request): Promise<Response> {
 
   const data = {
     packs: packs.map((pack) => ({
-      ...pack,
-      manifest: {
-        id: pack.manifest.id,
-        title: pack.manifest.title,
-        description: pack.manifest.description,
-        image: pack.manifest.image,
-      },
+      id: pack.id,
+      title: pack.title,
+      description: pack.description,
+      image: pack.image,
     })),
     limit: Math.min(limit, 20),
     offset,
@@ -92,22 +87,30 @@ export async function publish(req: Request): Promise<Response> {
 
   const { id: userId } = await auth.json();
 
-  const { manifest } = body as { manifest: Manifest };
+  const pack = body as Pack;
 
-  const valid = validate(manifest);
+  // validate that every character and media id starts with `${pack.id}:`
 
-  if (valid.errors?.length) {
-    return utils.json(
-      { errors: valid.errors },
-      {
-        status: 400,
-        statusText: 'Bad Request',
-      }
-    );
+  for (const character of pack.characters) {
+    if (!character.id.startsWith(`${pack.id}:`)) {
+      return utils.json(
+        { error: 'INVALID_CHARACTER_ID' },
+        { status: 400, statusText: 'Bad Request' }
+      );
+    }
+  }
+
+  for (const media of pack.media) {
+    if (!media.id.startsWith(`${pack.id}:`)) {
+      return utils.json(
+        { error: 'INVALID_MEDIA_ID' },
+        { status: 400, statusText: 'Bad Request' }
+      );
+    }
   }
 
   try {
-    const _ = await db.publishPack(userId, purgeReservedProps(manifest));
+    await db.publishPack(userId, pack);
     return new Response(undefined, { status: 201, statusText: 'Created' });
   } catch (err) {
     switch ((err as Error).message) {
@@ -157,17 +160,15 @@ export async function popular(req: Request): Promise<Response> {
   const data = {
     packs: packs.map(({ servers, pack }) => ({
       servers,
-      manifest: {
-        id: pack.manifest.id,
-        title: pack.manifest.title,
-        description: pack.manifest.description,
-        image: pack.manifest.image,
-        media: pack.manifest.media?.new?.length ?? 0,
-        characters: pack.manifest.characters?.new?.length ?? 0,
-        createdAt: pack.createdAt,
-        updatedAt: pack.updatedAt,
-        approved: pack.approved,
-      } as any,
+      id: pack.id,
+      title: pack.title,
+      description: pack.description,
+      image: pack.image,
+      media: pack.media?.length ?? 0,
+      characters: pack.characters?.length ?? 0,
+      createdAt: pack.createdAt,
+      updatedAt: pack.updatedAt,
+      approved: pack.approved,
     })),
     limit: Math.min(limit, 20),
     offset,
@@ -201,17 +202,15 @@ export async function lastUpdated(req: Request): Promise<Response> {
 
   const data = {
     packs: packs.map((pack) => ({
-      manifest: {
-        id: pack.manifest.id,
-        title: pack.manifest.title,
-        description: pack.manifest.description,
-        image: pack.manifest.image,
-        media: pack.manifest.media?.new?.length ?? 0,
-        characters: pack.manifest.characters?.new?.length ?? 0,
-        createdAt: pack.createdAt,
-        updatedAt: pack.updatedAt,
-        approved: pack.approved,
-      } as any,
+      id: pack.id,
+      title: pack.title,
+      description: pack.description,
+      image: pack.image,
+      media: pack.media?.length ?? 0,
+      characters: pack.characters?.length ?? 0,
+      createdAt: pack.createdAt,
+      updatedAt: pack.updatedAt,
+      approved: pack.approved,
     })),
     limit: Math.min(limit, 20),
     offset,
@@ -318,17 +317,15 @@ export async function search(req: Request): Promise<Response> {
 
   const data = {
     packs: packs.map((pack) => ({
-      manifest: {
-        id: pack.manifest.id,
-        title: pack.manifest.title,
-        description: pack.manifest.description,
-        image: pack.manifest.image,
-        media: pack.manifest.media?.new?.length ?? 0,
-        characters: pack.manifest.characters?.new?.length ?? 0,
-        createdAt: pack.createdAt,
-        updatedAt: pack.updatedAt,
-        approved: pack.approved,
-      } as any,
+      id: pack.id,
+      title: pack.title,
+      description: pack.description,
+      image: pack.image,
+      media: pack.media?.length ?? 0,
+      characters: pack.characters?.length ?? 0,
+      createdAt: pack.createdAt,
+      updatedAt: pack.updatedAt,
+      approved: pack.approved,
     })),
     limit: Math.min(limit, 20),
     offset,

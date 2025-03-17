@@ -1,14 +1,8 @@
-import { File } from 'node:buffer';
-
-import { basename, extname } from 'path';
-
-import mime from 'mime';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { json } from '~/src/utils.ts';
 
 import i18n from '~/src/i18n.ts';
-
-import { readFileSync } from 'fs';
 
 import utils, { ImageSize } from '~/src/utils.ts';
 
@@ -22,7 +16,7 @@ enum CommandType {
 }
 
 export type Attachment = {
-  arrayBuffer: ArrayBuffer;
+  arrayBuffer: Buffer;
   filename: string;
   type: string;
 };
@@ -527,10 +521,8 @@ export class Component {
 
 export class Embed {
   #data: EmbedInternal;
-  #files: File[];
 
   constructor(type: 'rich' = 'rich') {
-    this.#files = [];
     this.#data = { type };
   }
 
@@ -612,22 +604,6 @@ export class Embed {
     return this;
   }
 
-  setImageFile(path: string): Attachment {
-    const filename = encodeURIComponent(basename(path));
-
-    const arrayBuffer = readFileSync(path);
-
-    this.#data.image = { url: `attachment://${filename}` };
-
-    const type = mime.getType(extname(path));
-
-    if (type) {
-      return { type, arrayBuffer, filename };
-    } else {
-      throw new Error(`${extname(path)}: unsupported`);
-    }
-  }
-
   async setImageWithProxy(image: {
     url?: string;
     default?: boolean;
@@ -683,7 +659,7 @@ export class Embed {
 export class Message {
   #type?: MessageType;
 
-  #files: File[];
+  #files: { data: Blob; name: string }[];
 
   #suggestions: { [name: string]: Suggestion };
 
@@ -692,12 +668,9 @@ export class Message {
     custom_id?: string;
     flags?: number;
     content?: string;
-
     attachments: any[];
     embeds: unknown[];
     components: unknown[];
-    // title?: string;
-    // custom_id?: string;
     allowed_mentions?: AllowedPings;
   };
 
@@ -761,11 +734,10 @@ export class Message {
         id: `${this.#data.attachments.length}`,
       });
 
-      this.#files.push(
-        new File([attachment.arrayBuffer], attachment.filename, {
-          type: attachment.type,
-        })
-      );
+      this.#files.push({
+        data: new Blob([attachment.arrayBuffer], { type: attachment.type }),
+        name: attachment.filename,
+      });
     }
 
     return this;
@@ -931,7 +903,7 @@ export class Message {
     // respond first with a loading message
     // then add the attachments the follow-up message
     this.#files.forEach((file, index) => {
-      formData.append(`files[${index}]`, file, file.name);
+      formData.append(`files[${index}]`, file.data, file.name);
     });
 
     return new Response(formData, {
@@ -945,8 +917,8 @@ export class Message {
 
     formData.append('payload_json', JSON.stringify(this.json().data));
 
-    Object.entries(this.#files).forEach(([name, blob], index) => {
-      formData.append(`files[${index}]`, blob, name);
+    this.#files.forEach((file, index) => {
+      formData.append(`files[${index}]`, file.data, file.name);
     });
 
     let response: Response | undefined = undefined;
@@ -981,15 +953,15 @@ export class Message {
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
       'PATCH'
     ).finally(() => {
-      // WORKAROUND double patch messages
-      if (config.deploy) {
-        utils.sleep(0.25).then(() => {
-          return this.#http(
-            `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
-            'PATCH'
-          );
-        });
-      }
+      // // WORKAROUND double patch messages
+      // if (config.deploy) {
+      //   utils.sleep(0.25).then(() => {
+      //     return this.#http(
+      //       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
+      //       'PATCH'
+      //     );
+      //   });
+      // }
     });
   }
 
@@ -1008,11 +980,11 @@ export class Message {
     const embed = new Embed();
     const loading = new Message();
 
-    const image = embed.setImageFile(
+    embed.setImageUrl(
       landscape ? 'assets/public/spinner3.gif' : 'assets/public/spinner.gif'
     );
 
-    return loading.addEmbed(embed).addAttachment(image);
+    return loading.addEmbed(embed);
   }
 
   static page({

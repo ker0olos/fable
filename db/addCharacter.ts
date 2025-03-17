@@ -1,104 +1,6 @@
-import db, { type Mongo } from '~/db/index.ts';
+import { NoPullsError } from '~/src/errors.ts';
 
-import i18n from '~/src/i18n.ts';
-import utils from '~/src/utils.ts';
-
-import user from '~/src/user.ts';
-
-import { skills } from '~/src/skills.ts';
-
-import { NonFetalError, NoPullsError } from '~/src/errors.ts';
-
-import type { ObjectId } from '~/db/index.ts';
-
-import type * as Schema from '~/db/schema.ts';
-
-import type { SkillKey } from '~/src/types.ts';
-
-import type { AnyBulkWriteOperation } from 'mongodb';
-
-const newSkills = (rating: number): number => {
-  switch (rating) {
-    case 5:
-      return 2;
-    case 4:
-      return 1;
-    default:
-      return 0;
-  }
-};
-
-const newUnclaimed = (rating: number): number => {
-  return 3 * rating;
-};
-
-export const randomStats = (
-  total: number,
-  seed?: string
-): Schema.CharacterStats => {
-  let attack = 0;
-  let defense = 0;
-  let speed = 0;
-
-  const rng = seed ? new utils.LehmerRNG(seed) : undefined;
-
-  for (let i = 0; i < total; i++) {
-    const rand = rng
-      ? Math.floor(rng.nextFloat() * 3)
-      : Math.floor(Math.random() * 3);
-
-    if (rand === 0) {
-      attack += 1;
-    } else if (rand === 1) {
-      defense += 1;
-    } else {
-      speed += 1;
-    }
-  }
-
-  return {
-    attack,
-    defense,
-    speed,
-    hp: 10,
-  };
-};
-
-export const ensureCombat = (
-  character: Partial<Schema.Character>
-): Schema.Character => {
-  if (character.combat !== undefined) {
-    return character as Schema.Character;
-  }
-
-  const total = newUnclaimed(character.rating!);
-
-  const slots = newSkills(character.rating!);
-
-  character.combat = {
-    exp: 0,
-    level: 1,
-    skillPoints: 0,
-    skills: {},
-    baseStats: randomStats(total),
-    curStats: { attack: 0, defense: 0, hp: 0, speed: 0 },
-  };
-
-  character.combat.curStats = { ...character.combat.baseStats };
-
-  const skillsPool = Object.keys(skills) as SkillKey[];
-
-  for (let i = 0; i < slots; i++) {
-    const randomSkillKey = skillsPool.splice(
-      Math.floor(Math.random() * skillsPool.length),
-      1
-    )[0];
-
-    character.combat.skills[randomSkillKey] = { level: 1 };
-  }
-
-  return character as Schema.Character;
-};
+import db from './index.ts';
 
 export async function addCharacter({
   rating,
@@ -108,7 +10,6 @@ export async function addCharacter({
   userId,
   guildId,
   sacrifices,
-  mongo,
 }: {
   rating: number;
   mediaId: string;
@@ -116,101 +17,61 @@ export async function addCharacter({
   guaranteed: boolean;
   userId: string;
   guildId: string;
-  sacrifices?: ObjectId[];
-  mongo: Mongo;
+  sacrifices?: string[];
 }): Promise<void> {
-  const locale =
-    user.cachedUsers[userId]?.locale ?? user.cachedUsers[guildId]?.locale;
+  await db.rechargeConsumables(
+    guildId,
+    userId,
+    async (prisma, inventory, user) => {
+      if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
+        throw new NoPullsError(inventory.rechargeTimestamp);
+      }
 
-  const session = mongo.startSession();
+      if (
+        guaranteed &&
+        !sacrifices?.length &&
+        !user?.guarantees?.includes(rating)
+      ) {
+        throw new Error('403');
+      }
 
-  try {
-    session.startTransaction();
-
-    const { user, ...inventory } = await db.rechargeConsumables(
-      guildId,
-      userId,
-      mongo,
-      true
-    );
-
-    if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
-      throw new NoPullsError(inventory.rechargeTimestamp);
-    }
-
-    if (
-      guaranteed &&
-      !sacrifices?.length &&
-      !user?.guarantees?.includes(rating)
-    ) {
-      throw new Error('403');
-    }
-
-    const newCharacter: Schema.Character = ensureCombat({
-      createdAt: new Date(),
-      inventoryId: inventory._id,
-      characterId,
-      guildId,
-      userId,
-      mediaId,
-      rating,
-    });
-
-    const update: Partial<Schema.Inventory> = {
-      lastPull: new Date(),
-    };
-
-    const deleteSacrifices: AnyBulkWriteOperation<Schema.Character>[] = [];
-
-    // if sacrifices (merge)
-    if (sacrifices?.length) {
-      deleteSacrifices.push({
-        deleteMany: { filter: { _id: { $in: sacrifices } } },
-      });
-    } else if (guaranteed) {
-      // if guaranteed pull
-      const i = user.guarantees.indexOf(rating);
-
-      user.guarantees.splice(i, 1);
-
-      await mongo.users().updateOne(
-        { _id: user._id },
-        {
-          $set: { guarantees: user.guarantees },
+      await prisma.character.create({
+        data: {
+          inventory: { connect: { userId_guildId: { userId, guildId } } },
+          guild: { connect: { id: guildId } },
+          user: { connect: { id: userId } },
+          characterId,
+          mediaId,
+          rating,
         },
-        { session }
-      );
-    } else {
-      // if normal pull
-      update.availablePulls = inventory.availablePulls - 1;
-      update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
+      });
+
+      if (sacrifices?.length) {
+        await prisma.character.deleteMany({
+          where: { characterId: { in: sacrifices } },
+        });
+      } else if (guaranteed) {
+        const i = user.guarantees.indexOf(rating);
+
+        user.guarantees.splice(i, 1);
+
+        await prisma.user.update({
+          where: { id: userId },
+          data: { guarantees: { set: user.guarantees } },
+        });
+      } else {
+        inventory.availablePulls = inventory.availablePulls - 1;
+        inventory.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
+      }
+
+      await prisma.inventory.update({
+        where: { userId_guildId: { userId, guildId } },
+        data: {
+          lastPull: new Date(),
+          availablePulls: inventory.availablePulls,
+          rechargeTimestamp: inventory.rechargeTimestamp,
+        },
+      });
     }
-
-    await mongo
-      .inventories()
-      .updateOne({ _id: inventory._id }, { $set: update }, { session });
-
-    const result = await mongo
-      .characters()
-      .bulkWrite(
-        [...deleteSacrifices, { insertOne: { document: newCharacter } }],
-        { session }
-      );
-
-    if (sacrifices?.length && result.deletedCount !== sacrifices.length) {
-      throw new NonFetalError(i18n.get('failed', locale));
-    }
-
-    await session.commitTransaction();
-  } catch (err) {
-    if (session.transaction.isActive) {
-      await session.abortTransaction();
-    }
-
-    await session.endSession();
-
-    throw err;
-  } finally {
-    await session.endSession();
-  }
+  );
 }

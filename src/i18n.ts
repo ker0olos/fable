@@ -1,8 +1,8 @@
 import { AvailableLocales } from '~/src/discord.ts';
 
-import EN from '~/i18n/en-US.json';
-import ES from '~/i18n/es-ES.json';
-import BR from '~/i18n/pt-BR.json';
+import EN from '~/i18n/en-US.json' with { type: 'json' };
+import ES from '~/i18n/es-ES.json' with { type: 'json' };
+import BR from '~/i18n/pt-BR.json' with { type: 'json' };
 
 export type Keys = keyof typeof EN;
 

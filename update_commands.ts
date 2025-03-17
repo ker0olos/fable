@@ -2,8 +2,6 @@ import 'dotenv/config';
 
 import { AvailableLocales } from '~/src/discord.ts';
 
-import { skillCategories } from '~/src/types.ts';
-
 import EN from '~/i18n/en-US.json' with { type: 'json' };
 import ES from '~/i18n/es-ES.json' with { type: 'json' };
 import BR from '~/i18n/pt-BR.json' with { type: 'json' };
@@ -84,6 +82,7 @@ const Command = ({
   aliases,
   defaultPermission,
 }: Command) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const transformOption: any = (option: Option) => ({
     name: option.name,
     description:
@@ -456,19 +455,12 @@ export const commands = [
             value: 3,
           },
           {
-            name: EN['$help-page-combat'],
-            name_localizations: {
-              // 'es-ES': ES['$help-page-combat'],
-            },
-            value: 4,
-          },
-          {
             name: EN['$help-page-shop'],
             name_localizations: {
               'es-ES': ES['$help-page-shop'],
               'pt-BR': BR['$help-page-shop'],
             },
-            value: 5,
+            value: 4,
           },
           {
             name: EN['$help-page-essential-commands'],
@@ -476,7 +468,7 @@ export const commands = [
               'es-ES': ES['$help-page-essential-commands'],
               'pt-BR': BR['$help-page-essential-commands'],
             },
-            value: 6,
+            value: 5,
           },
           {
             name: EN['$help-page-other-commands'],
@@ -484,7 +476,7 @@ export const commands = [
               'es-ES': ES['$help-page-other-commands'],
               'pt-BR': BR['$help-page-other-commands'],
             },
-            value: 7,
+            value: 6,
           },
           {
             name: EN['$help-page-admin-commands'],
@@ -492,7 +484,7 @@ export const commands = [
               'es-ES': ES['$help-page-admin-commands'],
               'pt-BR': BR['$help-page-admin-commands'],
             },
-            value: 8,
+            value: 7,
           },
         ],
       }),
@@ -573,18 +565,18 @@ export const commands = [
         choices: spots.slice(1).reverse(),
         type: Type.INTEGER,
       }),
-      // Option({
-      //   name: 'min',
-      //   description: '/merge min',
-      //   type: Type.SUB_COMMAND,
-      //   optional: true,
-      // }),
-      // Option({
-      //   name: 'max',
-      //   description: '/merge max',
-      //   type: Type.SUB_COMMAND,
-      //   optional: true,
-      // }),
+      Option({
+        name: 'min',
+        description: '/merge min',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
+        name: 'max',
+        description: '/merge max',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
     ],
   }),
   ...Command({
@@ -650,21 +642,6 @@ export const commands = [
             description: '$buy-guaranteed-stars',
             type: Type.INTEGER,
             choices: spots.slice(2).reverse(),
-          }),
-        ],
-      }),
-      Option({
-        name: 'keys',
-        description: '/buy keys',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            min_value: 1,
-            max_value: 99,
-            name: 'amount',
-            description: '$buy-keys-amount',
-            type: Type.INTEGER,
           }),
         ],
       }),
@@ -940,110 +917,6 @@ export const commands = [
         ],
       }),
     ],
-  }),
-  //
-  ...Command({
-    name: 'stats',
-    description: '/stats',
-    options: [
-      Option({
-        name: 'name',
-        description: '$character-name',
-        autocomplete: true,
-        type: Type.STRING,
-      }),
-    ],
-  }),
-  ...Command({
-    name: 'skills',
-    description: 'characters skill management',
-    options: [
-      Option({
-        name: 'showall',
-        description: '/skills showall',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'category',
-            description: '$skill-categories',
-            optional: true,
-            type: Type.STRING,
-            choices: skillCategories.map((category) => ({
-              value: category,
-              name: EN[category],
-              name_localizations: {
-                'es-ES': (ES as any as typeof EN)[category],
-                'pt-BR': (BR as any as typeof EN)[category],
-              },
-            })),
-          }),
-        ],
-      }),
-      Option({
-        name: 'acquire',
-        description: '/skills acquire',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'character',
-            description: '$character-name',
-            autocomplete: true,
-            type: Type.STRING,
-          }),
-          Option({
-            name: 'skill',
-            autocomplete: true,
-            description: '$skill-name',
-            type: Type.STRING,
-          }),
-        ],
-      }),
-      Option({
-        name: 'upgrade',
-        description: '/skills upgrade',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'character',
-            description: '$character-name',
-            autocomplete: true,
-            type: Type.STRING,
-          }),
-          Option({
-            name: 'skill',
-            autocomplete: true,
-            description: '$skill-name',
-            type: Type.STRING,
-          }),
-        ],
-      }),
-    ],
-  }),
-  ...Command({
-    name: 'battle',
-    description: 'battle/combat commands',
-    aliases: ['bt'],
-    options: [
-      Option({
-        name: 'tower',
-        description: '/battle tower',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
-      Option({
-        name: 'challenge',
-        description: '/battle challenge',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
-    ],
-  }),
-  ...Command({
-    name: 'reclear',
-    description: '/reclear',
   }),
 ];
 

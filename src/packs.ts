@@ -1,11 +1,7 @@
-import * as _anilist from '~/packs/anilist/mod.ts';
-
 import * as discord from '~/src/discord.ts';
 
 import user from '~/src/user.ts';
 import utils from '~/src/utils.ts';
-
-import searchIndex from '~/search-index-mod/mod.ts';
 
 import i18n from '~/src/i18n.ts';
 
@@ -13,30 +9,23 @@ import config from '~/src/config.ts';
 
 import db from '~/db/index.ts';
 
-import {
-  Alias,
-  Character,
-  CharacterRole,
-  DisaggregatedCharacter,
-  DisaggregatedMedia,
-  Media,
-  MediaFormat,
-  MediaRelation,
-} from '~/src/types.ts';
-
 import { NonFetalError } from '~/src/errors.ts';
 
-import type {
-  Character as CharacterType,
-  Media as MediaType,
-} from '@fable-community/search-index';
+import {
+  MEDIA_FORMAT,
+  MEDIA_RELATION,
+  Pack,
+  PackCharacter,
+  PackMedia,
+} from '~/src/types.ts';
+import prisma from '~/prisma/index.ts';
 
-import type { Pack } from '~/db/schema.ts';
+const cachedPacks: Record<string, Pack> = {};
 
 const cachedGuilds: Record<
   string,
   {
-    packs: Pack[];
+    packs: string[];
     disables: Map<string, boolean>;
     options: { dupes: boolean };
     excluded?: boolean;
@@ -45,13 +34,10 @@ const cachedGuilds: Record<
 
 const packs = {
   ensureId,
-  aggregate,
-  aliasToArray,
   all,
   findById,
   cachedGuilds,
   characters,
-  aggregatedCharacters,
   formatToString,
   install,
   isDisabled,
@@ -60,8 +46,6 @@ const packs = {
   mediaToString,
   packEmbed,
   pages,
-  _searchManyCharacters,
-  _searchManyMedia,
   searchManyCharacters,
   searchManyMedia,
   searchOneCharacter,
@@ -70,13 +54,7 @@ const packs = {
   uninstallDialog,
 };
 
-async function all({
-  guildId,
-  filter,
-}: {
-  guildId: string;
-  filter?: boolean;
-}): Promise<Pack[]> {
+async function all({ guildId }: { guildId: string }): Promise<Pack[]> {
   let cachedGuild = packs.cachedGuilds[guildId];
 
   if (!cachedGuild) {
@@ -84,33 +62,25 @@ async function all({
 
     const _packs = guild.packs;
 
+    _packs.forEach(({ pack }) => {
+      cachedPacks[pack.id] = pack;
+    });
+
     cachedGuild = packs.cachedGuilds[guildId] = {
-      packs: _packs,
+      packs: _packs.map(({ pack: { id } }) => id),
       excluded: guild.excluded,
-      options: guild.options,
+      options: guild.options || { dupes: false },
       disables: new Map(),
     };
 
-    _packs.forEach((pack) => {
-      pack.manifest.conflicts?.forEach((id) => {
+    _packs.forEach(({ pack }) => {
+      pack.conflicts?.forEach((id) => {
         cachedGuild.disables.set(id, true);
       });
     });
   }
 
-  const _packs = cachedGuild.packs;
-
-  if (!config.communityPacks) {
-    const anilistPack = _packs.find(
-      ({ manifest }) => manifest.id === 'anilist'
-    );
-
-    if (filter || !anilistPack) {
-      return [];
-    }
-
-    return [anilistPack];
-  }
+  const _packs = cachedGuild.packs.map((id) => cachedPacks[id]);
 
   return _packs;
 }
@@ -119,14 +89,20 @@ function isDisabled(id: string, guildId: string): boolean {
   return packs.cachedGuilds[guildId]?.disables?.has(id);
 }
 
-function packEmbed(pack: Pack): discord.Embed {
+function packEmbed(pack: {
+  id: string;
+  author?: string | null;
+  description?: string | null;
+  image?: string | null;
+  title?: string | null;
+}): discord.Embed {
   const embed = new discord.Embed()
-    .setFooter({ text: pack.manifest.author })
-    .setDescription(pack.manifest.description)
-    .setTitle(pack.manifest.title ?? pack.manifest.id);
+    .setFooter({ text: pack.author || undefined })
+    .setDescription(pack.description || undefined)
+    .setTitle(pack.title ?? pack.id);
 
-  if (pack.manifest.image) {
-    embed.setThumbnailUrl(pack.manifest.image);
+  if (pack.image) {
+    embed.setThumbnailUrl(pack.image);
   }
 
   return embed;
@@ -147,9 +123,9 @@ async function uninstallDialog({
     throw new NonFetalError(i18n.get('maintenance-packs', locale));
   }
 
-  const list = await packs.all({ filter: true, guildId });
+  const list = await packs.all({ guildId });
 
-  const pack = list.find(({ manifest }) => manifest.id === packId);
+  const pack = list.find(({ id }) => id === packId);
 
   if (!pack) {
     throw new Error('404');
@@ -161,7 +137,7 @@ async function uninstallDialog({
     userId,
     message,
     type: 'uninstall',
-    confirm: discord.join(pack.manifest.id, userId),
+    confirm: discord.join(pack.id, userId),
     description: i18n.get('uninstall-pack-confirmation', locale),
   });
 }
@@ -187,14 +163,14 @@ async function pages({
   if (list.length) {
     embed.setDescription(
       list
-        .map(({ manifest }, i) => {
-          let s = `\`${manifest.id}\``;
+        .map((pack, i) => {
+          let s = `\`${pack.id}\``;
 
-          if (manifest.title) {
-            s = `${manifest.title} | ${s}`;
+          if (pack.title) {
+            s = `${pack.title} | ${s}`;
           }
 
-          return `${i + 1}. [${s}](${config.packsUrl}/${manifest.id})`;
+          return `${i + 1}. [${s}](${config.packsUrl}/${pack.id})`;
         })
         .join('\n')
     );
@@ -311,13 +287,9 @@ async function findById<T>({
   guildId: string;
   defaultPackId?: string;
 }): Promise<{ [key: string]: T }> {
-  const anilistIds: string[] = [];
-
   const results: { [key: string]: T } = {};
 
   const list = await packs.all({ guildId });
-
-  const anilistEnabled = list.some(({ manifest }) => manifest.id === 'anilist');
 
   for (const literal of [...new Set(ids)]) {
     const [packId, id] = parseId(literal, defaultPackId);
@@ -326,49 +298,19 @@ async function findById<T>({
       continue;
     }
 
-    if (packId === 'anilist') {
-      anilistIds.push(id);
-    } else {
-      const pack = list.find(({ manifest }) => manifest.id === packId);
+    const pack = list.find(({ id }) => id === packId);
 
-      // search for the id in packs
-      const match = (
-        pack?.manifest[key]?.new as Array<
-          DisaggregatedCharacter | DisaggregatedMedia
-        >
-      )?.find((m) => m.id === id);
+    // search for the id in packs
+    const match = (key === 'media' ? pack?.media : pack?.characters)?.find(
+      (m) => m.id === id
+    );
 
-      if (match) {
-        results[literal] = ((match.packId = packId), match) as T;
-      }
+    if (match) {
+      results[literal] = ((match.packId = packId), match) as T;
     }
   }
 
-  // if anilist pack is enabled
-  // request the ids from anilist
-  if (list.length && anilistEnabled) {
-    const anilistResults = await _anilist[key](anilistIds);
-
-    anilistIds.forEach((n) => {
-      const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
-
-      if (i > -1) {
-        results[`anilist:${n}`] = anilistResults[i] as T;
-      }
-    });
-  }
-
   return results;
-}
-
-async function _searchManyCharacters({
-  search,
-  guildId,
-}: {
-  search: string;
-  guildId: string;
-}): Promise<CharacterType[]> {
-  return await searchIndex.searchCharacters(search, guildId);
 }
 
 async function searchManyCharacters({
@@ -377,19 +319,33 @@ async function searchManyCharacters({
 }: {
   search: string;
   guildId: string;
-}): Promise<(Character | DisaggregatedCharacter)[]> {
-  const results = await _searchManyCharacters({
-    search,
-    guildId,
+}) {
+  return prisma.packCharacter.findMany({
+    orderBy: { rating: 'desc' },
+    include: {
+      externalLinks: true,
+      media: {
+        include: {
+          media: { include: { externalLinks: true } },
+          node: { include: { externalLinks: true } },
+        },
+      },
+    },
+    where: {
+      pack: {
+        installs: {
+          some: {
+            guildId,
+          },
+        },
+      },
+      OR: [
+        { name: { contains: search } },
+        { id: { contains: search } },
+        { alternative: { has: search } },
+      ],
+    },
   });
-
-  return Object.values(
-    await packs.findById<Character | DisaggregatedCharacter>({
-      ids: results.map((r) => r.id),
-      key: 'characters',
-      guildId,
-    })
-  );
 }
 
 async function searchOneCharacter({
@@ -398,29 +354,33 @@ async function searchOneCharacter({
 }: {
   search: string;
   guildId: string;
-}): Promise<Character | DisaggregatedCharacter | undefined> {
-  const results = await _searchManyCharacters({
-    search,
-    guildId,
+}) {
+  return prisma.packCharacter.findFirst({
+    orderBy: { rating: 'desc' },
+    include: {
+      externalLinks: true,
+      media: {
+        include: {
+          media: { include: { externalLinks: true } },
+          node: { include: { externalLinks: true } },
+        },
+      },
+    },
+    where: {
+      pack: {
+        installs: {
+          some: {
+            guildId,
+          },
+        },
+      },
+      OR: [
+        { name: { contains: search } },
+        { id: { contains: search } },
+        { alternative: { has: search } },
+      ],
+    },
   });
-
-  return Object.values(
-    await packs.findById<Character | DisaggregatedCharacter>({
-      ids: [results[0]?.id],
-      key: 'characters',
-      guildId,
-    })
-  )[0];
-}
-
-async function _searchManyMedia({
-  search,
-  guildId,
-}: {
-  search: string;
-  guildId: string;
-}): Promise<MediaType[]> {
-  return await searchIndex.searchMedia(search, guildId);
 }
 
 async function searchManyMedia({
@@ -429,19 +389,40 @@ async function searchManyMedia({
 }: {
   search: string;
   guildId: string;
-}): Promise<(Media | DisaggregatedMedia)[]> {
-  const results = await _searchManyMedia({
-    search,
-    guildId,
+}) {
+  return prisma.packMedia.findMany({
+    include: {
+      externalLinks: true,
+      characters: {
+        include: {
+          node: {
+            include: { externalLinks: true },
+          },
+        },
+      },
+      media: {
+        include: {
+          node: {
+            include: { externalLinks: true },
+          },
+        },
+      },
+    },
+    where: {
+      pack: {
+        installs: {
+          some: {
+            guildId,
+          },
+        },
+      },
+      OR: [
+        { title: { contains: search } },
+        { id: { contains: search } },
+        { alternative: { has: search } },
+      ],
+    },
   });
-
-  return Object.values(
-    await packs.findById<Media | DisaggregatedMedia>({
-      ids: results.map((r) => r.id),
-      key: 'media',
-      guildId,
-    })
-  );
 }
 
 async function searchOneMedia({
@@ -450,19 +431,33 @@ async function searchOneMedia({
 }: {
   search: string;
   guildId: string;
-}): Promise<Media | DisaggregatedMedia | undefined> {
-  const results = await _searchManyMedia({
-    search,
-    guildId,
+}) {
+  return prisma.packMedia.findFirst({
+    include: {
+      externalLinks: true,
+      characters: {
+        include: {
+          node: { include: { externalLinks: true } },
+          media: { include: { externalLinks: true } },
+        },
+      },
+      media: { include: { node: { include: { externalLinks: true } } } },
+    },
+    where: {
+      pack: {
+        installs: {
+          some: {
+            guildId,
+          },
+        },
+      },
+      OR: [
+        { title: { contains: search } },
+        { id: { contains: search } },
+        { alternative: { has: search } },
+      ],
+    },
   });
-
-  return Object.values(
-    await packs.findById<Media | DisaggregatedMedia>({
-      ids: [results[0]?.id],
-      key: 'media',
-      guildId,
-    })
-  )[0];
 }
 
 async function media({
@@ -473,12 +468,12 @@ async function media({
   ids?: string[];
   search?: string;
   guildId: string;
-}): Promise<(Media | DisaggregatedMedia)[]> {
+}) {
   if (ids?.length) {
     // remove duplicates
     ids = Array.from(new Set(ids));
 
-    const results = await packs.findById<Media | DisaggregatedMedia>({
+    const results = await packs.findById<PackMedia>({
       ids,
       guildId,
       key: 'media',
@@ -502,12 +497,12 @@ async function characters({
   ids?: string[];
   search?: string;
   guildId: string;
-}): Promise<(Character | DisaggregatedCharacter)[]> {
+}) {
   if (ids?.length) {
     // remove duplicates
     ids = Array.from(new Set(ids));
 
-    const results = await packs.findById<Character | DisaggregatedCharacter>({
+    const results = await packs.findById<PackCharacter>({
       ids,
       guildId,
       key: 'characters',
@@ -523,26 +518,6 @@ async function characters({
   }
 }
 
-async function aggregatedCharacters({
-  ids,
-  search,
-  guildId,
-}: {
-  ids?: string[];
-  search?: string;
-  guildId: string;
-}): Promise<Character[]> {
-  const characters = await packs.characters({ ids, search, guildId });
-
-  const aggregatedCharacters = await Promise.all(
-    characters.map((character) =>
-      packs.aggregate<Character>({ character, guildId })
-    )
-  );
-
-  return aggregatedCharacters;
-}
-
 async function mediaCharacters({
   id,
   search,
@@ -553,172 +528,32 @@ async function mediaCharacters({
   search?: string;
   guildId: string;
   index: number;
-}): Promise<{
-  media?: Media | DisaggregatedMedia;
-  role?: CharacterRole;
-  character?: DisaggregatedCharacter;
-  total?: number;
-  next: boolean;
-}> {
-  const results: (Media | DisaggregatedMedia)[] = await packs.media(
+}) {
+  const results = await packs.media(
     id ? { guildId, ids: [id] } : { search, guildId }
   );
+
+  const media = results[0];
 
   if (!results.length) {
     throw new Error('404');
   }
 
-  const media = await aggregate<Media>({ guildId, media: results[0] });
+  const total = media.characters?.length ?? 0;
 
-  const total = media.characters?.edges?.length ?? 0;
-
-  const character = media.characters?.edges?.[index];
+  const character = media.characters?.[index];
 
   return {
     total,
     media,
     role: character?.role,
-    character: character?.node as unknown as DisaggregatedCharacter,
+    character: character?.node,
     next: index + 1 < total,
   };
 }
 
-async function aggregate<T>({
-  media,
-  character,
-  start,
-  end,
-  guildId,
-}: {
-  media?: Media | DisaggregatedMedia;
-  character?: Character | DisaggregatedCharacter;
-  start?: number;
-  end?: number;
-  guildId: string;
-}): Promise<T> {
-  start = start || 0;
-
-  if (end) {
-    end = start + (end || 1);
-  }
-
-  if (media) {
-    if (
-      (media.relations && 'edges' in media.relations) ||
-      (media.characters && 'edges' in media.characters)
-    ) {
-      // is already aggregated
-      // doesn't need to be aggregated return as is
-      return media as T;
-    }
-
-    media = media as DisaggregatedMedia;
-
-    const mediaIds = (
-      media.relations instanceof Array ? media.relations.slice(start, end) : []
-    ).map(({ mediaId }) => mediaId);
-
-    const characterIds = (
-      media.characters instanceof Array
-        ? media.characters.slice(start, end)
-        : []
-    ).map(({ characterId }) => characterId);
-
-    const [mediaRefs, characterRefs] = await Promise.all([
-      packs.findById<Media>({
-        guildId,
-        key: 'media',
-        ids: mediaIds,
-        defaultPackId: media.packId,
-      }),
-      packs.findById<Character>({
-        guildId,
-        key: 'characters',
-        ids: characterIds,
-        defaultPackId: media.packId,
-      }),
-    ]);
-
-    const t: Media = {
-      ...media,
-      relations: {
-        edges:
-          media.relations
-            ?.slice(start, end)
-            ?.map(({ relation, mediaId }) => ({
-              relation,
-              node: mediaRefs[mediaId],
-            }))
-            .filter(({ node }) => Boolean(node)) ?? [],
-      },
-      characters: {
-        edges:
-          media.characters
-            ?.slice(start, end)
-            ?.map(({ role, characterId }) => ({
-              role,
-              node: characterRefs[characterId],
-            }))
-            .filter(({ node }) => Boolean(node)) ?? [],
-      },
-    };
-
-    return t as T;
-  } else if (character) {
-    if (character.media && 'edges' in character.media) {
-      // is anilist media or already aggregated
-      // doesn't need to be aggregated return as is
-      return character as T;
-    }
-
-    character = character as DisaggregatedCharacter;
-
-    const mediaIds = (
-      character.media instanceof Array ? character.media.slice(start, end) : []
-    ).map(({ mediaId }) => mediaId);
-
-    const [mediaRefs] = [
-      await packs.findById<Media>({
-        guildId,
-        key: 'media',
-        ids: mediaIds,
-        defaultPackId: character.packId,
-      }),
-    ];
-
-    const t: Character = {
-      ...character,
-      media: {
-        edges:
-          character.media
-            ?.slice(start, end)
-            ?.map(({ role, mediaId }) => ({
-              role,
-              node: mediaRefs[mediaId],
-            }))
-            .filter(({ node }) => Boolean(node)) ?? [],
-      },
-    };
-
-    return t as T;
-  }
-
-  throw new Error();
-}
-
-function aliasToArray(alias: Alias, max?: number): string[] {
-  const set = new Set(
-    [alias.english, alias.romaji, alias.native]
-      .concat(alias.alternative ?? [])
-      .filter(utils.nonNullable)
-      .map((str) => (max ? utils.truncate(str, max) : str))
-  );
-
-  return Array.from(set) as string[];
-}
-
-function formatToString(format?: MediaFormat): string {
-  if (!format || format === MediaFormat.Music) {
+function formatToString(format?: MEDIA_FORMAT | null): string {
+  if (!format || format === MEDIA_FORMAT.MUSIC) {
     return '';
   }
 
@@ -734,16 +569,16 @@ function mediaToString({
   media,
   relation,
 }: {
-  media: Media | DisaggregatedMedia;
-  relation?: MediaRelation;
+  media: { title: string; format?: MEDIA_FORMAT | null };
+  relation?: MEDIA_RELATION;
 }): string {
-  const title = packs.aliasToArray(media.title, 40)[0];
+  const { title } = media;
 
   switch (relation) {
-    case MediaRelation.Prequel:
-    case MediaRelation.Sequel:
-    case MediaRelation.SpinOff:
-    case MediaRelation.SideStory:
+    case MEDIA_RELATION.PREQUEL:
+    case MEDIA_RELATION.SEQUEL:
+    case MEDIA_RELATION.SPIN_OFF:
+    case MEDIA_RELATION.SIDE_STORY:
       return [title, `(${utils.capitalize(relation)})`].join(' ');
     default: {
       const format = formatToString(media.format);

@@ -9,7 +9,7 @@ import utils from '~/src/utils.ts';
 
 import user from '~/src/user.ts';
 
-import type { Guild } from '~/db/schema.ts';
+import { Guild } from '~/src/types.ts';
 
 const getOptionsEmbed = (
   guild: Guild,

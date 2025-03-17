@@ -1,128 +1,61 @@
-import { Mongo } from '~/db/index.ts';
+import prisma from '~/prisma/index.ts';
 
-import { newGuild } from '~/db/getInventory.ts';
-
-import type { Manifest } from '~/src/types.ts';
-
-import type * as Schema from '~/db/schema.ts';
-
+import type { Pack } from '@prisma/client';
 export async function publishPack(
   userId: string,
-  manifest: Manifest
+  pack: Partial<Pack> & { id: string }
 ): Promise<void> {
-  const db = new Mongo();
+  // not assignable by API
+  // create an object without ownerId, approved, hidden
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { ownerId, approved, hidden, ...packData } = pack;
 
-  try {
-    await db.connect();
-
-    const newPack: Omit<Omit<Schema.Pack, 'updatedAt'>, 'manifest'> = {
-      owner: userId,
-      createdAt: new Date(),
-      approved: false,
-      hidden: false,
-    };
-
-    await db.packs().updateOne(
-      {
-        'manifest.id': manifest.id,
-        $or: [{ owner: userId }, { 'manifest.maintainers': { $in: [userId] } }],
-      },
-      {
-        $setOnInsert: newPack, // new
-        $set: { manifest, updatedAt: new Date() }, // update existing
-      },
-      { upsert: true }
-    );
-  } finally {
-    await db.close();
-  }
+  await prisma.pack.upsert({
+    where: { id: pack.id },
+    create: { ...packData, ownerId: userId },
+    update: packData,
+  });
 }
 
-export async function addPack(
-  userId: string,
-  guildId: string,
-  manifestId: string
-): Promise<Schema.Pack | null> {
-  const db = new Mongo();
+export async function addPack(userId: string, guildId: string, packId: string) {
+  const pack = await prisma.pack.findFirst({
+    where: {
+      id: packId,
+      OR: [
+        { private: { not: true } },
+        { ownerId: userId },
+        { maintainers: { some: { id: userId } } },
+      ],
+    },
+    include: { maintainers: true },
+  });
 
-  let result: Schema.Pack;
-
-  try {
-    await db.connect();
-
-    const pack = await db.packs().findOne({ 'manifest.id': manifestId });
-
-    if (!pack) {
-      await db.close();
-      return null;
-    }
-
-    if (
-      pack.manifest.private &&
-      pack.owner !== userId &&
-      !pack.manifest.maintainers?.includes(userId)
-    ) {
-      await db.close();
-      return null;
-    }
-
-    const guild = await db.guilds().findOneAndUpdate(
-      { discordId: guildId },
-      {
-        $setOnInsert: newGuild(guildId, ['packIds']),
-        $addToSet: { packIds: manifestId },
-      },
-      { upsert: true, returnDocument: 'after' }
-    );
-
-    if (!guild) {
-      await db.close();
-      return null;
-    }
-
-    result = pack;
-  } finally {
-    await db.close();
+  if (!pack) {
+    return null;
   }
 
-  return result;
+  await prisma.packInstall.upsert({
+    where: { packId_guildId: { packId, guildId } },
+    create: { packId, guildId, byId: userId },
+    update: {},
+  });
+
+  return pack;
 }
 
-export async function removePack(
-  guildId: string,
-  manifestId: string
-): Promise<Schema.Pack | null> {
-  const db = new Mongo();
+export async function removePack(guildId: string, packId: string) {
+  const pack = await prisma.packInstall.findUnique({
+    where: { packId_guildId: { packId, guildId } },
+    include: { pack: true },
+  });
 
-  let result: Schema.Pack | null;
-
-  try {
-    await db.connect();
-
-    const pack = await db.packs().findOne({ 'manifest.id': manifestId });
-
-    if (!pack) {
-      await db.close();
-      return null;
-    }
-
-    const guild = await db
-      .guilds()
-      .findOneAndUpdate(
-        { discordId: guildId },
-        { $pull: { packIds: manifestId } },
-        { returnDocument: 'after' }
-      );
-
-    if (!guild) {
-      await db.close();
-      return null;
-    }
-
-    result = pack;
-  } finally {
-    await db.close();
+  if (!pack) {
+    return null;
   }
 
-  return result;
+  await prisma.packInstall.delete({
+    where: { packId_guildId: { packId, guildId } },
+  });
+
+  return pack.pack;
 }

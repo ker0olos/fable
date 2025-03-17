@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: "20.x"
+          node-version: '22.x'
       - run: npm install
       - run: npm run lint
 
@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: "20.x"
+          node-version: '22.x'
       - run: npm install
       - run: npm run check
 
@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: "20.x"
+          node-version: '22.x'
       - run: npm install
       - run: npm run test
 
@@ -52,7 +52,7 @@ jobs:
   #     - uses: actions/checkout@v4
   #     - uses: actions/setup-node@v3
   #       with:
-  #         node-version: "20.x"
+  #         node-version: "22.x"
   #     - run: deno run -A db/_ensureIndexes.ts
   #       env:
   #         MONGO_URI: ${{ secrets.MONGO_URI }}

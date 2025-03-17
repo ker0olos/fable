@@ -1,57 +1,48 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import prisma from '~/prisma/__mocks__/index.ts';
+import db from './index.ts';
+vi.mock('~/prisma/index.ts');
 
-import db, { Mongo } from '~/db/index.ts';
-import config from '~/src/config.ts';
-
-let mongod: MongoMemoryServer;
-let client: Mongo;
-
-describe('db.invertDupes()', () => {
-  beforeEach(async () => {
-    mongod = await MongoMemoryServer.create();
-    client = new Mongo(mongod.getUri());
-    config.mongoUri = mongod.getUri();
-  });
-
-  afterEach(async () => {
-    delete config.mongoUri;
-    await client.close();
-    await mongod.stop();
-  });
-
-  it('dupes are disallowed', async () => {
-    const { insertedId } = await client.guilds().insertOne({
-      discordId: 'guild-id',
-      options: { dupes: false },
-    } as any);
+describe('db.invertDupes', () => {
+  it('dupes are disallowed ', async () => {
+    prisma.options.findUnique.mockResolvedValue({
+      guildId: 'guild-id',
+      dupes: false,
+    });
 
     await db.invertDupes('guild-id');
 
-    const guild = await client.guilds().findOne({ discordId: 'guild-id' });
-
-    expect(guild).toMatchObject({
-      _id: insertedId,
-      discordId: 'guild-id',
-      options: { dupes: true },
+    expect(prisma.options.upsert).toBeCalledWith({
+      where: { guildId: 'guild-id' },
+      create: { guildId: 'guild-id', dupes: false },
+      update: { dupes: { set: true } },
     });
   });
 
-  it('dupes are allowed', async () => {
-    const { insertedId } = await client.guilds().insertOne({
-      discordId: 'guild-id',
-      options: { dupes: true },
-    } as any);
+  it('dupes are allowed ', async () => {
+    prisma.options.findUnique.mockResolvedValue({
+      guildId: 'guild-id',
+      dupes: true,
+    });
 
     await db.invertDupes('guild-id');
 
-    const guild = await client.guilds().findOne({ discordId: 'guild-id' });
+    expect(prisma.options.upsert).toBeCalledWith({
+      where: { guildId: 'guild-id' },
+      create: { guildId: 'guild-id', dupes: false },
+      update: { dupes: { set: false } },
+    });
+  });
 
-    expect(guild).toMatchObject({
-      _id: insertedId,
-      discordId: 'guild-id',
-      options: { dupes: false },
+  it('options are null', async () => {
+    prisma.options.findUnique.mockResolvedValue(null);
+
+    await db.invertDupes('guild-id');
+
+    expect(prisma.options.upsert).toBeCalledWith({
+      where: { guildId: 'guild-id' },
+      create: { guildId: 'guild-id', dupes: false },
+      update: { dupes: { set: false } },
     });
   });
 });

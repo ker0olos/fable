@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
+      - uses: actions/setup-node@v3
         with:
-          deno-version: v2.x
+          node-version: '22.x'
 
       - run: npm install
 
@@ -25,7 +25,7 @@ jobs:
         run: echo "GUILD_ID=${{ secrets.DUMMY_GUILD }}" >> "$GITHUB_ENV"
 
       - name: Update Commands
-        run: tsx update_commands.ts
+        run: tsx vite-node.ts update_commands.ts
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}

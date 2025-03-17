@@ -200,110 +200,11 @@ async function confirmGuaranteed({
   }
 }
 
-function keys({
-  userId,
-  amount,
-}: {
-  userId: string;
-  amount: number;
-}): discord.Message {
-  const locale = user.cachedUsers[userId]?.locale;
-
-  if (!config.shop) {
-    throw new NonFetalError(i18n.get('maintenance-shop', locale));
-  }
-
-  const message = new discord.Message();
-
-  message.addEmbed(
-    new discord.Embed().setDescription(
-      i18n.get(
-        'spent-tokens-normal',
-        locale,
-        amount,
-        amount > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
-        discord.emotes.remove
-      )
-    )
-  );
-
-  message.addComponents([
-    new discord.Component()
-      .setId('buy', 'keys', userId, `${amount}`)
-      .setLabel(i18n.get('confirm', locale)),
-    new discord.Component()
-      .setId('cancel', userId)
-      .setStyle(discord.ButtonStyle.Red)
-      .setLabel(i18n.get('cancel', locale)),
-  ]);
-
-  return message;
-}
-
-async function confirmKeys({
-  userId,
-  guildId,
-  amount,
-}: {
-  userId: string;
-  guildId: string;
-  amount: number;
-}): Promise<discord.Message> {
-  const locale = user.cachedUsers[userId]?.locale;
-
-  try {
-    await db.addKeys(userId, guildId, amount);
-
-    const message = new discord.Message();
-
-    message.addEmbed(
-      new discord.Embed().setDescription(
-        i18n.get(
-          'you-bought-pulls',
-          locale,
-          amount,
-          (amount > 1
-            ? i18n.get('keys', locale)
-            : i18n.get('key', locale)
-          ).toLocaleLowerCase(),
-          discord.emotes.add
-        )
-      )
-    );
-
-    message.addComponents([
-      new discord.Component()
-        .setId('tchallenge', userId)
-        .setLabel('/bt challenge'),
-      new discord.Component().setId('treclear', userId).setLabel('/reclear'),
-    ]);
-
-    return message;
-  } catch {
-    const { availableTokens } = await db.getUser(userId);
-
-    const diff = amount - availableTokens;
-
-    return new discord.Message().addEmbed(
-      new discord.Embed().setDescription(
-        i18n.get(
-          'you-need-more-tokens',
-          locale,
-          diff,
-          diff > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale)
-        )
-      )
-    );
-  }
-}
-
 const shop = {
   normal,
   guaranteed,
   confirmNormal,
   confirmGuaranteed,
-  keys,
-  confirmKeys,
 };
 
 export default shop;

@@ -11,7 +11,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
-    }
+    },
+    "strictNullChecks": true
   },
   "include": ["."]
 }
