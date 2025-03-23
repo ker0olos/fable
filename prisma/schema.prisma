@@ -104,6 +104,7 @@ model Inventory {
   @@unique([partyMember3Id, userId, guildId])
   @@unique([partyMember4Id, userId, guildId])
   @@unique([partyMember5Id, userId, guildId])
+  @@index([lastPull(sort: Desc)])
 }
 
 model Character {
@@ -243,6 +244,8 @@ model PackCharacter {
 
   likes Like[]
   owned Character[]
+
+  @@index([rating(sort: Desc)])
 }
 
 model CharacterRelation {
