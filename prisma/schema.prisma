@@ -221,6 +221,10 @@ model PackMedia {
   owned Character[]
 
   related MediaRelation[] @relation("mediaB")
+
+  textsearchable_index_col Unsupported("tsvector")? @default(dbgenerated("to_tsvector('english'::regconfig, COALESCE(title, ''::text))"))
+
+  @@index([textsearchable_index_col], type: Gin)
 }
 
 model PackCharacter {
@@ -245,7 +249,10 @@ model PackCharacter {
   likes Like[]
   owned Character[]
 
+  textsearchable_index_col Unsupported("tsvector")? @default(dbgenerated("to_tsvector('english'::regconfig, COALESCE(name, ''::text))"))
+
   @@index([rating(sort: Desc)])
+  @@index([textsearchable_index_col], type: Gin)
 }
 
 model CharacterRelation {
