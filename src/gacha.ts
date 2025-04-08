@@ -287,13 +287,13 @@ async function rngPull(
           }
 
           // same user dupe
-          if (
-            userId &&
-            guild.options?.dupes && Array.isArray(exists[character.id]) &&
-            exists[character.id].includes(userId)
-          ) {
-            return false;
-          }
+          // if (
+          //   userId &&
+          //   guild.options?.dupes && Array.isArray(exists[character.id]) &&
+          //   exists[character.id].includes(userId)
+          // ) {
+          //   return false;
+          // }
 
           return true;
         });
@@ -307,6 +307,10 @@ async function rngPull(
       const i = Math.floor(Math.random() * mediaCharacters.length);
 
       const characterId = mediaCharacters[i].id;
+
+      const sameUser = userId &&
+        guild.options?.dupes && Array.isArray(exists[characterId]) &&
+        exists[characterId].includes(userId);
 
       const results = await packs.characters({ guildId, ids: [characterId] });
 
@@ -334,7 +338,7 @@ async function rngPull(
       }
 
       // add character to user's inventory
-      if (userId) {
+      if (userId && !sameUser) {
         try {
           await db.addCharacter({
             characterId,
