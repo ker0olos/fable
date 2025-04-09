@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node"],
+    "types": ["node", "./worker-configuration.d.ts"],
     "moduleResolution": "nodenext",
     "module": "NodeNext",
     "target": "esnext",
