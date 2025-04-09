@@ -443,7 +443,7 @@ function attempt({
   const embed = new discord.Embed();
   const loading = new discord.Message();
 
-  embed.setImageUrl('assets/public/steal2.gif');
+  embed.setImageUrl(`${config.origin}/steal2.gif`);
 
   return loading.addEmbed(embed);
 }

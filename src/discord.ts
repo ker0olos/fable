@@ -981,7 +981,9 @@ export class Message {
     const loading = new Message();
 
     embed.setImageUrl(
-      landscape ? 'assets/public/spinner3.gif' : 'assets/public/spinner.gif'
+      landscape
+        ? `${config.origin}/spinner3.gif`
+        : `${config.origin}/spinner.gif`
     );
 
     return loading.addEmbed(embed);

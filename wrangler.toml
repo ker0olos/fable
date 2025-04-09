@@ -1,2 +1,6 @@
 compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
 compatibility_date = "2024-09-23"
+
+[assets]
+directory = "./assets/public"
+binding = "ASSETS"
