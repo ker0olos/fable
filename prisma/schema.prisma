@@ -1,11 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider        = "prisma-client-js"
+  output          = "generated/client"
   previewFeatures = ["fullTextSearchPostgres", "relationJoins"]
 }
 
@@ -133,6 +128,11 @@ model Character {
   inventoryAsPartyMember5 Inventory? @relation("PartyMember5")
 
   @@id([characterId, userId, guildId])
+  @@index([guildId])
+  @@index([userId])
+  @@index([mediaId])
+  @@index([rating(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
 }
 
 model PackInstall {
@@ -149,6 +149,7 @@ model PackInstall {
   guild Guild @relation(fields: [guildId], references: [id])
 
   @@unique([packId, guildId])
+  @@index([guildId])
 }
 
 model Pack {

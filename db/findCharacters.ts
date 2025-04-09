@@ -2,7 +2,7 @@ import prisma from '~/prisma/index.ts';
 
 export async function findGuildCharacters(guildId: string) {
   return await prisma.character.findMany({
-    // include: { inventory: true, user: true },
+    select: { characterId: true, userId: true },
     where: { guildId },
   });
 }

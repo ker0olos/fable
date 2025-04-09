@@ -320,8 +320,11 @@ async function searchManyCharacters({
   search: string;
   guildId: string;
 }) {
+  search = search.trim().split(' ').join(' | ');
+
   return prisma.packCharacter.findMany({
     orderBy: { rating: 'desc' },
+    relationLoadStrategy: 'query',
     include: {
       externalLinks: true,
       media: {
@@ -340,9 +343,8 @@ async function searchManyCharacters({
         },
       },
       OR: [
-        { name: { contains: search } },
-        { id: { contains: search } },
-        { alternative: { has: search } },
+        { name: { search } },
+        // { alternative: { has: search } },
       ],
     },
   });
@@ -355,6 +357,8 @@ async function searchOneCharacter({
   search: string;
   guildId: string;
 }) {
+  search = search.trim().split(' ').join(' | ');
+
   return prisma.packCharacter.findFirst({
     orderBy: { rating: 'desc' },
     include: {
@@ -375,9 +379,8 @@ async function searchOneCharacter({
         },
       },
       OR: [
-        { name: { contains: search } },
-        { id: { contains: search } },
-        { alternative: { has: search } },
+        { name: { search } },
+        // { alternative: { has: search } },
       ],
     },
   });
@@ -390,7 +393,10 @@ async function searchManyMedia({
   search: string;
   guildId: string;
 }) {
+  search = search.trim().split(' ').join(' | ');
+
   return prisma.packMedia.findMany({
+    relationLoadStrategy: 'query',
     include: {
       externalLinks: true,
       characters: {
@@ -417,9 +423,8 @@ async function searchManyMedia({
         },
       },
       OR: [
-        { title: { contains: search } },
-        { id: { contains: search } },
-        { alternative: { has: search } },
+        { title: { search } },
+        // { alternative: { has: search } },
       ],
     },
   });
@@ -432,6 +437,8 @@ async function searchOneMedia({
   search: string;
   guildId: string;
 }) {
+  search = search.trim().split(' ').join(' | ');
+
   return prisma.packMedia.findFirst({
     include: {
       externalLinks: true,
@@ -452,9 +459,8 @@ async function searchOneMedia({
         },
       },
       OR: [
-        { title: { contains: search } },
-        { id: { contains: search } },
-        { alternative: { has: search } },
+        { title: { search } },
+        // { alternative: { has: search } },
       ],
     },
   });

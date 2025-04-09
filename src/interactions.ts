@@ -153,7 +153,7 @@ export const handler = async (r: Request) => {
 
             results.forEach((media) => {
               message.addSuggestions({
-                name: media.title[0],
+                name: utils.wrap(media.title),
                 value: `${idPrefix}${media.id}`,
               });
             });
@@ -194,9 +194,11 @@ export const handler = async (r: Request) => {
 
             results.forEach((character) => {
               message.addSuggestions({
-                name: character.media?.[0]?.media?.title
-                  ? `${character.name[0]} (${character.media[0].media.title})`
-                  : character.name[0],
+                name: utils.wrap(
+                  character.media?.[0]?.media?.title
+                    ? `${character.name} (${character.media[0].media.title})`
+                    : character.name
+                ),
                 value: `${idPrefix}${character.id}`,
               });
             });
@@ -1237,8 +1239,12 @@ export const handler = async (r: Request) => {
 };
 
 export default {
-  async fetch(request: Request): Promise<Response> {
-    await initConfig();
+  async fetch(
+    request: Request,
+    env: Env,
+    ctx: ExecutionContext
+  ): Promise<Response> {
+    await initConfig(ctx);
 
     utils.initSentry(config.sentry);
 

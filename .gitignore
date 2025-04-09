@@ -3,3 +3,5 @@
 .wrangler
 node_modules
 db/migrate/*.json
+/*.sql
+prisma/generated

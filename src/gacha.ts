@@ -21,13 +21,21 @@ import prisma from '~/prisma/index.ts';
 import { CHARACTER_ROLE, type Prisma } from '@prisma/client';
 
 type PackCharacter = Prisma.PackCharacterGetPayload<{
-  include: {
-    externalLinks: true;
+  select: {
+    gender: true;
+    age: true;
+    rating: true;
+    id: true;
+    image: true;
+    name: true;
     media: {
-      include: {
+      select: {
+        role: true;
         media: {
-          include: {
-            media: true;
+          select: {
+            id: true;
+            title: true;
+            image: true;
           };
         };
       };
@@ -36,7 +44,11 @@ type PackCharacter = Prisma.PackCharacterGetPayload<{
 }>;
 
 type PackMedia = Prisma.PackMediaGetPayload<{
-  include: { media: true };
+  select: {
+    id: true;
+    title: true;
+    image: true;
+  };
 }>;
 
 type Variables = {
@@ -68,6 +80,7 @@ async function likedPool({
   guildId: string;
 }): Promise<PackCharacter[]> {
   const likes = await prisma.like.findMany({
+    relationLoadStrategy: 'query',
     include: {
       character: {
         include: {
@@ -84,6 +97,7 @@ async function likedPool({
         },
       },
     },
+    take: 5_000,
     where: {
       user: { id: userId },
       character: {
@@ -113,38 +127,6 @@ async function rngPool({
   return guaranteedPool({ guildId, guarantee: rating });
 }
 
-async function rangeFallbackPool({
-  guildId,
-}: {
-  guildId: string;
-}): Promise<PackCharacter[]> {
-  const pool = await prisma.packCharacter.findMany({
-    include: {
-      externalLinks: true,
-      media: {
-        include: {
-          media: {
-            include: {
-              media: true,
-            },
-          },
-        },
-      },
-    },
-    where: {
-      pack: {
-        installs: {
-          some: {
-            guildId,
-          },
-        },
-      },
-    },
-  });
-
-  return pool;
-}
-
 export async function guaranteedPool({
   guildId,
   guarantee,
@@ -153,18 +135,29 @@ export async function guaranteedPool({
   guarantee: number;
 }): Promise<PackCharacter[]> {
   const pool = await prisma.packCharacter.findMany({
-    include: {
-      externalLinks: true,
+    relationLoadStrategy: 'query',
+    select: {
+      name: true,
+      gender: true,
+      age: true,
+      rating: true,
+      id: true,
+      image: true,
       media: {
-        include: {
+        take: 1,
+        select: {
+          role: true,
           media: {
-            include: {
-              media: true,
+            select: {
+              id: true,
+              title: true,
+              image: true,
             },
           },
         },
       },
     },
+    take: 5_000,
     where: {
       pack: {
         installs: {
@@ -193,12 +186,21 @@ async function rngPull({
   guarantee?: number;
   sacrifices?: string[];
 }): Promise<Pull> {
-  let pool =
+  console.log('pull', guildId, userId, guarantee);
+
+  // let pool =
+  //   typeof guarantee === 'number'
+  //     ? await gacha.guaranteedPool({ guildId, guarantee })
+  //     : utils.rng(variables.liked).value && userId
+  //       ? await gacha.likedPool({ guildId, userId })
+  //       : await gacha.rngPool({ guildId });
+
+  const pool =
     typeof guarantee === 'number'
       ? await gacha.guaranteedPool({ guildId, guarantee })
-      : utils.rng(variables.liked).value && userId
-        ? await gacha.likedPool({ guildId, userId })
-        : await gacha.rngPool({ guildId });
+      : await gacha.rngPool({ guildId });
+
+  console.log('pool', pool.length);
 
   const [guild, existing] = await Promise.all([
     await db.getGuild(guildId),
@@ -221,10 +223,6 @@ async function rngPull({
   const { signal } = controller;
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
-
-  if (!pool.length && !guarantee) {
-    pool = await gacha.rangeFallbackPool({ guildId });
-  }
 
   if (!pool.length) {
     throw new PoolError();
@@ -334,8 +332,8 @@ async function pullAnimation({
 
   const mediaIds = [
     pull.media.id,
-    ...(pull.media.media?.map(({ id }) => id) ?? []),
-  ];
+    ...(pull.character.media?.map(({ media }) => media?.id) ?? []),
+  ].filter(utils.nonNullable);
 
   const embed = new discord.Embed().setTitle(utils.wrap(pull.media.title));
 
@@ -361,7 +359,7 @@ async function pullAnimation({
 
     const embed = new discord.Embed();
 
-    embed.setImageUrl(`assets/public/stars/${pull.character.rating}.gif`);
+    embed.setImageUrl(`${config.origin}/stars/${pull.character.rating}.gif`);
 
     message = new discord.Message().addEmbed(embed);
 
@@ -375,15 +373,13 @@ async function pullAnimation({
   }
   //
 
-  message = await search.characterMessage(pull.character, {
+  message = await search.characterMessage(pull.character as never, {
     relations: false,
     rating: new Rating({ stars: pull.character.rating }),
     description: false,
     externalLinks: false,
     footer: false,
-    media: {
-      title: true,
-    },
+    media: { title: pull.media.title },
   });
 
   if (components && userId) {
@@ -430,14 +426,18 @@ async function pullAnimation({
     if (pings.size > 0) {
       const message = new discord.Message();
 
-      const embed = await search.characterEmbed(message, pull.character, {
-        userId,
-        mode: 'thumbnail',
-        description: false,
-        footer: true,
-        media: { title: true },
-        overwrite: { userId, rating: pull.character.rating },
-      });
+      const embed = await search.characterEmbed(
+        message,
+        pull.character as never,
+        {
+          userId,
+          mode: 'thumbnail',
+          description: false,
+          footer: true,
+          media: { title: pull.media.title },
+          overwrite: { userId, rating: pull.character.rating },
+        }
+      );
 
       await message
         .addEmbed(embed)
@@ -473,71 +473,73 @@ function start({
     throw new NonFetalError(i18n.get('maintenance-gacha', locale));
   }
 
-  gacha
-    .rngPull({ userId, guildId, guarantee })
-    .then((pull) => {
-      return pullAnimation({ token, userId, guildId, mention, quiet, pull });
-    })
-    .catch(async (err) => {
-      if (err instanceof NoPullsError) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('gacha-no-more-pulls', locale)
-            )
-          )
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`)
-            )
-          )
-          .patch(token);
-      }
-
-      if (err?.message === '403') {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get(
-                'gacha-no-guarantees',
-                locale,
-                `${guarantee}${discord.emotes.smolStar}`
+  config.ctx!.waitUntil(
+    gacha
+      .rngPull({ userId, guildId, guarantee })
+      .then((pull) => {
+        return pullAnimation({ token, userId, guildId, mention, quiet, pull });
+      })
+      .catch(async (err) => {
+        if (err instanceof NoPullsError) {
+          return await new discord.Message()
+            .addEmbed(
+              new discord.Embed().setDescription(
+                i18n.get('gacha-no-more-pulls', locale)
               )
             )
-          )
-          .addComponents([
-            new discord.Component()
-
-              .setId('buy', 'bguaranteed', userId!, `${guarantee}`)
-              .setLabel(`/buy guaranteed ${guarantee}`),
-          ])
-          .patch(token);
-      }
-
-      if (err instanceof PoolError) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              typeof guarantee === 'number'
-                ? i18n.get(
-                    'gacha-no-more-characters-left',
-                    locale,
-                    `${guarantee}${discord.emotes.smolStar}`
-                  )
-                : i18n.get('gacha-no-more-in-range', locale)
+            .addEmbed(
+              new discord.Embed().setDescription(
+                i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`)
+              )
             )
-          )
-          .patch(token);
-      }
+            .patch(token);
+        }
 
-      if (!config.sentry) {
-        throw err;
-      }
+        if (err?.message === '403') {
+          return await new discord.Message()
+            .addEmbed(
+              new discord.Embed().setDescription(
+                i18n.get(
+                  'gacha-no-guarantees',
+                  locale,
+                  `${guarantee}${discord.emotes.smolStar}`
+                )
+              )
+            )
+            .addComponents([
+              new discord.Component()
 
-      const refId = utils.captureException(err);
+                .setId('buy', 'bguaranteed', userId!, `${guarantee}`)
+                .setLabel(`/buy guaranteed ${guarantee}`),
+            ])
+            .patch(token);
+        }
 
-      await discord.Message.internal(refId).patch(token);
-    });
+        if (err instanceof PoolError) {
+          return await new discord.Message()
+            .addEmbed(
+              new discord.Embed().setDescription(
+                typeof guarantee === 'number'
+                  ? i18n.get(
+                      'gacha-no-more-characters-left',
+                      locale,
+                      `${guarantee}${discord.emotes.smolStar}`
+                    )
+                  : i18n.get('gacha-no-more-in-range', locale)
+              )
+            )
+            .patch(token);
+        }
+
+        if (!config.sentry) {
+          throw err;
+        }
+
+        const refId = utils.captureException(err);
+
+        await discord.Message.internal(refId).patch(token);
+      })
+  );
 
   const loading = discord.Message.spinner();
 
@@ -553,7 +555,6 @@ const gacha = {
   rngPull,
   pullAnimation,
   guaranteedPool,
-  rangeFallbackPool,
   likedPool,
   rngPool,
   start,
