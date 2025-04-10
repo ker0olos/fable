@@ -85,6 +85,87 @@ async function createPacksIndexes(db: Mongo) {
     owner: Direction.ascending,
     'manifest.maintainers': Direction.ascending,
   });
+
+  await db.packs().createSearchIndexes([
+    {
+      name: 'anime',
+      definition: {
+        mappings: {
+          dynamic: false,
+          fields: {
+            manifest: {
+              fields: {
+                characters: {
+                  fields: {
+                    new: {
+                      fields: {
+                        name: {
+                          fields: {
+                            alternative: {
+                              type: 'string',
+                            },
+                            english: {
+                              type: 'string',
+                            },
+                          },
+                          type: 'document',
+                        },
+                      },
+                      type: 'document',
+                    },
+                  },
+                  type: 'document',
+                },
+              },
+              type: 'document',
+            },
+          },
+        },
+        storedSource: {
+          include: ['manifest.characters.new'],
+        },
+      },
+    },
+    {
+      name: 'media',
+      definition: {
+        mappings: {
+          dynamic: false,
+          fields: {
+            manifest: {
+              fields: {
+                media: {
+                  fields: {
+                    new: {
+                      fields: {
+                        title: {
+                          fields: {
+                            alternative: {
+                              type: 'string',
+                            },
+                            english: {
+                              type: 'string',
+                            },
+                          },
+                          type: 'document',
+                        },
+                      },
+                      type: 'document',
+                    },
+                  },
+                  type: 'document',
+                },
+              },
+              type: 'document',
+            },
+          },
+        },
+        storedSource: {
+          include: ['manifest.media.new'],
+        },
+      },
+    },
+  ]);
 }
 
 async function createAnimeIndexes(db: Mongo) {
