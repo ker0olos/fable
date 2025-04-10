@@ -6,15 +6,14 @@
     "dev": "concurrently \"cp .env .dev.vars && npx wrangler dev src/interactions.ts\" \"ngrok http 127.0.0.1:8787\" \"tsx start_dev.ts\"",
     "lint": "eslint . --config ./eslint.config.mjs",
     "check": "tsc --noEmit",
-    "test": "vitest tests db",
-    "db:generate": " prisma generate --no-engine"
+    "test": "vitest tests db"
   },
   "dependencies": {
     "@fable-community/images-proxy": "file:images-proxy",
-    "@prisma/client": "^6.5.0",
-    "@prisma/extension-accelerate": "^1.3.0",
+    "@fable-community/search-index": "file:search-index",
     "fastest-levenshtein": "^1.0.16",
     "mime": "^4.0.7",
+    "mongodb": "^6.15.0",
     "nanoid": "^5.1.5",
     "tweetnacl": "^1.0.3"
   },
@@ -26,9 +25,8 @@
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
-    "mongodb": "6.14.2",
+    "mongodb-memory-server": "^10.1.4",
     "prettier": "^3.5.3",
-    "prisma": "^6.5.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.29.1",

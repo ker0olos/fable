@@ -1,3 +1,6 @@
 [submodule "images-proxy"]
 	path = images-proxy
 	url = git@github.com:fable-community/images-proxy.git
+[submodule "search-index"]
+	path = search-index
+	url = git@github.com:fable-community/search-index.git

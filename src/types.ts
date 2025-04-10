@@ -1,103 +1,170 @@
-import {
-  Prisma,
-  CHARACTER_ROLE,
-  MEDIA_FORMAT,
-  MEDIA_RELATION,
-  MEDIA_TYPE,
-} from '@prisma/client';
+export type Modify<T, R> = Omit<T, keyof R> & R;
 
-type User = Prisma.UserGetPayload<{
-  include: {
-    likes: true;
-  };
-}>;
+export enum MediaType {
+  Anime = 'ANIME',
+  Manga = 'MANGA',
+  Other = 'OTHER',
+}
 
-type Pack = Prisma.PackGetPayload<{
-  include: {
-    owner: true;
-    maintainers: true;
-    characters: {
-      include: {
-        externalLinks: true;
-        media: {
-          include: {
-            media: { include: { externalLinks: true } };
-            node: { include: { externalLinks: true } };
-          };
-        };
-      };
-    };
-    media: {
-      include: {
-        externalLinks: true;
-        media: {
-          include: {
-            node: { include: { externalLinks: true } };
-          };
-        };
-        characters: {
-          include: {
-            node: { include: { externalLinks: true } };
-            media: { include: { externalLinks: true } };
-          };
-        };
-      };
-    };
-  };
-}>;
+export enum MediaFormat {
+  TV = 'TV',
+  TvShort = 'TV_SHORT',
+  Movie = 'MOVIE',
+  Special = 'SPECIAL',
+  OVA = 'OVA',
+  ONA = 'ONA',
+  Music = 'MUSIC',
+  Manga = 'MANGA',
+  Novel = 'NOVEL',
+  OneShot = 'ONE_SHOT',
+  VideoGame = 'VIDEO_GAME',
+}
 
-type Character = Prisma.CharacterGetPayload<{
-  include: {
-    inventory: true;
-    user: true;
-  };
-}>;
+export enum MediaRelation {
+  Adaptation = 'ADAPTATION',
+  Prequel = 'PREQUEL',
+  Sequel = 'SEQUEL',
+  Parent = 'PARENT',
+  Contains = 'CONTAINS',
+  SideStory = 'SIDE_STORY',
+  // Character = 'CHARACTER',
+  // Summary = 'SUMMARY',
+  // Alternative = 'ALTERNATIVE',
+  SpinOff = 'SPIN_OFF',
+  Other = 'OTHER',
+  // Source = 'SOURCE',
+  // Compilation = 'COMPILATION',
+}
 
-type PackCharacter = Prisma.PackCharacterGetPayload<{
-  include: {
-    media: {
-      include: { media: true };
-    };
-    externalLinks: true;
-  };
-}>;
+export enum CharacterRole {
+  Main = 'MAIN',
+  Supporting = 'SUPPORTING',
+  Background = 'BACKGROUND',
+}
 
-type PackMedia = Prisma.PackMediaGetPayload<{
-  include: {
-    characters: {
-      include: {
-        media: {
-          include: { externalLinks: true };
-        };
-        node: {
-          include: { externalLinks: true };
-        };
-      };
-    };
-    media: {
-      include: {
-        node: {
-          include: { externalLinks: true };
-        };
-      };
-    };
-    externalLinks: true;
-  };
-}>;
-
-type Guild = Prisma.GuildGetPayload<{
-  include: { options: true };
-}>;
-
-export {
-  User,
-  Pack,
-  Guild,
-  Character,
-  PackCharacter,
-  PackMedia,
-  CHARACTER_ROLE,
-  MEDIA_FORMAT,
-  MEDIA_RELATION,
-  MEDIA_TYPE,
+export type Alias = {
+  english?: string;
+  romaji?: string;
+  native?: string;
+  alternative?: string[];
 };
+
+export type Image = {
+  url: string;
+  artist?: {
+    username: string;
+    url?: string;
+  };
+};
+
+export type MediaEdge = { node: Media; relation?: MediaRelation };
+export type CharacterEdge = { node: Character; role?: CharacterRole };
+export type CharacterMediaEdge = { node: Media; role?: CharacterRole };
+
+export interface Media {
+  id: string;
+  title: Alias;
+  type: MediaType;
+  packId?: string;
+  added?: string;
+  updated?: string;
+  format?: MediaFormat;
+  description?: string;
+  popularity?: number;
+  images?: Image[];
+  externalLinks?: {
+    site: string;
+    url: string;
+  }[];
+  trailer?: {
+    id: string;
+    site: string;
+  };
+  relations?: {
+    edges: MediaEdge[];
+  };
+  characters?: {
+    edges: CharacterEdge[];
+  };
+}
+
+export type DisaggregatedMedia = Modify<
+  Media,
+  {
+    relations?: {
+      relation: MediaRelation;
+      mediaId: string;
+    }[];
+    characters?: {
+      role: CharacterRole;
+      characterId: string;
+    }[];
+  }
+>;
+
+export interface Character {
+  id: string;
+  name: Alias;
+  packId?: string;
+  added?: string;
+  updated?: string;
+  description?: string;
+  popularity?: number;
+  gender?: string;
+  age?: string;
+  images?: Image[];
+  externalLinks?: {
+    site: string;
+    url: string;
+  }[];
+  media?: {
+    edges: CharacterMediaEdge[];
+  };
+}
+
+export type DisaggregatedCharacter = Modify<
+  Character,
+  {
+    media?: {
+      role: CharacterRole;
+      mediaId: string;
+    }[];
+  }
+>;
+
+export type Pool = {
+  [key: string]: {
+    ALL: { id: string; mediaId: string; rating: number }[];
+    [CharacterRole.Main]: { id: string; mediaId: string; rating: number }[];
+    [CharacterRole.Supporting]: {
+      id: string;
+      mediaId: string;
+      rating: number;
+    }[];
+    [CharacterRole.Background]: {
+      id: string;
+      mediaId: string;
+      rating: number;
+    }[];
+  };
+};
+
+export interface Manifest {
+  id: string;
+  title?: string;
+  description?: string;
+  author?: string;
+  image?: string;
+  url?: string;
+  nsfw?: boolean;
+  webhookUrl?: string;
+  private?: boolean;
+  maintainers?: string[];
+  conflicts?: string[];
+  media?: {
+    new?: DisaggregatedMedia[];
+  };
+  characters?: {
+    new?: DisaggregatedCharacter[];
+  };
+}

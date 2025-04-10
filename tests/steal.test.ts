@@ -540,8 +540,8 @@ describe('/steal', () => {
   test('normal', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -575,13 +575,13 @@ describe('/steal', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -651,8 +651,8 @@ describe('/steal', () => {
 
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -677,13 +677,13 @@ describe('/steal', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -719,8 +719,8 @@ describe('/steal', () => {
   test('stealing from party (inactive user)', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -758,13 +758,13 @@ describe('/steal', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -833,8 +833,8 @@ describe('/steal', () => {
 
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -874,13 +874,13 @@ describe('/steal', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -931,8 +931,8 @@ describe('/steal', () => {
   test('co-owned character sorting', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -972,13 +972,13 @@ describe('/steal', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1045,8 +1045,8 @@ describe('/steal', () => {
   test('stealing from yourself', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1080,13 +1080,13 @@ describe('/steal', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1122,8 +1122,8 @@ describe('/steal', () => {
   test('not found', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([]);
@@ -1142,13 +1142,13 @@ describe('/steal', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1184,8 +1184,8 @@ describe('/steal', () => {
   test('not owned', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1212,13 +1212,13 @@ describe('/steal', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1336,9 +1336,9 @@ describe('attempt', () => {
     const rngMock = vi.spyOn(utils, 'getRandomFloat').mockReturnValue(0);
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1373,13 +1373,13 @@ describe('attempt', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://steal2.gif',
+              url: 'http://localhost:8000/steal2.gif',
             },
           },
         ],
@@ -1510,8 +1510,8 @@ describe('attempt', () => {
     const rngMock = vi.spyOn(utils, 'getRandomFloat').mockReturnValue(1);
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1546,13 +1546,13 @@ describe('attempt', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://steal2.gif',
+              url: 'http://localhost:8000/steal2.gif',
             },
           },
         ],
@@ -1598,9 +1598,9 @@ describe('attempt', () => {
 
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1627,13 +1627,13 @@ describe('attempt', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://steal2.gif',
+              url: 'http://localhost:8000/steal2.gif',
             },
           },
         ],
@@ -1669,9 +1669,9 @@ describe('attempt', () => {
   test('chances lowered', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1704,13 +1704,13 @@ describe('attempt', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://steal2.gif',
+              url: 'http://localhost:8000/steal2.gif',
             },
           },
         ],
@@ -1747,8 +1747,8 @@ describe('attempt', () => {
   test('not found', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1776,13 +1776,13 @@ describe('attempt', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://steal2.gif',
+              url: 'http://localhost:8000/steal2.gif',
             },
           },
         ],
@@ -1820,8 +1820,8 @@ describe('attempt', () => {
     const sleepMock = vi.spyOn(utils, 'sleep').mockResolvedValue(undefined);
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1858,13 +1858,13 @@ describe('attempt', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://steal2.gif',
+              url: 'http://localhost:8000/steal2.gif',
             },
           },
         ],
@@ -1902,8 +1902,8 @@ describe('attempt', () => {
   test('not owned', async () => {
     const fetchMock = vi
       .spyOn(utils, 'fetchWithRetry')
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
 
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
@@ -1935,13 +1935,13 @@ describe('attempt', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'steal2.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://steal2.gif',
+              url: 'http://localhost:8000/steal2.gif',
             },
           },
         ],

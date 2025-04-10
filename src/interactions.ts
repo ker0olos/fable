@@ -146,14 +146,14 @@ export const handler = async (r: Request) => {
           const message = new discord.Message(discord.MessageType.Suggestions);
 
           if (search) {
-            const results = await packs.searchManyMedia({
+            const results = await packs._searchManyMedia({
               search,
               guildId,
             });
 
             results.forEach((media) => {
               message.addSuggestions({
-                name: utils.wrap(media.title),
+                name: media.title[0],
                 value: `${idPrefix}${media.id}`,
               });
             });
@@ -180,25 +180,26 @@ export const handler = async (r: Request) => {
             'like',
             'unlike',
             'stats',
-          ].includes(name)
+          ].includes(name) ||
+          (name === 'skills' &&
+            ['acquire', 'upgrade'].includes(subcommand!) &&
+            focused === 'character')
         ) {
           const search = options[focused!] as string;
 
           const message = new discord.Message(discord.MessageType.Suggestions);
 
           if (search) {
-            const results = await packs.searchManyCharacters({
+            const results = await packs._searchManyCharacters({
               search,
               guildId,
             });
 
             results.forEach((character) => {
               message.addSuggestions({
-                name: utils.wrap(
-                  character.media?.[0]?.media?.title
-                    ? `${character.name} (${character.media[0].media.title})`
-                    : character.name
-                ),
+                name: character.mediaTitle?.length
+                  ? `${character.name[0]} (${character.mediaTitle[0]})`
+                  : character.name[0],
                 value: `${idPrefix}${character.id}`,
               });
             });
@@ -209,34 +210,41 @@ export const handler = async (r: Request) => {
 
         // suggest installed community packs
         if (name === 'packs' && ['uninstall'].includes(subcommand!)) {
+          const id = options[focused!] as string;
+
           const message = new discord.Message(discord.MessageType.Suggestions);
 
-          let list = await packs.all({ guildId });
+          let list = await packs.all({
+            filter: true,
+            guildId,
+          });
 
           const distance: Record<string, number> = {};
 
           // sort suggestion based on distance
-          list.forEach(({ title, id }) => {
-            const d = utils.distance(id, id);
+          list.forEach(({ manifest }) => {
+            const d = utils.distance(manifest.id, id);
 
-            if (title) {
-              const d2 = utils.distance(title, id);
+            if (manifest.title) {
+              const d2 = utils.distance(manifest.title, id);
 
               if (d < d2) {
-                distance[id] = d2;
+                distance[manifest.id] = d2;
                 return;
               }
             }
 
-            distance[id] = d;
+            distance[manifest.id] = d;
           });
 
-          list = list.sort((a, b) => distance[b.id] - distance[a.id]);
+          list = list.sort(
+            (a, b) => distance[b.manifest.id] - distance[a.manifest.id]
+          );
 
-          list?.forEach(({ title, id }) => {
+          list?.forEach(({ manifest }) => {
             message.addSuggestions({
-              name: `${title ?? id}`,
-              value: id,
+              name: `${manifest.title ?? manifest.id}`,
+              value: manifest.id,
             });
           });
 

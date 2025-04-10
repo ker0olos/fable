@@ -347,7 +347,7 @@ describe('attachments', () => {
 
     message.addAttachment({
       type: 'image/png',
-      arrayBuffer: new ArrayBuffer(8),
+      arrayBuffer: Buffer.from(new ArrayBuffer(8)),
       filename: 'file.test',
     });
 
@@ -375,7 +375,7 @@ describe('attachments', () => {
 
     message.addAttachment({
       type: 'image/png',
-      arrayBuffer: new ArrayBuffer(8),
+      arrayBuffer: Buffer.from(new ArrayBuffer(8)),
       filename: 'file.test',
     });
 
@@ -425,7 +425,7 @@ describe('attachments', () => {
 
     message.addAttachment({
       type: 'image/png',
-      arrayBuffer: new ArrayBuffer(8),
+      arrayBuffer: Buffer.from(new ArrayBuffer(8)),
       filename: 'file.test',
     });
 
@@ -1201,17 +1201,6 @@ describe('images', () => {
     embed.setThumbnailUrl('image_url');
 
     expect(embed.json().thumbnail!.url).toBe('image_url');
-  });
-
-  it('set image file', () => {
-    const embed = new discord.Embed();
-
-    const attachment = embed.setImageFile('assets/public/spinner.gif');
-
-    expect(embed.json().image!.url).toBe('attachment://spinner.gif');
-
-    expect(attachment.filename).toBe('spinner.gif');
-    expect(attachment.type).toBe('image/gif');
   });
 
   it('set image attachment proxy', async () => {

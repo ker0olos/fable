@@ -1,7 +1,14 @@
+import { Mongo, type ObjectId } from '~/db/index.ts';
+
 import utils from '~/src/utils.ts';
 
+import { newInventory } from '~/db/getInventory.ts';
+
 import { NonFetalError } from '~/src/errors.ts';
-import prisma from '~/prisma/index.ts';
+
+import type * as Schema from '~/db/schema.ts';
+
+import type { AnyBulkWriteOperation } from 'mongodb';
 
 export const STEAL_COOLDOWN_HOURS = 3 * 24;
 
@@ -15,16 +22,32 @@ export async function giveCharacters({
   bUserId: string;
   guildId: string;
   giveIds: string[];
-}) {
-  await prisma.$transaction(async (prisma) => {
-    const giveCharacters = await prisma.character.findMany({
-      include: { inventory: true },
-      where: {
-        characterId: { in: giveIds },
+}): Promise<void> {
+  const db = new Mongo();
+
+  const session = db.startSession();
+
+  try {
+    await db.connect();
+
+    session.startTransaction();
+
+    const giveCharacters = (await db
+      .characters()
+      .aggregate()
+      .match({
+        characterId: { $in: giveIds },
         userId: aUserId,
         guildId,
-      },
-    });
+      })
+      .lookup({
+        localField: 'inventoryId',
+        foreignField: '_id',
+        from: 'inventories',
+        as: 'inventory',
+      })
+      .unwind('$inventory')
+      .toArray()) as Schema.PopulatedCharacter[];
 
     if (giveCharacters.length !== giveIds.length) {
       throw new NonFetalError('NOT_OWNED');
@@ -33,32 +56,51 @@ export async function giveCharacters({
     const aInventory = giveCharacters[0].inventory;
 
     const aParty = [
-      aInventory.partyMember1Id,
-      aInventory.partyMember2Id,
-      aInventory.partyMember3Id,
-      aInventory.partyMember4Id,
-      aInventory.partyMember5Id,
+      aInventory.party.member1Id,
+      aInventory.party.member2Id,
+      aInventory.party.member3Id,
+      aInventory.party.member4Id,
+      aInventory.party.member5Id,
     ].filter(utils.nonNullable);
 
     if (
-      giveCharacters.some(({ characterId }) =>
-        aParty.some((member) => member === characterId)
+      giveCharacters.some(({ _id }) =>
+        aParty.some((member) => member.equals(_id))
       )
     ) {
       throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
-    await prisma.inventory.upsert({
-      where: { userId_guildId: { userId: bUserId, guildId } },
-      create: { userId: bUserId, guildId },
-      update: {},
-    });
+    const bInventory = (await db
+      .inventories()
+      .findOneAndUpdate(
+        { userId: bUserId, guildId },
+        { $setOnInsert: newInventory(guildId, bUserId) },
+        { upsert: true, returnDocument: 'after' }
+      ))!;
 
-    await prisma.character.updateMany({
-      where: { characterId: { in: giveIds } },
-      data: { userId: bUserId },
-    });
-  });
+    await db
+      .characters()
+      .updateMany(
+        { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
+        { $set: { userId: bUserId, inventoryId: bInventory._id } },
+        { session }
+      );
+
+    await session.commitTransaction();
+  } catch (err) {
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
+    await session.endSession();
+    await db.close();
+
+    throw err;
+  } finally {
+    await session.endSession();
+    await db.close();
+  }
 }
 
 export async function tradeCharacters({
@@ -73,25 +115,73 @@ export async function tradeCharacters({
   guildId: string;
   giveIds: string[];
   takeIds: string[];
-}) {
-  await prisma.$transaction(async (prisma) => {
-    const giveCharacters = await prisma.character.findMany({
-      include: { inventory: true },
-      where: {
-        characterId: { in: giveIds },
+}): Promise<void> {
+  const db = new Mongo();
+
+  const session = db.startSession();
+
+  try {
+    await db.connect();
+
+    session.startTransaction();
+
+    // TODO can be grouped using aggregate
+    //   {
+    //     $match: {
+    //       id: { $in: [...giveIds, ...takeIds] },
+    //       guildId,
+    //       $or: [
+    //         { userId: aUserId },
+    //         { userId: bUserId },
+    //       ],
+    //     },
+    //  },
+    //  {
+    //     $group: {
+    //       _id: "$userId",
+    //       characters: {
+    //         $push: {
+    //           id: "$id",
+    //           // Include any other fields you need from the characters
+    //         },
+    //       },
+    //     },
+    //  },
+    //
+
+    const giveCharacters = (await db
+      .characters()
+      .aggregate()
+      .match({
+        characterId: { $in: giveIds },
         userId: aUserId,
         guildId,
-      },
-    });
+      })
+      .lookup({
+        localField: 'inventoryId',
+        foreignField: '_id',
+        from: 'inventories',
+        as: 'inventory',
+      })
+      .unwind('$inventory')
+      .toArray()) as Schema.PopulatedCharacter[];
 
-    const takeCharacters = await prisma.character.findMany({
-      include: { inventory: true },
-      where: {
-        characterId: { in: takeIds },
+    const takeCharacters = (await db
+      .characters()
+      .aggregate()
+      .match({
+        characterId: { $in: takeIds },
         userId: bUserId,
         guildId,
-      },
-    });
+      })
+      .lookup({
+        localField: 'inventoryId',
+        foreignField: '_id',
+        from: 'inventories',
+        as: 'inventory',
+      })
+      .unwind('$inventory')
+      .toArray()) as Schema.PopulatedCharacter[];
 
     if (
       giveCharacters.length !== giveIds.length ||
@@ -104,95 +194,178 @@ export async function tradeCharacters({
     const bInventory = takeCharacters[0].inventory;
 
     const aParty = [
-      aInventory.partyMember1Id,
-      aInventory.partyMember2Id,
-      aInventory.partyMember3Id,
-      aInventory.partyMember4Id,
-      aInventory.partyMember5Id,
+      aInventory.party.member1Id,
+      aInventory.party.member2Id,
+      aInventory.party.member3Id,
+      aInventory.party.member4Id,
+      aInventory.party.member5Id,
     ].filter(utils.nonNullable);
 
     const bParty = [
-      bInventory.partyMember1Id,
-      bInventory.partyMember2Id,
-      bInventory.partyMember3Id,
-      bInventory.partyMember4Id,
-      bInventory.partyMember5Id,
+      bInventory.party.member1Id,
+      bInventory.party.member2Id,
+      bInventory.party.member3Id,
+      bInventory.party.member4Id,
+      bInventory.party.member5Id,
     ].filter(utils.nonNullable);
 
     if (
-      giveCharacters.some(({ characterId }) =>
-        aParty.some((member) => member === characterId)
+      giveCharacters.some(({ _id }) =>
+        aParty.some((member) => member.equals(_id))
       ) ||
-      takeCharacters.some(({ characterId }) =>
-        bParty.some((member) => member === characterId)
+      takeCharacters.some(({ _id }) =>
+        bParty.some((member) => member.equals(_id))
       )
     ) {
       throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
-    await prisma.character.updateMany({
-      where: { characterId: { in: giveIds } },
-      data: { userId: bUserId },
+    const bulk: AnyBulkWriteOperation<Schema.Character>[] = [];
+
+    bulk.push({
+      updateMany: {
+        filter: { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
+        update: { $set: { userId: bUserId, inventoryId: bInventory._id } },
+      },
     });
 
-    await prisma.character.updateMany({
-      where: { characterId: { in: takeIds } },
-      data: { userId: aUserId },
+    bulk.push({
+      updateMany: {
+        filter: { _id: { $in: takeCharacters.map(({ _id }) => _id) } },
+        update: { $set: { userId: aUserId, inventoryId: aInventory._id } },
+      },
     });
-  });
+
+    await db.characters().bulkWrite(bulk, { session });
+
+    await session.commitTransaction();
+  } catch (err) {
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
+    await session.endSession();
+    await db.close();
+
+    throw err;
+  } finally {
+    await session.endSession();
+    await db.close();
+  }
 }
 
 export async function stealCharacter(
   userId: string,
   guildId: string,
-  characterId: string
-) {
-  await prisma.$transaction(async (prisma) => {
-    const character = await prisma.character.findUnique({
-      where: { characterId_userId_guildId: { characterId, userId, guildId } },
-      include: { inventory: true },
-    });
+  characterOId: ObjectId
+): Promise<void> {
+  const db = new Mongo();
+
+  const session = db.startSession();
+
+  try {
+    await db.connect();
+
+    session.startTransaction();
+
+    const [character] = (await db
+      .characters()
+      .aggregate()
+      .match({
+        _id: characterOId,
+      })
+      .lookup({
+        localField: 'inventoryId',
+        foreignField: '_id',
+        from: 'inventories',
+        as: 'inventory',
+      })
+      .unwind('$inventory')
+      .toArray()) as Schema.PopulatedCharacter[];
 
     if (!character) {
       throw new NonFetalError('NOT_FOUND');
     }
 
-    const partyMembers = [
-      character.inventory.partyMember1Id,
-      character.inventory.partyMember2Id,
-      character.inventory.partyMember3Id,
-      character.inventory.partyMember4Id,
-      character.inventory.partyMember5Id,
-    ].filter(utils.nonNullable);
+    const partyMembers: (keyof typeof character.inventory.party)[] = [
+      'member1Id',
+      'member2Id',
+      'member3Id',
+      'member4Id',
+      'member5Id',
+    ];
 
     // if stealing a party member
-    // we must remove the character from the target user party
+    // we must remove hte character from the target user party
     // in the same transaction
-    partyMembers.forEach(async (memberId, i) => {
-      if (memberId !== characterId) return;
-      await prisma.inventory.update({
-        where: { userId_guildId: { userId, guildId } },
-        data: { [`partyMember${i + 1}Id`]: null },
-      });
+    partyMembers.forEach(async (memberId) => {
+      const target = character.inventory;
+
+      if (character._id.equals(target.party[memberId])) {
+        await db
+          .inventories()
+          .updateOne(
+            { _id: target._id },
+            { $unset: { [`party.${memberId}`]: '' } },
+            { session }
+          );
+      }
     });
 
-    await prisma.inventory.upsert({
-      where: { userId_guildId: { userId, guildId } },
-      create: { userId, guildId, stealTimestamp: new Date() },
-      update: { stealTimestamp: new Date() },
-    });
+    const inventory = await db
+      .inventories()
+      .findOneAndUpdate(
+        { userId, guildId },
+        { $set: { stealTimestamp: new Date() } },
+        { session }
+      );
 
-    await prisma.character.update({
-      where: { characterId_userId_guildId: { characterId, userId, guildId } },
-      data: { userId },
-    });
-  });
+    if (!inventory) {
+      throw new Error();
+    }
+
+    await db.characters().updateOne(
+      { _id: character._id },
+      {
+        $set: { userId, inventoryId: inventory._id },
+      },
+      { session }
+    );
+
+    await session.commitTransaction();
+  } catch (err) {
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
+    await session.endSession();
+    await db.close();
+
+    throw err;
+  } finally {
+    await session.endSession();
+    await db.close();
+  }
 }
 
-export async function failSteal(guildId: string, userId: string) {
-  await prisma.inventory.upsert({
-    where: { userId_guildId: { userId, guildId } },
-    create: { userId, guildId, stealTimestamp: new Date() },
-    update: { stealTimestamp: new Date() },
-  });
+export async function failSteal(
+  guildId: string,
+  userId: string
+): Promise<void> {
+  const db = new Mongo();
+
+  try {
+    await db.connect();
+
+    await db.inventories().updateOne(
+      { guildId, userId },
+      {
+        $setOnInsert: newInventory(guildId, userId, ['stealTimestamp']),
+        $set: { stealTimestamp: new Date() },
+      },
+      { upsert: true }
+    );
+  } finally {
+    await db.close();
+  }
 }

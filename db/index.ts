@@ -1,11 +1,16 @@
+import { type ClientSession, type Collection, MongoClient } from 'mongodb';
+
+import config from '~/src/config.ts';
+
 import {
   getActiveUsersIfLiked,
-  getUser,
   getGuild,
   getGuildCharacters,
   getInventory,
   getMediaCharacters,
+  getUser,
   getUserCharacters,
+  MAX_NEW_PULLS,
   MAX_PULLS,
   RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_MINS,
@@ -62,7 +67,67 @@ import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
 import { invertDupes } from '~/db/manageGuild.ts';
 
+import type * as Schema from '~/db/schema.ts';
+
+import type {
+  DisaggregatedCharacter,
+  DisaggregatedMedia,
+} from '~/src/types.ts';
+
+export class Mongo {
+  #client: MongoClient;
+
+  constructor(url = config.mongoUri!) {
+    this.#client = new MongoClient(url, { retryWrites: true });
+  }
+
+  async connect(): Promise<Mongo> {
+    this.#client = await this.#client.connect();
+    return this;
+  }
+
+  startSession(): ClientSession {
+    return this.#client.startSession();
+  }
+
+  async close(): Promise<void> {
+    await this.#client.close();
+  }
+
+  users(): Collection<Schema.User> {
+    return this.#client.db('default').collection('users');
+  }
+
+  guilds(): Collection<Schema.Guild> {
+    return this.#client.db('default').collection('guilds');
+  }
+
+  inventories(): Collection<Schema.Inventory> {
+    return this.#client.db('default').collection('inventories');
+  }
+
+  characters(): Collection<Schema.Character> {
+    return this.#client.db('default').collection('characters');
+  }
+
+  packs(): Collection<Schema.Pack> {
+    return this.#client.db('default').collection('packs');
+  }
+
+  public get anime() {
+    return {
+      media: (): Collection<DisaggregatedMedia> => {
+        return this.#client.db('anime').collection('media');
+      },
+      characters: (): Collection<DisaggregatedCharacter> => {
+        return this.#client.db('anime').collection('characters');
+      },
+    };
+  }
+}
+
 const db = {
+  newMongo: () => new Mongo(),
   getInventory,
   getUser,
   getGuild,
@@ -115,10 +180,13 @@ const db = {
 
 export {
   COSTS,
+  MAX_NEW_PULLS,
   MAX_PULLS,
   RECHARGE_DAILY_TOKENS_HOURS,
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
 };
+
+export { ObjectId } from 'mongodb';
 
 export default db;

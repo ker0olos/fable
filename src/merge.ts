@@ -13,8 +13,13 @@ import db from '~/db/index.ts';
 
 import { NonFetalError, PoolError } from '~/src/errors.ts';
 
-import type { Character } from '@prisma/client';
-import { PackCharacter } from './types.ts';
+import type { Character } from '~/src/types.ts';
+
+import type * as Schema from '~/db/schema.ts';
+
+import type { WithId } from 'mongodb';
+
+type CharacterWithId = WithId<Schema.Character>;
 
 async function getFilteredCharacters({
   userId,
@@ -22,8 +27,10 @@ async function getFilteredCharacters({
 }: {
   userId: string;
   guildId: string;
-}) {
-  const { user, ...inventory } = await db.getInventory(guildId, userId);
+}): Promise<WithId<CharacterWithId>[]> {
+  const mongo = await db.newMongo().connect();
+
+  const { user, party } = await db.getInventory(guildId, userId, mongo, true);
 
   const likesCharactersIds = user.likes
     ?.map(({ characterId }) => characterId)
@@ -33,15 +40,17 @@ async function getFilteredCharacters({
     ?.map(({ mediaId }) => mediaId)
     .filter(utils.nonNullable);
 
-  const characters = await db.getUserCharacters(userId, guildId);
+  const characters = await db.getUserCharacters(userId, guildId, mongo, true);
 
   const partyIds = [
-    inventory.partyMember1Id,
-    inventory.partyMember2Id,
-    inventory.partyMember3Id,
-    inventory.partyMember4Id,
-    inventory.partyMember5Id,
+    party.member1?.characterId,
+    party.member2?.characterId,
+    party.member3?.characterId,
+    party.member4?.characterId,
+    party.member5?.characterId,
   ];
+
+  await mongo.close();
 
   return characters.filter((char) => {
     if (
@@ -57,16 +66,16 @@ async function getFilteredCharacters({
 }
 
 function getSacrifices(
-  characters: Character[],
+  characters: CharacterWithId[],
   mode: 'target' | 'min' | 'max',
   target?: number,
   locale?: discord.AvailableLocales
-): { sacrifices: Character[]; target: number } {
+): { sacrifices: CharacterWithId[]; target: number } {
   // I'm sure there is a faster way to do this with just math
   // but i am not smart enough to figure it out
   // the important thing is that all the tests pass
 
-  const split: Record<number, Character[]> = {
+  const split: Record<number, CharacterWithId[]> = {
     1: [],
     2: [],
     3: [],
@@ -81,7 +90,7 @@ function getSacrifices(
       split[char.rating === 5 ? 4 : char.rating].push(char);
     });
 
-  const possibilities: Record<number, Character[][]> = {
+  const possibilities: Record<number, CharacterWithId[][]> = {
     1: [],
     2: [],
     3: [],
@@ -165,29 +174,31 @@ function getSacrifices(
 
 async function characterPreview(
   message: discord.Message,
-  character: PackCharacter,
-  existing: Partial<Character>
+  character: Character,
+  existing: Partial<CharacterWithId>
 ): Promise<discord.Embed> {
-  const image = existing?.image ?? character.image;
+  const image = existing?.image
+    ? { url: existing?.image }
+    : character.images?.[0];
 
-  const media = character.media?.[0].media;
+  const media = character.media?.edges?.[0]?.node;
 
   const name = `${existing.rating}${discord.emotes.smolStar}${utils.wrap(
-    existing?.nickname ?? character.name
+    existing?.nickname ?? packs.aliasToArray(character.name)[0]
   )}`;
 
   const embed = new discord.Embed();
 
   const attachment = await embed.setThumbnailWithProxy({
     size: ImageSize.Preview,
-    url: image || undefined,
+    url: image?.url,
   });
 
   message.addAttachment(attachment);
 
   if (media) {
     embed.addField({
-      name: utils.wrap(media.title),
+      name: utils.wrap(packs.aliasToArray(media.title)[0]),
       value: name,
     });
   } else {
@@ -248,17 +259,20 @@ function synthesize({
 
       for (const existing of highlights) {
         const index = highlightedCharacters.findIndex(
-          (char) => existing.characterId === char.id
+          (char) => existing.characterId === `${char.packId}:${char.id}`
         );
 
         if (index > -1) {
-          const character = highlightedCharacters[index];
+          const character = await packs.aggregate<Character>({
+            character: highlightedCharacters[index],
+            guildId,
+          });
 
-          const media = character?.media?.[0]?.media;
+          const media = character?.media?.edges?.[0]?.node;
 
           if (
             packs.isDisabled(existing.mediaId, guildId) ||
-            (media && packs.isDisabled(media.id, guildId))
+            (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
           ) {
             highlightedCharacters.splice(index, 1);
             continue;
@@ -335,7 +349,7 @@ function confirmed({
         userId,
         guildId,
         guarantee: target,
-        sacrifices: sacrifices.map(({ characterId }) => characterId),
+        sacrifices: sacrifices.map(({ _id }) => _id),
       });
 
       return gacha.pullAnimation({

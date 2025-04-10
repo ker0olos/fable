@@ -14,14 +14,9 @@ import { default as srch } from '~/src/search.ts';
 
 import * as discord from '~/src/discord.ts';
 
-import type { Prisma } from '@prisma/client';
+import * as Schema from '~/db/schema.ts';
 
-type Character = Prisma.CharacterGetPayload<{
-  include: {
-    character: true;
-    media: true;
-  };
-}>;
+import type { Character } from '~/src/types.ts';
 
 async function embed({
   guildId,
@@ -29,37 +24,75 @@ async function embed({
   locale,
 }: {
   guildId: string;
-  party: (Character | null)[];
+  party: Schema.Party;
   locale: discord.AvailableLocales;
 }): Promise<discord.Message> {
   const message = new discord.Message();
 
-  const embeds = await Promise.all(
-    party.map(async (member, i) => {
-      const { character, media } = member ?? {};
+  const ids = [
+    party.member1?.characterId,
+    party.member2?.characterId,
+    party.member3?.characterId,
+    party.member4?.characterId,
+    party.member5?.characterId,
+  ];
 
-      if (!character) {
+  const mediaIds = [
+    party.member1?.mediaId,
+    party.member2?.mediaId,
+    party.member3?.mediaId,
+    party.member4?.mediaId,
+    party.member5?.mediaId,
+  ];
+
+  const members = [
+    party.member1,
+    party.member2,
+    party.member3,
+    party.member4,
+    party.member5,
+  ];
+
+  const [media, characters] = await Promise.all([
+    packs.media({ ids: mediaIds.filter(utils.nonNullable), guildId }),
+    packs.characters({ ids: ids.filter(utils.nonNullable), guildId }),
+  ]);
+
+  const embeds = await Promise.all(
+    ids.map(async (characterId, i) => {
+      if (!characterId) {
         return new discord.Embed().setDescription(
           i18n.get('unassigned', locale)
         );
       }
 
-      if (!media || packs.isDisabled(media.id, guildId)) {
+      const character = characters.find(
+        ({ packId, id }) => characterId === `${packId}:${id}`
+      );
+
+      const mediaIndex = media.findIndex(
+        ({ packId, id }) => mediaIds[i]! === `${packId}:${id}`
+      );
+
+      if (
+        !character ||
+        mediaIndex === -1 ||
+        packs.isDisabled(mediaIds[i]!, guildId)
+      ) {
         return new discord.Embed().setDescription(
           i18n.get('character-disabled', locale)
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const embed = await srch.characterEmbed(message, character as any, {
+      const embed = await srch.characterEmbed(message, character, {
         mode: 'thumbnail',
-        media: { title: media.title },
-        rating: new Rating({ stars: party[i]?.rating }),
+        media: { title: packs.aliasToArray(media[mediaIndex].title)[0] },
+        rating: new Rating({ stars: members[i]?.rating }),
         description: false,
         footer: false,
         overwrite: {
-          image: party[i]?.image,
-          nickname: party[i]?.nickname,
+          image: members[i]?.image,
+          nickname: members[i]?.nickname,
         },
       });
 
@@ -86,25 +119,9 @@ function view({
 
   Promise.resolve()
     .then(async () => {
-      const {
-        partyMember1,
-        partyMember2,
-        partyMember3,
-        partyMember4,
-        partyMember5,
-      } = await db.getInventory(guildId, userId);
+      const { party } = await db.getInventory(guildId, userId);
 
-      const message = await embed({
-        guildId,
-        party: [
-          partyMember1,
-          partyMember2,
-          partyMember3,
-          partyMember4,
-          partyMember5,
-        ],
-        locale,
-      });
+      const message = await embed({ guildId, party, locale });
 
       return message.patch(token);
     })
@@ -142,9 +159,13 @@ function assign({
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results) => {
-      const character = results[0];
+      const character = await packs.aggregate<Character>({
+        character: results[0],
+        guildId,
+        end: 1,
+      });
 
-      const media = character.media?.[0]?.media;
+      const media = character.media?.edges?.[0]?.node;
 
       if (
         !results.length ||
@@ -155,7 +176,7 @@ function assign({
 
       const message = new discord.Message();
 
-      const characterId = character.id;
+      const characterId = `${character.packId}:${character.id}`;
 
       try {
         const response = await db.assignCharacter(
@@ -191,10 +212,12 @@ function assign({
           ])
           .patch(token);
       } catch {
+        const names = packs.aliasToArray(results[0].name);
+
         return message
           .addEmbed(
             new discord.Embed().setDescription(
-              i18n.get('character-hasnt-been-found', locale, results[0].name)
+              i18n.get('character-hasnt-been-found', locale, names[0])
             )
           )
           .addComponents([
@@ -250,24 +273,14 @@ function swap({
 
       await db.swapSpots(inventory, a, b);
 
-      const t = inventory[`partyMember${a}`];
+      const t = inventory.party[`member${a}`];
 
-      inventory[`partyMember${a}`] = inventory[`partyMember${b}`];
-      inventory[`partyMember${b}`] = t;
+      inventory.party[`member${a}`] = inventory.party[`member${b}`];
+      inventory.party[`member${b}`] = t;
 
-      return (
-        await embed({
-          guildId,
-          party: [
-            inventory.partyMember1,
-            inventory.partyMember2,
-            inventory.partyMember3,
-            inventory.partyMember4,
-            inventory.partyMember5,
-          ],
-          locale,
-        })
-      ).patch(token);
+      return (await embed({ guildId, party: inventory.party, locale })).patch(
+        token
+      );
     })
     .catch(async (err) => {
       if (!config.sentry) {
@@ -302,7 +315,7 @@ function remove({
 
       const message = new discord.Message();
 
-      const character = inventory[`partyMember${spot}`];
+      const character = inventory.party[`member${spot}`];
 
       if (!character) {
         return message
@@ -382,13 +395,11 @@ function clear({
     .then(async () => {
       await db.clearParty(userId, guildId);
 
-      return (
-        await embed({
-          guildId,
-          party: [null, null, null, null, null],
-          locale,
-        })
-      ).patch(token);
+      const inventory = await db.getInventory(guildId, userId);
+
+      return (await embed({ guildId, party: inventory.party, locale })).patch(
+        token
+      );
     })
     .catch(async (err) => {
       if (!config.sentry) {

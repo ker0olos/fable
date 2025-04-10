@@ -29,8 +29,7 @@
   "+1-key": "_+1 key {0}_",
   "available-pull": "Available Pull",
   "available-pulls": "Available Pulls",
-  "available-key": "Available Key",
-  "available-keys": "Available Keys",
+
   "daily-token": "Daily Token",
   "daily-tokens": "Daily Tokens",
   "steal-cooldown-ends": "_Steal cooldown ends {0}_",
@@ -41,19 +40,6 @@
   "pulls": "pulls",
   "character": "character",
   "characters": "characters",
-
-  "skip": "Skip",
-  "attacking": "Attacking",
-  "attacking-again": "Again",
-  "won": "Won",
-
-  "key": "Key",
-  "keys": "Keys",
-  "reclear": "Reclear",
-  "floor": "Floor",
-  "next-floor": "Next Floor",
-  "try-again": "Try Again",
-  "challenge": "Challenge",
 
   "undiscovered": "Undiscovered",
   "cleared": "Cleared",
@@ -143,8 +129,6 @@
   "gacha-no-more-characters-left": "There are no more {0}characters left",
   "gacha-no-more-in-range": "There are no more characters left in this range",
 
-  "combat-no-more-keys": "You don't have any more keys!",
-
   "no-packs-installed": "Server doesn't have any installed packs",
 
   "uninstall-pack-confirmation": "**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.",
@@ -177,7 +161,6 @@
   "help-page2-merge-example-2": "or __5 of your 2{0}characters.__",
   "help-page2-footer": "> *Sacrificed characters will return to being available in `/gacha`*",
 
-  "help-page3-party-required": "You will need a party to use combat features",
   "help-page3-party-presets-disclaimer": "__You can't have more than 1 party__ or save your current party to a preset and switch between presets.",
   "help-page3-party-view": "`/party view` to see your current party.",
   "help-page3-party-assign-1": "`/party assign name: spot:` to assign a character you have to your party,",
@@ -256,7 +239,6 @@
 
   "/buy normal": "use tokens to buy normal pulls",
   "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
-  "/buy keys": "use tokens to buy tower keys",
 
   "/installed packs": "list all the installed packs on a server",
   "/logs": "list user last few found characters",

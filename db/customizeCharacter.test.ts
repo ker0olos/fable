@@ -1,34 +1,109 @@
-import { expect, it, vi } from 'vitest';
-import prisma from '~/prisma/__mocks__/index.ts';
-import db from './index.ts';
-vi.mock('~/prisma/index.ts');
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 
-it('db.setCharacterNickname', () => {
-  db.setCharacterNickname('user-id', 'guild-id', 'character-id', 'nickname');
+import db, { Mongo } from '~/db/index.ts';
+import config from '~/src/config.ts';
 
-  expect(prisma.character.update).toBeCalledWith({
-    where: {
-      characterId_userId_guildId: {
-        characterId: 'character-id',
-        userId: 'user-id',
-        guildId: 'guild-id',
-      },
-    },
-    data: { nickname: 'nickname' },
+let mongod: MongoMemoryServer;
+let client: Mongo;
+
+describe('db.setCharacterNickname()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
+  });
+
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
+
+  it('set new nickname', async () => {
+    const { insertedId } = await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-id',
+    } as any);
+
+    const character = await db.setCharacterNickname(
+      'user-id',
+      'guild-id',
+      'character-id',
+      'new-nickname'
+    );
+
+    expect(character!._id).toEqual(insertedId);
+    expect(character!.nickname).toBe('new-nickname');
+  });
+
+  it('reset nickname', async () => {
+    const { insertedId } = await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-id',
+      nickname: 'nickname',
+    } as any);
+
+    const character = await db.setCharacterNickname(
+      'user-id',
+      'guild-id',
+      'character-id'
+    );
+
+    expect(character!._id).toEqual(insertedId);
+    expect(character!.nickname).toBeUndefined();
   });
 });
 
-it('db.setCharacterImage', () => {
-  db.setCharacterImage('user-id', 'guild-id', 'character-id', 'image');
+describe('db.setCharacterImage()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
+  });
 
-  expect(prisma.character.update).toBeCalledWith({
-    where: {
-      characterId_userId_guildId: {
-        characterId: 'character-id',
-        userId: 'user-id',
-        guildId: 'guild-id',
-      },
-    },
-    data: { image: 'image' },
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
+
+  it('set new image', async () => {
+    const { insertedId } = await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-id',
+    } as any);
+
+    const character = await db.setCharacterImage(
+      'user-id',
+      'guild-id',
+      'character-id',
+      'new-image-url'
+    );
+
+    expect(character!._id).toEqual(insertedId);
+    expect(character!.image).toBe('new-image-url');
+  });
+
+  it('reset image', async () => {
+    const { insertedId } = await client.characters().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-id',
+      Image: 'image-url',
+    } as any);
+
+    const character = await db.setCharacterImage(
+      'user-id',
+      'guild-id',
+      'character-id'
+    );
+
+    expect(character!._id).toEqual(insertedId);
+    expect(character!.image).toBeUndefined();
   });
 });

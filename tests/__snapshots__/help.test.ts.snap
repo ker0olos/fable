@@ -8,7 +8,7 @@ exports[`/help > pages 1`] = `
       {
         "components": [
           {
-            "custom_id": "help==8=prev",
+            "custom_id": "help==7=prev",
             "label": "Prev",
             "style": 2,
             "type": 2,
@@ -16,7 +16,7 @@ exports[`/help > pages 1`] = `
           {
             "custom_id": "_",
             "disabled": true,
-            "label": "1/9",
+            "label": "1/8",
             "style": 2,
             "type": 2,
           },
@@ -108,7 +108,7 @@ exports[`/help > pages 2`] = `
           {
             "custom_id": "_",
             "disabled": true,
-            "label": "2/9",
+            "label": "2/8",
             "style": 2,
             "type": 2,
           },
@@ -168,7 +168,7 @@ exports[`/help > pages 3`] = `
           {
             "custom_id": "_",
             "disabled": true,
-            "label": "3/9",
+            "label": "3/8",
             "style": 2,
             "type": 2,
           },
@@ -199,9 +199,7 @@ exports[`/help > pages 3`] = `
         "author": {
           "name": "3.",
         },
-        "description": "You will need a party to use combat features
-
-__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
+        "description": "__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
 
 \`/party view\` to see your current party.
 
@@ -238,7 +236,7 @@ exports[`/help > pages 4`] = `
           {
             "custom_id": "_",
             "disabled": true,
-            "label": "4/9",
+            "label": "4/8",
             "style": 2,
             "type": 2,
           },
@@ -295,73 +293,12 @@ exports[`/help > pages 5`] = `
           {
             "custom_id": "_",
             "disabled": true,
-            "label": "5/9",
+            "label": "5/8",
             "style": 2,
             "type": 2,
           },
           {
             "custom_id": "help==5=next",
-            "label": "Next",
-            "style": 2,
-            "type": 2,
-          },
-        ],
-        "type": 1,
-      },
-    ],
-    "embeds": [
-      {
-        "author": {
-          "name": "Combat",
-        },
-        "description": "__Every character gets a starting amount of stats and skills__ based on their star rating.
-
-__Stats and skills are randomly generated for every new character you find__, use \`/stats\` to check.
-
-__Attack is the damage__, that you can potentially do to your enemy.
-
-__Defense is your damage reduction__, minimizing the damage a enemy can do to you.
-
-__Speed is your turn order__, the faster between you and your enemy gets the first move, an overwhelming speed difference will allow you to attack move than once in the same turn.
-
-Use \`/battle tower\` to climb the tower, every server has a unique tower and unique enemies.
-
-Level up your characters and gain extra stat points by \`/reclear\`ing the same floor a few times.
-
-> Stat points gained from leveling up is random distributed based on the ratio of your starting stats, Skill points can be used to acquire or upgrade \`/skills\`
-
-> Challenging and reclearing floors require keys, you get +1 key every 10 minutes, you can also buy more keys from the \`/shop\`
-​",
-        "type": "rich",
-      },
-    ],
-  },
-  "type": 4,
-}
-`;
-
-exports[`/help > pages 6`] = `
-{
-  "data": {
-    "attachments": [],
-    "components": [
-      {
-        "components": [
-          {
-            "custom_id": "help==4=prev",
-            "label": "Prev",
-            "style": 2,
-            "type": 2,
-          },
-          {
-            "custom_id": "_",
-            "disabled": true,
-            "label": "6/9",
-            "style": 2,
-            "type": 2,
-          },
-          {
-            "custom_id": "help==6=next",
             "label": "Next",
             "style": 2,
             "type": 2,
@@ -410,7 +347,7 @@ Example: \`/buy guaranteed 5\` will guarantee you get one random 5<:smolstar:110
 }
 `;
 
-exports[`/help > pages 7`] = `
+exports[`/help > pages 6`] = `
 {
   "data": {
     "attachments": [],
@@ -418,7 +355,7 @@ exports[`/help > pages 7`] = `
       {
         "components": [
           {
-            "custom_id": "help==5=prev",
+            "custom_id": "help==4=prev",
             "label": "Prev",
             "style": 2,
             "type": 2,
@@ -426,12 +363,12 @@ exports[`/help > pages 7`] = `
           {
             "custom_id": "_",
             "disabled": true,
-            "label": "7/9",
+            "label": "6/8",
             "style": 2,
             "type": 2,
           },
           {
-            "custom_id": "help==7=next",
+            "custom_id": "help==6=next",
             "label": "Next",
             "style": 2,
             "type": 2,
@@ -468,11 +405,7 @@ exports[`/help > pages 7`] = `
 
 - \`/steal\`: _steal a character from another user_
 - \`/trade\` \`/offer\`: _trade characters with another user_
-- \`/give\` \`/gift\`: _give characters to another user_
-
-- \`/battle tower\`: _Climb the tower to glory and become a fable_
-- \`/battle challenge\`: _Challenge the tower's next floor_
-- \`/reclear\`: _Reclear your current tower floor to gain exp_",
+- \`/give\` \`/gift\`: _give characters to another user_",
         "type": "rich",
       },
     ],
@@ -481,7 +414,7 @@ exports[`/help > pages 7`] = `
 }
 `;
 
-exports[`/help > pages 8`] = `
+exports[`/help > pages 7`] = `
 {
   "data": {
     "attachments": [],
@@ -489,7 +422,7 @@ exports[`/help > pages 8`] = `
       {
         "components": [
           {
-            "custom_id": "help==6=prev",
+            "custom_id": "help==5=prev",
             "label": "Prev",
             "style": 2,
             "type": 2,
@@ -497,12 +430,12 @@ exports[`/help > pages 8`] = `
           {
             "custom_id": "_",
             "disabled": true,
-            "label": "8/9",
+            "label": "7/8",
             "style": 2,
             "type": 2,
           },
           {
-            "custom_id": "help==8=next",
+            "custom_id": "help==7=next",
             "label": "Next",
             "style": 2,
             "type": 2,
@@ -545,7 +478,7 @@ exports[`/help > pages 8`] = `
 }
 `;
 
-exports[`/help > pages 9`] = `
+exports[`/help > pages 8`] = `
 {
   "data": {
     "attachments": [],
@@ -553,7 +486,7 @@ exports[`/help > pages 9`] = `
       {
         "components": [
           {
-            "custom_id": "help==7=prev",
+            "custom_id": "help==6=prev",
             "label": "Prev",
             "style": 2,
             "type": 2,
@@ -561,7 +494,7 @@ exports[`/help > pages 9`] = `
           {
             "custom_id": "_",
             "disabled": true,
-            "label": "9/9",
+            "label": "8/8",
             "style": 2,
             "type": 2,
           },

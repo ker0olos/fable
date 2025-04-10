@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, test, expect, vi, afterEach } from 'vitest';
 
-import searchIndex from '~/search-index-mod/mod.ts';
+import searchIndex from '~/search-index-mod/index.ts';
 import packs from '~/src/packs.ts';
 
 const toString = async (

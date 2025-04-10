@@ -4,15 +4,18 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import serverOptions from '~/src/serverOptions.ts';
 import utils from '~/src/utils.ts';
 import db from '~/db/index.ts';
+import config from '~/src/config.ts';
 
 describe('/server options', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    config.origin = 'http://localhost:8000';
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     vi.clearAllTimers();
+    delete config.origin;
   });
 
   it('dupes allowed', async () => {
@@ -33,13 +36,13 @@ describe('/server options', () => {
       type: 4,
       data: {
         flags: 64,
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -102,13 +105,13 @@ describe('/server options', () => {
       type: 4,
       data: {
         flags: 64,
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -169,13 +172,13 @@ describe('/server options', () => {
       type: 4,
       data: {
         flags: 64,
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -224,11 +227,13 @@ describe('/server options', () => {
 describe('invert dupes', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    config.origin = 'http://localhost:8000';
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     vi.clearAllTimers();
+    delete config.origin;
   });
 
   it('normal', async () => {
@@ -248,13 +253,13 @@ describe('invert dupes', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],

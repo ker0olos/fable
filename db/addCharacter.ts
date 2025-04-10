@@ -1,6 +1,16 @@
-import { NoPullsError } from '~/src/errors.ts';
+import db, { type Mongo } from '~/db/index.ts';
 
-import db from './index.ts';
+import i18n from '~/src/i18n.ts';
+
+import user from '~/src/user.ts';
+
+import { NonFetalError, NoPullsError } from '~/src/errors.ts';
+
+import type { ObjectId } from '~/db/index.ts';
+
+import type * as Schema from '~/db/schema.ts';
+
+import type { AnyBulkWriteOperation } from 'mongodb';
 
 export async function addCharacter({
   rating,
@@ -10,6 +20,7 @@ export async function addCharacter({
   userId,
   guildId,
   sacrifices,
+  mongo,
 }: {
   rating: number;
   mediaId: string;
@@ -17,61 +28,101 @@ export async function addCharacter({
   guaranteed: boolean;
   userId: string;
   guildId: string;
-  sacrifices?: string[];
+  sacrifices?: ObjectId[];
+  mongo: Mongo;
 }): Promise<void> {
-  await db.rechargeConsumables(
-    guildId,
-    userId,
-    async (prisma, inventory, user) => {
-      if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
-        throw new NoPullsError(inventory.rechargeTimestamp);
-      }
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedUsers[guildId]?.locale;
 
-      if (
-        guaranteed &&
-        !sacrifices?.length &&
-        !user?.guarantees?.includes(rating)
-      ) {
-        throw new Error('403');
-      }
+  const session = mongo.startSession();
 
-      await prisma.character.create({
-        data: {
-          inventory: { connect: { userId_guildId: { userId, guildId } } },
-          guild: { connect: { id: guildId } },
-          user: { connect: { id: userId } },
-          characterId,
-          mediaId,
-          rating,
-        },
-      });
+  try {
+    session.startTransaction();
 
-      if (sacrifices?.length) {
-        await prisma.character.deleteMany({
-          where: { characterId: { in: sacrifices } },
-        });
-      } else if (guaranteed) {
-        const i = user.guarantees.indexOf(rating);
+    const { user, ...inventory } = await db.rechargeConsumables(
+      guildId,
+      userId,
+      mongo,
+      true
+    );
 
-        user.guarantees.splice(i, 1);
-
-        await prisma.user.update({
-          where: { id: userId },
-          data: { guarantees: { set: user.guarantees } },
-        });
-      } else {
-        inventory.availablePulls = inventory.availablePulls - 1;
-        inventory.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
-      }
-
-      await prisma.inventory.update({
-        where: { userId_guildId: { userId, guildId } },
-        data: {
-          lastPull: new Date(),
-          availablePulls: inventory.availablePulls,
-          rechargeTimestamp: inventory.rechargeTimestamp,
-        },
-      });
+    if (!guaranteed && !sacrifices?.length && inventory.availablePulls <= 0) {
+      throw new NoPullsError(inventory.rechargeTimestamp);
     }
-  );
+
+    if (
+      guaranteed &&
+      !sacrifices?.length &&
+      !user?.guarantees?.includes(rating)
+    ) {
+      throw new Error('403');
+    }
+
+    const newCharacter: Schema.Character = {
+      createdAt: new Date(),
+      inventoryId: inventory._id,
+      characterId,
+      guildId,
+      userId,
+      mediaId,
+      rating,
+    };
+
+    const update: Partial<Schema.Inventory> = {
+      lastPull: new Date(),
+    };
+
+    const deleteSacrifices: AnyBulkWriteOperation<Schema.Character>[] = [];
+
+    // if sacrifices (merge)
+    if (sacrifices?.length) {
+      deleteSacrifices.push({
+        deleteMany: { filter: { _id: { $in: sacrifices } } },
+      });
+    } else if (guaranteed) {
+      // if guaranteed pull
+      const i = user.guarantees.indexOf(rating);
+
+      user.guarantees.splice(i, 1);
+
+      await mongo.users().updateOne(
+        { _id: user._id },
+        {
+          $set: { guarantees: user.guarantees },
+        },
+        { session }
+      );
+    } else {
+      // if normal pull
+      update.availablePulls = inventory.availablePulls - 1;
+      update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
+    }
+
+    await mongo
+      .inventories()
+      .updateOne({ _id: inventory._id }, { $set: update }, { session });
+
+    const result = await mongo
+      .characters()
+      .bulkWrite(
+        [...deleteSacrifices, { insertOne: { document: newCharacter } }],
+        { session }
+      );
+
+    if (sacrifices?.length && result.deletedCount !== sacrifices.length) {
+      throw new NonFetalError(i18n.get('failed', locale));
+    }
+
+    await session.commitTransaction();
+  } catch (err) {
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
+    await session.endSession();
+
+    throw err;
+  } finally {
+    await session.endSession();
+  }
 }

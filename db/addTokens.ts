@@ -1,4 +1,4 @@
-import prisma from '~/prisma/index.ts';
+import { Mongo } from '~/db/index.ts';
 
 export const COSTS = {
   THREE: 4,
@@ -7,10 +7,17 @@ export const COSTS = {
 };
 
 export async function addTokens(userId: string, amount: number): Promise<void> {
-  await prisma.user.update({
-    where: { id: userId },
-    data: { availableTokens: { increment: amount } },
-  });
+  const db = new Mongo();
+
+  try {
+    await db.connect();
+
+    await db
+      .users()
+      .updateOne({ discordId: userId }, { $inc: { availableTokens: amount } });
+  } finally {
+    await db.close();
+  }
 }
 
 export async function addPulls(
@@ -19,23 +26,47 @@ export async function addPulls(
   amount: number,
   free: boolean = false
 ): Promise<void> {
-  await prisma.$transaction(async (prisma) => {
-    if (!free) {
-      const user = await prisma.user.update({
-        where: { id: userId },
-        data: { availableTokens: { decrement: amount } },
-      });
+  const db = new Mongo();
 
-      if (user?.availableTokens < 0) {
+  const session = db.startSession();
+
+  try {
+    await db.connect();
+
+    session.startTransaction();
+
+    if (!free) {
+      const { modifiedCount } = await db.users().updateOne(
+        {
+          discordId: userId,
+          availableTokens: { $gte: amount },
+        },
+        { $inc: { availableTokens: -amount } }
+      );
+
+      if (!modifiedCount) {
         throw new Error('INSUFFICIENT_TOKENS');
       }
-
-      await prisma.inventory.update({
-        where: { userId_guildId: { userId, guildId } },
-        data: { availablePulls: { increment: amount } },
-      });
     }
-  });
+
+    await db
+      .inventories()
+      .updateOne({ userId, guildId }, { $inc: { availablePulls: amount } });
+
+    await session.commitTransaction();
+  } catch (err) {
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
+    await session.endSession();
+    await db.close();
+
+    throw err;
+  } finally {
+    await session.endSession();
+    await db.close();
+  }
 }
 
 export async function addGuarantee(
@@ -45,17 +76,26 @@ export async function addGuarantee(
   const cost =
     guarantee === 5 ? COSTS.FIVE : guarantee === 4 ? COSTS.FOUR : COSTS.THREE;
 
-  await prisma.$transaction(async (prisma) => {
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        availableTokens: { decrement: cost },
-        guarantees: { push: guarantee },
-      },
-    });
+  const db = new Mongo();
 
-    if (user?.availableTokens < 0) {
+  try {
+    await db.connect();
+
+    const { modifiedCount } = await db.users().updateOne(
+      {
+        discordId: userId,
+        availableTokens: { $gte: cost },
+      },
+      {
+        $push: { guarantees: guarantee },
+        $inc: { availableTokens: -cost },
+      }
+    );
+
+    if (!modifiedCount) {
       throw new Error('INSUFFICIENT_TOKENS');
     }
-  });
+  } finally {
+    await db.close();
+  }
 }

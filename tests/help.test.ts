@@ -11,7 +11,7 @@ describe('/help', () => {
     const message = help.pages({ userId: 'user_id', index: 0 });
 
     expect(message.json().data.components[0].components[0]).toEqual({
-      custom_id: 'help==8=prev',
+      custom_id: 'help==7=prev',
       label: 'Prev',
       style: 2,
       type: 2,
@@ -20,7 +20,7 @@ describe('/help', () => {
     expect(message.json().data.components[0].components[1]).toEqual({
       custom_id: '_',
       disabled: true,
-      label: '1/9',
+      label: '1/8',
       style: 2,
       type: 2,
     });
@@ -34,7 +34,7 @@ describe('/help', () => {
   });
 
   it('pages', () => {
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 8; i++) {
       const message = help.pages({ userId: 'user_id', index: i });
 
       expect(message.json()).toMatchSnapshot();

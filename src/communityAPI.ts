@@ -2,9 +2,11 @@ import config from '~/src/config.ts';
 
 import utils from '~/src/utils.ts';
 
+import validate, { purgeReservedProps } from '~/src/validate.ts';
+
 import db from '~/db/index.ts';
 
-import type { Pack } from '~/src/types.ts';
+import type { Manifest } from '~/src/types.ts';
 
 export async function user(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -36,7 +38,8 @@ export async function user(req: Request): Promise<Response> {
     return auth;
   }
 
-  const { id: userId } = await auth.json();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { id: userId }: any = await auth.json();
 
   const limit = +(url.searchParams.get('limit') ?? 20);
   const offset = +(url.searchParams.get('offset') ?? 0);
@@ -45,10 +48,13 @@ export async function user(req: Request): Promise<Response> {
 
   const data = {
     packs: packs.map((pack) => ({
-      id: pack.id,
-      title: pack.title,
-      description: pack.description,
-      image: pack.image,
+      ...pack,
+      manifest: {
+        id: pack.manifest.id,
+        title: pack.manifest.title,
+        description: pack.manifest.description,
+        image: pack.manifest.image,
+      },
     })),
     limit: Math.min(limit, 20),
     offset,
@@ -85,32 +91,25 @@ export async function publish(req: Request): Promise<Response> {
     return auth;
   }
 
-  const { id: userId } = await auth.json();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { id: userId }: any = await auth.json();
 
-  const pack = body as Pack;
+  const { manifest } = body as { manifest: Manifest };
 
-  // validate that every character and media id starts with `${pack.id}:`
+  const valid = validate(manifest);
 
-  for (const character of pack.characters) {
-    if (!character.id.startsWith(`${pack.id}:`)) {
-      return utils.json(
-        { error: 'INVALID_CHARACTER_ID' },
-        { status: 400, statusText: 'Bad Request' }
-      );
-    }
-  }
-
-  for (const media of pack.media) {
-    if (!media.id.startsWith(`${pack.id}:`)) {
-      return utils.json(
-        { error: 'INVALID_MEDIA_ID' },
-        { status: 400, statusText: 'Bad Request' }
-      );
-    }
+  if (valid.errors?.length) {
+    return utils.json(
+      { errors: valid.errors },
+      {
+        status: 400,
+        statusText: 'Bad Request',
+      }
+    );
   }
 
   try {
-    await db.publishPack(userId, pack);
+    await db.publishPack(userId, purgeReservedProps(manifest));
     return new Response(undefined, { status: 201, statusText: 'Created' });
   } catch (err) {
     switch ((err as Error).message) {
@@ -160,15 +159,18 @@ export async function popular(req: Request): Promise<Response> {
   const data = {
     packs: packs.map(({ servers, pack }) => ({
       servers,
-      id: pack.id,
-      title: pack.title,
-      description: pack.description,
-      image: pack.image,
-      media: pack.media?.length ?? 0,
-      characters: pack.characters?.length ?? 0,
-      createdAt: pack.createdAt,
-      updatedAt: pack.updatedAt,
-      approved: pack.approved,
+      manifest: {
+        id: pack.manifest.id,
+        title: pack.manifest.title,
+        description: pack.manifest.description,
+        image: pack.manifest.image,
+        media: pack.manifest.media?.new?.length ?? 0,
+        characters: pack.manifest.characters?.new?.length ?? 0,
+        createdAt: pack.createdAt,
+        updatedAt: pack.updatedAt,
+        approved: pack.approved,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
     })),
     limit: Math.min(limit, 20),
     offset,
@@ -202,15 +204,18 @@ export async function lastUpdated(req: Request): Promise<Response> {
 
   const data = {
     packs: packs.map((pack) => ({
-      id: pack.id,
-      title: pack.title,
-      description: pack.description,
-      image: pack.image,
-      media: pack.media?.length ?? 0,
-      characters: pack.characters?.length ?? 0,
-      createdAt: pack.createdAt,
-      updatedAt: pack.updatedAt,
-      approved: pack.approved,
+      manifest: {
+        id: pack.manifest.id,
+        title: pack.manifest.title,
+        description: pack.manifest.description,
+        image: pack.manifest.image,
+        media: pack.manifest.media?.new?.length ?? 0,
+        characters: pack.manifest.characters?.new?.length ?? 0,
+        createdAt: pack.createdAt,
+        updatedAt: pack.updatedAt,
+        approved: pack.approved,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
     })),
     limit: Math.min(limit, 20),
     offset,
@@ -263,7 +268,8 @@ export async function pack(
     );
 
     if (auth.ok) {
-      const { id } = await auth.json();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { id }: any = await auth.json();
 
       userId = id;
     }
@@ -317,15 +323,18 @@ export async function search(req: Request): Promise<Response> {
 
   const data = {
     packs: packs.map((pack) => ({
-      id: pack.id,
-      title: pack.title,
-      description: pack.description,
-      image: pack.image,
-      media: pack.media?.length ?? 0,
-      characters: pack.characters?.length ?? 0,
-      createdAt: pack.createdAt,
-      updatedAt: pack.updatedAt,
-      approved: pack.approved,
+      manifest: {
+        id: pack.manifest.id,
+        title: pack.manifest.title,
+        description: pack.manifest.description,
+        image: pack.manifest.image,
+        media: pack.manifest.media?.new?.length ?? 0,
+        characters: pack.manifest.characters?.new?.length ?? 0,
+        createdAt: pack.createdAt,
+        updatedAt: pack.updatedAt,
+        approved: pack.approved,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
     })),
     limit: Math.min(limit, 20),
     offset,

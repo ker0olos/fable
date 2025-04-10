@@ -83,41 +83,26 @@ describe('/party view', () => {
           characterId: 'anilist:1',
           mediaId: 'anilist:0',
           rating: 1,
-          combat: {
-            level: 1,
-          },
         },
         member2: {
           characterId: 'anilist:2',
           mediaId: 'anilist:0',
           rating: 2,
-          combat: {
-            level: 2,
-          },
         },
         member3: {
           characterId: 'anilist:3',
           mediaId: 'anilist:0',
           rating: 3,
-          combat: {
-            level: 3,
-          },
         },
         member4: {
           characterId: 'anilist:4',
           mediaId: 'anilist:0',
           rating: 4,
-          combat: {
-            level: 4,
-          },
         },
         member5: {
           characterId: 'anilist:5',
           mediaId: 'anilist:0',
           rating: 5,
-          combat: {
-            level: 5,
-          },
         },
       },
     } as any);
@@ -145,12 +130,12 @@ describe('/party view', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -192,7 +177,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -207,7 +191,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 2' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -222,7 +205,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 3' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -237,7 +219,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 4' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
         },
@@ -252,7 +233,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 5' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
         },
@@ -381,12 +361,12 @@ describe('/party view', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -428,7 +408,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://image1.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -443,7 +422,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://image2.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -458,7 +436,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://image3.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -473,7 +450,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://image4.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
         },
@@ -488,7 +464,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://image5.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
         },
@@ -599,12 +574,12 @@ describe('/party view', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -644,7 +619,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -659,7 +633,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -682,7 +655,6 @@ describe('/party view', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
         },
@@ -803,12 +775,12 @@ describe('/party view', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -917,12 +889,12 @@ describe('/party assign', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1041,12 +1013,12 @@ describe('/party assign', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1161,12 +1133,12 @@ describe('/party assign', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1334,12 +1306,12 @@ describe('/party swap', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1381,7 +1353,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -1396,7 +1367,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -1411,7 +1381,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -1426,7 +1395,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
         },
@@ -1441,7 +1409,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://default.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
         },
@@ -1574,12 +1541,12 @@ describe('/party swap', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1621,7 +1588,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://image1.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -1636,7 +1602,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://image2.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -1651,7 +1616,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://image3.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
         },
@@ -1666,7 +1630,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://image4.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
         },
@@ -1681,7 +1644,6 @@ describe('/party swap', () => {
           thumbnail: {
             url: 'attachment://image5.webp',
           },
-          footer: { text: 'LVL 1' },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
         },
@@ -1752,12 +1714,12 @@ describe('/party remove', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1873,12 +1835,12 @@ describe('/party remove', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1984,12 +1946,12 @@ describe('/party remove', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -2090,12 +2052,12 @@ describe('/party clear', () => {
       type: 4,
       data: {
         components: [],
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],

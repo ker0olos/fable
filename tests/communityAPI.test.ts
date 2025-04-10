@@ -37,7 +37,7 @@ describe('/user', () => {
       expect(response.status).toBe(200);
       expect(response.statusText).toBe('OK');
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       expect(data.packs.length).toBe(3);
       expect(data.packs[0].manifest.id).toBe('pack-1');
@@ -126,7 +126,7 @@ describe('/popular', () => {
       expect(response.status).toBe(200);
       expect(response.statusText).toBe('OK');
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       expect(data.limit).toBe(20);
       expect(data.offset).toBe(0);
@@ -169,7 +169,7 @@ describe('/updated', () => {
       expect(response.status).toBe(200);
       expect(response.statusText).toBe('OK');
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       expect(data.limit).toBe(20);
       expect(data.offset).toBe(0);
@@ -314,9 +314,9 @@ describe('/publish', () => {
       expect(await response.json()).toEqual({
         errors: [
           {
-            instancePath: '',
+            dataPath: '',
             keyword: 'required',
-            message: "must have required property 'id'",
+            message: "should have required property 'id'",
             params: {
               missingProperty: 'id',
             },
@@ -632,7 +632,7 @@ describe('/search', () => {
       expect(response.status).toBe(200);
       expect(response.statusText).toBe('OK');
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       expect(data.limit).toBe(20);
       expect(data.offset).toBe(0);
@@ -657,7 +657,7 @@ describe('/search', () => {
       expect(response.status).toBe(400);
       expect(response.statusText).toBe('Bad Request');
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       expect(data.error).toBe('MISSING_QUERY');
     } finally {

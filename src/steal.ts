@@ -15,13 +15,15 @@ import * as discord from '~/src/discord.ts';
 
 import Rating from '~/src/rating.ts';
 
+import { Character, DisaggregatedCharacter } from '~/src/types.ts';
+
 import { NonFetalError } from '~/src/errors.ts';
 
-import type { Character } from '~/src/types.ts';
+import type * as Schema from '~/db/schema.ts';
 
 export const PARTY_PROTECTION_PERIOD = 4;
 
-const getInactiveDays = (inventory?: { lastPull?: Date | null }): number => {
+const getInactiveDays = (inventory?: Partial<Schema.Inventory>): number => {
   const lastPull = inventory?.lastPull
     ? new Date(inventory.lastPull)
     : undefined;
@@ -31,7 +33,10 @@ const getInactiveDays = (inventory?: { lastPull?: Date | null }): number => {
     : utils.diffInDays(new Date(), lastPull);
 };
 
-const getChances = (character: Character, inactiveDays: number): number => {
+const getChances = (
+  character: Schema.Character,
+  inactiveDays: number
+): number => {
   let chance = 0;
 
   switch (character.rating) {
@@ -65,19 +70,19 @@ const getChances = (character: Character, inactiveDays: number): number => {
   return Math.min(chance, 90);
 };
 
-const sortExisting = (existing: Character[]): number[] => {
+const sortExisting = (existing: Schema.PopulatedCharacter[]): number[] => {
   return existing.map((existing) => {
     const targetInventory = existing.inventory;
 
     const inactiveDays = getInactiveDays(targetInventory);
 
     const isPartyMember = [
-      targetInventory.partyMember1Id,
-      targetInventory.partyMember2Id,
-      targetInventory.partyMember3Id,
-      targetInventory.partyMember4Id,
-      targetInventory.partyMember5Id,
-    ].some((id) => id === existing.characterId);
+      targetInventory.party.member1Id,
+      targetInventory.party.member2Id,
+      targetInventory.party.member3Id,
+      targetInventory.party.member4Id,
+      targetInventory.party.member5Id,
+    ].some((id) => id?.equals(existing._id));
 
     if (isPartyMember && inactiveDays <= PARTY_PROTECTION_PERIOD) {
       return 0;
@@ -109,7 +114,7 @@ function pre({
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
-    .then(async (results) => {
+    .then(async (results: (Character | DisaggregatedCharacter)[]) => {
       if (!results.length) {
         throw new Error('404');
       }
@@ -127,18 +132,22 @@ function pre({
       }
 
       return Promise.all([
-        results[0],
-        db.findCharacter(guildId, results[0].id),
+        packs.aggregate<Character>({
+          guildId,
+          character: results[0],
+          end: 1,
+        }),
+        db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
       ]);
     })
     .then(async ([character, existing]) => {
       const message = new discord.Message();
 
-      const characterId = character.id;
+      const characterId = `${character.packId}:${character.id}`;
 
-      const characterName = character.name;
+      const characterName = packs.aliasToArray(character.name)[0];
 
-      const media = character.media?.[0]?.media;
+      const media = character.media?.edges?.[0]?.node;
 
       if (!existing?.length) {
         message.addEmbed(
@@ -167,7 +176,7 @@ function pre({
 
       if (
         packs.isDisabled(exists.mediaId, guildId) ||
-        (media && packs.isDisabled(media.id, guildId))
+        (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
       ) {
         throw new Error('404');
       }
@@ -279,8 +288,13 @@ function attempt({
     .then(async (results) => {
       const message = new discord.Message();
 
-      const character = results[0];
-      const characterName = character.name;
+      const character = await packs.aggregate<Character>({
+        guildId,
+        character: results[0],
+        end: 1,
+      });
+
+      const characterName = packs.aliasToArray(character.name)[0];
 
       const { stealTimestamp } = await db.getInventory(guildId, userId);
 
@@ -297,7 +311,7 @@ function attempt({
       const exists = await db.findOneCharacter(
         guildId,
         targetUserId,
-        results[0].id
+        `${results[0].packId}:${results[0].id}`
       );
 
       if (!exists) {
@@ -345,7 +359,7 @@ function attempt({
       }
 
       try {
-        await db.stealCharacter(userId, guildId, exists.characterId);
+        await db.stealCharacter(userId, guildId, exists._id);
 
         const embed = await srch.characterEmbed(message, character, {
           footer: false,

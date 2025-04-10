@@ -1,231 +1,358 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, expect, it, vi } from 'vitest';
-import prisma from '~/prisma/__mocks__/index.ts';
-import db from './index.ts';
-vi.mock('~/prisma/index.ts');
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-describe('db.getPopularPacks', () => {
-  it('gets popular packs with default parameters', async () => {
-    prisma.packInstall.groupBy.mockResolvedValue([
-      { packId: 'pack-1', _count: { packId: 10 } },
-      { packId: 'pack-2', _count: { packId: 5 } },
-    ] as any);
+import db, { Mongo } from '~/db/index.ts';
+import config from '~/src/config.ts';
 
-    prisma.pack.findMany.mockResolvedValue([
-      { id: 'pack-1', title: 'Pack 1' },
-      { id: 'pack-2', title: 'Pack 2' },
-    ] as any);
+let mongod: MongoMemoryServer;
+let client: Mongo;
 
-    const result = await db.getPopularPacks();
+describe('db.getPopularPacks()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
+  });
 
-    expect(prisma.packInstall.groupBy).toBeCalledWith({
-      by: ['packId'],
-      where: {
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
+
+  it('normal', async () => {
+    const { insertedId: pack1InsertedId } = await client.packs().insertOne({
+      hidden: false,
+      manifest: { id: 'pack-id' },
+    } as any);
+
+    const { insertedId: pack2InsertedId } = await client.packs().insertOne({
+      hidden: false,
+      manifest: { id: 'pack-2' },
+    } as any);
+
+    await client.guilds().insertOne({
+      discordId: 'guild-1',
+      packIds: ['pack-id', 'pack-2'],
+    } as any);
+
+    await client.guilds().insertOne({
+      discordId: 'guild-2',
+      packIds: ['pack-2'],
+    } as any);
+
+    const packs = await db.getPopularPacks();
+
+    expect(packs).toEqual([
+      {
+        servers: 2,
         pack: {
-          hidden: { not: true },
-          private: { not: true },
-          nsfw: { not: true },
-        },
-      },
-      _count: {
-        packId: true,
-      },
-      orderBy: {
-        _count: {
-          packId: 'desc',
-        },
-      },
-      skip: 0,
-      take: 20,
-    });
-
-    expect(prisma.pack.findMany).toBeCalledWith({
-      include: { media: true, characters: true },
-      where: {
-        id: { in: ['pack-1', 'pack-2'] },
-      },
-    });
-
-    expect(result).toEqual([
-      {
-        servers: 10,
-        pack: { id: 'pack-1', title: 'Pack 1' },
+          _id: pack2InsertedId,
+          hidden: false,
+          manifest: { id: 'pack-2' },
+        } as any,
       },
       {
-        servers: 5,
-        pack: { id: 'pack-2', title: 'Pack 2' },
+        servers: 1,
+        pack: {
+          _id: pack1InsertedId,
+          hidden: false,
+          manifest: { id: 'pack-id' },
+        } as any,
       },
     ]);
   });
 
-  it('gets popular packs with custom offset and limit', async () => {
-    prisma.packInstall.groupBy.mockResolvedValue([] as any);
-    prisma.pack.findMany.mockResolvedValue([] as any);
+  it('filter out hidden', async () => {
+    const { insertedId: pack1InsertedId } = await client.packs().insertOne({
+      hidden: false,
+      manifest: { id: 'pack-id' },
+    } as any);
 
-    await db.getPopularPacks(10, 5);
+    await client.packs().insertOne({
+      hidden: true,
+      manifest: { id: 'pack-2' },
+    } as any);
 
-    expect(prisma.packInstall.groupBy).toBeCalledWith({
-      by: ['packId'],
-      where: {
+    await client.guilds().insertOne({
+      discordId: 'guild-1',
+      packIds: ['pack-id', 'pack-2'],
+    } as any);
+
+    await client.guilds().insertOne({
+      discordId: 'guild-2',
+      packIds: ['pack-2'],
+    } as any);
+
+    const packs = await db.getPopularPacks();
+
+    expect(packs).toEqual([
+      {
+        servers: 1,
         pack: {
-          hidden: { not: true },
-          private: { not: true },
-          nsfw: { not: true },
-        },
+          _id: pack1InsertedId,
+          hidden: false,
+          manifest: { id: 'pack-id' },
+        } as any,
       },
-      _count: {
-        packId: true,
+    ]);
+  });
+
+  it('filter out private', async () => {
+    const { insertedId: pack1InsertedId } = await client.packs().insertOne({
+      hidden: false,
+      manifest: { id: 'pack-id' },
+    } as any);
+
+    await client.packs().insertOne({
+      hidden: false,
+      manifest: { private: true, id: 'pack-2' },
+    } as any);
+
+    await client.guilds().insertOne({
+      discordId: 'guild-1',
+      packIds: ['pack-id', 'pack-2'],
+    } as any);
+
+    await client.guilds().insertOne({
+      discordId: 'guild-2',
+      packIds: ['pack-2'],
+    } as any);
+
+    const packs = await db.getPopularPacks();
+
+    expect(packs).toEqual([
+      {
+        servers: 1,
+        pack: {
+          _id: pack1InsertedId,
+          hidden: false,
+          manifest: { id: 'pack-id' },
+        } as any,
       },
-      orderBy: {
-        _count: {
-          packId: 'desc',
-        },
+    ]);
+  });
+
+  it('filter out nsfw', async () => {
+    const { insertedId: pack1InsertedId } = await client.packs().insertOne({
+      hidden: false,
+      manifest: { id: 'pack-id' },
+    } as any);
+
+    await client.packs().insertOne({
+      hidden: false,
+      manifest: { nsfw: true, id: 'pack-2' },
+    } as any);
+
+    await client.guilds().insertOne({
+      discordId: 'guild-1',
+      packIds: ['pack-id', 'pack-2'],
+    } as any);
+
+    await client.guilds().insertOne({
+      discordId: 'guild-2',
+      packIds: ['pack-2'],
+    } as any);
+
+    const packs = await db.getPopularPacks();
+
+    expect(packs).toEqual([
+      {
+        servers: 1,
+        pack: {
+          _id: pack1InsertedId,
+          hidden: false,
+          manifest: { id: 'pack-id' },
+        } as any,
       },
-      skip: 10,
-      take: 5,
-    });
+    ]);
   });
 });
 
-describe('db.getLastUpdatedPacks', () => {
-  it('gets last updated packs with default parameters', async () => {
-    await db.getLastUpdatedPacks();
-
-    expect(prisma.pack.findMany).toBeCalledWith({
-      include: { media: true, characters: true },
-      where: {
-        hidden: { not: true },
-        private: { not: true },
-        nsfw: { not: true },
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      skip: 0,
-      take: 20,
-    });
+describe('db.getPacksByMaintainerId()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
-  it('gets last updated packs with custom offset and limit', async () => {
-    await db.getLastUpdatedPacks(5, 10);
-
-    expect(prisma.pack.findMany).toBeCalledWith({
-      include: { media: true, characters: true },
-      where: {
-        hidden: { not: true },
-        private: { not: true },
-        nsfw: { not: true },
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      skip: 5,
-      take: 10,
-    });
-  });
-});
-
-describe('db.getPacksByMaintainerId', () => {
-  it('gets packs by maintainer id', async () => {
-    await db.getPacksByMaintainerId('user-id');
-
-    expect(prisma.pack.findMany).toBeCalledWith({
-      where: {
-        maintainers: {
-          every: {
-            id: 'user-id',
-          },
-        },
-      },
-      orderBy: { updatedAt: 'desc' },
-      skip: 0,
-      take: 20,
-    });
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
   });
 
-  it('gets packs by maintainer id with custom offset and limit', async () => {
-    await db.getPacksByMaintainerId('user-id', 5, 10);
+  it('returns packs by owner Id', async () => {
+    const { insertedId: pack1InsertedId } = await client.packs().insertOne({
+      owner: 'maintainer-id',
+      manifest: { id: 'pack-1' },
+    } as any);
 
-    expect(prisma.pack.findMany).toBeCalledWith({
-      where: {
-        maintainers: {
-          every: {
-            id: 'user-id',
-          },
-        },
+    const { insertedId: pack2InsertedId } = await client.packs().insertOne({
+      owner: 'maintainer-id',
+      manifest: { id: 'pack-2' },
+    } as any);
+
+    await client.packs().insertOne({
+      owner: 'maintainer-2',
+      manifest: { id: 'pack-3' },
+    } as any);
+
+    const packs = await db.getPacksByMaintainerId('maintainer-id');
+
+    expect(packs).toEqual([
+      {
+        _id: pack1InsertedId,
+        owner: 'maintainer-id',
+        manifest: { id: 'pack-1' },
       },
-      orderBy: { updatedAt: 'desc' },
-      skip: 5,
-      take: 10,
-    });
+      {
+        _id: pack2InsertedId,
+        owner: 'maintainer-id',
+        manifest: { id: 'pack-2' },
+      },
+    ] as any);
   });
-});
 
-describe('db.getPack', () => {
-  it('gets a pack with just manifest id', async () => {
-    await db.getPack('manifest-id');
+  it('returns packs by maintainer Id', async () => {
+    const { insertedId: pack1InsertedId } = await client.packs().insertOne({
+      manifest: { id: 'pack-1', maintainers: ['maintainer-id'] },
+    } as any);
 
-    expect(prisma.pack.findFirst).toBeCalledWith({
-      where: {
-        id: 'manifest-id',
-        OR: [{ private: { not: true } }],
+    const { insertedId: pack2InsertedId } = await client.packs().insertOne({
+      manifest: { id: 'pack-2', maintainers: ['maintainer-id'] },
+    } as any);
+
+    await client.packs().insertOne({
+      manifest: { id: 'pack-3', maintainers: ['maintainer-2'] },
+    } as any);
+
+    const packs = await db.getPacksByMaintainerId('maintainer-id');
+
+    expect(packs).toEqual([
+      {
+        _id: pack1InsertedId,
+        manifest: { id: 'pack-1', maintainers: ['maintainer-id'] },
       },
-    });
+      {
+        _id: pack2InsertedId,
+        manifest: { id: 'pack-2', maintainers: ['maintainer-id'] },
+      },
+    ] as any);
   });
 
-  it('gets a public pack with user id', async () => {
-    await db.getPack('manifest-id', 'user-id');
+  it('returns packs by maintainer & owner Id', async () => {
+    const { insertedId: pack1InsertedId } = await client.packs().insertOne({
+      owner: 'maintainer-id',
+      manifest: { id: 'pack-1', maintainers: [] },
+    } as any);
 
-    expect(prisma.pack.findFirst).toBeCalledWith({
-      where: {
-        id: 'manifest-id',
-        OR: [
-          { private: { not: true } },
-          {
-            private: true,
-            OR: [
-              { ownerId: 'user-id' },
-              { maintainers: { every: { id: 'user-id' } } },
-            ],
-          },
-        ],
+    const { insertedId: pack2InsertedId } = await client.packs().insertOne({
+      manifest: { id: 'pack-2', maintainers: ['maintainer-id'] },
+    } as any);
+
+    await client.packs().insertOne({
+      owner: 'maintainer-2',
+      manifest: { id: 'pack-3', maintainers: ['maintainer-3'] },
+    } as any);
+
+    const packs = await db.getPacksByMaintainerId('maintainer-id');
+
+    expect(packs).toEqual([
+      {
+        _id: pack1InsertedId,
+        owner: 'maintainer-id',
+        manifest: { id: 'pack-1', maintainers: [] },
       },
-    });
+      {
+        _id: pack2InsertedId,
+        manifest: { id: 'pack-2', maintainers: ['maintainer-id'] },
+      },
+    ] as any);
   });
 });
 
-describe('db.searchPacks', () => {
-  it('searches packs with default parameters', async () => {
-    await db.searchPacks('query');
-
-    expect(prisma.pack.findMany).toBeCalledWith({
-      include: { media: true, characters: true },
-      where: {
-        hidden: { not: true },
-        private: { not: true },
-        nsfw: { not: true },
-        OR: [{ title: { search: 'query' } }, { id: { search: 'query' } }],
-      },
-      orderBy: { updatedAt: 'desc' },
-      skip: 0,
-      take: 20,
-    });
+describe('db.getPack()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
   });
 
-  it('searches packs with custom offset and limit', async () => {
-    await db.searchPacks('query', 10, 5);
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
 
-    expect(prisma.pack.findMany).toBeCalledWith({
-      include: { media: true, characters: true },
-      where: {
-        hidden: { not: true },
-        private: { not: true },
-        nsfw: { not: true },
-        OR: [{ title: { search: 'query' } }, { id: { search: 'query' } }],
+  it('normal', async () => {
+    const { insertedId } = await client.packs().insertOne({
+      owner: 'maintainer-id',
+      manifest: { id: 'pack-id' },
+    } as any);
+
+    const pack = await db.getPack('pack-id');
+
+    expect(pack).toEqual({
+      _id: insertedId,
+      owner: 'maintainer-id',
+      manifest: { id: 'pack-id' },
+    } as any);
+  });
+
+  it('private (not owned)', async () => {
+    await client.packs().insertOne({
+      owner: 'maintainer-id',
+      manifest: {
+        private: true,
+        id: 'pack-id',
       },
-      orderBy: { updatedAt: 'desc' },
-      skip: 10,
-      take: 5,
-    });
+    } as any);
+
+    const pack = await db.getPack('pack-id');
+
+    expect(pack).toBeNull();
+  });
+
+  it('private (owned)', async () => {
+    const { insertedId } = await client.packs().insertOne({
+      owner: 'maintainer-id',
+      manifest: {
+        private: true,
+        id: 'pack-id',
+      },
+    } as any);
+
+    const pack = await db.getPack('pack-id', 'maintainer-id');
+
+    expect(pack).toEqual({
+      _id: insertedId,
+      owner: 'maintainer-id',
+      manifest: { private: true, id: 'pack-id' },
+    } as any);
+  });
+
+  it('private (maintainer)', async () => {
+    const { insertedId } = await client.packs().insertOne({
+      owner: 'maintainer-2',
+      manifest: {
+        private: true,
+        id: 'pack-id',
+        maintainers: ['maintainer-id'],
+      },
+    } as any);
+
+    const pack = await db.getPack('pack-id', 'maintainer-id');
+
+    expect(pack).toEqual({
+      _id: insertedId,
+      owner: 'maintainer-2',
+      manifest: {
+        private: true,
+        id: 'pack-id',
+        maintainers: ['maintainer-id'],
+      },
+    } as any);
   });
 });

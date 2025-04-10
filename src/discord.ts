@@ -733,11 +733,6 @@ export class Message {
         filename: attachment.filename,
         id: `${this.#data.attachments.length}`,
       });
-
-      this.#files.push({
-        data: new Blob([attachment.arrayBuffer], { type: attachment.type }),
-        name: attachment.filename,
-      });
     }
 
     return this;

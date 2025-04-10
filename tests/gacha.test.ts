@@ -7,7 +7,7 @@ import utils from '~/src/utils.ts';
 import packs from '~/src/packs.ts';
 import config from '~/src/config.ts';
 import db from '~/db/index.ts';
-import searchIndex, { IndexedCharacter } from '~/search-index-mod/mod.ts';
+import searchIndex, { IndexedCharacter } from '~/search-index-mod/index.ts';
 
 import {
   Character,
@@ -1058,7 +1058,6 @@ describe('/gacha', () => {
     } as any);
 
     config.gacha = true;
-    config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -1072,13 +1071,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -1138,12 +1137,12 @@ describe('/gacha', () => {
           {
             type: 'rich',
             image: {
-              url: 'attachment://1.gif',
+              url: 'http://localhost:8000/stars/1.gif',
             },
           },
         ],
         components: [],
-        attachments: [{ filename: '1.gif', id: '0' }],
+        attachments: [],
       });
 
       expect(fetchStub).toHaveBeenNthCalledWith(
@@ -1195,12 +1194,6 @@ describe('/gacha', () => {
                 type: 2,
               },
               {
-                custom_id: 'stats=pack-id-2:2',
-                label: '/stats',
-                style: 2,
-                type: 2,
-              },
-              {
                 custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
@@ -1214,7 +1207,6 @@ describe('/gacha', () => {
       delete config.appId;
       delete config.origin;
       delete config.gacha;
-      delete config.combat;
     }
   });
 
@@ -1284,7 +1276,6 @@ describe('/gacha', () => {
     } as any);
 
     config.gacha = true;
-    config.combat = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -1298,13 +1289,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -1364,12 +1355,12 @@ describe('/gacha', () => {
           {
             type: 'rich',
             image: {
-              url: 'attachment://1.gif',
+              url: 'http://localhost:8000/stars/1.gif',
             },
           },
         ],
         components: [],
-        attachments: [{ filename: '1.gif', id: '0' }],
+        attachments: [],
       });
 
       expect(fetchStub).toHaveBeenNthCalledWith(
@@ -1421,12 +1412,6 @@ describe('/gacha', () => {
                 type: 2,
               },
               {
-                custom_id: 'stats=pack-id-2:2',
-                label: '/stats',
-                style: 2,
-                type: 2,
-              },
-              {
                 custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
@@ -1440,7 +1425,6 @@ describe('/gacha', () => {
       delete config.appId;
       delete config.origin;
       delete config.gacha;
-      delete config.combat;
     }
   });
 
@@ -1521,13 +1505,13 @@ describe('/gacha', () => {
         data: {
           content: '<@user_id>',
           allowed_mentions: { parse: [] },
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -1588,12 +1572,12 @@ describe('/gacha', () => {
         content: '<@user_id>',
         allowed_mentions: { parse: [] },
         components: [],
-        attachments: [{ filename: '1.gif', id: '0' }],
+        attachments: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://1.gif',
+              url: 'http://localhost:8000/stars/1.gif',
             },
           },
         ],
@@ -1741,13 +1725,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -1899,13 +1883,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -1965,12 +1949,12 @@ describe('/gacha', () => {
           {
             type: 'rich',
             image: {
-              url: 'attachment://1.gif',
+              url: 'http://localhost:8000/stars/1.gif',
             },
           },
         ],
         components: [],
-        attachments: [{ filename: '1.gif', id: '0' }],
+        attachments: [],
       });
 
       expect(fetchStub).toHaveBeenNthCalledWith(
@@ -2151,13 +2135,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -2217,12 +2201,12 @@ describe('/gacha', () => {
           {
             type: 'rich',
             image: {
-              url: 'attachment://1.gif',
+              url: 'http://localhost:8000/stars/1.gif',
             },
           },
         ],
         components: [],
-        attachments: [{ filename: '1.gif', id: '0' }],
+        attachments: [],
       });
 
       expect(fetchStub).toHaveBeenNthCalledWith(
@@ -2418,13 +2402,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -2484,12 +2468,12 @@ describe('/gacha', () => {
           {
             type: 'rich',
             image: {
-              url: 'attachment://1.gif',
+              url: 'http://localhost:8000/stars/1.gif',
             },
           },
         ],
         components: [],
-        attachments: [{ filename: '1.gif', id: '0' }],
+        attachments: [],
       });
 
       expect(fetchStub).toHaveBeenNthCalledWith(
@@ -2624,13 +2608,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -2706,13 +2690,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -2801,13 +2785,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],
@@ -2883,13 +2867,13 @@ describe('/gacha', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          attachments: [{ filename: 'spinner.gif', id: '0' }],
+          attachments: [],
           components: [],
           embeds: [
             {
               type: 'rich',
               image: {
-                url: 'attachment://spinner.gif',
+                url: 'http://localhost:8000/spinner.gif',
               },
             },
           ],

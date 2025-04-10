@@ -1,136 +1,156 @@
-import { Inventory } from '@prisma/client/edge';
-import prisma from '~/prisma/index.ts';
+import { Mongo } from '~/db/index.ts';
+
+import type { WithId } from 'mongodb';
+
+import type * as Schema from '~/db/schema.ts';
 
 export async function assignCharacter(
   userId: string,
   guildId: string,
   characterId: string,
   spot?: 1 | 2 | 3 | 4 | 5
-) {
-  const [character, inventory] = await prisma.$transaction([
-    prisma.character.findUnique({
-      where: { characterId_userId_guildId: { userId, guildId, characterId } },
-    }),
-    prisma.inventory.findUnique({
-      where: { userId_guildId: { userId, guildId } },
-    }),
-  ]);
+): Promise<Schema.Character> {
+  const db = new Mongo();
 
-  if (!character || !inventory) {
-    throw new Error();
-  }
+  let result: Schema.Character;
 
-  let {
-    partyMember1Id,
-    partyMember2Id,
-    partyMember3Id,
-    partyMember4Id,
-    partyMember5Id,
-  } = inventory;
+  try {
+    await db.connect();
 
-  // if the character is already in the party, remove them
-  if (partyMember1Id === characterId) {
-    partyMember1Id = null;
-  } else if (partyMember2Id === characterId) {
-    partyMember2Id = null;
-  } else if (partyMember3Id === characterId) {
-    partyMember3Id = null;
-  } else if (partyMember4Id === characterId) {
-    partyMember4Id = null;
-  } else if (partyMember5Id === characterId) {
-    partyMember5Id = null;
-  }
+    const character = await db
+      .characters()
+      .findOne({ userId, guildId, characterId });
 
-  // if spot is not provided, assign the character to the first available spot
-  if (typeof spot !== 'number') {
-    if (!partyMember1Id) {
-      spot = 1;
-    } else if (!partyMember2Id) {
-      spot = 2;
-    } else if (!partyMember3Id) {
-      spot = 3;
-    } else if (!partyMember4Id) {
-      spot = 4;
-    } else {
-      spot = 5;
+    if (!character) {
+      throw new Error();
     }
+
+    result = character;
+
+    const inventory = (await db.inventories().findOne({ userId, guildId }))!;
+
+    // remove character from party
+    // if they already are in it
+    [
+      inventory.party.member1Id,
+      inventory.party.member2Id,
+      inventory.party.member3Id,
+      inventory.party.member4Id,
+      inventory.party.member5Id,
+    ].forEach((id, i) => {
+      if (character._id.equals(id)) {
+        inventory.party[`member${(i + 1) as 1 | 2 | 3 | 4 | 5}Id`] = null;
+      }
+    });
+
+    if (typeof spot === 'number' && spot >= 1 && spot <= 5) {
+      switch (spot) {
+        case 1:
+          inventory.party.member1Id = character._id;
+          break;
+        case 2:
+          inventory.party.member2Id = character._id;
+          break;
+        case 3:
+          inventory.party.member3Id = character._id;
+          break;
+        case 4:
+          inventory.party.member4Id = character._id;
+          break;
+        case 5:
+          inventory.party.member5Id = character._id;
+          break;
+      }
+    } else if (!inventory.party.member1Id) {
+      inventory.party.member1Id = character._id;
+    } else if (!inventory.party.member2Id) {
+      inventory.party.member2Id = character._id;
+    } else if (!inventory.party.member3Id) {
+      inventory.party.member3Id = character._id;
+    } else if (!inventory.party.member4Id) {
+      inventory.party.member4Id = character._id;
+    } else {
+      inventory.party.member5Id = character._id;
+    }
+
+    await db
+      .inventories()
+      .updateOne({ _id: inventory._id }, { $set: { party: inventory.party } });
+  } finally {
+    await db.close();
   }
 
-  switch (spot) {
-    case 1:
-      partyMember1Id = characterId;
-      break;
-    case 2:
-      partyMember2Id = characterId;
-      break;
-    case 3:
-      partyMember3Id = characterId;
-      break;
-    case 4:
-      partyMember4Id = characterId;
-      break;
-    case 5:
-      partyMember5Id = characterId;
-      break;
-  }
-
-  await prisma.inventory.update({
-    where: { userId_guildId: { userId, guildId } },
-    data: {
-      partyMember1Id,
-      partyMember2Id,
-      partyMember3Id,
-      partyMember4Id,
-      partyMember5Id,
-    },
-  });
-
-  return character;
+  return result;
 }
 
 export async function swapSpots(
-  inventory: Inventory,
+  inventory: WithId<Schema.Inventory>,
   a: 1 | 2 | 3 | 4 | 5,
   b: 1 | 2 | 3 | 4 | 5
-) {
-  const temp = inventory[`partyMember${a}Id`];
-  inventory[`partyMember${a}Id`] = inventory[`partyMember${b}Id`];
-  inventory[`partyMember${b}Id`] = temp;
+): Promise<void> {
+  const db = new Mongo();
 
-  await prisma.inventory.update({
-    where: {
-      userId_guildId: { userId: inventory.userId, guildId: inventory.guildId },
-    },
-    data: {
-      partyMember1Id: inventory.partyMember1Id,
-      partyMember2Id: inventory.partyMember2Id,
-      partyMember3Id: inventory.partyMember3Id,
-      partyMember4Id: inventory.partyMember4Id,
-      partyMember5Id: inventory.partyMember5Id,
-    },
-  });
+  try {
+    await db.connect();
+
+    const temp = inventory.party[`member${a}Id`];
+
+    inventory.party[`member${a}Id`] = inventory.party[`member${b}Id`];
+    inventory.party[`member${b}Id`] = temp;
+
+    await db
+      .inventories()
+      .updateOne({ _id: inventory._id }, { $set: { party: inventory.party } });
+  } finally {
+    await db.close();
+  }
 }
 
 export async function unassignCharacter(
   userId: string,
   guildId: string,
   spot: 1 | 2 | 3 | 4 | 5
-) {
-  await prisma.inventory.update({
-    where: { userId_guildId: { userId, guildId } },
-    data: { [`partyMember${spot}Id`]: null },
-  });
+): Promise<void> {
+  const db = new Mongo();
+
+  try {
+    await db.connect();
+
+    await db
+      .inventories()
+      .updateOne(
+        { userId, guildId },
+        { $set: { [`party.member${spot}Id`]: undefined } }
+      );
+  } finally {
+    await db.close();
+  }
 }
 
-export async function clearParty(userId: string, guildId: string) {
-  await prisma.inventory.update({
-    where: { userId_guildId: { userId, guildId } },
-    data: {
-      partyMember1Id: null,
-      partyMember2Id: null,
-      partyMember3Id: null,
-      partyMember4Id: null,
-      partyMember5Id: null,
-    },
-  });
+export async function clearParty(
+  userId: string,
+  guildId: string
+): Promise<void> {
+  const db = new Mongo();
+
+  try {
+    await db.connect();
+
+    await db.inventories().updateOne(
+      { userId, guildId },
+      {
+        $set: {
+          party: {
+            member1Id: null,
+            member2Id: null,
+            member3Id: null,
+            member4Id: null,
+            member5Id: null,
+          },
+        },
+      }
+    );
+  } finally {
+    await db.close();
+  }
 }

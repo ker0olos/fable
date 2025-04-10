@@ -148,7 +148,7 @@ export async function validateRequest(
 
   // Validate the body of the request if defined in the terms.
   if (terms[request.method].body && terms[request.method].body!.length > 0) {
-    const requestBody = await request.json();
+    const requestBody: any = await request.json();
 
     const bodyKeys = Object.keys(requestBody);
 

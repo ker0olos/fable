@@ -71,13 +71,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -154,13 +154,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -237,13 +237,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -326,13 +326,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -426,13 +426,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -512,13 +512,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -661,13 +661,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -868,13 +868,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1036,13 +1036,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1164,13 +1164,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1301,13 +1301,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1444,13 +1444,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1584,13 +1584,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1689,13 +1689,13 @@ describe('/media', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1792,13 +1792,13 @@ describe('/media debug', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1887,13 +1887,13 @@ describe('/media debug', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2017,13 +2017,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2125,13 +2125,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2243,13 +2243,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2361,13 +2361,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2479,13 +2479,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2583,13 +2583,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2684,13 +2684,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2801,13 +2801,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2898,13 +2898,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -2981,13 +2981,13 @@ describe('/character', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -3448,13 +3448,13 @@ describe('/character debug', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -3569,13 +3569,13 @@ describe('/character debug', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -3704,13 +3704,13 @@ describe('/character debug', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -3812,13 +3812,13 @@ describe('/character debug', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -3947,13 +3947,13 @@ describe('media characters', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4074,13 +4074,13 @@ describe('media characters', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4192,13 +4192,13 @@ describe('media characters', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4263,13 +4263,13 @@ describe('media characters', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4331,13 +4331,13 @@ describe('media characters', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4390,13 +4390,13 @@ describe('media characters', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4524,13 +4524,13 @@ describe('/found', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4720,13 +4720,13 @@ describe('/found', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4823,13 +4823,13 @@ describe('/found', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -4895,13 +4895,13 @@ describe('/found', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],

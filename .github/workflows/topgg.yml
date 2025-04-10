@@ -20,4 +20,4 @@ jobs:
         env:
           APP_ID: ${{ secrets.APP_ID }}
           TOPGG_TOKEN: ${{ secrets.TOPGG_TOKEN }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.MONGO_URI }}

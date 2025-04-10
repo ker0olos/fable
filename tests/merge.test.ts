@@ -14,7 +14,7 @@ import merge from '~/src/merge.ts';
 
 import db from '~/db/index.ts';
 
-import searchIndex, { IndexedCharacter } from '~/search-index-mod/mod.ts';
+import searchIndex, { IndexedCharacter } from '~/search-index-mod/index.ts';
 
 import {
   Character,
@@ -440,13 +440,13 @@ describe('synthesis confirmed', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -493,12 +493,12 @@ describe('synthesis confirmed', () => {
         {
           type: 'rich',
           image: {
-            url: 'attachment://2.gif',
+            url: 'http://localhost:8000/stars/2.gif',
           },
         },
       ],
       components: [],
-      attachments: [{ filename: '2.gif', id: '0' }],
+      attachments: [],
     });
 
     expect(fetchStub).toHaveBeenNthCalledWith(
@@ -656,13 +656,13 @@ describe('synthesis confirmed', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -742,13 +742,13 @@ describe('synthesis confirmed', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -820,13 +820,13 @@ describe('synthesis confirmed', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner.gif',
+              url: 'http://localhost:8000/spinner.gif',
             },
           },
         ],
@@ -1015,13 +1015,13 @@ describe('/merge', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1250,13 +1250,13 @@ describe('/merge', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1464,13 +1464,13 @@ describe('/merge', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1650,13 +1650,13 @@ describe('/merge', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1775,13 +1775,13 @@ describe('/merge', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1892,13 +1892,13 @@ describe('/merge', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],
@@ -1963,13 +1963,13 @@ describe('/merge', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        attachments: [{ filename: 'spinner3.gif', id: '0' }],
+        attachments: [],
         components: [],
         embeds: [
           {
             type: 'rich',
             image: {
-              url: 'attachment://spinner3.gif',
+              url: 'http://localhost:8000/spinner3.gif',
             },
           },
         ],

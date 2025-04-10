@@ -201,14 +201,6 @@ describe('utils', () => {
     );
   });
 
-  test('recharge keys timestamps', () => {
-    const now = new Date();
-    const expected = new Date().setMinutes(now.getMinutes() + 10).toString();
-    expect(utils.rechargeKeysTimestamp(now)).toBe(
-      expected.substring(0, expected.length - 3)
-    );
-  });
-
   test('recharge daily tokens timestamps', () => {
     const now = new Date();
     const expected = new Date().setHours(now.getHours() + 12).toString();

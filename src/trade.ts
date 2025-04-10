@@ -12,6 +12,8 @@ import db from '~/db/index.ts';
 
 import * as discord from '~/src/discord.ts';
 
+import { Character } from '~/src/types.ts';
+
 import { NonFetalError } from '~/src/errors.ts';
 
 function pre({
@@ -78,17 +80,20 @@ function pre({
         throw new Error('404');
       }
 
-      // results = await Promise.all(
-      //   results.map((character) =>
-      //     packs.aggregate<Character>({ guildId, character, end: 1 })
-      //   )
-      // );
+      results = await Promise.all(
+        results.map((character) =>
+          packs.aggregate<Character>({ guildId, character, end: 1 })
+        )
+      );
 
       if (
         results.some((char) => {
-          const media = char.media?.[0].media;
+          const media = (char as Character).media?.edges?.[0].node;
 
-          if (media && packs.isDisabled(media.id, guildId)) {
+          if (
+            media &&
+            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+          ) {
             return true;
           }
 
@@ -108,7 +113,7 @@ function pre({
       // filter repeated characters
       giveCharacters =
         (giveCharacters.forEach((char) => {
-          _filter[char.id] = char;
+          _filter[`${char.packId}:${char.id}`] = char;
         }),
         Object.values(_filter));
 
@@ -116,18 +121,18 @@ function pre({
       takeCharacters =
         ((_filter = {}),
         takeCharacters.forEach((char) => {
-          _filter[char.id] = char;
+          _filter[`${char.packId}:${char.id}`] = char;
         }),
         Object.values(_filter));
 
       const [giveIds, takeIds] = [
-        giveCharacters.map(({ id }) => id),
-        takeCharacters.map(({ id }) => id),
+        giveCharacters.map(({ packId, id }) => `${packId}:${id}`),
+        takeCharacters.map(({ packId, id }) => `${packId}:${id}`),
       ];
 
       const [giveNames, takeNames] = [
-        giveCharacters.map(({ name }) => name),
-        takeCharacters.map(({ name }) => name),
+        giveCharacters.map(({ name }) => packs.aliasToArray(name)[0]),
+        takeCharacters.map(({ name }) => packs.aliasToArray(name)[0]),
       ];
 
       const [userInventory, targetInventory] = await Promise.all([
@@ -143,11 +148,11 @@ function pre({
           : undefined;
 
       const giveParty = [
-        userInventory.partyMember1Id,
-        userInventory.partyMember2Id,
-        userInventory.partyMember3Id,
-        userInventory.partyMember4Id,
-        userInventory.partyMember5Id,
+        userInventory.party.member1?.characterId,
+        userInventory.party.member2?.characterId,
+        userInventory.party.member3?.characterId,
+        userInventory.party.member4?.characterId,
+        userInventory.party.member5?.characterId,
       ]
         .filter(utils.nonNullable)
         .filter((id) => giveIds.includes(id));
@@ -166,14 +171,15 @@ function pre({
           await Promise.all(
             giveFilter.map(async (characterId) => {
               const character = giveCharacters.find(
-                ({ id }) => id === characterId
+                ({ packId, id }) => `${packId}:${id}` === characterId
               )!;
 
               const i = giveCollection.findIndex(
-                ({ characterId }) => character.id === characterId
+                ({ characterId }) =>
+                  `${character.packId}:${character.id}` === characterId
               );
 
-              const characterName = character.name;
+              const characterName = packs.aliasToArray(character.name)[0];
 
               const embed = await search.characterEmbed(message, character, {
                 footer: false,
@@ -207,12 +213,14 @@ function pre({
       }
 
       if (takeCollection) {
+        const _takeParty = targetInventory.party;
+
         const takeParty = [
-          targetInventory.partyMember1Id,
-          targetInventory.partyMember2Id,
-          targetInventory.partyMember3Id,
-          targetInventory.partyMember4Id,
-          targetInventory.partyMember5Id,
+          _takeParty.member1?.characterId,
+          _takeParty.member2?.characterId,
+          _takeParty.member3?.characterId,
+          _takeParty.member4?.characterId,
+          _takeParty.member5?.characterId,
         ]
           .filter(utils.nonNullable)
           .filter((id) => takeIds.includes(id));
@@ -231,14 +239,15 @@ function pre({
             await Promise.all(
               takeFilter.map(async (characterId) => {
                 const character = takeCharacters.find(
-                  ({ id }) => id === characterId
+                  ({ packId, id }) => `${packId}:${id}` === characterId
                 )!;
 
                 const i = takeCollection.findIndex(
-                  ({ characterId }) => character.id === characterId
+                  ({ characterId }) =>
+                    `${character.packId}:${character.id}` === characterId
                 );
 
-                const characterName = character.name;
+                const characterName = packs.aliasToArray(character.name)[0];
 
                 const embed = await search.characterEmbed(message, character, {
                   footer: false,
@@ -284,7 +293,8 @@ function pre({
         const takeEmbeds = await Promise.all(
           takeCharacters.map((character) => {
             const i = takeCollection.findIndex(
-              ({ characterId }) => character.id === characterId
+              ({ characterId }) =>
+                `${character.packId}:${character.id}` === characterId
             );
 
             return search.characterEmbed(message, character, {
@@ -313,7 +323,8 @@ function pre({
       const giveEmbeds = await Promise.all(
         giveCharacters.map((character) => {
           const i = giveCollection.findIndex(
-            ({ characterId }) => character.id === characterId
+            ({ characterId }) =>
+              `${character.packId}:${character.id}` === characterId
           );
 
           return search.characterEmbed(message, character, {
@@ -450,7 +461,7 @@ function give({
         giveIds: giveCharactersIds,
       });
 
-      const giveCharacters = await packs.characters({
+      const results = await packs.characters({
         ids: giveCharactersIds,
         guildId,
       });
@@ -471,6 +482,18 @@ function give({
         )
       );
 
+      const giveCharacters = await Promise.all(
+        giveCharactersIds.map((characterId) =>
+          packs.aggregate<Character>({
+            guildId,
+            character: results.find(
+              ({ packId, id }) => `${packId}:${id}` === characterId
+            ),
+            end: 1,
+          })
+        )
+      );
+
       await Promise.all(
         giveCharacters.map(async (character) => {
           const embed = await search.characterEmbed(newMessage, character, {
@@ -488,7 +511,7 @@ function give({
       );
 
       if (giveCharacters.length === 1) {
-        const characterId = giveCharacters[0].id;
+        const characterId = `${giveCharacters[0].packId}:${giveCharacters[0].id}`;
 
         newMessage.addComponents([
           new discord.Component()
@@ -583,13 +606,29 @@ function accepted({
         )
       );
 
-      const giveCharacters = giveCharactersIds
-        .map((characterId) => results.find(({ id }) => id === characterId))
-        .filter(utils.nonNullable);
+      const giveCharacters = await Promise.all(
+        giveCharactersIds.map((characterId) =>
+          packs.aggregate<Character>({
+            guildId,
+            character: results.find(
+              ({ packId, id }) => `${packId}:${id}` === characterId
+            ),
+            end: 1,
+          })
+        )
+      );
 
-      const takeCharacters = takeCharactersIds
-        .map((characterId) => results.find(({ id }) => id === characterId))
-        .filter(utils.nonNullable);
+      const takeCharacters = await Promise.all(
+        takeCharactersIds.map((characterId) =>
+          packs.aggregate<Character>({
+            guildId,
+            character: results.find(
+              ({ packId, id }) => `${packId}:${id}` === characterId
+            ),
+            end: 1,
+          })
+        )
+      );
 
       await Promise.all(
         takeCharacters.map(async (character) => {

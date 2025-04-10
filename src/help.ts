@@ -112,8 +112,6 @@ function pages({
           .setTitle('`/party`')
           .setDescription(
             [
-              i18n.get('help-page3-party-required', locale),
-              '',
               i18n.get('help-page3-party-presets-disclaimer', locale),
               '',
               i18n.get('help-page3-party-view', locale),

@@ -1,6 +1,7 @@
 const config: {
   appId?: string;
   publicKey?: string;
+  mongoUri?: string;
   packsUrl?: string;
   sentry?: string;
   origin?: string;
@@ -19,6 +20,7 @@ const config: {
 } = {
   appId: undefined,
   publicKey: undefined,
+  mongoUri: undefined,
   packsUrl: undefined,
   sentry: undefined,
   origin: undefined,
@@ -29,8 +31,10 @@ const config: {
   stealing: undefined,
   synthesis: undefined,
   shop: undefined,
+  communityPacks: undefined,
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
+  //
   disableImagesProxy: undefined,
   ctx: undefined,
 };
@@ -41,6 +45,8 @@ export async function initConfig(ctx?: ExecutionContext): Promise<void> {
   config.appId = process.env.APP_ID;
 
   config.publicKey = process.env.PUBLIC_KEY;
+
+  config.mongoUri = process.env.MONGO_URI;
 
   config.packsUrl = process.env.PACKS_URL;
 
@@ -60,6 +66,9 @@ export async function initConfig(ctx?: ExecutionContext): Promise<void> {
     !('SYNTHESIS' in process.env) || process.env.SYNTHESIS === '1';
 
   config.shop = !('SHOP' in process.env) || process.env.SHOP === '1';
+
+  config.communityPacks =
+    !('COMMUNITY_PACKS' in process.env) || process.env.COMMUNITY_PACKS === '1';
 
   config.communityPacksMaintainerAPI =
     !('COMMUNITY_PACKS_MAINTAINER_API' in process.env) ||
