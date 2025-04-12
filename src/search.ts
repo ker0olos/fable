@@ -305,75 +305,69 @@ function character({
   const locale =
     user.cachedGuilds[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  packs
-    .characters(id ? { ids: [id], guildId } : { search, guildId })
-    .then((results) => {
-      if (!results.length) {
-        throw new Error('404');
-      }
+  config.ctx!.waitUntil(
+    packs
+      .characters(id ? { ids: [id], guildId } : { search, guildId })
+      .then((results) => {
+        if (!results.length) {
+          throw new Error('404');
+        }
 
-      return Promise.all([
-        // aggregate the media by populating any references to other media/character objects
-        packs.aggregate<Character>({
-          guildId,
-          character: results[0],
-          end: 4,
-        }),
-        db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
-      ]);
-    })
-    .then(async ([character, existing]) => {
-      const characterId = `${character.packId}:${character.id}`;
-
-      const media = character.media?.edges?.[0]?.node;
-
-      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
-        throw new Error('404');
-      }
-
-      if (debug) {
-        const message = await characterDebugMessage(character);
-        return await message.patch(token);
-      }
-
-      const message = await characterMessage(character, {
-        existing,
-        userId,
-      });
-
-      if (existing) {
-        message.insertComponents([
-          new discord.Component()
-            .setLabel('/stats')
-            .setId(`stats`, characterId),
+        return Promise.all([
+          // aggregate the media by populating any references to other media/character objects
+          packs.aggregate<Character>({
+            guildId,
+            character: results[0],
+            end: 4,
+          }),
+          db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
         ]);
-      }
+      })
+      .then(async ([character, existing]) => {
+        const characterId = `${character.packId}:${character.id}`;
 
-      message.insertComponents([
-        new discord.Component().setLabel('/like').setId(`like`, characterId),
-      ]);
+        const media = character.media?.edges?.[0]?.node;
 
-      return await message.patch(token);
-    })
-    .catch(async (err) => {
-      if (err.message === '404') {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale)
+        if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
+          throw new Error('404');
+        }
+
+        if (debug) {
+          const message = await characterDebugMessage(character);
+          return await message.patch(token);
+        }
+
+        const message = await characterMessage(character, {
+          existing,
+          userId,
+        });
+
+        message.insertComponents([
+          new discord.Component().setLabel('/like').setId(`like`, characterId),
+        ]);
+
+        return await message.patch(token);
+      })
+      .catch(async (err) => {
+        if (err.message === '404') {
+          return await new discord.Message()
+            .addEmbed(
+              new discord.Embed().setDescription(
+                i18n.get('found-nothing', locale)
+              )
             )
-          )
-          .patch(token);
-      }
+            .patch(token);
+        }
 
-      if (!config.sentry) {
-        throw err;
-      }
+        if (!config.sentry) {
+          throw err;
+        }
 
-      const refId = utils.captureException(err);
+        const refId = utils.captureException(err);
 
-      await discord.Message.internal(refId).patch(token);
-    });
+        await discord.Message.internal(refId).patch(token);
+      })
+  );
 
   return discord.Message.spinner();
 }
@@ -575,12 +569,8 @@ async function characterDebugMessage(
   const media = character.media?.edges?.[0];
 
   const role = media?.role;
-  const popularity = character.popularity || media?.node.popularity || 0;
 
-  const rating = new Rating({
-    popularity,
-    role: character.popularity ? undefined : role,
-  });
+  const rating = new Rating({ stars: character.rating });
 
   const titles = packs.aliasToArray(character.name);
 
@@ -608,11 +598,6 @@ async function characterDebugMessage(
     .addField({
       name: 'Role',
       value: `${utils.capitalize(role)}`,
-      inline: true,
-    })
-    .addField({
-      name: 'Popularity',
-      value: `${utils.comma(popularity)}`,
       inline: true,
     });
 

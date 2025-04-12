@@ -67,6 +67,8 @@ import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
 import { invertDupes } from '~/db/manageGuild.ts';
 
+import { ratingPool, likesPool } from '~/db/charactersPool.ts';
+
 import type * as Schema from '~/db/schema.ts';
 
 import type {
@@ -74,15 +76,22 @@ import type {
   DisaggregatedMedia,
 } from '~/src/types.ts';
 
+// let _MongoClient: MongoClient | null = null;
+
 export class Mongo {
   #client: MongoClient;
 
   constructor(url = config.mongoUri!) {
+    // if (_MongoClient) {
+    //   this.#client = _MongoClient;
+    //   return;
+    // }
     this.#client = new MongoClient(url, { retryWrites: true });
   }
 
   async connect(): Promise<Mongo> {
     this.#client = await this.#client.connect();
+    // _MongoClient = this.#client;
     return this;
   }
 
@@ -114,15 +123,12 @@ export class Mongo {
     return this.#client.db('default').collection('packs');
   }
 
-  public get anime() {
-    return {
-      media: (): Collection<DisaggregatedMedia> => {
-        return this.#client.db('anime').collection('media');
-      },
-      characters: (): Collection<DisaggregatedCharacter> => {
-        return this.#client.db('anime').collection('characters');
-      },
-    };
+  packCharacters(): Collection<DisaggregatedCharacter> {
+    return this.#client.db('default').collection('pack_characters');
+  }
+
+  packMedia(): Collection<DisaggregatedMedia> {
+    return this.#client.db('default').collection('pack_media');
   }
 }
 
@@ -174,6 +180,9 @@ const db = {
   searchPacks,
   publishPack,
   removePack,
+  //
+  ratingPool,
+  likesPool,
   //
   invertDupes,
 };

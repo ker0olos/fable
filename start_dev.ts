@@ -5,7 +5,7 @@ const green = (text: string) => `\x1b[32m${text}\x1b[0m`;
 
 async function tunnel() {
   try {
-    const maxAttempts = 5;
+    const maxAttempts = 10;
 
     let ngrok;
     let attempts = 0;

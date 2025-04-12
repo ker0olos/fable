@@ -1,17 +1,13 @@
-import * as _anilist from '~/packs/anilist/index.ts';
-
 import * as discord from '~/src/discord.ts';
 
 import user from '~/src/user.ts';
 import utils from '~/src/utils.ts';
 
-import searchIndex from '~/search-index-mod/index.ts';
-
 import i18n from '~/src/i18n.ts';
 
 import config from '~/src/config.ts';
 
-import db from '~/db/index.ts';
+import db, { Mongo } from '~/db/index.ts';
 
 import {
   Alias,
@@ -23,13 +19,6 @@ import {
   MediaFormat,
   MediaRelation,
 } from '~/src/types.ts';
-
-import { NonFetalError } from '~/src/errors.ts';
-
-import type {
-  Character as CharacterType,
-  Media as MediaType,
-} from '@fable-community/search-index';
 
 import type { Pack } from '~/db/schema.ts';
 
@@ -44,6 +33,7 @@ const cachedGuilds: Record<
 > = {};
 
 const packs = {
+  parseId,
   ensureId,
   aggregate,
   aliasToArray,
@@ -70,13 +60,7 @@ const packs = {
   uninstallDialog,
 };
 
-async function all({
-  guildId,
-  filter,
-}: {
-  guildId: string;
-  filter?: boolean;
-}): Promise<Pack[]> {
+async function all({ guildId }: { guildId: string }): Promise<Pack[]> {
   let cachedGuild = packs.cachedGuilds[guildId];
 
   if (!cachedGuild) {
@@ -99,18 +83,6 @@ async function all({
   }
 
   const _packs = cachedGuild.packs;
-
-  if (!config.communityPacks) {
-    const anilistPack = _packs.find(
-      ({ manifest }) => manifest.id === 'anilist'
-    );
-
-    if (filter || !anilistPack) {
-      return [];
-    }
-
-    return [anilistPack];
-  }
 
   return _packs;
 }
@@ -143,11 +115,7 @@ async function uninstallDialog({
 }): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
 
-  if (!config.communityPacks) {
-    throw new NonFetalError(i18n.get('maintenance-packs', locale));
-  }
-
-  const list = await packs.all({ filter: true, guildId });
+  const list = await packs.all({ guildId });
 
   const pack = list.find(({ manifest }) => manifest.id === packId);
 
@@ -175,10 +143,6 @@ async function pages({
 }): Promise<discord.Message> {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
-
-  if (!config.communityPacks) {
-    throw new NonFetalError(i18n.get('maintenance-packs', locale));
-  }
 
   const list = (await packs.all({ guildId })).reverse();
 
@@ -216,10 +180,6 @@ async function install({
 }): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
 
-  if (!config.communityPacks) {
-    throw new NonFetalError(i18n.get('maintenance-packs', locale));
-  }
-
   const pack = await db.addPack(userId, guildId, id);
 
   if (!pack) {
@@ -247,10 +207,6 @@ async function uninstall({
 }): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
 
-  if (!config.communityPacks) {
-    throw new NonFetalError(i18n.get('maintenance-packs', locale));
-  }
-
   const pack = await db.removePack(guildId, id);
 
   if (!pack) {
@@ -277,7 +233,7 @@ async function uninstall({
 function parseId(
   literal: string,
   defaultPackId?: string
-): [string | undefined, string | undefined] {
+): [string, string] | undefined {
   const split = /^([-_a-z0-9]+):([-_a-z0-9]+)$/.exec(literal);
 
   if (split?.length === 3) {
@@ -287,7 +243,7 @@ function parseId(
     return [defaultPackId, literal];
   }
 
-  return [undefined, undefined];
+  return;
 }
 
 function ensureId(id: string, defaultPackId?: string): string {
@@ -311,52 +267,32 @@ async function findById<T>({
   guildId: string;
   defaultPackId?: string;
 }): Promise<{ [key: string]: T }> {
-  const anilistIds: string[] = [];
-
   const results: { [key: string]: T } = {};
+
+  const db = new Mongo();
 
   const list = await packs.all({ guildId });
 
-  const anilistEnabled = list.some(({ manifest }) => manifest.id === 'anilist');
+  ids = Array.from(new Set(ids));
 
-  for (const literal of [...new Set(ids)]) {
-    const [packId, id] = parseId(literal, defaultPackId);
-
-    if (!packId || !id) {
-      continue;
-    }
-
-    if (packId === 'anilist') {
-      anilistIds.push(id);
-    } else {
-      const pack = list.find(({ manifest }) => manifest.id === packId);
-
-      // search for the id in packs
-      const match = (
-        pack?.manifest[key]?.new as Array<
-          DisaggregatedCharacter | DisaggregatedMedia
-        >
-      )?.find((m) => m.id === id);
-
-      if (match) {
-        results[literal] = ((match.packId = packId), match) as T;
-      }
-    }
-  }
-
-  // if anilist pack is enabled
-  // request the ids from anilist
-  if (list.length && anilistEnabled) {
-    const anilistResults = await _anilist[key](anilistIds);
-
-    anilistIds.forEach((n) => {
-      const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
-
-      if (i > -1) {
-        results[`anilist:${n}`] = anilistResults[i] as T;
-      }
+  const parsedIds = ids
+    .map((id) => parseId(id, defaultPackId))
+    .filter(utils.nonNullable)
+    .filter(([packId]) => {
+      const pack = list.some(({ manifest }) => manifest.id === packId);
+      return pack;
     });
-  }
+
+  const queries = parsedIds.map(async ([packId, id]) => {
+    const coll = key === 'characters' ? db.packCharacters() : db.packMedia();
+
+    const item = await coll.findOne({ packId, id });
+
+    if (item) results[`${packId}:${item.id}`] = item as T;
+  });
+
+  await Promise.allSettled(queries);
+  await db.close();
 
   return results;
 }
@@ -367,8 +303,46 @@ async function _searchManyCharacters({
 }: {
   search: string;
   guildId: string;
-}): Promise<CharacterType[]> {
-  return await searchIndex.searchCharacters(search, guildId);
+}): Promise<DisaggregatedCharacter[]> {
+  const db = new Mongo();
+
+  await db.connect();
+
+  const list = await packs.all({ guildId });
+
+  const results = await db
+    .packCharacters()
+    .aggregate([
+      {
+        $search: {
+          text: {
+            query: search,
+            path: ['name.english', 'name.alternative'],
+            fuzzy: {
+              maxEdits: 2,
+              prefixLength: 0,
+              maxExpansions: 50,
+            },
+          },
+          sort: { rating: -1, score: { $meta: 'searchScore' } },
+        },
+      },
+      {
+        $match: {
+          packId: {
+            $in: list.map(({ manifest }) => manifest.id),
+          },
+        },
+      },
+      {
+        $limit: 20,
+      },
+    ])
+    .toArray();
+
+  await db.close();
+
+  return results as DisaggregatedCharacter[];
 }
 
 async function searchManyCharacters({
@@ -419,8 +393,46 @@ async function _searchManyMedia({
 }: {
   search: string;
   guildId: string;
-}): Promise<MediaType[]> {
-  return await searchIndex.searchMedia(search, guildId);
+}): Promise<DisaggregatedMedia[]> {
+  const db = new Mongo();
+
+  await db.connect();
+
+  const list = await packs.all({ guildId });
+
+  const results = await db
+    .packMedia()
+    .aggregate([
+      {
+        $search: {
+          text: {
+            query: search,
+            path: ['title.english', 'title.alternative'],
+            fuzzy: {
+              maxEdits: 2,
+              prefixLength: 0,
+              maxExpansions: 50,
+            },
+          },
+          sort: { popularity: -1, score: { $meta: 'searchScore' } },
+        },
+      },
+      {
+        $match: {
+          packId: {
+            $in: list.map(({ manifest }) => manifest.id),
+          },
+        },
+      },
+      {
+        $limit: 20,
+      },
+    ])
+    .toArray();
+
+  await db.close();
+
+  return results as DisaggregatedMedia[];
 }
 
 async function searchManyMedia({
@@ -708,7 +720,7 @@ async function aggregate<T>({
 
 function aliasToArray(alias: Alias, max?: number): string[] {
   const set = new Set(
-    [alias.english, alias.romaji, alias.native]
+    [alias.english]
       .concat(alias.alternative ?? [])
       .filter(utils.nonNullable)
       .map((str) => (max ? utils.truncate(str, max) : str))

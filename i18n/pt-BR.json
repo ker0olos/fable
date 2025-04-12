@@ -306,7 +306,6 @@
   "/packs install": "instala um pacote da comunidade",
   "/packs uninstall": "desinstala um pacote da comunidade",
 
-  "/stats": "gerencie os pontos de estátisticas e habilidades de seus personagens",
 
   "/battle tower": "Escale a torre até a glória e se torne um fable",
   "/battle challenge": "Desafie o próximo andar da torre",

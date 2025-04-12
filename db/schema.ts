@@ -63,6 +63,7 @@ export interface Character {
 
   guildId: string;
   userId: string;
+
   inventoryId: ObjectId;
 }
 

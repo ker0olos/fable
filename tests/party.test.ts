@@ -946,12 +946,6 @@ describe('/party assign', () => {
               style: 2,
               type: 2,
             },
-            {
-              custom_id: 'stats=anilist:1',
-              label: '/stats',
-              style: 2,
-              type: 2,
-            },
           ],
         },
       ],
@@ -1067,12 +1061,6 @@ describe('/party assign', () => {
             {
               custom_id: 'character=anilist:1',
               label: '/character',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'stats=anilist:1',
-              label: '/stats',
               style: 2,
               type: 2,
             },

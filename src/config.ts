@@ -12,7 +12,6 @@ const config: {
   stealing?: boolean;
   synthesis?: boolean;
   shop?: boolean;
-  communityPacks?: boolean;
   communityPacksMaintainerAPI?: boolean;
   communityPacksBrowseAPI?: boolean;
   disableImagesProxy?: boolean;
@@ -31,7 +30,6 @@ const config: {
   stealing: undefined,
   synthesis: undefined,
   shop: undefined,
-  communityPacks: undefined,
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
   //
@@ -66,9 +64,6 @@ export async function initConfig(ctx?: ExecutionContext): Promise<void> {
     !('SYNTHESIS' in process.env) || process.env.SYNTHESIS === '1';
 
   config.shop = !('SHOP' in process.env) || process.env.SHOP === '1';
-
-  config.communityPacks =
-    !('COMMUNITY_PACKS' in process.env) || process.env.COMMUNITY_PACKS === '1';
 
   config.communityPacksMaintainerAPI =
     !('COMMUNITY_PACKS_MAINTAINER_API' in process.env) ||

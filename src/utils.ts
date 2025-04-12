@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mime from 'mime';
+// import mime from 'mime';
+
 import nacl from 'tweetnacl';
+
 import { nanoid } from 'nanoid';
 
-// import { init as _initSentry, captureException as _captureException} from '@sentry/node';
+import { captureException } from '@sentry/cloudflare';
 
 import { distance as levenshtein } from 'fastest-levenshtein';
-
-import { proxy as _proxy } from '@fable-community/images-proxy';
 
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
@@ -494,54 +494,108 @@ function getDayOfWeek(): DayOfWeek {
   return days[new Date().getUTCDay()] as DayOfWeek;
 }
 
-function initSentry(dsn?: string): void {
-  // if (dsn) _initSentry({ dsn });
-}
+async function proxy(
+  url?: string,
+  size?: ImageSize
+): Promise<Attachment | null> {
+  try {
+    let response = await fetch(url ?? '');
+    let contentType = response.headers.get('Content-Type');
 
-function captureException(err: Error, extra?: { extra: any }) {
-  // return _captureException(err, extra);
-  return '';
-}
+    const sizes: Record<string, [number, number]> = {
+      preview: [32, 32],
+      thumbnail: [110, 155],
+      medium: [230, 325],
+      large: [450, 635],
+    };
 
-function basename(path: string): string {
-  path = path.replace(/\/*$/, '');
-  return path.split('/').pop() || '';
-}
+    if (contentType?.startsWith('text/html')) {
+      const xml = await response.text();
 
-function extname(path: string): string {
-  const base = basename(path);
-  const dotIndex = base.lastIndexOf('.');
-  return dotIndex < 0 ? '' : base.slice(dotIndex);
-}
+      const re = /<meta.*?property="og:image".*?content="(.*?)"/;
 
-async function proxy(url?: string, size?: ImageSize): Promise<Attachment> {
-  let filename = url ? basename(url) : 'default.webp';
+      const match = xml.match(re);
 
-  const file = await _proxy(url ?? '', size);
+      if (match) {
+        const imageUrl = new URL(match[1]);
 
-  if (extname(filename) === '') {
-    const ext = mime.getExtension(file.format);
+        if (imageUrl.hostname === 'i.imgur.com') {
+          imageUrl.search = '';
+        }
 
-    console.log({ ext });
-
-    if (ext?.length) {
-      filename = `${filename}.${ext}`;
+        response = await fetch(imageUrl.toString());
+        contentType = response.headers.get('Content-Type');
+      } else {
+        throw new Error('html page has no og:image');
+      }
     }
+
+    if (!contentType) {
+      throw new Error('no content type header');
+    } else if (
+      !['image/jpeg', 'image/png', 'image/webp'].includes(contentType)
+    ) {
+      throw new Error(`image type ${contentType} is not supported`);
+    }
+
+    console.log(`${response.status} ${contentType} ${url}`);
+
+    const data = await response
+      .arrayBuffer()
+      .then((buffer) => new Uint8Array(buffer));
+
+    const photon = await import('@cf-wasm/photon');
+
+    const image = photon.PhotonImage.new_from_byteslice(new Uint8Array(data));
+
+    const resizeToFit = async ([width, height]: [number, number]) => {
+      const wraito = width / image.get_width();
+      const hratio = height / image.get_height();
+
+      const ratio = Math.max(wraito, hratio);
+
+      const newWidth = Math.max(Math.round(image.get_width() * ratio), 1);
+      const newHeight = Math.max(Math.round(image.get_height() * ratio), 1);
+
+      const resized = photon.resize(image, newWidth, newHeight, 4);
+
+      const _ratio = image.get_width() * height;
+      const _nratio = width * image.get_height();
+
+      if (_nratio > _ratio) {
+        return photon.crop(
+          resized,
+          0,
+          (resized.get_height() - height) / 2,
+          width,
+          height
+        );
+      } else {
+        return photon.crop(
+          resized,
+          (resized.get_width() - width) / 2,
+          0,
+          width,
+          height
+        );
+      }
+    };
+
+    const final = await resizeToFit(sizes[size ?? ImageSize.Large]);
+    const bytes = final.get_bytes_webp();
+
+    image.free();
+    final.free();
+
+    return {
+      filename: 'default.webp',
+      arrayBuffer: bytes,
+      type: 'image/webp',
+    };
+  } catch (err) {
+    console.error(`${url}`);
+    throw err;
   }
-
-  const asciiFilename = Array.from(filename)
-    .map((char) => char.charCodeAt(0))
-    .map((code) => (code < 128 ? String.fromCharCode(code) : '-'))
-    .join('')
-    .replaceAll('_', '-')
-    .replace(/\s+/g, '');
-  console.log({ filename });
-
-  return {
-    filename: asciiFilename,
-    arrayBuffer: Buffer.from(file.image),
-    type: file.format,
-  };
 }
 
 function chunks<T>(array: T[], size: number): T[][] {
@@ -557,7 +611,6 @@ const utils = {
   LehmerRNG,
   isWithin14Days,
   capitalize,
-  captureException,
   chunks,
   comma,
   compact,
@@ -571,7 +624,7 @@ const utils = {
   fetchWithRetry,
   getRandomFloat,
   hexToInt,
-  initSentry,
+  captureException,
   json,
   nanoid,
   parseInt: _parseInt,

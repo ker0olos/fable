@@ -16,7 +16,7 @@ enum CommandType {
 }
 
 export type Attachment = {
-  arrayBuffer: Buffer;
+  arrayBuffer: Uint8Array;
   filename: string;
   type: string;
 };
@@ -162,9 +162,7 @@ export type Member = {
 export type User = {
   id: string;
   username: string;
-
   display_name?: string;
-
   global_name?: string;
   avatar?: string;
 };
@@ -375,7 +373,9 @@ export class Interaction<Options> {
             }
           });
         } else if (data.options?.[0].type === 2) {
-          this.subcommand = `${data.options?.[0].name} ${data.options?.[0].options?.[0]?.name}`;
+          this.subcommand = `${data.options?.[0].name} ${
+            data.options?.[0].options?.[0]?.name
+          }`;
 
           data.options?.[0].options?.[0]?.options?.forEach((option) => {
             this.options[option.name] = option.value as Options;
@@ -404,6 +404,7 @@ export class Interaction<Options> {
         this.customValues = data.values?.length ? data.values : custom.slice(1);
 
         if (data.components) {
+          // deno-lint-ignore no-explicit-any
           data.components[0].components.forEach((component: any) => {
             this.options[component.custom_id] = component.value as Options;
           });
@@ -659,7 +660,7 @@ export class Embed {
 export class Message {
   #type?: MessageType;
 
-  #files: { data: Blob; name: string }[];
+  #files: File[];
 
   #suggestions: { [name: string]: Suggestion };
 
@@ -733,6 +734,12 @@ export class Message {
         filename: attachment.filename,
         id: `${this.#data.attachments.length}`,
       });
+
+      this.#files.push(
+        new File([attachment.arrayBuffer], attachment.filename, {
+          type: attachment.type,
+        })
+      );
     }
 
     return this;
@@ -898,7 +905,7 @@ export class Message {
     // respond first with a loading message
     // then add the attachments the follow-up message
     this.#files.forEach((file, index) => {
-      formData.append(`files[${index}]`, file.data, file.name);
+      formData.append(`files[${index}]`, file, file.name);
     });
 
     return new Response(formData, {
@@ -912,8 +919,8 @@ export class Message {
 
     formData.append('payload_json', JSON.stringify(this.json().data));
 
-    this.#files.forEach((file, index) => {
-      formData.append(`files[${index}]`, file.data, file.name);
+    Object.entries(this.#files).forEach(([name, blob], index) => {
+      formData.append(`files[${index}]`, blob, name);
     });
 
     let response: Response | undefined = undefined;

@@ -44,8 +44,6 @@ export enum CharacterRole {
 
 export type Alias = {
   english?: string;
-  romaji?: string;
-  native?: string;
   alternative?: string[];
 };
 
@@ -65,7 +63,7 @@ export interface Media {
   id: string;
   title: Alias;
   type: MediaType;
-  packId?: string;
+  packId: string;
   added?: string;
   updated?: string;
   format?: MediaFormat;
@@ -105,11 +103,11 @@ export type DisaggregatedMedia = Modify<
 export interface Character {
   id: string;
   name: Alias;
-  packId?: string;
+  packId: string;
   added?: string;
   updated?: string;
   description?: string;
-  popularity?: number;
+  rating: number;
   gender?: string;
   age?: string;
   images?: Image[];
@@ -161,10 +159,4 @@ export interface Manifest {
   private?: boolean;
   maintainers?: string[];
   conflicts?: string[];
-  media?: {
-    new?: DisaggregatedMedia[];
-  };
-  characters?: {
-    new?: DisaggregatedCharacter[];
-  };
 }

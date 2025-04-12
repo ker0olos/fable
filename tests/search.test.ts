@@ -2178,12 +2178,6 @@ describe('/character', () => {
               style: 2,
               type: 2,
             },
-            {
-              custom_id: 'stats=pack-id:1',
-              label: '/stats',
-              style: 2,
-              type: 2,
-            },
           ],
         },
       ],
@@ -2293,12 +2287,6 @@ describe('/character', () => {
             {
               custom_id: 'like=pack-id:1',
               label: '/like',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'stats=pack-id:1',
-              label: '/stats',
               style: 2,
               type: 2,
             },
@@ -2414,12 +2402,6 @@ describe('/character', () => {
               style: 2,
               type: 2,
             },
-            {
-              custom_id: 'stats=pack-id:1',
-              label: '/stats',
-              style: 2,
-              type: 2,
-            },
           ],
         },
       ],
@@ -2529,12 +2511,6 @@ describe('/character', () => {
             {
               custom_id: 'like=pack-id:1',
               label: '/like',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'stats=pack-id:1',
-              label: '/stats',
               style: 2,
               type: 2,
             },

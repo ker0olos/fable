@@ -222,7 +222,6 @@
   "/packs install": "instala un pack de la comunidad",
   "/packs uninstall": "desinstala un pack de la comunidad",
 
-  "/stats": "administra las estadísticas y habilidades de tus personajes",
 
   "/help": "¿Necesitas más información? No te preocupes",
 

@@ -1,3 +1,5 @@
+import { withSentry } from '@sentry/cloudflare';
+
 import * as discord from '~/src/discord.ts';
 
 import search, { idPrefix } from '~/src/search.ts';
@@ -153,8 +155,8 @@ export const handler = async (r: Request) => {
 
             results.forEach((media) => {
               message.addSuggestions({
-                name: media.title[0],
-                value: `${idPrefix}${media.id}`,
+                name: packs.aliasToArray(media.title)[0],
+                value: `${idPrefix}${media.packId}:${media.id}`,
               });
             });
           }
@@ -197,10 +199,11 @@ export const handler = async (r: Request) => {
 
             results.forEach((character) => {
               message.addSuggestions({
-                name: character.mediaTitle?.length
-                  ? `${character.name[0]} (${character.mediaTitle[0]})`
-                  : character.name[0],
-                value: `${idPrefix}${character.id}`,
+                // name: character.mediaTitle?.length
+                //   ? `${character.name[0]} (${character.mediaTitle[0]})`
+                //   : character.name[0],
+                name: packs.aliasToArray(character.name)[0],
+                value: `${idPrefix}${character.packId}:${character.id}`,
               });
             });
           }
@@ -214,10 +217,7 @@ export const handler = async (r: Request) => {
 
           const message = new discord.Message(discord.MessageType.Suggestions);
 
-          let list = await packs.all({
-            filter: true,
-            guildId,
-          });
+          let list = await packs.all({ guildId });
 
           const distance: Record<string, number> = {};
 
@@ -1246,59 +1246,61 @@ export const handler = async (r: Request) => {
     .send();
 };
 
-export default {
-  async fetch(
-    request: Request,
-    env: Env,
-    ctx: ExecutionContext
-  ): Promise<Response> {
-    await initConfig(ctx);
+export default withSentry(
+  (env) => ({
+    dsn: env.SENTRY_DSN,
+    tracesSampleRate: 0.2,
+  }),
+  {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-expect-error
+    async fetch(request, env, ctx): Promise<Response> {
+      await initConfig(ctx);
 
-    utils.initSentry(config.sentry);
+      const url = new URL(request.url);
 
-    const url = new URL(request.url);
+      if (url.pathname === '/') {
+        return handler(request);
+      }
 
-    if (url.pathname === '/') {
-      return handler(request);
-    }
+      if (url.pathname === '/api/user') {
+        return communityAPI.user(request);
+      }
 
-    if (url.pathname === '/api/user') {
-      return communityAPI.user(request);
-    }
+      if (url.pathname === '/api/publish') {
+        return communityAPI.publish(request);
+      }
 
-    if (url.pathname === '/api/publish') {
-      return communityAPI.publish(request);
-    }
+      if (url.pathname === '/api/popular') {
+        return communityAPI.popular(request);
+      }
 
-    if (url.pathname === '/api/popular') {
-      return communityAPI.popular(request);
-    }
+      if (url.pathname === '/api/updated') {
+        return communityAPI.lastUpdated(request);
+      }
 
-    if (url.pathname === '/api/updated') {
-      return communityAPI.lastUpdated(request);
-    }
+      if (url.pathname.startsWith('/api/pack/')) {
+        const packId = url.pathname.substring('/api/pack/'.length);
+        return communityAPI.pack(request, packId);
+      }
 
-    if (url.pathname.startsWith('/api/pack/')) {
-      const packId = url.pathname.substring('/api/pack/'.length);
-      return communityAPI.pack(request, packId);
-    }
+      if (url.pathname === '/api/search') {
+        return communityAPI.search(request);
+      }
 
-    if (url.pathname === '/api/search') {
-      return communityAPI.search(request);
-    }
+      if (url.pathname === '/invite') {
+        return Response.redirect(
+          `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`
+        );
+      }
 
-    if (url.pathname === '/invite') {
-      return Response.redirect(
-        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`
-      );
-    }
+      if (url.pathname === '/robots.txt') {
+        return new Response('User-agent: *\nDisallow: /', {
+          headers: { 'content-type': 'text/plain' },
+        });
+      }
 
-    if (url.pathname === '/robots.txt') {
-      return new Response('User-agent: *\nDisallow: /', {
-        headers: { 'content-type': 'text/plain' },
-      });
-    }
-
-    return new Response('Not Found', { status: 404 });
-  },
-};
+      return new Response('Not Found', { status: 404 });
+    },
+  } satisfies ExportedHandler<Env>
+);

@@ -18,8 +18,6 @@ export async function ensureIndexes(): Promise<void> {
   await createCharactersIndexes(db);
   await createPacksIndexes(db);
 
-  await createAnimeIndexes(db);
-
   await db.close();
 }
 
@@ -86,96 +84,68 @@ async function createPacksIndexes(db: Mongo) {
     'manifest.maintainers': Direction.ascending,
   });
 
-  await db.packs().createSearchIndexes([
+  await db.packCharacters().createIndex(
     {
-      name: 'anime',
-      definition: {
-        mappings: {
-          dynamic: false,
-          fields: {
-            manifest: {
-              fields: {
-                characters: {
-                  fields: {
-                    new: {
-                      fields: {
-                        name: {
-                          fields: {
-                            alternative: {
-                              type: 'string',
-                            },
-                            english: {
-                              type: 'string',
-                            },
-                          },
-                          type: 'document',
-                        },
-                      },
-                      type: 'document',
-                    },
-                  },
-                  type: 'document',
-                },
-              },
-              type: 'document',
+      id: Direction.ascending,
+      packId: Direction.ascending,
+    },
+    { unique: true }
+  );
+
+  await db.packMedia().createIndex(
+    {
+      id: Direction.ascending,
+      packId: Direction.ascending,
+    },
+    { unique: true }
+  );
+
+  await db.packCharacters().createIndex({
+    rating: Direction.descending,
+    packId: Direction.ascending,
+  });
+
+  await db.packCharacters().createIndex({
+    rating: Direction.descending,
+  });
+
+  await db.packCharacters().createSearchIndex({
+    definition: {
+      mappings: {
+        dynamic: false,
+        fields: {
+          name: {
+            fields: {
+              english: { type: 'string' },
+              alternative: { type: 'string' },
             },
+            type: 'document',
           },
-        },
-        storedSource: {
-          include: ['manifest.characters.new'],
+          rating: { type: 'number' },
         },
       },
+      storedSource: true,
     },
-    {
-      name: 'media',
-      definition: {
-        mappings: {
-          dynamic: false,
-          fields: {
-            manifest: {
-              fields: {
-                media: {
-                  fields: {
-                    new: {
-                      fields: {
-                        title: {
-                          fields: {
-                            alternative: {
-                              type: 'string',
-                            },
-                            english: {
-                              type: 'string',
-                            },
-                          },
-                          type: 'document',
-                        },
-                      },
-                      type: 'document',
-                    },
-                  },
-                  type: 'document',
-                },
-              },
-              type: 'document',
+  });
+
+  await db.packMedia().createSearchIndex({
+    definition: {
+      mappings: {
+        dynamic: false,
+        fields: {
+          title: {
+            fields: {
+              english: { type: 'string' },
+              alternative: { type: 'string' },
             },
+            type: 'document',
           },
-        },
-        storedSource: {
-          include: ['manifest.media.new'],
+          popularity: { type: 'string' },
         },
       },
+      storedSource: true,
     },
-  ]);
-}
-
-async function createAnimeIndexes(db: Mongo) {
-  await db.anime
-    .media()
-    .createIndex({ id: Direction.ascending }, { unique: true });
-
-  await db.anime
-    .characters()
-    .createIndex({ id: Direction.ascending }, { unique: true });
+  });
 }
 
 {

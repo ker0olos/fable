@@ -1,6 +1,14 @@
+// import { PhotonImage } from '@cf-wasm/photon';
+// import { existsSync, promises } from 'node:fs';
+// import { dirname, join } from 'node:path';
+// import { fileURLToPath } from 'node:url';
+// import pixelmatch from 'pixelmatch';
 import { describe, test, expect, vi, afterEach } from 'vitest';
 
 import utils from '~/src/utils.ts';
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 describe('utils', () => {
   afterEach(() => {
@@ -358,3 +366,94 @@ describe('utils', () => {
     });
   });
 });
+
+// describe('image proxy', () => {
+//   const kiara = 'https://images2.imgbox.com/05/06/ilSpCC45_o.png';
+//   const fauna = 'https://images2.imgbox.com/76/07/BLiqJb65_o.png';
+//   const aqua = 'https://images2.imgbox.com/a8/8c/a91bsWKH_o.png';
+//   const guraEmbed = 'https://imgbox.com/mxkxpJOP';
+
+//   const compare = async (snapShotPath: string, image: Buffer) => {
+//     const existing = PhotonImage.new_from_byteslice(
+//       await promises.readFile(snapShotPath)
+//     );
+//     const decoded = PhotonImage.new_from_byteslice(image);
+
+//     // console.log(await existing.metadata());
+//     // console.log(await decoded.metadata());
+
+//     return pixelmatch(
+//       existing.get_bytes_webp(),
+//       decoded.get_bytes_webp(),
+//       new Uint8Array(),
+//       existing.get_width(),
+//       existing.get_height()
+//     );
+//   };
+
+//   test('large portrait', async () => {
+//     const { arrayBuffer } = await utils.proxy(kiara);
+//     const snapShotPath = join(__dirname, '__images__', 'large portrait.png');
+
+//     if (!existsSync(snapShotPath)) {
+//       await promises.writeFile(snapShotPath, arrayBuffer);
+//     } else {
+//       expect(await compare(snapShotPath, arrayBuffer)).toBe(0);
+//     }
+//   }, 20000);
+
+//   test('large portrait 2', async () => {
+//     const { arrayBuffer } = await utils.proxy(fauna);
+//     const snapShotPath = join(__dirname, '__images__', 'large portrait 2.png');
+
+//     if (!existsSync(snapShotPath)) {
+//       await promises.writeFile(snapShotPath, arrayBuffer);
+//     } else {
+//       expect(await compare(snapShotPath, arrayBuffer)).toBe(0);
+//     }
+//   }, 20000);
+
+//   test('large square', async () => {
+//     const { arrayBuffer } = await utils.proxy(aqua);
+//     const snapShotPath = join(__dirname, '__images__', 'large square.png');
+
+//     if (!existsSync(snapShotPath)) {
+//       await promises.writeFile(snapShotPath, arrayBuffer);
+//     } else {
+//       expect(await compare(snapShotPath, arrayBuffer)).toBe(0);
+//     }
+//   }, 20000);
+
+//   test('preview portrait', async () => {
+//     const { arrayBuffer } = await utils.proxy(kiara, ImageSize.Preview);
+//     const snapShotPath = join(__dirname, '__images__', 'preview portrait.png');
+
+//     if (!existsSync(snapShotPath)) {
+//       await promises.writeFile(snapShotPath, arrayBuffer);
+//     } else {
+//       expect(await compare(snapShotPath, arrayBuffer)).toBe(0);
+//     }
+//   }, 20000);
+
+//   test('preview square', async () => {
+//     const { arrayBuffer } = await utils.proxy(aqua, ImageSize.Preview);
+//     const snapShotPath = join(__dirname, '__images__', 'preview square.png');
+
+//     if (!existsSync(snapShotPath)) {
+//       await promises.writeFile(snapShotPath, arrayBuffer);
+//     } else {
+//       expect(await compare(snapShotPath, arrayBuffer)).toBe(0);
+//     }
+//   }, 20000);
+
+//   test.skip('ogimage ', async () => {
+//     const { arrayBuffer } = await utils.proxy(guraEmbed, undefined);
+//     const snapShotPath = join(__dirname, '__images__', 'ogimage.jpeg');
+
+//     if (!existsSync(snapShotPath)) {
+//       await promises.writeFile(snapShotPath, arrayBuffer);
+//     } else {
+//       expect(await compare(snapShotPath, arrayBuffer)).toBe(0);
+//     }
+//   }, 20000);
+// });
