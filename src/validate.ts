@@ -1,14 +1,211 @@
-import Ajv from 'ajv';
+import { z } from 'zod';
 
-import alias from '~/json/alias.json' with { type: 'json' };
+const idSchema = z
+  .string()
+  .min(1)
+  .max(20)
+  .regex(/^[-_a-z0-9]+$/);
 
-import image from '~/json/image.json' with { type: 'json' };
+const aliasSchema = z
+  .object({
+    english: z.string().min(1).max(128),
+    alternative: z.array(z.string().min(1).max(128)).optional(),
+  })
+  .strict();
 
-import media from '~/json/media.json' with { type: 'json' };
+const imageSchema = z
+  .object({
+    url: z
+      .string()
+      .describe(
+        'A url of the image (Fable forces the aspect-ratio of all images to 230:325) (recommended size: 450x635)'
+      ),
+  })
+  .strict();
 
-import character from '~/json/character.json' with { type: 'json' };
+const externalLinksSchema = z
+  .object({
+    site: z.string(),
+    url: z
+      .string()
+      .regex(
+        /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|netflix\.com|crunchyroll\.com|tapas\.io|webtoons\.com|amazon\.com)[\S]*$/,
+        { message: 'Must be a valid URL from a supported site' }
+      ),
+  })
+  .strict();
 
-import index from '~/json/schema.json' with { type: 'json' };
+const characterSchema = z
+  .object({
+    id: idSchema,
+
+    added: z.date(),
+    updated: z.date(),
+
+    name: aliasSchema,
+
+    description: z
+      .string()
+      .max(2048, 'Description must be at most 2048 characters')
+      .optional(),
+
+    rating: z.number().int().min(1).max(5),
+
+    gender: z.string().optional(),
+    age: z.string().optional(),
+
+    images: imageSchema.optional(),
+
+    externalLinks: externalLinksSchema.optional(),
+
+    media: z
+      .array(
+        z
+          .object({
+            role: z.enum(['MAIN', 'SUPPORTING', 'BACKGROUND']),
+            mediaId: z
+              .string()
+              .regex(
+                /^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/,
+                'mediaId must be in the format [pack:]id'
+              ),
+          })
+          .strict()
+      )
+      .optional(),
+  })
+  .strict();
+
+export const mediaSchema = z
+  .object({
+    id: idSchema,
+
+    added: z.date(),
+    updated: z.date(),
+
+    type: z.enum(['ANIME', 'MANGA', 'OTHER']),
+
+    format: z
+      .enum([
+        'TV',
+        'TV_SHORT',
+        'MOVIE',
+        'SPECIAL',
+        'OVA',
+        'ONA',
+        'MUSIC',
+        'MANGA',
+        'VIDEO_GAME',
+        'NOVEL',
+        'ONE_SHOT',
+      ])
+      .optional(),
+
+    title: aliasSchema,
+
+    popularity: z.number().int().min(0).max(2147483647),
+
+    description: z
+      .string()
+      .max(2048, 'Description must be at most 2048 characters')
+      .optional(),
+
+    images: imageSchema,
+
+    trailer: z
+      .object({
+        site: z.enum(['youtube']),
+        id: z.string().regex(/([A-Za-z0-9_-]{11})/, {
+          message: 'Must be a valid YouTube video ID',
+        }),
+      })
+      .strict()
+      .optional(),
+
+    externalLinks: externalLinksSchema.optional(),
+
+    relations: z.array(
+      z
+        .object({
+          relation: z.enum([
+            'PREQUEL',
+            'SEQUEL',
+            'PARENT',
+            'CONTAINS',
+            'SIDE_STORY',
+            'SPIN_OFF',
+            'ADAPTATION',
+            'OTHER',
+          ]),
+          mediaId: z.string().regex(/^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/),
+        })
+        .strict()
+    ),
+
+    characters: z.array(
+      z
+        .object({
+          role: z.enum(['MAIN', 'SUPPORTING', 'BACKGROUND']),
+          characterId: z.string().regex(/^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/),
+        })
+        .strict()
+    ),
+  })
+  .strict();
+
+export const manifestSchema = z.object({
+  id: idSchema,
+
+  title: z.string().max(128, 'Title cannot exceed 128 characters').optional(),
+
+  description: z
+    .string()
+    .max(2048, 'Description cannot exceed 2048 characters')
+    .optional(),
+
+  author: z.string().optional(),
+
+  image: z.string().optional(),
+
+  url: z.string().optional(),
+
+  webhookUrl: z.string().optional(),
+
+  nsfw: z.boolean().optional(),
+
+  private: z.boolean().optional(),
+
+  conflicts: z
+    .array(
+      z
+        .string()
+        .regex(
+          /^[-_a-z0-9]+:[-_a-z0-9]+$/,
+          "Conflict must be in format 'pack:id'"
+        )
+    )
+    .max(20, 'Cannot have more than 20 conflicts')
+    .optional(),
+
+  maintainers: z
+    .array(
+      z.string().regex(/^[0-9]+$/, 'Maintainer ID must a valid Discord User ID')
+    )
+    .max(10, 'Cannot have more than 10 maintainers')
+    .optional(),
+
+  media: z
+    .object({
+      new: z.array(mediaSchema),
+    })
+    .optional(),
+
+  characters: z
+    .object({
+      new: z.array(characterSchema),
+    })
+    .optional(),
+});
 
 import { Manifest } from '~/src/types.ts';
 
@@ -29,46 +226,16 @@ export const purgeReservedProps = (data: Manifest): Manifest => {
   return purged as Manifest;
 };
 
-export const assertValidManifest = (data: Manifest) => {
-  const validate = new Ajv({
-    strictDefaults: false,
-    strictKeywords: false,
-    strictNumbers: false,
-    allErrors: true,
-  })
-    .addSchema(alias)
-    .addSchema(image)
-    .addSchema(media)
-    .addSchema(character)
-    .compile(index);
-
-  if (!validate(data)) {
-    throw new Error(validate.errors?.map((error) => error.message).join('\n'));
-  }
-};
-
 export default (data: Manifest) => {
   data = purgeReservedProps(data);
 
-  index.additionalProperties = false;
-
-  const validate = new Ajv({
-    strictDefaults: false,
-    strictKeywords: false,
-    strictNumbers: false,
-    allErrors: true,
-  })
-    .addSchema(alias)
-    .addSchema(image)
-    .addSchema(media)
-    .addSchema(character)
-    .compile(index);
+  const result = manifestSchema.safeParse(data);
 
   if (reservedIds.includes(data.id)) {
     return { errors: [`${data.id} is a reserved id`] };
-  } else if (!validate(data)) {
+  } else if (!result.success) {
     return {
-      errors: validate.errors,
+      errors: result.error,
     };
   } else {
     return { errors: [] };
