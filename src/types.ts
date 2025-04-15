@@ -160,3 +160,8 @@ export interface Manifest {
   maintainers?: string[];
   conflicts?: string[];
 }
+
+export interface MergedManifest extends Manifest {
+  characters?: DisaggregatedCharacter[];
+  media?: DisaggregatedMedia[];
+}

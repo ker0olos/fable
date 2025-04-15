@@ -2,13 +2,19 @@ import { Mongo } from '~/db/index.ts';
 
 import { newGuild } from '~/db/getInventory.ts';
 
-import type { Manifest } from '~/src/types.ts';
+import type {
+  DisaggregatedCharacter,
+  DisaggregatedMedia,
+  Manifest,
+} from '~/src/types.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
 export async function publishPack(
   userId: string,
-  manifest: Manifest
+  manifest: Manifest,
+  characters?: DisaggregatedCharacter[],
+  media?: DisaggregatedMedia[]
 ): Promise<void> {
   const db = new Mongo();
 
@@ -32,6 +38,34 @@ export async function publishPack(
         $set: { manifest, updatedAt: new Date() }, // update existing
       },
       { upsert: true }
+    );
+
+    await Promise.all(
+      (characters ?? []).map(async (char) => {
+        char.packId = manifest.id;
+
+        return db
+          .packCharacters()
+          .findOneAndUpdate(
+            { packId: manifest.id, id: char.id },
+            { $set: char, $setOnInsert: char },
+            { upsert: true }
+          );
+      })
+    );
+
+    await Promise.all(
+      (media ?? []).map(async (media) => {
+        media.packId = manifest.id;
+
+        return db
+          .packMedia()
+          .findOneAndUpdate(
+            { packId: manifest.id },
+            { $set: media, $setOnInsert: media },
+            { upsert: true }
+          );
+      })
     );
   } finally {
     await db.close();

@@ -2,6 +2,11 @@ import { Mongo } from '~/db/index.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
+import type {
+  DisaggregatedCharacter,
+  DisaggregatedMedia,
+} from '~/src/types.ts';
+
 type PopularPack = {
   servers: number;
   pack: Schema.Pack;
@@ -126,43 +131,66 @@ export async function getPacksByMaintainerId(
   return packs;
 }
 
-export async function getPack(
-  manifestId: string,
-  userId?: string
-): Promise<Schema.Pack | null> {
+export async function getPack(manifestId: string, userId?: string) {
   const db = new Mongo();
 
-  let pack: Schema.Pack;
+  let pack: Schema.Pack | null = null;
+  let packCharacters: DisaggregatedCharacter[] = [];
+  let packMedia: DisaggregatedMedia[] = [];
 
   try {
     await db.connect();
 
-    if (typeof userId === 'string') {
-      pack = (await db.packs().findOne({
-        'manifest.id': manifestId,
-        $or: [
-          { 'manifest.private': null },
-          { 'manifest.private': false },
-          {
-            'manifest.private': true,
+    await Promise.all([
+      db
+        .packCharacters()
+        .find({ packId: manifestId })
+        .toArray()
+        .then((r) => (packCharacters = r)),
+      db
+        .packMedia()
+        .find({ packId: manifestId })
+        .toArray()
+        .then((r) => (packMedia = r)),
+      (userId
+        ? db.packs().findOne({
+            'manifest.id': manifestId,
             $or: [
-              { owner: userId },
-              { 'manifest.maintainers': { $in: [userId] } },
+              { 'manifest.private': null },
+              { 'manifest.private': false },
+              {
+                'manifest.private': true,
+                $or: [
+                  { owner: userId },
+                  { 'manifest.maintainers': { $in: [userId] } },
+                ],
+              },
             ],
-          },
-        ],
-      })) as Schema.Pack;
-    } else {
-      pack = (await db.packs().findOne({
-        'manifest.id': manifestId,
-        $or: [{ 'manifest.private': null }, { 'manifest.private': false }],
-      })) as Schema.Pack;
+          })
+        : db.packs().findOne({
+            'manifest.id': manifestId,
+            $or: [{ 'manifest.private': null }, { 'manifest.private': false }],
+          })
+      ).then((r) => (pack = r as Schema.Pack)),
+    ]);
+
+    if (!pack) {
+      return null;
     }
+
+    pack = pack as Schema.Pack;
+
+    return {
+      ...pack,
+      manifest: {
+        ...pack.manifest,
+        characters: packCharacters,
+        media: packMedia,
+      },
+    };
   } finally {
     await db.close();
   }
-
-  return pack;
 }
 
 export async function searchPacks(

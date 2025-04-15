@@ -1,4 +1,7 @@
+import { ok } from 'assert';
 import { z } from 'zod';
+
+import type { Manifest } from '~/src/types.ts';
 
 const idSchema = z
   .string()
@@ -39,8 +42,8 @@ const characterSchema = z
   .object({
     id: idSchema,
 
-    added: z.date(),
-    updated: z.date(),
+    added: z.string().datetime(),
+    updated: z.string().datetime(),
 
     name: aliasSchema,
 
@@ -80,8 +83,8 @@ export const mediaSchema = z
   .object({
     id: idSchema,
 
-    added: z.date(),
-    updated: z.date(),
+    added: z.string().datetime(),
+    updated: z.string().datetime(),
 
     type: z.enum(['ANIME', 'MANGA', 'OTHER']),
 
@@ -194,20 +197,9 @@ export const manifestSchema = z.object({
     .max(10, 'Cannot have more than 10 maintainers')
     .optional(),
 
-  media: z
-    .object({
-      new: z.array(mediaSchema),
-    })
-    .optional(),
-
-  characters: z
-    .object({
-      new: z.array(characterSchema),
-    })
-    .optional(),
+  media: z.array(mediaSchema).optional(),
+  characters: z.array(characterSchema).optional(),
 });
-
-import { Manifest } from '~/src/types.ts';
 
 const reservedIds = ['fable', 'anilist'];
 
@@ -232,12 +224,16 @@ export default (data: Manifest) => {
   const result = manifestSchema.safeParse(data);
 
   if (reservedIds.includes(data.id)) {
-    return { errors: [`${data.id} is a reserved id`] };
+    return {
+      ok: false,
+      error: `${data.id} is a reserved id`,
+    };
   } else if (!result.success) {
     return {
-      errors: result.error,
+      ok: false,
+      error: result.error.toString(),
     };
   } else {
-    return { errors: [] };
+    return { ok: true };
   }
 };

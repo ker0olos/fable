@@ -6,7 +6,7 @@ import validate, { purgeReservedProps } from '~/src/validate.ts';
 
 import db from '~/db/index.ts';
 
-import type { Manifest } from '~/src/types.ts';
+import type { MergedManifest } from '~/src/types.ts';
 
 export async function user(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -94,22 +94,29 @@ export async function publish(req: Request): Promise<Response> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { id: userId }: any = await auth.json();
 
-  const { manifest } = body as { manifest: Manifest };
+  const {
+    manifest: { characters, media, ...manifest },
+  } = body as {
+    manifest: MergedManifest;
+  };
 
   const valid = validate(manifest);
 
-  if (valid.errors?.length) {
+  if (!valid.ok) {
     return utils.json(
-      { errors: valid.errors },
-      {
-        status: 400,
-        statusText: 'Bad Request',
-      }
+      { error: valid.error },
+      { status: 400, statusText: 'Bad Request' }
     );
   }
 
   try {
-    await db.publishPack(userId, purgeReservedProps(manifest));
+    await db.publishPack(
+      userId,
+      purgeReservedProps(manifest),
+      characters,
+      media
+    );
+
     return new Response(undefined, { status: 201, statusText: 'Created' });
   } catch (err) {
     switch ((err as Error).message) {
@@ -164,8 +171,6 @@ export async function popular(req: Request): Promise<Response> {
         title: pack.manifest.title,
         description: pack.manifest.description,
         image: pack.manifest.image,
-        media: pack.manifest.media?.new?.length ?? 0,
-        characters: pack.manifest.characters?.new?.length ?? 0,
         createdAt: pack.createdAt,
         updatedAt: pack.updatedAt,
         approved: pack.approved,
@@ -209,8 +214,6 @@ export async function lastUpdated(req: Request): Promise<Response> {
         title: pack.manifest.title,
         description: pack.manifest.description,
         image: pack.manifest.image,
-        media: pack.manifest.media?.new?.length ?? 0,
-        characters: pack.manifest.characters?.new?.length ?? 0,
         createdAt: pack.createdAt,
         updatedAt: pack.updatedAt,
         approved: pack.approved,
@@ -328,8 +331,6 @@ export async function search(req: Request): Promise<Response> {
         title: pack.manifest.title,
         description: pack.manifest.description,
         image: pack.manifest.image,
-        media: pack.manifest.media?.new?.length ?? 0,
-        characters: pack.manifest.characters?.new?.length ?? 0,
         createdAt: pack.createdAt,
         updatedAt: pack.updatedAt,
         approved: pack.approved,
