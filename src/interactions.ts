@@ -26,7 +26,7 @@ import config, { initConfig } from '~/src/config.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
-export const handler = async (r: Request) => {
+export const handler = async (r: Request, ctx: ExecutionContext) => {
   const { origin } = new URL(r.url);
 
   const { error } = await utils.validateRequest(r, {
@@ -263,8 +263,8 @@ export const handler = async (r: Request) => {
             const title = options['title'] as string;
 
             if (options['characters']) {
-              return search
-                .mediaCharacters({
+              ctx.waitUntil(
+                search.mediaCharacters({
                   token,
                   guildId,
                   index: 0,
@@ -274,11 +274,13 @@ export const handler = async (r: Request) => {
                     ? title.substring(idPrefix.length)
                     : undefined,
                 })
-                .send();
+              );
+
+              return discord.Message.spinner().send();
             }
 
-            return search
-              .media({
+            ctx.waitUntil(
+              search.media({
                 token,
                 guildId,
                 search: title,
@@ -287,13 +289,15 @@ export const handler = async (r: Request) => {
                   ? title.substring(idPrefix.length)
                   : undefined,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'character': {
             const name = options['name'] as string;
 
-            return search
-              .character({
+            ctx.waitUntil(
+              search.character({
                 token,
                 guildId,
                 userId: member.user.id,
@@ -303,7 +307,9 @@ export const handler = async (r: Request) => {
                   ? name.substring(idPrefix.length)
                   : undefined,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'party':
           case 'team':
@@ -313,8 +319,8 @@ export const handler = async (r: Request) => {
 
             switch (subcommand!) {
               case 'assign':
-                return party
-                  .assign({
+                ctx.waitUntil(
+                  party.assign({
                     token,
                     spot,
                     userId: member.user.id,
@@ -324,45 +330,52 @@ export const handler = async (r: Request) => {
                       ? character.substring(idPrefix.length)
                       : undefined,
                   })
-                  .send();
+                );
+                return discord.Message.spinner(true).send();
               case 'swap':
-                return party
-                  .swap({
+                ctx.waitUntil(
+                  party.swap({
                     token,
                     guildId,
                     userId: member.user.id,
                     a: options['a'] as 1 | 2 | 3 | 4 | 5,
                     b: options['b'] as 1 | 2 | 3 | 4 | 5,
                   })
-                  .send();
+                );
+                return discord.Message.spinner(true).send();
+
               case 'remove':
-                return party
-                  .remove({
+                ctx.waitUntil(
+                  party.remove({
                     token,
                     spot,
                     guildId,
                     userId: member.user.id,
                   })
-                  .send();
+                );
+                return discord.Message.spinner(true).send();
               case 'clear': {
-                return party
-                  .clear({
+                ctx.waitUntil(
+                  party.clear({
                     token,
                     guildId,
                     userId: member.user.id,
                   })
-                  .send();
+                );
+                return discord.Message.spinner(true).send();
               }
               default: {
                 const user = (options['user'] as string) ?? member.user.id;
 
-                return party
-                  .view({
+                ctx.waitUntil(
+                  party.view({
                     token,
                     guildId,
                     userId: user,
                   })
-                  .send();
+                );
+
+                return discord.Message.spinner(true).send();
               }
             }
           }
@@ -373,15 +386,16 @@ export const handler = async (r: Request) => {
 
             switch (subcommand!) {
               case 'show': {
-                return user
-                  .showcase({
+                ctx.waitUntil(
+                  user.showcase({
                     token,
                     userId,
                     guildId,
                     index: 0,
                     nick: userId !== member.user.id,
                   })
-                  .send();
+                );
+                return discord.Message.spinner(true).send();
               }
               case 'stars':
               case 'media': {
@@ -389,8 +403,8 @@ export const handler = async (r: Request) => {
                 const rating = options['rating'] as number;
                 const picture = options['picture'] as boolean;
 
-                return user
-                  .list({
+                ctx.waitUntil(
+                  user.list({
                     token,
                     userId,
                     guildId,
@@ -403,17 +417,19 @@ export const handler = async (r: Request) => {
                     nick: userId !== member.user.id,
                     picture,
                   })
-                  .send();
+                );
+
+                return discord.Message.spinner().send();
               }
               case 'sum': {
-                return user
-                  .sum({
+                ctx.waitUntil(
+                  user.sum({
                     token,
                     userId,
                     guildId,
-                    nick: userId !== member.user.id,
                   })
-                  .send();
+                );
+                return discord.Message.spinner(true).send();
               }
               default:
                 break;
@@ -426,8 +442,8 @@ export const handler = async (r: Request) => {
           case 'unlike': {
             const search = options['name'] as string;
 
-            return user
-              .like({
+            ctx.waitUntil(
+              user.like({
                 token,
                 search,
                 guildId,
@@ -438,14 +454,16 @@ export const handler = async (r: Request) => {
                   ? search.substring(idPrefix.length)
                   : undefined,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'likeall':
           case 'unlikeall': {
             const search = options['title'] as string;
 
-            return user
-              .likeall({
+            ctx.waitUntil(
+              user.likeall({
                 token,
                 search,
                 guildId,
@@ -456,7 +474,9 @@ export const handler = async (r: Request) => {
                   ? search.substring(idPrefix.length)
                   : undefined,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'likes':
           case 'likeslist': {
@@ -465,8 +485,8 @@ export const handler = async (r: Request) => {
             const filter = options['filter-owned'] as boolean | undefined;
             const ownedBy = options['owned-by'] as string | undefined;
 
-            return user
-              .likeslist({
+            ctx.waitUntil(
+              user.likeslist({
                 token,
                 guildId,
                 userId,
@@ -475,14 +495,16 @@ export const handler = async (r: Request) => {
                 filter,
                 ownedBy,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'found':
           case 'owned': {
             const title = options['title'] as string;
 
-            return search
-              .mediaFound({
+            ctx.waitUntil(
+              search.mediaFound({
                 token,
                 guildId,
                 index: 0,
@@ -492,7 +514,9 @@ export const handler = async (r: Request) => {
                   ? title.substring(idPrefix.length)
                   : undefined,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'trade':
           case 'offer':
@@ -510,26 +534,40 @@ export const handler = async (r: Request) => {
               options['take3'] as string,
             ].filter(utils.nonNullable);
 
-            const message = trade.pre({
-              token,
-              guildId,
-              userId: member.user.id,
-              targetId: options['user'] as string,
-              give: giveCharacters,
-              take: takeCharacters,
-            });
-
-            if (!takeCharacters?.length) {
-              message.setFlags(discord.MessageFlags.Ephemeral);
+            if (member.user.id === options['user']) {
+              return trade
+                .self({
+                  guildId,
+                  userId: member.user.id,
+                  trade: takeCharacters.length > 0,
+                })
+                .send();
             }
 
-            return message.send();
+            ctx.waitUntil(
+              trade.pre({
+                token,
+                guildId,
+                userId: member.user.id,
+                targetId: options['user'] as string,
+                give: giveCharacters,
+                take: takeCharacters,
+              })
+            );
+
+            const loading = discord.Message.spinner(true);
+
+            if (!takeCharacters?.length) {
+              loading.setFlags(discord.MessageFlags.Ephemeral);
+            }
+
+            return loading.send();
           }
           case 'steal': {
             const search = options['name'] as string;
 
-            return steal
-              .pre({
+            ctx.waitUntil(
+              steal.pre({
                 token,
                 guildId,
                 userId: member.user.id,
@@ -538,6 +576,9 @@ export const handler = async (r: Request) => {
                   ? search.substring(idPrefix.length)
                   : undefined,
               })
+            );
+
+            return discord.Message.spinner(true)
               .setFlags(discord.MessageFlags.Ephemeral)
               .send();
           }
@@ -557,23 +598,25 @@ export const handler = async (r: Request) => {
           case 'q': {
             const stars = options['stars'] as number | undefined;
 
-            return gacha
-              .start({
+            ctx.waitUntil(
+              gacha.start({
                 token,
                 guildId,
                 guarantee: stars,
                 quiet: name === 'q',
                 userId: member.user.id,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'nick': {
             const name = options['character'] as string;
 
             const nick = options['new_nick'] as string | undefined;
 
-            return user
-              .nick({
+            ctx.waitUntil(
+              user.nick({
                 nick,
                 token,
                 guildId,
@@ -583,7 +626,9 @@ export const handler = async (r: Request) => {
                   ? name.substring(idPrefix.length)
                   : undefined,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'image':
           case 'custom': {
@@ -591,8 +636,8 @@ export const handler = async (r: Request) => {
 
             const image = options['new_image'] as string | undefined;
 
-            return user
-              .image({
+            ctx.waitUntil(
+              user.image({
                 image,
                 token,
                 guildId,
@@ -603,34 +648,38 @@ export const handler = async (r: Request) => {
                   ? name.substring(idPrefix.length)
                   : undefined,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'synthesize':
           case 'merge': {
             const target = options['target'] as number;
 
-            return merge
-              .synthesize({
+            ctx.waitUntil(
+              merge.synthesize({
                 token,
                 guildId,
                 userId: member.user.id,
                 mode: 'target',
                 target,
               })
-              .send();
+            );
+            return discord.Message.spinner(true).send();
           }
           case 'automerge': {
             switch (subcommand!) {
               case 'min':
               case 'max':
-                return merge
-                  .synthesize({
+                ctx.waitUntil(
+                  merge.synthesize({
                     token,
                     guildId,
                     userId: member.user.id,
                     mode: subcommand,
                   })
-                  .send();
+                );
+                return discord.Message.spinner(true).send();
               default:
                 break;
             }
@@ -696,16 +745,16 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'server': {
-            //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               default:
               case 'options': {
-                return serverOptions
-                  .view({
-                    token,
+                return (
+                  await serverOptions.view({
                     guildId,
                     userId: member.user.id,
                   })
+                )
+                  .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
             }
@@ -724,14 +773,16 @@ export const handler = async (r: Request) => {
           case 'logs': {
             const userId = (options['user'] as string) ?? member.user.id;
 
-            return user
-              .logs({
+            ctx.waitUntil(
+              user.logs({
                 token,
                 guildId,
                 userId,
                 nick: userId !== member.user.id,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'reward': {
             switch (subcommand!) {
@@ -763,8 +814,9 @@ export const handler = async (r: Request) => {
           case 'media': {
             const id = customValues![0];
 
-            return search
-              .media({ id, guildId, token })
+            ctx.waitUntil(search.media({ id, guildId, token }));
+
+            return discord.Message.spinner()
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -773,13 +825,16 @@ export const handler = async (r: Request) => {
 
             const type = customValues![1];
 
-            return search
-              .character({
+            ctx.waitUntil(
+              search.character({
                 id,
                 token,
                 guildId,
                 userId: member.user.id,
               })
+            );
+
+            return discord.Message.spinner()
               .setType(
                 type === '1'
                   ? discord.MessageType.New
@@ -792,14 +847,17 @@ export const handler = async (r: Request) => {
 
             const index = parseInt(customValues![1]);
 
-            return search
-              .mediaCharacters({
+            ctx.waitUntil(
+              search.mediaCharacters({
                 token,
                 index,
                 userId: member.user.id,
                 guildId,
                 id: mediaId,
               })
+            );
+
+            return discord.Message.spinner()
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -814,8 +872,8 @@ export const handler = async (r: Request) => {
 
             const index = parseInt(customValues![4]);
 
-            return user
-              .list({
+            ctx.waitUntil(
+              user.list({
                 token,
                 index,
                 guildId,
@@ -824,6 +882,9 @@ export const handler = async (r: Request) => {
                 id: mediaId,
                 picture,
               })
+            );
+
+            return discord.Message.spinner()
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -832,21 +893,24 @@ export const handler = async (r: Request) => {
 
             const index = parseInt(customValues![1]);
 
-            return user
-              .showcase({
+            ctx.waitUntil(
+              user.showcase({
                 token,
                 index,
                 guildId,
                 userId,
               })
+            );
+
+            return discord.Message.spinner(true)
               .setType(discord.MessageType.Update)
               .send();
           }
           case 'like': {
             const id = customValues![0];
 
-            return user
-              .like({
+            ctx.waitUntil(
+              user.like({
                 id,
                 token,
                 guildId,
@@ -854,7 +918,9 @@ export const handler = async (r: Request) => {
                 userId: member.user.id,
                 undo: false,
               })
-              .send();
+            );
+
+            return discord.Message.spinner().send();
           }
           case 'likes': {
             const userId = customValues![0];
@@ -865,8 +931,8 @@ export const handler = async (r: Request) => {
 
             const index = parseInt(customValues![3]);
 
-            return user
-              .likeslist({
+            ctx.waitUntil(
+              user.likeslist({
                 index,
                 token,
                 userId,
@@ -874,6 +940,9 @@ export const handler = async (r: Request) => {
                 filter,
                 ownedBy,
               })
+            );
+
+            return discord.Message.spinner()
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -882,14 +951,17 @@ export const handler = async (r: Request) => {
 
             const index = parseInt(customValues![1]);
 
-            return search
-              .mediaFound({
+            ctx.waitUntil(
+              search.mediaFound({
                 id,
                 token,
                 guildId,
                 userId: member.user.id,
                 index,
               })
+            );
+
+            return discord.Message.spinner()
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -898,8 +970,8 @@ export const handler = async (r: Request) => {
           case 'gacha': {
             const stars = utils.parseInt(customValues![1]);
 
-            return gacha
-              .start({
+            ctx.waitUntil(
+              gacha.start({
                 token,
                 guildId,
                 mention: true,
@@ -907,6 +979,11 @@ export const handler = async (r: Request) => {
                 quiet: customType === 'q',
                 userId: member.user.id,
               })
+            );
+
+            return discord.Message.spinner()
+              .setContent(`<@${member.user.id}>`)
+              .setPing()
               .send();
           }
           case 'now': {
@@ -977,15 +1054,17 @@ export const handler = async (r: Request) => {
             const giveCharactersIds = customValues![2].split('&');
 
             if (userId === member.user.id) {
-              return trade
-                .give({
+              ctx.waitUntil(
+                trade.give({
                   token,
                   userId,
                   guildId,
-
                   targetId: targetId,
                   giveCharactersIds,
                 })
+              );
+
+              return discord.Message.spinner(true)
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1002,16 +1081,18 @@ export const handler = async (r: Request) => {
             const takeCharactersIds = customValues![3].split('&');
 
             if (targetId === member.user.id) {
-              return trade
-                .accepted({
+              ctx.waitUntil(
+                trade.accepted({
                   token,
                   guildId,
-
                   userId,
                   targetId,
                   giveCharactersIds,
                   takeCharactersIds,
                 })
+              );
+
+              return discord.Message.spinner(true)
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1024,14 +1105,17 @@ export const handler = async (r: Request) => {
             const target = parseInt(customValues![1]);
 
             if (userId === member.user.id) {
-              return merge
-                .confirmed({
+              ctx.waitUntil(
+                merge.confirmed({
                   token,
                   target,
                   guildId,
 
                   userId: member.user.id,
                 })
+              );
+
+              return discord.Message.spinner()
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1045,8 +1129,8 @@ export const handler = async (r: Request) => {
 
             const chance = parseInt(customValues![2]);
 
-            return steal
-              .attempt({
+            ctx.waitUntil(
+              steal.attempt({
                 token,
                 guildId,
                 targetUserId,
@@ -1054,6 +1138,12 @@ export const handler = async (r: Request) => {
                 characterId,
                 pre: chance,
               })
+            );
+
+            return new discord.Message()
+              .addEmbed(
+                new discord.Embed().setImageUrl(`${config.origin}/steal2.gif`)
+              )
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -1063,13 +1153,16 @@ export const handler = async (r: Request) => {
             const characterId = customValues![1];
 
             if (userId === member.user.id) {
-              return party
-                .assign({
+              ctx.waitUntil(
+                party.assign({
                   token,
                   userId: member.user.id,
                   guildId,
                   id: characterId,
                 })
+              );
+
+              return discord.Message.spinner(true)
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1111,12 +1204,12 @@ export const handler = async (r: Request) => {
 
             switch (type) {
               case 'dupes':
-                return serverOptions
-                  .invertDupes({
-                    token,
+                return (
+                  await serverOptions.invertDupes({
                     guildId,
                     userId: member.user.id,
                   })
+                )
                   .setType(discord.MessageType.Update)
                   .send();
               default:
@@ -1255,12 +1348,12 @@ export default withSentry(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-expect-error
     async fetch(request, env, ctx): Promise<Response> {
-      await initConfig(ctx);
+      await initConfig();
 
       const url = new URL(request.url);
 
       if (url.pathname === '/') {
-        return handler(request);
+        return handler(request, ctx);
       }
 
       if (url.pathname === '/api/user') {

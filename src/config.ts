@@ -15,7 +15,6 @@ const config: {
   communityPacksMaintainerAPI?: boolean;
   communityPacksBrowseAPI?: boolean;
   disableImagesProxy?: boolean;
-  ctx?: ExecutionContext;
 } = {
   appId: undefined,
   publicKey: undefined,
@@ -34,10 +33,9 @@ const config: {
   communityPacksBrowseAPI: undefined,
   //
   disableImagesProxy: undefined,
-  ctx: undefined,
 };
 
-export async function initConfig(ctx?: ExecutionContext): Promise<void> {
+export async function initConfig(): Promise<void> {
   config.sentry = process.env.SENTRY_DSN;
 
   config.appId = process.env.APP_ID;
@@ -76,8 +74,6 @@ export async function initConfig(ctx?: ExecutionContext): Promise<void> {
   config.disableImagesProxy = process.env.DISABLE_IMAGES_PROXY === '1';
 
   config.origin = undefined;
-
-  config.ctx = ctx;
 }
 
 export function clearConfig(): void {

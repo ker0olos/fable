@@ -113,11 +113,11 @@ function view({
   token: string;
   userId: string;
   guildId: string;
-}): discord.Message {
+}) {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       const { party } = await db.getInventory(guildId, userId);
 
@@ -134,8 +134,6 @@ function view({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 function assign({
@@ -152,11 +150,11 @@ function assign({
   spot?: 1 | 2 | 3 | 4 | 5;
   search?: string;
   id?: string;
-}): discord.Message {
+}) {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  packs
+  return packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results) => {
       const character = await packs.aggregate<Character>({
@@ -244,8 +242,6 @@ function assign({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 function swap({
@@ -260,11 +256,11 @@ function swap({
   b: 1 | 2 | 3 | 4 | 5;
   userId: string;
   guildId: string;
-}): discord.Message {
+}) {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       const inventory = await db.getInventory(guildId, userId);
 
@@ -288,8 +284,6 @@ function swap({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 function remove({
@@ -302,11 +296,11 @@ function remove({
   spot: 1 | 2 | 3 | 4 | 5;
   userId: string;
   guildId: string;
-}): discord.Message {
+}) {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       const inventory = await db.getInventory(guildId, userId);
 
@@ -372,8 +366,6 @@ function remove({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 function clear({
@@ -384,11 +376,11 @@ function clear({
   token: string;
   userId: string;
   guildId: string;
-}): discord.Message {
+}) {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       await db.clearParty(userId, guildId);
 
@@ -407,8 +399,6 @@ function clear({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 const party = {

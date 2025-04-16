@@ -104,7 +104,7 @@ function pre({
   guildId: string;
   search?: string;
   id?: string;
-}): discord.Message {
+}) {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
@@ -112,7 +112,7 @@ function pre({
     throw new NonFetalError(i18n.get('maintenance-steal', locale));
   }
 
-  packs
+  return packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
       if (!results.length) {
@@ -261,8 +261,6 @@ function pre({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 function attempt({
@@ -279,11 +277,11 @@ function attempt({
   characterId: string;
   targetUserId: string;
   pre: number;
-}): discord.Message {
+}) {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  packs
+  return packs
     .characters({ ids: [characterId], guildId })
     .then(async (results) => {
       const message = new discord.Message();
@@ -453,13 +451,6 @@ function attempt({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  const embed = new discord.Embed();
-  const loading = new discord.Message();
-
-  embed.setImageUrl(`${config.origin}/steal2.gif`);
-
-  return loading.addEmbed(embed);
 }
 
 const steal = {

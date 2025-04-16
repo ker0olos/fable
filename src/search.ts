@@ -60,10 +60,10 @@ function media({
   search?: string;
   debug?: boolean;
   guildId: string;
-}): discord.Message {
+}) {
   const locale = user.cachedGuilds[guildId]?.locale;
 
-  packs
+  return packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
     .then((results: (Media | DisaggregatedMedia)[]) => {
       if (
@@ -107,8 +107,6 @@ function media({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 async function mediaMessage(media: Media): Promise<discord.Message> {
@@ -301,75 +299,71 @@ function character({
   id?: string;
   search?: string;
   debug?: boolean;
-}): discord.Message {
+}) {
   const locale =
     user.cachedGuilds[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  config.ctx!.waitUntil(
-    packs
-      .characters(id ? { ids: [id], guildId } : { search, guildId })
-      .then((results) => {
-        if (!results.length) {
-          throw new Error('404');
-        }
+  return packs
+    .characters(id ? { ids: [id], guildId } : { search, guildId })
+    .then((results) => {
+      if (!results.length) {
+        throw new Error('404');
+      }
 
-        return Promise.all([
-          // aggregate the media by populating any references to other media/character objects
-          packs.aggregate<Character>({
-            guildId,
-            character: results[0],
-            end: 4,
-          }),
-          db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
-        ]);
-      })
-      .then(async ([character, existing]) => {
-        const characterId = `${character.packId}:${character.id}`;
+      return Promise.all([
+        // aggregate the media by populating any references to other media/character objects
+        packs.aggregate<Character>({
+          guildId,
+          character: results[0],
+          end: 4,
+        }),
+        db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
+      ]);
+    })
+    .then(async ([character, existing]) => {
+      const characterId = `${character.packId}:${character.id}`;
 
-        const media = character.media?.edges?.[0]?.node;
+      const media = character.media?.edges?.[0]?.node;
 
-        if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
-          throw new Error('404');
-        }
+      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
+        throw new Error('404');
+      }
 
-        if (debug) {
-          const message = await characterDebugMessage(character);
-          return await message.patch(token);
-        }
-
-        const message = await characterMessage(character, {
-          existing,
-          userId,
-        });
-
-        message.insertComponents([
-          new discord.Component().setLabel('/like').setId(`like`, characterId),
-        ]);
-
+      if (debug) {
+        const message = await characterDebugMessage(character);
         return await message.patch(token);
-      })
-      .catch(async (err) => {
-        if (err.message === '404') {
-          return await new discord.Message()
-            .addEmbed(
-              new discord.Embed().setDescription(
-                i18n.get('found-nothing', locale)
-              )
+      }
+
+      const message = await characterMessage(character, {
+        existing,
+        userId,
+      });
+
+      message.insertComponents([
+        new discord.Component().setLabel('/like').setId(`like`, characterId),
+      ]);
+
+      return await message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('found-nothing', locale)
             )
-            .patch(token);
-        }
+          )
+          .patch(token);
+      }
 
-        if (!config.sentry) {
-          throw err;
-        }
+      if (!config.sentry) {
+        throw err;
+      }
 
-        const refId = utils.captureException(err);
+      const refId = utils.captureException(err);
 
-        await discord.Message.internal(refId).patch(token);
-      })
-  );
-
-  return discord.Message.spinner();
+      await discord.Message.internal(refId).patch(token);
+    });
 }
 
 async function characterMessage(
@@ -630,11 +624,11 @@ function mediaCharacters({
   userId: string;
   guildId: string;
   index: number;
-}): discord.Message {
+}) {
   const locale =
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  packs
+  return packs
     .mediaCharacters({
       id,
       search,
@@ -728,8 +722,6 @@ function mediaCharacters({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 function mediaFound({
@@ -746,10 +738,10 @@ function mediaFound({
   userId: string;
   search?: string;
   id?: string;
-}): discord.Message {
+}) {
   const locale = user.cachedUsers[userId]?.locale;
 
-  packs
+  return packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Media | DisaggregatedMedia)[]) => {
       const embed = new discord.Embed();
@@ -874,8 +866,6 @@ function mediaFound({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 const search = {

@@ -220,7 +220,7 @@ function synthesize({
   guildId: string;
   mode: 'target' | 'min' | 'max';
   target?: number;
-}): discord.Message {
+}) {
   const locale = user.cachedUsers[userId]?.locale;
 
   if (!config.synthesis) {
@@ -228,7 +228,7 @@ function synthesize({
   }
 
   // const message = new discord.Message();
-  synthesis
+  return synthesis
     .getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
       const message = new discord.Message();
@@ -318,8 +318,6 @@ function synthesize({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 function confirmed({
@@ -332,10 +330,10 @@ function confirmed({
   userId: string;
   guildId: string;
   target: number;
-}): discord.Message {
+}) {
   const locale = user.cachedUsers[userId]?.locale;
 
-  synthesis
+  return synthesis
     .getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
       const { sacrifices } = getSacrifices(
@@ -389,8 +387,6 @@ function confirmed({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 const synthesis = {

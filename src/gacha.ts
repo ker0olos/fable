@@ -401,7 +401,7 @@ function start({
   guarantee?: number;
   mention?: boolean;
   quiet?: boolean;
-}): discord.Message {
+}) {
   const locale = userId
     ? (user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale)
     : user.cachedGuilds[guildId]?.locale;
@@ -410,81 +410,71 @@ function start({
     throw new NonFetalError(i18n.get('maintenance-gacha', locale));
   }
 
-  config.ctx!.waitUntil(
-    gacha
-      .rngPull({ userId, guildId, guarantee })
-      .then((pull) => {
-        return pullAnimation({ token, userId, guildId, mention, quiet, pull });
-      })
-      .catch(async (err) => {
-        if (err instanceof NoPullsError) {
-          return await new discord.Message()
-            .addEmbed(
-              new discord.Embed().setDescription(
-                i18n.get('gacha-no-more-pulls', locale)
+  return gacha
+    .rngPull({ userId, guildId, guarantee })
+    .then((pull) => {
+      return pullAnimation({ token, userId, guildId, mention, quiet, pull });
+    })
+    .catch(async (err) => {
+      if (err instanceof NoPullsError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('gacha-no-more-pulls', locale)
+            )
+          )
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`)
+            )
+          )
+          .patch(token);
+      }
+
+      if (err?.message === '403') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get(
+                'gacha-no-guarantees',
+                locale,
+                `${guarantee}${discord.emotes.smolStar}`
               )
             )
-            .addEmbed(
-              new discord.Embed().setDescription(
-                i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`)
-              )
+          )
+          .addComponents([
+            new discord.Component()
+
+              .setId('buy', 'bguaranteed', userId!, `${guarantee}`)
+              .setLabel(`/buy guaranteed ${guarantee}`),
+          ])
+          .patch(token);
+      }
+
+      if (err instanceof PoolError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              typeof guarantee === 'number'
+                ? i18n.get(
+                    'gacha-no-more-characters-left',
+                    locale,
+                    `${guarantee}${discord.emotes.smolStar}`
+                  )
+                : i18n.get('gacha-no-more-in-range', locale)
             )
-            .patch(token);
-        }
+          )
+          .patch(token);
+      }
 
-        if (err?.message === '403') {
-          return await new discord.Message()
-            .addEmbed(
-              new discord.Embed().setDescription(
-                i18n.get(
-                  'gacha-no-guarantees',
-                  locale,
-                  `${guarantee}${discord.emotes.smolStar}`
-                )
-              )
-            )
-            .addComponents([
-              new discord.Component()
+      if (!config.sentry) {
+        throw err;
+      }
 
-                .setId('buy', 'bguaranteed', userId!, `${guarantee}`)
-                .setLabel(`/buy guaranteed ${guarantee}`),
-            ])
-            .patch(token);
-        }
+      const refId = utils.captureException(err);
 
-        if (err instanceof PoolError) {
-          return await new discord.Message()
-            .addEmbed(
-              new discord.Embed().setDescription(
-                typeof guarantee === 'number'
-                  ? i18n.get(
-                      'gacha-no-more-characters-left',
-                      locale,
-                      `${guarantee}${discord.emotes.smolStar}`
-                    )
-                  : i18n.get('gacha-no-more-in-range', locale)
-              )
-            )
-            .patch(token);
-        }
-
-        if (!config.sentry) {
-          throw err;
-        }
-
-        const refId = utils.captureException(err);
-
-        await discord.Message.internal(refId).patch(token);
-      })
-  );
-
-  const loading = discord.Message.spinner();
-
-  if (mention) {
-    loading.setContent(`<@${userId}>`).setPing();
-  }
-
-  return loading;
+      await discord.Message.internal(refId).patch(token);
+    });
 }
 
 const gacha = {

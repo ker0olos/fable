@@ -171,10 +171,10 @@ function nick({
   nick?: string;
   search?: string;
   id?: string;
-}): discord.Message {
+}) {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
-  packs
+  return packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
       if (!results.length) {
@@ -286,8 +286,6 @@ function nick({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 function image({
@@ -304,10 +302,10 @@ function image({
   image?: string;
   search?: string;
   id?: string;
-}): discord.Message {
+}) {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
-  packs
+  return packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
       if (!results.length) {
@@ -424,8 +422,6 @@ function image({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 function like({
@@ -444,10 +440,10 @@ function like({
   mention?: boolean;
   search?: string;
   id?: string;
-}): discord.Message {
+}) {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
-  packs
+  return packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
       if (!results.length) {
@@ -523,8 +519,6 @@ function like({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 function likeall({
@@ -541,10 +535,10 @@ function likeall({
   undo: boolean;
   search?: string;
   id?: string;
-}): discord.Message {
+}) {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
-  packs
+  return packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Media | DisaggregatedMedia)[]) => {
       if (!results.length) {
@@ -605,8 +599,6 @@ function likeall({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 function list({
@@ -629,10 +621,10 @@ function list({
   id?: string;
   nick?: boolean;
   picture?: boolean;
-}): discord.Message {
+}) {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       const mongo = await db.newMongo().connect();
 
@@ -880,8 +872,6 @@ function list({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 function likeslist({
@@ -900,10 +890,10 @@ function likeslist({
   nick?: boolean;
   filter?: boolean;
   ownedBy?: string;
-}): discord.Message {
+}) {
   const locale = user.cachedUsers[userId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       const user = await db.getUser(userId);
 
@@ -1067,24 +1057,20 @@ function likeslist({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 function sum({
   token,
   userId,
   guildId,
-}: // nick,
-{
+}: {
   token: string;
   userId: string;
   guildId: string;
-  nick?: boolean;
-}): discord.Message {
+}) {
   const locale = cachedUsers[userId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       const mongo = await db.newMongo().connect();
 
@@ -1179,8 +1165,6 @@ function sum({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 function showcase({
@@ -1195,10 +1179,10 @@ function showcase({
   userId: string;
   guildId: string;
   nick?: boolean;
-}): discord.Message {
+}) {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       const embed = new discord.Embed();
 
@@ -1383,8 +1367,6 @@ function showcase({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner(true);
 }
 
 function logs({
@@ -1397,10 +1379,10 @@ function logs({
   userId: string;
   guildId: string;
   nick?: boolean;
-}): discord.Message {
+}) {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(async () => {
       const message = new discord.Message();
 
@@ -1456,8 +1438,6 @@ function logs({
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  return discord.Message.spinner();
 }
 
 const user = {
