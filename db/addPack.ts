@@ -48,7 +48,7 @@ export async function publishPack(
           .packCharacters()
           .findOneAndUpdate(
             { packId: manifest.id, id: char.id },
-            { $set: char, $setOnInsert: char },
+            { $set: char },
             { upsert: true }
           );
       })
@@ -61,8 +61,8 @@ export async function publishPack(
         return db
           .packMedia()
           .findOneAndUpdate(
-            { packId: manifest.id },
-            { $set: media, $setOnInsert: media },
+            { packId: manifest.id, id: media.id },
+            { $set: media },
             { upsert: true }
           );
       })

@@ -1,7 +1,6 @@
-import { ok } from 'assert';
 import { z } from 'zod';
 
-import type { Manifest } from '~/src/types.ts';
+import type { Manifest, MergedManifest } from '~/src/types.ts';
 
 const idSchema = z
   .string()
@@ -218,7 +217,7 @@ export const purgeReservedProps = (data: Manifest): Manifest => {
   return purged as Manifest;
 };
 
-export default (data: Manifest) => {
+export default (data: MergedManifest) => {
   data = purgeReservedProps(data);
 
   const result = manifestSchema.safeParse(data);
@@ -226,12 +225,12 @@ export default (data: Manifest) => {
   if (reservedIds.includes(data.id)) {
     return {
       ok: false,
-      error: `${data.id} is a reserved id`,
+      errors: `${data.id} is a reserved id`,
     };
   } else if (!result.success) {
     return {
       ok: false,
-      error: result.error.toString(),
+      errors: result.error.errors,
     };
   } else {
     return { ok: true };

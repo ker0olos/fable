@@ -100,13 +100,20 @@ export async function publish(req: Request): Promise<Response> {
     manifest: MergedManifest;
   };
 
-  const valid = validate(manifest);
+  const valid = validate({ characters, media, ...manifest });
 
   if (!valid.ok) {
-    return utils.json(
-      { error: valid.error },
-      { status: 400, statusText: 'Bad Request' }
-    );
+    if (Array.isArray(valid.errors)) {
+      return utils.json(
+        { errors: valid.errors },
+        { status: 400, statusText: 'Bad Request' }
+      );
+    }
+  } else {
+    return new Response(valid.errors as string, {
+      status: 400,
+      statusText: 'Bad Request',
+    });
   }
 
   try {
@@ -129,6 +136,8 @@ export async function publish(req: Request): Promise<Response> {
           }
         );
       default:
+        console.error(err);
+        utils.captureException(err);
         return utils.json(
           { error: 'INTERNAL_SERVER_ERROR' },
           {
