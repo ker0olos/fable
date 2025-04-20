@@ -40,9 +40,10 @@ const externalLinksSchema = z
 const characterSchema = z
   .object({
     id: idSchema,
+    packId: idSchema,
 
-    added: z.string().datetime(),
-    updated: z.string().datetime(),
+    added: z.string().datetime().optional(),
+    updated: z.string().datetime().optional(),
 
     name: aliasSchema,
 
@@ -56,9 +57,8 @@ const characterSchema = z
     gender: z.string().optional(),
     age: z.string().optional(),
 
-    images: imageSchema.optional(),
-
-    externalLinks: externalLinksSchema.optional(),
+    images: z.array(imageSchema).optional(),
+    externalLinks: z.array(externalLinksSchema).optional(),
 
     media: z
       .array(
@@ -81,9 +81,10 @@ const characterSchema = z
 export const mediaSchema = z
   .object({
     id: idSchema,
+    packId: idSchema,
 
-    added: z.string().datetime(),
-    updated: z.string().datetime(),
+    added: z.string().datetime().optional(),
+    updated: z.string().datetime().optional(),
 
     type: z.enum(['ANIME', 'MANGA', 'OTHER']),
 
@@ -112,7 +113,8 @@ export const mediaSchema = z
       .max(2048, 'Description must be at most 2048 characters')
       .optional(),
 
-    images: imageSchema,
+    images: z.array(imageSchema).optional(),
+    externalLinks: z.array(externalLinksSchema).optional(),
 
     trailer: z
       .object({
@@ -124,34 +126,36 @@ export const mediaSchema = z
       .strict()
       .optional(),
 
-    externalLinks: externalLinksSchema.optional(),
+    relations: z
+      .array(
+        z
+          .object({
+            relation: z.enum([
+              'PREQUEL',
+              'SEQUEL',
+              'PARENT',
+              'CONTAINS',
+              'SIDE_STORY',
+              'SPIN_OFF',
+              'ADAPTATION',
+              'OTHER',
+            ]),
+            mediaId: z.string().regex(/^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/),
+          })
+          .strict()
+      )
+      .optional(),
 
-    relations: z.array(
-      z
-        .object({
-          relation: z.enum([
-            'PREQUEL',
-            'SEQUEL',
-            'PARENT',
-            'CONTAINS',
-            'SIDE_STORY',
-            'SPIN_OFF',
-            'ADAPTATION',
-            'OTHER',
-          ]),
-          mediaId: z.string().regex(/^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/),
-        })
-        .strict()
-    ),
-
-    characters: z.array(
-      z
-        .object({
-          role: z.enum(['MAIN', 'SUPPORTING', 'BACKGROUND']),
-          characterId: z.string().regex(/^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/),
-        })
-        .strict()
-    ),
+    characters: z
+      .array(
+        z
+          .object({
+            role: z.enum(['MAIN', 'SUPPORTING', 'BACKGROUND']),
+            characterId: z.string().regex(/^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/),
+          })
+          .strict()
+      )
+      .optional(),
   })
   .strict();
 
@@ -221,6 +225,8 @@ export default (data: MergedManifest) => {
   data = purgeReservedProps(data);
 
   const result = manifestSchema.safeParse(data);
+
+  console.log('Validating manifest', result);
 
   if (reservedIds.includes(data.id)) {
     return {

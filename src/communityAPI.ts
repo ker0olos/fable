@@ -108,12 +108,12 @@ export async function publish(req: Request): Promise<Response> {
         { errors: valid.errors },
         { status: 400, statusText: 'Bad Request' }
       );
+    } else {
+      return new Response(valid.errors as string, {
+        status: 400,
+        statusText: 'Bad Request',
+      });
     }
-  } else {
-    return new Response(valid.errors as string, {
-      status: 400,
-      statusText: 'Bad Request',
-    });
   }
 
   try {
@@ -124,7 +124,7 @@ export async function publish(req: Request): Promise<Response> {
       media
     );
 
-    return new Response(undefined, { status: 201, statusText: 'Created' });
+    return utils.json({ ok: true }, { status: 201, statusText: 'Created' });
   } catch (err) {
     switch ((err as Error).message) {
       case 'PERMISSION_DENIED':
