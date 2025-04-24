@@ -3,7 +3,7 @@
   "name": "fable",
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently \"cp .env .dev.vars && npx wrangler dev src/interactions.ts\" \"ngrok http 127.0.0.1:8787\" \"tsx start_dev.ts\"",
+    "dev": "concurrently \"cp .env .dev.vars && npx wrangler dev src/interactions.ts\" \"lt --port 8787\"",
     "lint": "eslint . --config ./eslint.config.mjs",
     "check": "tsc --noEmit",
     "test": "vitest tests db"
@@ -24,6 +24,7 @@
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
+    "localtunnel": "^2.0.2",
     "mongodb-memory-server": "^10.1.4",
     "prettier": "^3.5.3",
     "tsx": "^4.19.3",
