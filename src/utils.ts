@@ -588,7 +588,7 @@ async function proxy(
     final.free();
 
     return {
-      filename: 'default.webp',
+      filename: crypto.randomUUID() + '.webp',
       arrayBuffer: bytes,
       type: 'image/webp',
     };
