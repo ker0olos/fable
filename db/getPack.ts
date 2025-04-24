@@ -144,20 +144,14 @@ export async function getPack(manifestId: string, userId?: string) {
     await Promise.all([
       db
         .packCharacters()
-        .aggregate([
-          { $match: { packId: manifestId } },
-          { $project: { _id: 0 } },
-        ])
+        .find({ packId: manifestId })
         .toArray()
-        .then((r) => (packCharacters = r as DisaggregatedCharacter[])),
+        .then((r) => (packCharacters = r)),
       db
         .packMedia()
-        .aggregate([
-          { $match: { packId: manifestId } },
-          { $project: { _id: 0 } },
-        ])
+        .find({ packId: manifestId })
         .toArray()
-        .then((r) => (packMedia = r as DisaggregatedMedia[])),
+        .then((r) => (packMedia = r)),
       (userId
         ? db.packs().findOne({
             'manifest.id': manifestId,

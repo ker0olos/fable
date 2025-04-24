@@ -39,6 +39,8 @@ const externalLinksSchema = z
 
 const characterSchema = z
   .object({
+    _id: z.string(),
+
     id: idSchema,
     packId: idSchema,
 
@@ -80,6 +82,8 @@ const characterSchema = z
 
 export const mediaSchema = z
   .object({
+    _id: z.string(),
+
     id: idSchema,
     packId: idSchema,
 

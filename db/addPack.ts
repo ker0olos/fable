@@ -18,8 +18,12 @@ export async function publishPack(
 ): Promise<void> {
   const db = new Mongo();
 
+  await db.connect();
+
+  const session = db.startSession();
+
   try {
-    await db.connect();
+    session.startTransaction();
 
     const newPack: Omit<Omit<Schema.Pack, 'updatedAt'>, 'manifest'> = {
       owner: userId,
@@ -40,34 +44,25 @@ export async function publishPack(
       { upsert: true }
     );
 
-    await Promise.all(
-      (characters ?? []).map(async (char) => {
-        char.packId = manifest.id;
+    await Promise.all([
+      db.packCharacters().deleteMany({ packId: manifest.id }, { session }),
+      db.packMedia().deleteMany({ packId: manifest.id }, { session }),
+    ]);
 
-        return db
-          .packCharacters()
-          .findOneAndUpdate(
-            { packId: manifest.id, id: char.id },
-            { $set: char },
-            { upsert: true }
-          );
-      })
-    );
+    await Promise.all([
+      characters?.length
+        ? db.packCharacters().insertMany(characters, { session })
+        : null,
+      media?.length ? db.packMedia().insertMany(media, { session }) : null,
+    ]);
 
-    await Promise.all(
-      (media ?? []).map(async (media) => {
-        media.packId = manifest.id;
-
-        return db
-          .packMedia()
-          .findOneAndUpdate(
-            { packId: manifest.id, id: media.id },
-            { $set: media },
-            { upsert: true }
-          );
-      })
-    );
+    await session.commitTransaction();
   } finally {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    await session.endSession();
     await db.close();
   }
 }
