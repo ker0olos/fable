@@ -1,20 +1,17 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { MongoMemoryReplSet, MongoMemoryServer } from 'mongodb-memory-server';
+import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
-import { MongoMemoryServer } from 'mongodb-memory-server';
-
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
+import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryServer | MongoMemoryReplSet;
 let client: Mongo;
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 const assertWithinLast5secs = (ts: Date) => {
-  assertEquals(Math.abs(Date.now() - ts.getTime()) <= 5000, true);
+  expect(Math.abs(Date.now() - ts.getTime()) <= 5000).toBe(true);
 };
 
 describe('db.addPack()', () => {
@@ -44,11 +41,11 @@ describe('db.addPack()', () => {
       discordId: 'guild-id',
     });
 
-    assertEquals(objectIdRegex.test(guild!._id.toHexString()), true);
+    expect(objectIdRegex.test(guild!._id.toHexString())).toBe(true);
 
-    assertEquals(pack!.manifest.id, 'pack-id');
+    expect(pack!.manifest.id).toBe('pack-id');
 
-    assertEquals(guild!.packIds, ['pack-id']);
+    expect(guild!.packIds).toEqual(['pack-id']);
   });
 
   it('install public on existing guild', async () => {
@@ -70,9 +67,9 @@ describe('db.addPack()', () => {
       _id: guildInsertedId,
     });
 
-    assertEquals(pack!.manifest.id, 'pack-id');
+    expect(pack!.manifest.id).toBe('pack-id');
 
-    assertEquals(guild!.packIds, ['old-pack-id', 'pack-id'] as any);
+    expect(guild!.packIds).toEqual(['old-pack-id', 'pack-id']);
   });
 
   it('install private (owned)', async () => {
@@ -90,11 +87,11 @@ describe('db.addPack()', () => {
       discordId: 'guild-id',
     });
 
-    assertEquals(objectIdRegex.test(guild!._id.toHexString()), true);
+    expect(objectIdRegex.test(guild!._id.toHexString())).toBe(true);
 
-    assertEquals(pack!.manifest.id, 'pack-id');
+    expect(pack!.manifest.id).toBe('pack-id');
 
-    assertEquals(guild!.packIds, ['pack-id']);
+    expect(guild!.packIds).toEqual(['pack-id']);
   });
 
   it('install private (maintained)', async () => {
@@ -113,11 +110,11 @@ describe('db.addPack()', () => {
       discordId: 'guild-id',
     });
 
-    assertEquals(objectIdRegex.test(guild!._id.toHexString()), true);
+    expect(objectIdRegex.test(guild!._id.toHexString())).toBe(true);
 
-    assertEquals(pack!.manifest.id, 'pack-id');
+    expect(pack!.manifest.id).toBe('pack-id');
 
-    assertEquals(guild!.packIds, ['pack-id']);
+    expect(guild!.packIds).toEqual(['pack-id']);
   });
 
   it('install private (not allowed)', async () => {
@@ -136,8 +133,8 @@ describe('db.addPack()', () => {
       discordId: 'guild-id',
     });
 
-    assertEquals(pack, null);
-    assertEquals(guild, null);
+    expect(pack).toBe(null);
+    expect(guild).toBe(null);
   });
 });
 
@@ -180,26 +177,26 @@ describe('db.removePack()', () => {
       _id: guildInsertedId,
     });
 
-    assertEquals(pack!.manifest.id, 'pack-1');
+    expect(pack!.manifest.id).toBe('pack-1');
 
-    assertEquals(guild!.packIds, ['pack-2'] as any);
+    expect(guild!.packIds).toEqual(['pack-2']);
   });
 
   it('not found', async () => {
-    const { insertedId: _guildInsertedId } = await client.guilds().insertOne({
+    await client.guilds().insertOne({
       discordId: 'guild-id',
       packIds: [],
     } as any);
 
     const pack = await db.removePack('guild-id', 'pack-1');
 
-    assertEquals(pack, null);
+    expect(pack).toBe(null);
   });
 });
 
 describe('db.publishPack()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryServer.create();
+    mongod = await MongoMemoryReplSet.create();
     client = new Mongo(mongod.getUri());
     config.mongoUri = mongod.getUri();
   });
@@ -215,9 +212,9 @@ describe('db.publishPack()', () => {
 
     const pack = await client.packs().findOne({ 'manifest.id': 'pack-id' });
 
-    assertEquals(objectIdRegex.test(pack!._id.toHexString()), true);
+    expect(objectIdRegex.test(pack!._id.toHexString())).toBe(true);
 
-    assertEquals(Object.keys(pack!), [
+    expect(Object.keys(pack!)).toEqual([
       '_id',
       'manifest',
       'approved',
@@ -230,7 +227,7 @@ describe('db.publishPack()', () => {
     assertWithinLast5secs(pack!.createdAt);
     assertWithinLast5secs(pack!.updatedAt);
 
-    assertObjectMatch(pack!, {
+    expect(pack).toMatchObject({
       approved: false,
       hidden: false,
       owner: 'user-id',
@@ -241,14 +238,12 @@ describe('db.publishPack()', () => {
   });
 
   it('update existing pack (owner)', async () => {
-    const { insertedId } = await client.packs().insertOne(
-      {
-        owner: 'user-id',
-        createdAt: new Date('1999-1-1'),
-        updatedAt: new Date('1999-1-1'),
-        manifest: { id: 'pack-id', title: 'old' },
-      } as any,
-    );
+    const { insertedId } = await client.packs().insertOne({
+      owner: 'user-id',
+      createdAt: new Date('1999-1-1'),
+      updatedAt: new Date('1999-1-1'),
+      manifest: { id: 'pack-id', title: 'old' },
+    } as any);
 
     await db.publishPack('user-id', { id: 'pack-id', title: 'new' } as any);
 
@@ -256,7 +251,7 @@ describe('db.publishPack()', () => {
 
     assertWithinLast5secs(pack!.updatedAt);
 
-    assertObjectMatch(pack!, {
+    expect(pack).toMatchObject({
       _id: insertedId,
       owner: 'user-id',
       manifest: {
@@ -267,14 +262,12 @@ describe('db.publishPack()', () => {
   });
 
   it('update existing pack (maintainer)', async () => {
-    const { insertedId } = await client.packs().insertOne(
-      {
-        owner: 'another-user-id',
-        createdAt: new Date('1999-1-1'),
-        updatedAt: new Date('1999-1-1'),
-        manifest: { id: 'pack-id', title: 'old', maintainers: ['user-id'] },
-      } as any,
-    );
+    const { insertedId } = await client.packs().insertOne({
+      owner: 'another-user-id',
+      createdAt: new Date('1999-1-1'),
+      updatedAt: new Date('1999-1-1'),
+      manifest: { id: 'pack-id', title: 'old', maintainers: ['user-id'] },
+    } as any);
 
     await db.publishPack('user-id', { id: 'pack-id', title: 'new' } as any);
 
@@ -282,7 +275,7 @@ describe('db.publishPack()', () => {
 
     assertWithinLast5secs(pack!.updatedAt);
 
-    assertObjectMatch(pack!, {
+    expect(pack).toMatchObject({
       _id: insertedId,
       owner: 'another-user-id',
       manifest: {
@@ -293,22 +286,20 @@ describe('db.publishPack()', () => {
   });
 
   it('update existing pack (no permission)', async () => {
-    const { insertedId } = await client.packs().insertOne(
-      {
-        owner: 'another-user-id',
-        createdAt: new Date('1999-1-1'),
-        updatedAt: new Date('1999-1-1'),
-        manifest: { id: 'pack-id', title: 'old' },
-      } as any,
-    );
+    const { insertedId } = await client.packs().insertOne({
+      owner: 'another-user-id',
+      createdAt: new Date('1999-1-1'),
+      updatedAt: new Date('1999-1-1'),
+      manifest: { id: 'pack-id', title: 'old' },
+    } as any);
 
     await db.publishPack('user-id', { id: 'pack-id', title: 'new' } as any);
 
     const pack = await client.packs().findOne({ 'manifest.id': 'pack-id' });
 
-    assertEquals(pack!.updatedAt, new Date('1999-1-1'));
+    expect(pack!.updatedAt).toEqual(new Date('1999-1-1'));
 
-    assertObjectMatch(pack!, {
+    expect(pack).toMatchObject({
       _id: insertedId,
       owner: 'another-user-id',
       manifest: {

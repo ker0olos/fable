@@ -1,11 +1,8 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertEquals, assertRejects } from '$std/assert/mod.ts';
-
-import db, { COSTS, Mongo } from '~/db/mod.ts';
+import db, { COSTS, Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
@@ -34,8 +31,8 @@ describe('db.addTokens()', () => {
 
     const user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(user!._id, insertedId);
-    assertEquals(user!.availableTokens, 5);
+    expect(user!._id).toEqual(insertedId);
+    expect(user!.availableTokens).toBe(5);
   });
 });
 
@@ -63,9 +60,9 @@ describe('db.addGuarantee()', () => {
 
     const _user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(_user!._id, insertedId);
-    assertEquals(_user!.availableTokens, 0);
-    assertEquals(_user!.guarantees, [1, 5]);
+    expect(_user!._id).toEqual(insertedId);
+    expect(_user!.availableTokens).toBe(0);
+    expect(_user!.guarantees).toEqual([1, 5]);
   });
 
   it('add 4*', async () => {
@@ -79,9 +76,9 @@ describe('db.addGuarantee()', () => {
 
     const _user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(_user!._id, insertedId);
-    assertEquals(_user!.availableTokens, 0);
-    assertEquals(_user!.guarantees, [1, 4]);
+    expect(_user!._id).toEqual(insertedId);
+    expect(_user!.availableTokens).toBe(0);
+    expect(_user!.guarantees).toEqual([1, 4]);
   });
 
   it('add 3*', async () => {
@@ -95,9 +92,9 @@ describe('db.addGuarantee()', () => {
 
     const _user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(_user!._id, insertedId);
-    assertEquals(_user!.availableTokens, 0);
-    assertEquals(_user!.guarantees, [1, 3]);
+    expect(_user!._id).toEqual(insertedId);
+    expect(_user!.availableTokens).toBe(0);
+    expect(_user!.guarantees).toEqual([1, 3]);
   });
 
   it('not enough tokens', async () => {
@@ -107,17 +104,15 @@ describe('db.addGuarantee()', () => {
       guarantees: [1],
     } as any);
 
-    await assertRejects(
-      () => db.addGuarantee('user-id', 5),
-      Error,
-      'INSUFFICIENT_TOKENS',
+    await expect(db.addGuarantee('user-id', 5)).rejects.toThrow(
+      'INSUFFICIENT_TOKENS'
     );
 
     const _user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertEquals(_user!._id, insertedId);
-    assertEquals(_user!.availableTokens, COSTS.FIVE - 1);
-    assertEquals(_user!.guarantees, [1]);
+    expect(_user!._id).toEqual(insertedId);
+    expect(_user!.availableTokens).toBe(COSTS.FIVE - 1);
+    expect(_user!.guarantees).toEqual([1]);
   });
 });
 
@@ -140,7 +135,8 @@ describe('db.addPulls()', () => {
       availableTokens: 2,
     } as any);
 
-    const { insertedId: insertedInventoryId } = await client.inventories()
+    const { insertedId: insertedInventoryId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -155,11 +151,11 @@ describe('db.addPulls()', () => {
       guildId: 'guild-id',
     });
 
-    assertEquals(user!._id, insertedUserId);
-    assertEquals(inventory!._id, insertedInventoryId);
+    expect(user!._id).toEqual(insertedUserId);
+    expect(inventory!._id).toEqual(insertedInventoryId);
 
-    assertEquals(user!.availableTokens, 0);
-    assertEquals(inventory!.availablePulls, 3);
+    expect(user!.availableTokens).toBe(0);
+    expect(inventory!.availablePulls).toBe(3);
   });
 
   it('add 2 pulls (not enough tokens)', async () => {
@@ -168,65 +164,8 @@ describe('db.addPulls()', () => {
       availableTokens: 1,
     } as any);
 
-    await assertRejects(
-      () => db.addPulls('user-id', 'guild-id', 2),
-      Error,
-      'INSUFFICIENT_TOKENS',
-    );
-  });
-});
-
-describe('db.addKeys()', () => {
-  beforeEach(async () => {
-    mongod = await MongoMemoryServer.create();
-    client = new Mongo(mongod.getUri());
-    config.mongoUri = mongod.getUri();
-  });
-
-  afterEach(async () => {
-    delete config.mongoUri;
-    await client.close();
-    await mongod.stop();
-  });
-
-  it('add 2 keys', async () => {
-    const { insertedId: insertedUserId } = await client.users().insertOne({
-      discordId: 'user-id',
-      availableTokens: 2,
-    } as any);
-
-    const { insertedId: insertedInventoryId } = await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        availableKeys: 1,
-      } as any);
-
-    await db.addKeys('user-id', 'guild-id', 2);
-
-    const user = await client.users().findOne({ discordId: 'user-id' });
-    const inventory = await client.inventories().findOne({
-      userId: 'user-id',
-      guildId: 'guild-id',
-    });
-
-    assertEquals(user!._id, insertedUserId);
-    assertEquals(inventory!._id, insertedInventoryId);
-
-    assertEquals(user!.availableTokens, 0);
-    assertEquals(inventory!.availableKeys, 3);
-  });
-
-  it('add 2 keys (not enough tokens)', async () => {
-    await client.users().insertOne({
-      discordId: 'user-id',
-      availableTokens: 1,
-    } as any);
-
-    await assertRejects(
-      () => db.addKeys('user-id', 'guild-id', 2),
-      Error,
-      'INSUFFICIENT_TOKENS',
+    await expect(db.addPulls('user-id', 'guild-id', 2)).rejects.toThrow(
+      'INSUFFICIENT_TOKENS'
     );
   });
 });

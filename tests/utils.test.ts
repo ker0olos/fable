@@ -1,446 +1,471 @@
-// deno-lint-ignore-file no-non-null-assertion
-import { stripAnsiCode } from '$std/fmt/colors.ts';
+import { PhotonImage } from '@cf-wasm/photon/node';
+import { existsSync, promises } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import pixelmatch from 'pixelmatch';
+import { describe, test, expect, vi, afterEach } from 'vitest';
 
-import { assert, assertEquals, assertThrows } from '$std/assert/mod.ts';
+import utils, { ImageSize } from '~/src/utils.ts';
 
-import {
-  // assertSpyCall,
-  assertSpyCalls,
-  returnsNext,
-  stub,
-} from '$std/testing/mock.ts';
-import { assertSnapshot, createAssertSnapshot } from '$std/testing/snapshot.ts';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-import utils from '~/src/utils.ts';
+describe('utils', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-export const assertMonochromeSnapshot = createAssertSnapshot<string>(
-  { serializer: (obj) => stripAnsiCode(JSON.stringify(obj, undefined, 2)) },
-  assertSnapshot,
-);
+  test('color hex to color int', () => {
+    expect(utils.hexToInt('#3E5F8A')).toBe(4087690);
+  });
 
-Deno.test('color hex to color int', () => {
-  assertEquals(utils.hexToInt('#3E5F8A'), 4087690);
-});
+  test('shuffle array', () => {
+    vi.spyOn(Math, 'random')
+      .mockReturnValueOnce(0.42)
+      .mockReturnValueOnce(0.2)
+      .mockReturnValueOnce(0.8);
 
-Deno.test('shuffle array', () => {
-  const randomStub = stub(Math, 'random', returnsNext([0.42, 0.2, 0.8]));
-
-  try {
     const array = ['a', 'b', 'c'];
-
     utils.shuffle(array);
+    expect(array).toEqual(['b', 'a', 'c']);
+  });
 
-    assertEquals(array, ['b', 'a', 'c']);
-  } finally {
-    randomStub.restore();
-  }
-});
+  describe('rng with percentages', () => {
+    test('normal', () => {
+      vi.spyOn(Math, 'random').mockReturnValue(0);
 
-Deno.test('rng with percentages', async (test) => {
-  const randomStub = stub(Math, 'random', returnsNext(Array(100).fill(0)));
-
-  try {
-    await test.step('normal', () => {
       const rng = utils.rng({
         10: 'a',
         70: 'b',
         20: 'c',
       });
 
-      assertEquals(rng, { value: 'b', chance: 70 });
-
-      assertSpyCalls(randomStub, 100);
+      expect(rng).toEqual({ value: 'b', chance: 70 });
+      expect(Math.random).toHaveBeenCalledTimes(100);
     });
 
-    await test.step("fail if doesn't sum up to 100", () => {
-      assertThrows(
-        () =>
-          utils.rng({
-            50: 'fail',
-            55: 'fail',
-          }),
-        Error,
-        'Sum of 50,55 is 105 when it should be 100',
-      );
+    test("fail if doesn't sum up to 100", () => {
+      expect(() =>
+        utils.rng({
+          50: 'fail',
+          55: 'fail',
+        })
+      ).toThrow('Sum of 50,55 is 105 when it should be 100');
     });
-  } finally {
-    randomStub.restore();
-  }
-});
-
-Deno.test('truncate', async (test) => {
-  await test.step('normal', () => {
-    const maxLength = 50;
-
-    const short = utils.truncate('-'.repeat(20), maxLength);
-
-    assertEquals(short!.length, 20);
-
-    const long = utils.truncate('-'.repeat(100), maxLength);
-
-    assertEquals(long!.length, maxLength);
-
-    assert(long!.endsWith('...'));
   });
 
-  await test.step('word split', () => {
+  describe('truncate', () => {
+    test('normal', () => {
+      const maxLength = 50;
+      const short = utils.truncate('-'.repeat(20), maxLength);
+      expect(short!.length).toBe(20);
+
+      const long = utils.truncate('-'.repeat(100), maxLength);
+      expect(long!.length).toBe(maxLength);
+      expect(long!.endsWith('...')).toBe(true);
+    });
+
+    test('word split', () => {
+      const text =
+        'Sit aute ad sunt mollit in aliqua consectetur tempor duis adipisicing id velit et. Quis nostrud excepteur in exercitation.';
+
+      const truncate = utils.truncate(text, 20);
+      expect(truncate!.length).toBeLessThan(20);
+      expect(truncate).toBe('Sit aute ad sunt...');
+    });
+  });
+
+  test('word wrap', () => {
     const text =
       'Sit aute ad sunt mollit in aliqua consectetur tempor duis adipisicing id velit et. Quis nostrud excepteur in exercitation.';
 
-    const truncate = utils.truncate(text, 20);
+    const wrap = utils.wrap(text, 20);
 
-    assert(truncate!.length < 20);
-
-    assertEquals(truncate, 'Sit aute ad sunt...');
-  });
-});
-
-Deno.test('word wrap', () => {
-  const text =
-    'Sit aute ad sunt mollit in aliqua consectetur tempor duis adipisicing id velit et. Quis nostrud excepteur in exercitation.';
-
-  const wrap = utils.wrap(text, 20);
-
-  assertEquals(
-    wrap,
-    [
-      'Sit aute ad sunt',
-      'mollit in aliqua',
-      'consectetur tempor',
-      'duis adipisicing id',
-      'velit et. Quis',
-      'nostrud excepteur in',
-      'exercitation.',
-    ].join('\n'),
-  );
-});
-
-Deno.test('capitalize', async (test) => {
-  await test.step('normal', () => {
-    const text = 'Sit_aute_ad_sunt_mollit';
-
-    const wrap = utils.capitalize(text);
-
-    assertEquals(wrap, 'Sit Aute Ad Sunt Mollit');
-  });
-
-  await test.step('normal 2', () => {
-    const text = 'i am a fox';
-
-    const wrap = utils.capitalize(text);
-
-    assertEquals(wrap, 'I Am A Fox');
-  });
-
-  await test.step('3 letters', () => {
-    const text = 'ona';
-
-    const wrap = utils.capitalize(text);
-
-    assertEquals(wrap, 'ONA');
-  });
-
-  await test.step('white space', () => {
-    const text = '     ';
-
-    const wrap = utils.capitalize(text);
-
-    assertEquals(wrap, '');
-  });
-});
-
-Deno.test('comma', () => {
-  const number = 1_00_0_000_00;
-
-  const wrap = utils.comma(number);
-
-  assertEquals(wrap, '100,000,000');
-});
-
-Deno.test('parse int', () => {
-  const id = '84824280';
-  const notId = 'abc' + id;
-
-  assertEquals(utils.parseInt(id)!, 84824280);
-  assertEquals(utils.parseInt(notId)!, undefined);
-});
-
-Deno.test('decode description', async (test) => {
-  await test.step('decode simple html', () => {
-    assertEquals(utils.decodeDescription('&amp;'), '&');
-    assertEquals(utils.decodeDescription('&quot;'), '"');
-    assertEquals(utils.decodeDescription('&apos;'), "'");
-    assertEquals(utils.decodeDescription('&rsquo;'), "'");
-    assertEquals(utils.decodeDescription('&#039;'), "'");
-    assertEquals(utils.decodeDescription('&lt;'), '<');
-    assertEquals(utils.decodeDescription('&gt;'), '>');
-    assertEquals(utils.decodeDescription('&mdash;'), '-');
-  });
-
-  await test.step('strip urls', () => {
-    assertEquals(
-      utils.decodeDescription('<a href="https://goolge/com/page">page</a>'),
-      '[page](https://goolge/com/page)',
-    );
-
-    assertEquals(
-      utils.decodeDescription('<a href="https://goolge/com/page">pa\n\nge</a>'),
-      '[pa\n\nge](https://goolge/com/page)',
-    );
-
-    assertEquals(
-      utils.decodeDescription("<a href='https://goolge/com/page'>page</a>"),
-      '[page](https://goolge/com/page)',
-    );
-
-    assertEquals(
-      utils.decodeDescription("<a href='https://goolge/com/page'>page<a>"),
-      '[page](https://goolge/com/page)',
-    );
-
-    assertEquals(
-      utils.decodeDescription('[page](https://goolge/com/page)'),
-      '[page](https://goolge/com/page)',
+    expect(wrap).toBe(
+      [
+        'Sit aute ad sunt',
+        'mollit in aliqua',
+        'consectetur tempor',
+        'duis adipisicing id',
+        'velit et. Quis',
+        'nostrud excepteur in',
+        'exercitation.',
+      ].join('\n')
     );
   });
 
-  await test.step('decode complicated html', () => {
-    assertEquals(utils.decodeDescription('&amp;quot;'), '&quot;');
-  });
-
-  await test.step('transform html to markdown', () => {
-    assertEquals(utils.decodeDescription('<i>abc</i>'), '*abc*');
-    assertEquals(utils.decodeDescription('<i> a\nbc  \n <i>'), '*a\nbc*');
-    assertEquals(utils.decodeDescription('<b>abc</b>'), '**abc**');
-    assertEquals(utils.decodeDescription('<b>ab\nc \n  <b>'), '**ab\nc**');
-    assertEquals(utils.decodeDescription('<strike>abc</strike>'), '~~abc~~');
-    assertEquals(utils.decodeDescription('<strike>   abc<strike>'), '~~abc~~');
-    assertEquals(utils.decodeDescription('<br></br><br/>'), '\n\n\n');
-    assertEquals(utils.decodeDescription('<hr></hr><hr/>'), '\n\n\n');
-  });
-
-  await test.step('remove certain tags', () => {
-    assertEquals(utils.decodeDescription('~!abc!~'), '');
-    assertEquals(utils.decodeDescription('~!a\n\nbc!~'), '');
-    assertEquals(utils.decodeDescription('||abc||'), '');
-    assertEquals(utils.decodeDescription('||a\nb\nc||'), '');
-  });
-});
-
-Deno.test('read json', async () => {
-  const readTextStub = stub(
-    Deno,
-    'readTextFile',
-    () => Promise.resolve('{"data": "abc"}'),
-  );
-
-  try {
-    const data = await utils.readJson('');
-
-    assertEquals(data, {
-      data: 'abc',
+  describe('capitalize', () => {
+    test('normal', () => {
+      const text = 'Sit_aute_ad_sunt_mollit';
+      const wrap = utils.capitalize(text);
+      expect(wrap).toBe('Sit Aute Ad Sunt Mollit');
     });
-  } finally {
-    readTextStub.restore();
-  }
-});
 
-Deno.test('normal timestamps', () => {
-  const now = new Date();
+    test('normal 2', () => {
+      const text = 'i am a fox';
+      const wrap = utils.capitalize(text);
+      expect(wrap).toBe('I Am A Fox');
+    });
 
-  const expected = new Date().getTime().toString();
+    test('3 letters', () => {
+      const text = 'ona';
+      const wrap = utils.capitalize(text);
+      expect(wrap).toBe('ONA');
+    });
 
-  assertEquals(
-    utils.normalTimestamp(now),
-    expected.substring(0, expected.length - 3),
-  );
-});
-
-Deno.test('recharge timestamps', () => {
-  const now = new Date();
-
-  const expected = new Date().setMinutes(now.getMinutes() + 30).toString();
-
-  assertEquals(
-    utils.rechargeTimestamp(now),
-    expected.substring(0, expected.length - 3),
-  );
-});
-
-Deno.test('recharge keys timestamps', () => {
-  const now = new Date();
-
-  const expected = new Date().setMinutes(now.getMinutes() + 10).toString();
-
-  assertEquals(
-    utils.rechargeKeysTimestamp(now),
-    expected.substring(0, expected.length - 3),
-  );
-});
-
-Deno.test('recharge daily tokens timestamps', () => {
-  const now = new Date();
-
-  const expected = new Date().setHours(now.getHours() + 12).toString();
-
-  assertEquals(
-    utils.rechargeDailyTimestamp(now),
-    expected.substring(0, expected.length - 3),
-  );
-});
-
-Deno.test('reset steal timestamp', () => {
-  const now = new Date();
-
-  const expected = new Date().setDate(now.getDate() + 3).toString();
-
-  assertEquals(
-    utils.rechargeStealTimestamp(now),
-    expected.substring(0, expected.length - 3),
-  );
-});
-
-Deno.test('diff days', async (test) => {
-  await test.step('23 hours', () => {
-    const a = new Date();
-    const b = new Date();
-
-    b.setHours(b.getHours() - 23);
-
-    assertEquals(utils.diffInDays(a, b), 0);
+    test('white space', () => {
+      const text = '     ';
+      const wrap = utils.capitalize(text);
+      expect(wrap).toBe('');
+    });
   });
 
-  await test.step('25 hours', () => {
-    const a = new Date();
-    const b = new Date();
-
-    b.setHours(b.getHours() - 25);
-
-    assertEquals(utils.diffInDays(a, b), 1);
+  test('comma', () => {
+    const number = 1_00_0_000_00;
+    const wrap = utils.comma(number);
+    expect(wrap).toBe('100,000,000');
   });
 
-  await test.step('47 hours', () => {
-    const a = new Date();
-    const b = new Date();
+  test('parse int', () => {
+    const id = '84824280';
+    const notId = 'abc' + id;
 
-    b.setHours(b.getHours() - 47);
-
-    assertEquals(utils.diffInDays(a, b), 1);
+    expect(utils.parseInt(id)!).toBe(84824280);
+    expect(utils.parseInt(notId)!).toBeUndefined();
   });
 
-  await test.step('49 hours', () => {
-    const a = new Date();
-    const b = new Date();
+  describe('decode description', () => {
+    test('decode simple html', () => {
+      expect(utils.decodeDescription('&amp;')).toBe('&');
+      expect(utils.decodeDescription('&quot;')).toBe('"');
+      expect(utils.decodeDescription('&apos;')).toBe("'");
+      expect(utils.decodeDescription('&rsquo;')).toBe("'");
+      expect(utils.decodeDescription('&#039;')).toBe("'");
+      expect(utils.decodeDescription('&lt;')).toBe('<');
+      expect(utils.decodeDescription('&gt;')).toBe('>');
+      expect(utils.decodeDescription('&mdash;')).toBe('-');
+    });
 
-    b.setHours(b.getHours() - 49);
+    test('strip urls', () => {
+      expect(
+        utils.decodeDescription('<a href="https://goolge/com/page">page</a>')
+      ).toBe('[page](https://goolge/com/page)');
 
-    assertEquals(utils.diffInDays(a, b), 2);
+      expect(
+        utils.decodeDescription(
+          '<a href="https://goolge/com/page">pa\n\nge</a>'
+        )
+      ).toBe('[pa\n\nge](https://goolge/com/page)');
+
+      expect(
+        utils.decodeDescription("<a href='https://goolge/com/page'>page</a>")
+      ).toBe('[page](https://goolge/com/page)');
+
+      expect(
+        utils.decodeDescription("<a href='https://goolge/com/page'>page<a>")
+      ).toBe('[page](https://goolge/com/page)');
+
+      expect(utils.decodeDescription('[page](https://goolge/com/page)')).toBe(
+        '[page](https://goolge/com/page)'
+      );
+    });
+
+    test('decode complicated html', () => {
+      expect(utils.decodeDescription('&amp;quot;')).toBe('&quot;');
+    });
+
+    test('transform html to markdown', () => {
+      expect(utils.decodeDescription('<i>abc</i>')).toBe('*abc*');
+      expect(utils.decodeDescription('<i> a\nbc  \n <i>')).toBe('*a\nbc*');
+      expect(utils.decodeDescription('<b>abc</b>')).toBe('**abc**');
+      expect(utils.decodeDescription('<b>ab\nc \n  <b>')).toBe('**ab\nc**');
+      expect(utils.decodeDescription('<strike>abc</strike>')).toBe('~~abc~~');
+      expect(utils.decodeDescription('<strike>   abc<strike>')).toBe('~~abc~~');
+      expect(utils.decodeDescription('<br></br><br/>')).toBe('\n\n\n');
+      expect(utils.decodeDescription('<hr></hr><hr/>')).toBe('\n\n\n');
+    });
+
+    test('remove certain tags', () => {
+      expect(utils.decodeDescription('~!abc!~')).toBe('');
+      expect(utils.decodeDescription('~!a\n\nbc!~')).toBe('');
+      expect(utils.decodeDescription('||abc||')).toBe('');
+      expect(utils.decodeDescription('||a\nb\nc||')).toBe('');
+    });
   });
-});
 
-Deno.test('diff mins', async (test) => {
-  await test.step('30 mins', () => {
-    const a = new Date();
-    const b = new Date();
-
-    b.setMinutes(b.getMinutes() - 30);
-
-    assertEquals(utils.diffInMinutes(a, b), 30);
-  });
-});
-
-Deno.test('is within last 14 days', () => {
-  const now = new Date();
-
-  const thirteenDaysAgo = new Date();
-  thirteenDaysAgo.setDate(now.getDate() - 13);
-
-  const fifteenDaysAgo = new Date();
-  fifteenDaysAgo.setDate(now.getDate() - 15);
-
-  assertEquals(utils.isWithin14Days(now), true);
-
-  assertEquals(utils.isWithin14Days(thirteenDaysAgo), true);
-  assertEquals(utils.isWithin14Days(fifteenDaysAgo), false);
-});
-
-Deno.test('distance', () => {
-  assertEquals(utils.distance('AQUA', 'aqua'), 100);
-
-  assertEquals(utils.distance('cat', 'cow'), 66.66666666666666);
-});
-
-Deno.test('pagination', async (test) => {
-  await test.step('default limit', () => {
-    const url = new URL('http://localhost:8000?offset=2');
-
-    const pages = utils.pagination(
-      url,
-      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
-      'data',
+  test('normal timestamps', () => {
+    const now = new Date();
+    const expected = new Date().getTime().toString();
+    expect(utils.normalTimestamp(now)).toBe(
+      expected.substring(0, expected.length - 3)
     );
-
-    assertEquals(pages.data.length, 8);
-    assertEquals(pages.length, 10);
-    assertEquals(pages.limit, 20);
-    assertEquals(pages.offset, 2);
-
-    assertEquals(pages.data[0], 'item-3');
-    assertEquals(pages.data[1], 'item-4');
-    assertEquals(pages.data[2], 'item-5');
   });
 
-  await test.step('custom limit', () => {
-    const url = new URL('http://localhost:8000?limit=3&offset=2');
-
-    const pages = utils.pagination(
-      url,
-      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
-      'data',
+  test('recharge timestamps', () => {
+    const now = new Date();
+    const expected = new Date().setMinutes(now.getMinutes() + 30).toString();
+    expect(utils.rechargeTimestamp(now)).toBe(
+      expected.substring(0, expected.length - 3)
     );
-
-    assertEquals(pages.data.length, 3);
-    assertEquals(pages.length, 10);
-    assertEquals(pages.limit, 3);
-    assertEquals(pages.offset, 2);
-
-    assertEquals(pages.data[0], 'item-3');
-    assertEquals(pages.data[1], 'item-4');
-    assertEquals(pages.data[2], 'item-5');
   });
 
-  await test.step('limit equal to the length of data', () => {
-    const url = new URL('http://localhost:8000?limit=10&offset=0');
-
-    const pages = utils.pagination(
-      url,
-      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
-      'data',
+  test('recharge daily tokens timestamps', () => {
+    const now = new Date();
+    const expected = new Date().setHours(now.getHours() + 12).toString();
+    expect(utils.rechargeDailyTimestamp(now)).toBe(
+      expected.substring(0, expected.length - 3)
     );
-
-    assertEquals(pages.data.length, 10);
-    assertEquals(pages.length, 10);
-    assertEquals(pages.limit, 10);
-    assertEquals(pages.offset, 0);
-
-    assertEquals(pages.data[0], 'item-1');
-    assertEquals(pages.data[1], 'item-2');
-    assertEquals(pages.data[2], 'item-3');
-    assertEquals(pages.data[9], 'item-10');
   });
 
-  await test.step('offset is higher than length of data', () => {
-    const url = new URL('http://localhost:8000?limit=10&offset=11');
-
-    const pages = utils.pagination(
-      url,
-      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
-      'data',
+  test('reset steal timestamp', () => {
+    const now = new Date();
+    const expected = new Date().setDate(now.getDate() + 3).toString();
+    expect(utils.rechargeStealTimestamp(now)).toBe(
+      expected.substring(0, expected.length - 3)
     );
-
-    assertEquals(pages.data.length, 0);
-    assertEquals(pages.length, 10);
-    assertEquals(pages.limit, 10);
-    assertEquals(pages.offset, 11);
   });
+
+  describe('diff days', () => {
+    test('23 hours', () => {
+      const a = new Date();
+      const b = new Date();
+      b.setHours(b.getHours() - 23);
+      expect(utils.diffInDays(a, b)).toBe(0);
+    });
+
+    test('25 hours', () => {
+      const a = new Date();
+      const b = new Date();
+      b.setHours(b.getHours() - 25);
+      expect(utils.diffInDays(a, b)).toBe(1);
+    });
+
+    test('47 hours', () => {
+      const a = new Date();
+      const b = new Date();
+      b.setHours(b.getHours() - 47);
+      expect(utils.diffInDays(a, b)).toBe(1);
+    });
+
+    test('49 hours', () => {
+      const a = new Date();
+      const b = new Date();
+      b.setHours(b.getHours() - 49);
+      expect(utils.diffInDays(a, b)).toBe(2);
+    });
+  });
+
+  describe('diff mins', () => {
+    test('30 mins', () => {
+      const a = new Date();
+      const b = new Date();
+      b.setMinutes(b.getMinutes() - 30);
+      expect(utils.diffInMinutes(a, b)).toBe(30);
+    });
+  });
+
+  test('is within last 14 days', () => {
+    const now = new Date();
+
+    const thirteenDaysAgo = new Date();
+    thirteenDaysAgo.setDate(now.getDate() - 13);
+
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(now.getDate() - 15);
+
+    expect(utils.isWithin14Days(now)).toBe(true);
+    expect(utils.isWithin14Days(thirteenDaysAgo)).toBe(true);
+    expect(utils.isWithin14Days(fifteenDaysAgo)).toBe(false);
+  });
+
+  test('distance', () => {
+    expect(utils.distance('AQUA', 'aqua')).toBe(100);
+    expect(utils.distance('cat', 'cow')).toBe(66.66666666666666);
+  });
+
+  describe('pagination', () => {
+    test('default limit', () => {
+      const url = new URL('http://localhost:8000?offset=2');
+
+      const pages = utils.pagination(
+        url,
+        Array(10)
+          .fill({})
+          .map((_, i) => `item-${i + 1}`),
+        'data'
+      );
+
+      expect(pages.data.length).toBe(8);
+      expect(pages.length).toBe(10);
+      expect(pages.limit).toBe(20);
+      expect(pages.offset).toBe(2);
+
+      expect(pages.data[0]).toBe('item-3');
+      expect(pages.data[1]).toBe('item-4');
+      expect(pages.data[2]).toBe('item-5');
+    });
+
+    test('custom limit', () => {
+      const url = new URL('http://localhost:8000?limit=3&offset=2');
+
+      const pages = utils.pagination(
+        url,
+        Array(10)
+          .fill({})
+          .map((_, i) => `item-${i + 1}`),
+        'data'
+      );
+
+      expect(pages.data.length).toBe(3);
+      expect(pages.length).toBe(10);
+      expect(pages.limit).toBe(3);
+      expect(pages.offset).toBe(2);
+
+      expect(pages.data[0]).toBe('item-3');
+      expect(pages.data[1]).toBe('item-4');
+      expect(pages.data[2]).toBe('item-5');
+    });
+
+    test('limit equal to the length of data', () => {
+      const url = new URL('http://localhost:8000?limit=10&offset=0');
+
+      const pages = utils.pagination(
+        url,
+        Array(10)
+          .fill({})
+          .map((_, i) => `item-${i + 1}`),
+        'data'
+      );
+
+      expect(pages.data.length).toBe(10);
+      expect(pages.length).toBe(10);
+      expect(pages.limit).toBe(10);
+      expect(pages.offset).toBe(0);
+
+      expect(pages.data[0]).toBe('item-1');
+      expect(pages.data[1]).toBe('item-2');
+      expect(pages.data[2]).toBe('item-3');
+      expect(pages.data[9]).toBe('item-10');
+    });
+
+    test('offset is higher than length of data', () => {
+      const url = new URL('http://localhost:8000?limit=10&offset=11');
+
+      const pages = utils.pagination(
+        url,
+        Array(10)
+          .fill({})
+          .map((_, i) => `item-${i + 1}`),
+        'data'
+      );
+
+      expect(pages.data.length).toBe(0);
+      expect(pages.length).toBe(10);
+      expect(pages.limit).toBe(10);
+      expect(pages.offset).toBe(11);
+    });
+  });
+});
+
+describe.skip('image proxy', () => {
+  const kiara = 'https://images2.imgbox.com/05/06/ilSpCC45_o.png';
+  const fauna = 'https://images2.imgbox.com/76/07/BLiqJb65_o.png';
+  const aqua = 'https://images2.imgbox.com/a8/8c/a91bsWKH_o.png';
+  const guraEmbed = 'https://imgbox.com/mxkxpJOP';
+
+  const compare = async (snapShotPath: string, image: Buffer) => {
+    const existing = PhotonImage.new_from_byteslice(
+      await promises.readFile(snapShotPath)
+    );
+    const decoded = PhotonImage.new_from_byteslice(image);
+
+    // console.log(await existing.metadata());
+    // console.log(await decoded.metadata());
+
+    return pixelmatch(
+      existing.get_bytes_webp(),
+      decoded.get_bytes_webp(),
+      new Uint8Array(),
+      existing.get_width(),
+      existing.get_height()
+    );
+  };
+
+  test('large portrait', async () => {
+    const attachment = await utils.proxy(kiara);
+    const snapShotPath = join(__dirname, '__images__', 'large portrait.png');
+
+    if (!existsSync(snapShotPath)) {
+      await promises.writeFile(snapShotPath, attachment!.arrayBuffer);
+    } else {
+      expect(
+        await compare(snapShotPath, Buffer.from(attachment!.arrayBuffer))
+      ).toBe(0);
+    }
+  }, 20000);
+
+  test('large portrait 2', async () => {
+    const attachment = await utils.proxy(fauna);
+    const snapShotPath = join(__dirname, '__images__', 'large portrait 2.png');
+
+    if (!existsSync(snapShotPath)) {
+      await promises.writeFile(snapShotPath, attachment!.arrayBuffer);
+    } else {
+      expect(
+        await compare(snapShotPath, Buffer.from(attachment!.arrayBuffer))
+      ).toBe(0);
+    }
+  }, 20000);
+
+  test('large square', async () => {
+    const attachment = await utils.proxy(aqua);
+    const snapShotPath = join(__dirname, '__images__', 'large square.png');
+
+    if (!existsSync(snapShotPath)) {
+      await promises.writeFile(snapShotPath, attachment!.arrayBuffer);
+    } else {
+      expect(
+        await compare(snapShotPath, Buffer.from(attachment!.arrayBuffer))
+      ).toBe(0);
+    }
+  }, 20000);
+
+  test('preview portrait', async () => {
+    const attachment = await utils.proxy(kiara, ImageSize.Preview);
+    const snapShotPath = join(__dirname, '__images__', 'preview portrait.png');
+
+    if (!existsSync(snapShotPath)) {
+      await promises.writeFile(snapShotPath, attachment!.arrayBuffer);
+    } else {
+      expect(
+        await compare(snapShotPath, Buffer.from(attachment!.arrayBuffer))
+      ).toBe(0);
+    }
+  }, 20000);
+
+  test('preview square', async () => {
+    const attachment = await utils.proxy(aqua, ImageSize.Preview);
+    const snapShotPath = join(__dirname, '__images__', 'preview square.png');
+
+    if (!existsSync(snapShotPath)) {
+      await promises.writeFile(snapShotPath, attachment!.arrayBuffer);
+    } else {
+      expect(
+        await compare(snapShotPath, Buffer.from(attachment!.arrayBuffer))
+      ).toBe(0);
+    }
+  }, 20000);
+
+  test.skip('ogimage ', async () => {
+    const attachment = await utils.proxy(guraEmbed, undefined);
+    const snapShotPath = join(__dirname, '__images__', 'ogimage.jpeg');
+
+    if (!existsSync(snapShotPath)) {
+      await promises.writeFile(snapShotPath, attachment!.arrayBuffer);
+    } else {
+      expect(
+        await compare(snapShotPath, Buffer.from(attachment!.arrayBuffer))
+      ).toBe(0);
+    }
+  }, 20000);
 });

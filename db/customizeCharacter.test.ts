@@ -1,11 +1,8 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertEquals } from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
+import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
@@ -35,11 +32,11 @@ describe('db.setCharacterNickname()', () => {
       'user-id',
       'guild-id',
       'character-id',
-      'new-nickname',
+      'new-nickname'
     );
 
-    assertEquals(character!._id, insertedId);
-    assertEquals(character!.nickname, 'new-nickname');
+    expect(character!._id).toEqual(insertedId);
+    expect(character!.nickname).toBe('new-nickname');
   });
 
   it('reset nickname', async () => {
@@ -53,11 +50,11 @@ describe('db.setCharacterNickname()', () => {
     const character = await db.setCharacterNickname(
       'user-id',
       'guild-id',
-      'character-id',
+      'character-id'
     );
 
-    assertEquals(character!._id, insertedId);
-    assertEquals(character!.nickname, undefined);
+    expect(character!._id).toEqual(insertedId);
+    expect(character!.nickname).toBeUndefined();
   });
 });
 
@@ -85,11 +82,11 @@ describe('db.setCharacterImage()', () => {
       'user-id',
       'guild-id',
       'character-id',
-      'new-image-url',
+      'new-image-url'
     );
 
-    assertEquals(character!._id, insertedId);
-    assertEquals(character!.image, 'new-image-url');
+    expect(character!._id).toEqual(insertedId);
+    expect(character!.image).toBe('new-image-url');
   });
 
   it('reset image', async () => {
@@ -103,10 +100,10 @@ describe('db.setCharacterImage()', () => {
     const character = await db.setCharacterImage(
       'user-id',
       'guild-id',
-      'character-id',
+      'character-id'
     );
 
-    assertEquals(character!._id, insertedId);
-    assertEquals(character!.image, undefined);
+    expect(character!._id).toEqual(insertedId);
+    expect(character!.image).toBeUndefined();
   });
 });

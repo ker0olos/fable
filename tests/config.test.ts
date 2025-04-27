@@ -1,181 +1,127 @@
-// deno-lint-ignore-file no-explicit-any
-
-import { assertEquals } from '$std/assert/mod.ts';
-
-import { returnsNext, stub } from '$std/testing/mock.ts';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import config, { clearConfig, initConfig } from '~/src/config.ts';
 
-Deno.test('init', async (test) => {
-  await test.step('1', async () => {
-    const permissionsStub = stub(
-      Deno.permissions,
-      'query',
-      () => ({ state: 'granted' } as any),
-    );
+const originalEnv = { ...process.env };
 
-    const readFileStub = stub(
-      Deno,
-      'readTextFile',
-      () => Promise.resolve(''),
-    );
-
-    const hasStub = stub(
-      Deno.env,
-      'has',
-      returnsNext([
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-      ]),
-    );
-
-    const getStub = stub(
-      Deno.env,
-      'get',
-      returnsNext([
-        '',
-        'sentry_dsn',
-        'app_id',
-        'public_key',
-        'mongo_uri',
-        'packs_url',
-        'notice_message',
-        '0',
-        '0',
-      ]),
-    );
-
-    try {
-      await initConfig();
-
-      assertEquals(config, {
-        deploy: false,
-        appId: 'app_id',
-        publicKey: 'public_key',
-        sentry: 'sentry_dsn',
-        mongoUri: 'mongo_uri',
-        packsUrl: 'packs_url',
-        notice: 'notice_message',
-        global: true,
-        gacha: true,
-        trading: true,
-        stealing: true,
-        synthesis: true,
-        shop: true,
-        communityPacks: true,
-        communityPacksMaintainerAPI: true,
-        communityPacksBrowseAPI: true,
-        combat: true,
-        origin: undefined,
-        disableImagesProxy: false,
-        defaultServerDupes: false,
-      });
-    } finally {
-      clearConfig();
-      permissionsStub.restore();
-      readFileStub.restore();
-      hasStub.restore();
-      getStub.restore();
-    }
+describe('Config', () => {
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+    vi.mock('fs/promises', () => ({
+      readFile: vi.fn().mockResolvedValue(''),
+    }));
   });
 
-  await test.step('2', async () => {
-    const permissionsStub = stub(
-      Deno.permissions,
-      'query',
-      () => ({ state: 'granted' } as any),
-    );
+  afterEach(() => {
+    clearConfig();
+    process.env = originalEnv;
+    vi.restoreAllMocks();
+  });
 
-    const readFileStub = stub(
-      Deno,
-      'readTextFile',
-      () => Promise.resolve(''),
-    );
+  it('should initialize with environment variables when present', async () => {
+    process.env.SENTRY_DSN = 'sentry_dsn';
+    process.env.APP_ID = 'app_id';
+    process.env.PUBLIC_KEY = 'public_key';
+    process.env.MONGO_URI = 'mongo_uri';
+    process.env.PACKS_URL = 'packs_url';
+    process.env.NOTICE = 'notice_message';
+    process.env.GLOBAL = '1';
+    process.env.GACHA = '1';
+    process.env.TRADING = '1';
+    process.env.STEALING = '1';
+    process.env.SYNTHESIS = '1';
+    process.env.SHOP = '1';
+    process.env.COMMUNITY_PACKS_MAINTAINER_API = '1';
+    process.env.COMMUNITY_PACKS_BROWSE_API = '1';
+    process.env.DISABLE_IMAGES_PROXY = '1';
 
-    const hasStub = stub(
-      Deno.env,
-      'has',
-      returnsNext([
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-      ]),
-    );
+    await initConfig();
 
-    const getStub = stub(
-      Deno.env,
-      'get',
-      returnsNext([
-        '1',
-        'sentry_dsn',
-        'app_id',
-        'public_key',
-        'mongo_uri',
-        'packs_url',
-        'notice_message',
-        '0',
-        '0',
-        '0',
-        '0',
-        '0',
-        '0',
-        '0',
-        '0',
-        '0',
-        '0',
-        '1',
-        '1',
-      ]),
-    );
+    expect(config).toEqual({
+      appId: 'app_id',
+      publicKey: 'public_key',
+      sentry: 'sentry_dsn',
+      mongoUri: 'mongo_uri',
+      packsUrl: 'packs_url',
+      notice: 'notice_message',
+      gacha: true,
+      global: true,
+      trading: true,
+      stealing: true,
+      synthesis: true,
+      shop: true,
+      communityPacksMaintainerAPI: true,
+      communityPacksBrowseAPI: true,
+      disableImagesProxy: true,
+    });
+  });
 
-    try {
-      await initConfig();
+  it('should initialize with default values when environment variables not present', async () => {
+    process.env.SENTRY_DSN = 'sentry_dsn';
+    process.env.APP_ID = 'app_id';
+    process.env.PUBLIC_KEY = 'public_key';
+    process.env.MONGO_URI = 'mongo_uri';
+    process.env.PACKS_URL = 'packs_url';
+    process.env.NOTICE = 'notice_message';
 
-      assertEquals(config, {
-        deploy: true,
-        appId: 'app_id',
-        publicKey: 'public_key',
-        sentry: 'sentry_dsn',
-        mongoUri: 'mongo_uri',
-        packsUrl: 'packs_url',
-        notice: 'notice_message',
-        gacha: false,
-        global: false,
-        trading: false,
-        stealing: false,
-        synthesis: false,
-        shop: false,
-        communityPacks: false,
-        communityPacksMaintainerAPI: false,
-        communityPacksBrowseAPI: false,
-        combat: false,
-        origin: undefined,
-        disableImagesProxy: true,
-        defaultServerDupes: true,
-      });
-    } finally {
-      clearConfig();
-      permissionsStub.restore();
-      readFileStub.restore();
-      hasStub.restore();
-      getStub.restore();
-    }
+    await initConfig();
+
+    expect(config).toEqual({
+      appId: 'app_id',
+      publicKey: 'public_key',
+      sentry: 'sentry_dsn',
+      mongoUri: 'mongo_uri',
+      packsUrl: 'packs_url',
+      notice: 'notice_message',
+      global: true,
+      gacha: true,
+      trading: true,
+      stealing: true,
+      synthesis: true,
+      shop: true,
+      communityPacksMaintainerAPI: true,
+      communityPacksBrowseAPI: true,
+      disableImagesProxy: false,
+      config: undefined,
+    });
+  });
+
+  it('should initialize with environment variables when present and are false', async () => {
+    process.env.SENTRY_DSN = 'sentry_dsn';
+    process.env.APP_ID = 'app_id';
+    process.env.PUBLIC_KEY = 'public_key';
+    process.env.MONGO_URI = 'mongo_uri';
+    process.env.PACKS_URL = 'packs_url';
+    process.env.NOTICE = 'notice_message';
+    process.env.GLOBAL = '0';
+    process.env.GACHA = '0';
+    process.env.TRADING = '0';
+    process.env.STEALING = '0';
+    process.env.SYNTHESIS = '0';
+    process.env.SHOP = '0';
+    process.env.COMMUNITY_PACKS_MAINTAINER_API = '0';
+    process.env.COMMUNITY_PACKS_BROWSE_API = '0';
+    process.env.DISABLE_IMAGES_PROXY = '0';
+
+    await initConfig();
+
+    expect(config).toEqual({
+      appId: 'app_id',
+      publicKey: 'public_key',
+      sentry: 'sentry_dsn',
+      mongoUri: 'mongo_uri',
+      packsUrl: 'packs_url',
+      notice: 'notice_message',
+      gacha: false,
+      global: false,
+      trading: false,
+      stealing: false,
+      synthesis: false,
+      shop: false,
+      communityPacksMaintainerAPI: false,
+      communityPacksBrowseAPI: false,
+      disableImagesProxy: false,
+      config: undefined,
+    });
   });
 });

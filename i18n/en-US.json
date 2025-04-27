@@ -16,10 +16,6 @@
   "decline": "Decline",
   "failed": "Failed",
 
-  "reply": "Reply",
-  "message": "Message",
-  "reply-to": "Reply to {0}",
-
   "homepage": "Homepage",
 
   "assigned": "Assigned",
@@ -33,8 +29,7 @@
   "+1-key": "_+1 key {0}_",
   "available-pull": "Available Pull",
   "available-pulls": "Available Pulls",
-  "available-key": "Available Key",
-  "available-keys": "Available Keys",
+
   "daily-token": "Daily Token",
   "daily-tokens": "Daily Tokens",
   "steal-cooldown-ends": "_Steal cooldown ends {0}_",
@@ -45,19 +40,6 @@
   "pulls": "pulls",
   "character": "character",
   "characters": "characters",
-
-  "skip": "Skip",
-  "attacking": "Attacking",
-  "attacking-again": "Again",
-  "won": "Won",
-
-  "key": "Key",
-  "keys": "Keys",
-  "reclear": "Reclear",
-  "floor": "Floor",
-  "next-floor": "Next Floor",
-  "try-again": "Try Again",
-  "challenge": "Challenge",
 
   "undiscovered": "Undiscovered",
   "cleared": "Cleared",
@@ -139,7 +121,6 @@
   "maintenance-merge": "Merging is under maintenance, try again later!",
   "maintenance-trade": "Trading is under maintenance, try again later!",
   "maintenance-steal": "Stealing is under maintenance, try again later!",
-  "maintenance-combat": "Combat test period has ended! Please wait while we implement a new rework to make things more fun!",
   "maintenance-packs": "Community Packs are under maintenance, try again later!",
   "maintenance-shop": "Shop is under maintenance, try again later!",
 
@@ -147,8 +128,6 @@
   "gacha-no-guarantees": "You don`t have any {0}pulls",
   "gacha-no-more-characters-left": "There are no more {0}characters left",
   "gacha-no-more-in-range": "There are no more characters left in this range",
-
-  "combat-no-more-keys": "You don't have any more keys!",
 
   "no-packs-installed": "Server doesn't have any installed packs",
 
@@ -160,47 +139,6 @@
 
   "your-party-empty": "Your party is empty",
   "user-party-empty": "{0} party is empty",
-
-  "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
-  "not-enough-unclaimed": "Character doesn't have enough unclaimed points left",
-
-  "battle-yourself": "You can't battle yourself",
-
-  "atk": "ATK",
-  "def": "DEF",
-  "spd": "SPD",
-
-  "stats": "Stats",
-  "skills": "Skills",
-  "skill-point": "Skill Point",
-  "skill-points": "Skill Points",
-  "stat-points": "Stat Points",
-
-  "attack": "Attack",
-  "defense": "Defense",
-  "speed": "Speed",
-  "hp": "HP",
-
-  "lvl": "LVL",
-  "level": "Level",
-  "max": "MAX",
-
-  "acquire-skill": "Acquire Skill",
-  "skill-acquired": "Skill Acquired",
-
-  "upgrade-skill": "Upgrade Skill",
-  "skill-upgraded": "Skill Upgraded",
-
-  "character-not-enough-skill-points": "Character doesn't have enough skill points left",
-  "skill-is-maxed": "Skill is maxed",
-  "maxed-skill-slots": "This character already has the max number of skills possible, and can't acquire new skills",
-
-  "no-cleared-floors": "Clear at least one floor of the `/battle tower` first",
-  "max-floor-cleared": "You already cleared the hightest floor in the tower",
-  "tower-fail": "`/reclear` the last floor to level up your party and try again!",
-  "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
-  "exp-gained": "**{0}** {1}(+{2})/{3} EXP",
-  "exp": "EXP",
 
   "dupes-allowed": "Dupes are allowed (Experimental)",
   "dupes-disallowed": "Dupes are disallowed",
@@ -223,7 +161,6 @@
   "help-page2-merge-example-2": "or __5 of your 2{0}characters.__",
   "help-page2-footer": "> *Sacrificed characters will return to being available in `/gacha`*",
 
-  "help-page3-party-required": "You will need a party to use combat features",
   "help-page3-party-presets-disclaimer": "__You can't have more than 1 party__ or save your current party to a preset and switch between presets.",
   "help-page3-party-view": "`/party view` to see your current party.",
   "help-page3-party-assign-1": "`/party assign name: spot:` to assign a character you have to your party,",
@@ -239,19 +176,6 @@
   "help-page4-cooldown": "__Steal has a cooldown of **{0}** days__ regardless of the outcome of the attempt.",
   "help-page4-footer": "> Staying active is the best defense against stealing.",
 
-  "help-page10-title": "Combat",
-  "help-page10-starting-points": "__Every character gets a starting amount of stats and skills__ based on their star rating.",
-  "help-page10-stats-rng": "__Stats and skills are randomly generated for every new character you find__, use `/stats` to check.",
-
-  "help-page10-attack": "__Attack is the damage__, that you can potentially do to your enemy.",
-  "help-page10-defense": "__Defense is your damage reduction__, minimizing the damage a enemy can do to you.",
-  "help-page10-speed": "__Speed is your turn order__, the faster between you and your enemy gets the first move, an overwhelming speed difference will allow you to attack move than once in the same turn.",
-
-  "help-page10-tower": "Use `/battle tower` to climb the tower, every server has a unique tower and unique enemies.",
-  "help-page10-reclear": "Level up your characters and gain extra stat points by `/reclear`ing the same floor a few times.",
-  "help-page10-distribution": "> Stat points gained from leveling up is random distributed based on the ratio of your starting stats, Skill points can be used to acquire or upgrade `/skills`",
-  "help-page10-keys": "> Challenging and reclearing floors require keys, you get +1 key every {0} minutes, you can also buy more keys from the `/shop`",
-
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
   "help-page5-daily-tokens": "__You get 1 daily token every {0} hours__, tokens are added automatically. \n\nYou get 2 daily tokens on weekends.",
@@ -266,7 +190,7 @@
   "help-page5-footer": "> Use the guaranteed pulls you bought by calling `/pull stars:`",
 
   "help-page6-title": "Roadmap",
-  "help-page6-release": "__**Releasing in the near future (~3 months)**__",
+  "help-page6-release": "__**Releasing in the future**__",
 
   "help-page7-title": "Essential Commands",
   "help-page8-title": "Other Commands",
@@ -315,7 +239,6 @@
 
   "/buy normal": "use tokens to buy normal pulls",
   "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
-  "/buy keys": "use tokens to buy tower keys",
 
   "/installed packs": "list all the installed packs on a server",
   "/logs": "list user last few found characters",
@@ -324,17 +247,6 @@
   "/packs uninstall": "uninstall a community pack",
 
   "/server options": "manage your server",
-
-  "/stats": "manage your characters stat points and skills",
-
-  "/battle tower": "Climb the tower to glory and become a fable",
-  "/battle challenge": "Challenge the tower's next floor",
-
-  "/reclear": "Reclear your current tower floor to gain exp",
-
-  "/skills showall": "Show all available skills and their details",
-  "/skills acquire": "Teach a character a skill",
-  "/skills upgrade": "Upgrade a character's skill",
 
   "/help": "need more information? we got you",
 
@@ -365,7 +277,6 @@
   "$picture": "Show the picture of the character (but can only view one character at a time)",
 
   "$buy-normal-amount": "the amount of pulls you want to buy",
-  "$buy-keys-amount": "the amount of keys you want to buy",
   "$buy-guaranteed-stars": "the star rating you want to buy",
 
   "$reward-pulls": "the amount of pulls you want to give the user",
@@ -377,8 +288,6 @@
 
   "$pack-id": "the id of the pack",
 
-  "$message": "your next message",
-
   "page": "page",
   "category": "category",
 
@@ -387,61 +296,9 @@
   "$help-page-merging": "Merging",
   "$help-page-party": "Party",
   "$help-page-stealing": "Stealing",
-  "$help-page-combat": "Combat",
   "$help-page-shop": "Shop",
   "$help-page-roadmap": "Roadmap",
   "$help-page-essential-commands": "Essential Commands",
   "$help-page-other-commands": "Other Commands",
-  "$help-page-admin-commands": "Admin Commands",
-
-  "$skill-categories": "specify a category to display",
-
-  "buff": "Buff",
-  "debuff": "Debuff",
-  "offensive": "Offensive",
-  "support": "Support",
-  "heal": "Heal",
-
-  "stunned": "Stunned",
-  "chained": "Chained",
-  "crit": "Crit",
-
-  "~crit": "Critical Hit",
-  "~crit-desc": "The art of performing the traditional critical hit.",
-  "~crit-chance": "Crit Chance",
-  "~crit-damage": "Crit Damage",
-
-  "~boost": "Boost by",
-
-  "~speed-boost": "Speed Boost",
-  "~speed-boost-desc": "Boost the speed of all party members (Not stackable)",
-  "~defense-boost": "Defense Boost",
-  "~defense-boost-desc": "Boost the defense of all party members (Not stackable)",
-
-  "~slow-debuff": "Slow Debuff",
-  "~slow-debuff-desc": "Slow the speed of your enemy party members (Not stackable)",
-
-  "~enrage": "Enraged",
-  "~enrage-desc": "If your health drops to n% boost all stats by n%",
-  "~hp-remaining": "HP Remaining",
-
-  "~heal": "Emergency Healing",
-  "~heal-desc": "Once per battle, once a party member HP drops to below 25%, heal them by n% of the caster's max HP (Not stackable)",
-  "~heal-amount": "Heal by",
-
-  "~lifesteal": "Lifesteal",
-  "~lifesteal-desc": "Every time you damage an enemy heal a portion of the damage you dealt",
-  "~lifesteal-amount": "Heal By of Damage",
-
-  "~stun": "Stun",
-  "~stun-desc": "Adds a chance to stun the enemy skipping their next turn",
-  "~stun-chance": "Stun Chance",
-
-  "~chain": "Chain Attack",
-  "~chain-desc": "Increases the amount of damage on chained attacks",
-  "~chain-2-boost": "x2 Attack Boost",
-  "~chain-3-boost": "x3 Attack Boost",
-
-  "~sneak": "Sneak Attack",
-  "~sneak-desc": "Always target and sneak attack the backline of the enemy party instead"
+  "$help-page-admin-commands": "Admin Commands"
 }

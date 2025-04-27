@@ -1,10 +1,6 @@
-// deno-lint-ignore-file camelcase
-
-import { green } from '$std/fmt/colors.ts';
+import 'dotenv/config';
 
 import { AvailableLocales } from '~/src/discord.ts';
-
-import { skillCategories } from '~/src/types.ts';
 
 import EN from '~/i18n/en-US.json' with { type: 'json' };
 import ES from '~/i18n/es-ES.json' with { type: 'json' };
@@ -14,6 +10,8 @@ enum CommandType {
   'CHAT' = 1,
   'USER' = 2,
 }
+
+const green = (text: string) => `\x1b[32m${text}\x1b[0m`;
 
 const spots = [
   { name: '1', value: 1 },
@@ -84,12 +82,13 @@ const Command = ({
   aliases,
   defaultPermission,
 }: Command) => {
-  // deno-lint-ignore no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const transformOption: any = (option: Option) => ({
     name: option.name,
-    description: option.description && option.description in EN
-      ? EN[option.description as keyof typeof EN]
-      : option.description,
+    description:
+      option.description && option.description in EN
+        ? EN[option.description as keyof typeof EN]
+        : option.description,
     autocomplete: option.autocomplete,
     type: option.type.valueOf(),
     choices: option.choices,
@@ -99,30 +98,36 @@ const Command = ({
     min_length: option.min_length,
     max_length: option.max_length,
     description_localizations: {
-      'es-ES': option.description && option.description in ES
-        ? ES[option.description as keyof typeof ES]
-        : undefined,
-      'pt-BR': option.description && option.description in BR
-        ? BR[option.description as keyof typeof BR]
-        : undefined,
+      'es-ES':
+        option.description && option.description in ES
+          ? ES[option.description as keyof typeof ES]
+          : undefined,
+      'pt-BR':
+        option.description && option.description in BR
+          ? BR[option.description as keyof typeof BR]
+          : undefined,
     },
     options: option.options?.map((option) => transformOption(option)),
   });
 
-  const commands = [{
-    name,
-    type,
-    description: description && description in EN
-      ? EN[description as keyof typeof EN]
-      : description,
-    default_member_permissions: defaultPermission,
-    description_localizations: {
-      'es-ES': description && description in ES
-        ? ES[description as keyof typeof ES]
-        : undefined,
+  const commands = [
+    {
+      name,
+      type,
+      description:
+        description && description in EN
+          ? EN[description as keyof typeof EN]
+          : description,
+      default_member_permissions: defaultPermission,
+      description_localizations: {
+        'es-ES':
+          description && description in ES
+            ? ES[description as keyof typeof ES]
+            : undefined,
+      },
+      options: options?.map((option) => transformOption(option)),
     },
-    options: options?.map((option) => transformOption(option)),
-  }];
+  ];
 
   aliases?.forEach((alias) =>
     commands.push({
@@ -134,22 +139,25 @@ const Command = ({
   return commands;
 };
 
-async function put(commands: Command[], {
-  BOT_TOKEN,
-  GUILD_ID,
-  APP_ID,
-}: {
-  APP_ID: string;
-  BOT_TOKEN: string;
-  GUILD_ID?: string;
-}): Promise<void> {
+async function put(
+  commands: Command[],
+  {
+    BOT_TOKEN,
+    GUILD_ID,
+    APP_ID,
+  }: {
+    APP_ID: string;
+    BOT_TOKEN: string;
+    GUILD_ID?: string;
+  }
+): Promise<void> {
   if (commands.length > 100) {
     throw new Error('the maximum number of commands allowed is 100');
   }
 
   if (!GUILD_ID) {
     console.log(
-      `Updating ${commands.length} global commands for production bot\n\n`,
+      `Updating ${commands.length} global commands for production bot\n\n`
     );
   } else {
     console.log(`Updating ${commands.length} guild commands for dev bot\n\n`);
@@ -162,7 +170,7 @@ async function put(commands: Command[], {
   const response = await fetch(url, {
     method: 'PUT',
     headers: {
-      'Authorization': `Bot ${BOT_TOKEN}`,
+      Authorization: `Bot ${BOT_TOKEN}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(commands),
@@ -447,19 +455,12 @@ export const commands = [
             value: 3,
           },
           {
-            name: EN['$help-page-combat'],
-            name_localizations: {
-              // 'es-ES': ES['$help-page-combat'],
-            },
-            value: 4,
-          },
-          {
             name: EN['$help-page-shop'],
             name_localizations: {
               'es-ES': ES['$help-page-shop'],
               'pt-BR': BR['$help-page-shop'],
             },
-            value: 5,
+            value: 4,
           },
           {
             name: EN['$help-page-essential-commands'],
@@ -467,7 +468,7 @@ export const commands = [
               'es-ES': ES['$help-page-essential-commands'],
               'pt-BR': BR['$help-page-essential-commands'],
             },
-            value: 6,
+            value: 5,
           },
           {
             name: EN['$help-page-other-commands'],
@@ -475,7 +476,7 @@ export const commands = [
               'es-ES': ES['$help-page-other-commands'],
               'pt-BR': BR['$help-page-other-commands'],
             },
-            value: 7,
+            value: 6,
           },
           {
             name: EN['$help-page-admin-commands'],
@@ -483,7 +484,7 @@ export const commands = [
               'es-ES': ES['$help-page-admin-commands'],
               'pt-BR': BR['$help-page-admin-commands'],
             },
-            value: 8,
+            value: 7,
           },
         ],
       }),
@@ -512,7 +513,7 @@ export const commands = [
         name: 'stars',
         description: '$stars',
         type: Type.INTEGER,
-        choices: spots.slice(2).toReversed(),
+        choices: spots.slice(2).reverse(),
       }),
     ],
   }),
@@ -561,21 +562,9 @@ export const commands = [
       Option({
         name: 'target',
         description: '$merge-star-target',
-        choices: spots.slice(1).toReversed(),
+        choices: spots.slice(1).reverse(),
         type: Type.INTEGER,
       }),
-      // Option({
-      //   name: 'min',
-      //   description: '/merge min',
-      //   type: Type.SUB_COMMAND,
-      //   optional: true,
-      // }),
-      // Option({
-      //   name: 'max',
-      //   description: '/merge max',
-      //   type: Type.SUB_COMMAND,
-      //   optional: true,
-      // }),
     ],
   }),
   ...Command({
@@ -640,22 +629,7 @@ export const commands = [
             name: 'stars',
             description: '$buy-guaranteed-stars',
             type: Type.INTEGER,
-            choices: spots.slice(2).toReversed(),
-          }),
-        ],
-      }),
-      Option({
-        name: 'keys',
-        description: '/buy keys',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            min_value: 1,
-            max_value: 99,
-            name: 'amount',
-            description: '$buy-keys-amount',
-            type: Type.INTEGER,
+            choices: spots.slice(2).reverse(),
           }),
         ],
       }),
@@ -778,7 +752,7 @@ export const commands = [
             name: 'rating',
             description: '$stars',
             type: Type.INTEGER,
-            choices: spots.toReversed(),
+            choices: spots.reverse(),
           }),
           Option({
             name: 'user',
@@ -932,120 +906,12 @@ export const commands = [
       }),
     ],
   }),
-  //
-  ...Command({
-    name: 'stats',
-    description: '/stats',
-    options: [
-      Option({
-        name: 'name',
-        description: '$character-name',
-        autocomplete: true,
-        type: Type.STRING,
-      }),
-    ],
-  }),
-  ...Command({
-    name: 'skills',
-    description: 'characters skill management',
-    options: [
-      Option({
-        name: 'showall',
-        description: '/skills showall',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'category',
-            description: '$skill-categories',
-            optional: true,
-            type: Type.STRING,
-            choices: skillCategories.map((category) => ({
-              value: category,
-              name: EN[category],
-              name_localizations: {
-                // deno-lint-ignore no-explicit-any
-                'es-ES': (ES as any as typeof EN)[category],
-                // deno-lint-ignore no-explicit-any
-                'pt-BR': (BR as any as typeof EN)[category],
-              },
-            })),
-          }),
-        ],
-      }),
-      Option({
-        name: 'acquire',
-        description: '/skills acquire',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'character',
-            description: '$character-name',
-            autocomplete: true,
-            type: Type.STRING,
-          }),
-          Option({
-            name: 'skill',
-            autocomplete: true,
-            description: '$skill-name',
-            type: Type.STRING,
-          }),
-        ],
-      }),
-      Option({
-        name: 'upgrade',
-        description: '/skills upgrade',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'character',
-            description: '$character-name',
-            autocomplete: true,
-            type: Type.STRING,
-          }),
-          Option({
-            name: 'skill',
-            autocomplete: true,
-            description: '$skill-name',
-            type: Type.STRING,
-          }),
-        ],
-      }),
-    ],
-  }),
-  ...Command({
-    name: 'battle',
-    description: 'battle/combat commands',
-    aliases: ['bt'],
-    options: [
-      Option({
-        name: 'tower',
-        description: '/battle tower',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
-      Option({
-        name: 'challenge',
-        description: '/battle challenge',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
-    ],
-  }),
-  ...Command({
-    name: 'reclear',
-    description: '/reclear',
-  }),
 ];
 
-if (import.meta.main) {
-  const APP_ID = Deno.env.get('APP_ID');
-
-  const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
-
-  const GUILD_ID = Deno.env.get('GUILD_ID');
+{
+  const APP_ID = process.env.APP_ID;
+  const BOT_TOKEN = process.env.BOT_TOKEN;
+  const GUILD_ID = process.env.GUILD_ID;
 
   if (!APP_ID) {
     throw new Error('APP_ID is not defined');

@@ -9,9 +9,7 @@ import i18n from '~/src/i18n.ts';
 import user from '~/src/user.ts';
 import search from '~/src/search.ts';
 
-import db, { ObjectId } from '~/db/mod.ts';
-
-import searchIndex from '~/search-index/mod.ts';
+import db, { ObjectId } from '~/db/index.ts';
 
 import packs from '~/src/packs.ts';
 
@@ -51,188 +49,91 @@ const variables: Variables = {
   },
 };
 
-async function likedPool(
-  { userId, guildId }: { userId: string; guildId: string },
-): Promise<{
-  pool: Map<string, import('search-index').Character[]>;
-  validate: (character: Character) => boolean;
-}> {
+async function likedPool({
+  userId,
+  guildId,
+}: {
+  userId: string;
+  guildId: string;
+}): Promise<DisaggregatedCharacter[]> {
   const user = await db.getUser(userId);
 
-  let likes = user.likes ?? [];
+  const likes = user.likes ?? [];
 
-  const results = await db.findCharacters(
-    guildId,
-    likes.map(({ characterId }) => characterId)
-      .filter(utils.nonNullable),
-  );
-
-  likes = likes.filter((like, i) => {
-    return like.mediaId || (like.characterId && results[i] === undefined);
-  });
-
-  // fallback to normal pool
   if (!likes.length) {
     return gacha.rngPool({ guildId });
   }
 
-  const [mediaPool, charPool] = await Promise.all([
-    searchIndex.pool({}, guildId),
-    searchIndex.charIdPool(guildId),
-  ]);
+  const charLikes = likes
+    .map((like) => like.characterId)
+    .filter(utils.nonNullable);
 
-  const finalPool: Awaited<ReturnType<typeof searchIndex.pool>> = new Map();
+  const mediaLikes = likes
+    .map((like) => like.mediaId)
+    .filter(utils.nonNullable);
 
-  likes.forEach(({ characterId, mediaId }) => {
-    if (typeof characterId === 'string') {
-      const char = charPool.get(characterId);
-
-      if (!char || !char.mediaId) return;
-
-      if (!finalPool.has(char.mediaId)) {
-        finalPool.set(char.mediaId, []);
-      }
-
-      // deno-lint-ignore no-non-null-assertion
-      finalPool.get(char.mediaId)!.push(char);
-    } else if (typeof mediaId === 'string') {
-      const characters = mediaPool.get(mediaId);
-
-      if (!characters?.length) return;
-
-      if (!finalPool.has(mediaId)) {
-        finalPool.set(mediaId, []);
-      }
-
-      // deno-lint-ignore no-non-null-assertion
-      finalPool.get(mediaId)!.push(...characters);
-    }
+  const pool = await db.likesPool({
+    guildId,
+    characterIds: charLikes,
+    mediaIds: mediaLikes,
   });
 
-  const validate = (): boolean => {
-    return true;
-  };
+  console.log('initial likes pool length', pool.length);
 
-  // fallback to normal pool
-  if (!finalPool.size) {
+  if (!pool.length) {
     return gacha.rngPool({ guildId });
   }
 
-  return { pool: finalPool, validate };
+  return pool;
 }
 
-async function rngPool(
-  { guildId }: { guildId: string },
-): Promise<{
-  pool: Map<string, import('search-index').Character[]>;
-  validate: (character: Character) => boolean;
-}> {
+async function rngPool({
+  guildId,
+}: {
+  guildId: string;
+}): Promise<DisaggregatedCharacter[]> {
   const variables: Variables = gacha.variables;
 
   const { value: rating } = utils.rng(variables.rating);
 
-  const pool = await searchIndex.pool({ rating }, guildId);
+  const pool = await db.ratingPool({ guildId, rating });
 
-  const validate = (character: Character | DisaggregatedCharacter): boolean => {
-    if (
-      typeof character.popularity === 'number' &&
-      new Rating({ popularity: character.popularity }).stars !== rating
-    ) {
-      return false;
-    }
+  console.log('initial pool length', pool.length, 'rating', rating);
 
-    // deno-lint-ignore no-non-null-assertion
-    const edge = character.media && 'edges' in character.media! &&
-      character.media.edges[0];
-
-    if (edge) {
-      const popularity = character.popularity || edge.node.popularity || lowest;
-
-      if (
-        new Rating({
-          popularity,
-          role: character.popularity ? undefined : edge.role,
-        }).stars !== rating
-      ) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  return { pool, validate };
+  return pool;
 }
 
-async function rangeFallbackPool(
-  { guildId }: { guildId: string },
-): Promise<Map<string, import('search-index').Character[]>> {
-  return await searchIndex.pool({}, guildId);
+export async function guaranteedPool({
+  guildId,
+  guarantee,
+}: {
+  guildId: string;
+  guarantee: number;
+}): Promise<DisaggregatedCharacter[]> {
+  const pool = await db.ratingPool({ guildId, rating: guarantee });
+
+  return pool;
 }
 
-export async function guaranteedPool(
-  { guildId, guarantee }: {
-    guildId: string;
-    guarantee: number;
-  },
-): Promise<{
-  pool: Map<string, import('search-index').Character[]>;
-  validate: (character: Character) => boolean;
-  role?: CharacterRole;
-  range?: [number, number];
-}> {
-  const pool = await searchIndex.pool(
-    { rating: guarantee },
-    guildId,
-  );
-
-  const validate = (character: Character | DisaggregatedCharacter): boolean => {
-    // deno-lint-ignore no-non-null-assertion
-    const edge = character.media && 'edges' in character.media! &&
-      character.media.edges[0];
-
-    if (
-      typeof character.popularity === 'number' &&
-      new Rating({ popularity: character.popularity }).stars === guarantee
-    ) {
-      return true;
-    } else if (edge) {
-      const popularity = character.popularity || edge.node.popularity || lowest;
-
-      if (new Rating({ popularity, role: edge.role }).stars === guarantee) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  return {
-    pool,
-    validate,
-  };
-}
-
-async function rngPull(
-  {
-    guildId,
-    userId,
-    guarantee,
-    sacrifices,
-  }: {
-    guildId: string;
-    userId?: string;
-    guarantee?: number;
-    sacrifices?: ObjectId[];
-  },
-): Promise<Pull> {
+async function rngPull({
+  guildId,
+  userId,
+  guarantee,
+  sacrifices,
+}: {
+  guildId: string;
+  userId?: string;
+  guarantee?: number;
+  sacrifices?: ObjectId[];
+}): Promise<Pull> {
   const mongo = await db.newMongo().connect();
 
-  let { pool, validate } = typeof guarantee === 'number'
-    ? await gacha.guaranteedPool({ guildId, guarantee })
-    : utils.rng(variables.liked).value && userId
-    ? await gacha.likedPool({ guildId, userId })
-    : await gacha.rngPool({ guildId });
+  const pool =
+    typeof guarantee === 'number'
+      ? await gacha.guaranteedPool({ guildId, guarantee })
+      : utils.rng(variables.liked).value && userId
+        ? await gacha.likedPool({ guildId, userId })
+        : await gacha.rngPool({ guildId });
 
   const [guild, existing] = await Promise.all([
     db.getGuild(guildId, mongo, true),
@@ -249,7 +150,6 @@ async function rngPull(
     exists[characterId].push(userId);
   });
 
-  let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
@@ -259,57 +159,32 @@ async function rngPull(
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
 
-  if (!pool.size && !guarantee) {
-    pool = await gacha.rangeFallbackPool({ guildId });
-    validate = () => true;
-  }
+  console.log('final pool length', pool.length);
 
-  if (!pool.size) {
+  if (!pool.length) {
     throw new PoolError();
   }
-
-  const poolKeys = Array.from(pool.keys());
 
   try {
     while (!signal.aborted) {
       // pool is empty
-      if (!poolKeys.length) {
+      if (!pool.length) {
         break;
       }
 
-      const mediaIndex = Math.floor(Math.random() * poolKeys.length);
+      const index = Math.floor(Math.random() * pool.length);
 
-      const mediaCharacters = pool.get(poolKeys[mediaIndex])
-        ?.filter((character) => {
-          // dupes disallowed
-          if (!guild.options?.dupes && Array.isArray(exists[character.id])) {
-            return false;
-          }
+      const rating = pool[index].rating;
+      const characterId = `${pool[index].packId}:${pool[index].id}`;
 
-          // same user dupe
-          // if (
-          //   userId &&
-          //   guild.options?.dupes && Array.isArray(exists[character.id]) &&
-          //   exists[character.id].includes(userId)
-          // ) {
-          //   return false;
-          // }
-
-          return true;
-        });
-
-      if (!mediaCharacters?.length) {
-        // remove media from pool to avoid slow down
-        poolKeys.splice(mediaIndex, 1);
+      if (!guild.options?.dupes && Array.isArray(exists[characterId])) {
         continue;
       }
 
-      const i = Math.floor(Math.random() * mediaCharacters.length);
-
-      const characterId = mediaCharacters[i].id;
-
-      const sameUser = userId &&
-        guild.options?.dupes && Array.isArray(exists[characterId]) &&
+      const sameUserDupe =
+        userId &&
+        guild.options?.dupes &&
+        Array.isArray(exists[characterId]) &&
         exists[characterId].includes(userId);
 
       const results = await packs.characters({ guildId, ids: [characterId] });
@@ -323,7 +198,7 @@ async function rngPull(
 
       const edge = candidate.media?.edges?.[0];
 
-      if (!edge || !validate(candidate)) {
+      if (!edge) {
         continue;
       }
 
@@ -331,28 +206,22 @@ async function rngPull(
         continue;
       }
 
-      rating = Rating.fromCharacter(candidate);
-
-      if (!rating.stars) {
+      if (!rating) {
         continue;
       }
 
       // add character to user's inventory
-      if (userId && !sameUser) {
-        try {
-          await db.addCharacter({
-            characterId,
-            guildId,
-            userId,
-            mediaId: `${edge.node.packId}:${edge.node.id}`,
-            guaranteed: typeof guarantee === 'number',
-            rating: rating.stars,
-            sacrifices,
-            mongo,
-          });
-        } catch (err) {
-          throw err;
-        }
+      if (userId && !sameUserDupe) {
+        await db.addCharacter({
+          characterId,
+          guildId,
+          userId,
+          mediaId: `${edge.node.packId}:${edge.node.id}`,
+          guaranteed: typeof guarantee === 'number',
+          sacrifices,
+          rating,
+          mongo,
+        });
       }
 
       media = edge.node;
@@ -365,41 +234,46 @@ async function rngPull(
     await mongo.close();
   }
 
-  if (!character || !media || !rating?.stars) {
+  if (!character || !media) {
     throw new PoolError();
   }
 
   media = await packs.aggregate<Media>({ media, guildId });
 
-  return { rating, character, media };
+  return { rating: new Rating({ stars: character.rating }), character, media };
 }
 
-async function pullAnimation(
-  { token, userId, guildId, quiet, mention, components, pull }: {
-    token: string;
-    pull: Pull;
-    userId?: string;
-    guildId?: string;
-    quiet?: boolean;
-    mention?: boolean;
-    components?: boolean;
-  },
-): Promise<void> {
+async function pullAnimation({
+  token,
+  userId,
+  guildId,
+  quiet,
+  mention,
+  components,
+  pull,
+}: {
+  token: string;
+  pull: Pull;
+  userId?: string;
+  guildId?: string;
+  quiet?: boolean;
+  mention?: boolean;
+  components?: boolean;
+}): Promise<void> {
   components ??= true;
 
   const characterId = `${pull.character.packId}:${pull.character.id}`;
 
   const mediaIds = [
     pull.media,
-    ...pull.media.relations?.edges?.map(({ node }) => node) ?? [],
+    ...(pull.media.relations?.edges?.map(({ node }) => node) ?? []),
   ].map(({ packId, id }) => `${packId}:${id}`);
 
   const mediaTitles = packs.aliasToArray(pull.media.title);
 
   const mediaImage = pull.media.images?.[0];
 
-  const embed = new discord.Embed()
-    .setTitle(utils.wrap(mediaTitles[0]));
+  const embed = new discord.Embed().setTitle(utils.wrap(mediaTitles[0]));
 
   const mediaImageAttachment = await embed.setImageWithProxy({
     size: ImageSize.Medium,
@@ -411,9 +285,7 @@ async function pullAnimation(
     .addAttachment(mediaImageAttachment);
 
   if (mention && userId) {
-    message
-      .setContent(`<@${userId}>`)
-      .setPing();
+    message.setContent(`<@${userId}>`).setPing();
   }
 
   // animate pull by shown media
@@ -425,18 +297,12 @@ async function pullAnimation(
 
     const embed = new discord.Embed();
 
-    const image = embed.setImageFile(
-      `assets/public/stars/${pull.rating.stars}.gif`,
-    );
+    embed.setImageUrl(`${config.origin}/stars/${pull.rating.stars}.gif`);
 
-    message = new discord.Message()
-      .addEmbed(embed)
-      .addAttachment(image);
+    message = new discord.Message().addEmbed(embed);
 
     if (mention && userId) {
-      message
-        .setContent(`<@${userId}>`)
-        .setPing();
+      message.setContent(`<@${userId}>`).setPing();
     }
 
     await message.patch(token);
@@ -461,29 +327,20 @@ async function pullAnimation(
       .setId(quiet ? 'q' : 'gacha', userId)
       .setLabel(`/${quiet ? 'q' : 'gacha'}`);
 
-    message.addComponents([
-      component,
-    ]);
+    message.addComponents([component]);
   }
 
-  message.addComponents([
-    new discord.Component()
-      .setLabel('/character')
-      .setId(`character`, characterId, '1'),
-    config.combat
-      ? new discord.Component()
-        .setLabel('/stats')
-        .setId(`stats`, characterId)
-      : undefined,
-    new discord.Component()
-      .setLabel('/like')
-      .setId(`like`, characterId),
-  ].filter(utils.nonNullable));
+  message.addComponents(
+    [
+      new discord.Component()
+        .setLabel('/character')
+        .setId(`character`, characterId, '1'),
+      new discord.Component().setLabel('/like').setId(`like`, characterId),
+    ].filter(utils.nonNullable)
+  );
 
   if (mention && userId) {
-    message
-      .setContent(`<@${userId}>`)
-      .setPing();
+    message.setContent(`<@${userId}>`).setPing();
   }
 
   await message.patch(token);
@@ -497,7 +354,7 @@ async function pullAnimation(
     const users = await db.getActiveUsersIfLiked(
       guildId,
       characterId,
-      mediaIds,
+      mediaIds
     );
 
     const existing = await db.findCharacter(guildId, characterId);
@@ -530,28 +387,31 @@ async function pullAnimation(
 /**
  * start the pull's animation
  */
-function start(
-  { token, guildId, userId, guarantee, mention, quiet }: {
-    token: string;
-    guildId: string;
-    userId?: string;
-    guarantee?: number;
-    mention?: boolean;
-    quiet?: boolean;
-  },
-): discord.Message {
+function start({
+  token,
+  guildId,
+  userId,
+  guarantee,
+  mention,
+  quiet,
+}: {
+  token: string;
+  guildId: string;
+  userId?: string;
+  guarantee?: number;
+  mention?: boolean;
+  quiet?: boolean;
+}) {
   const locale = userId
-    ? (user.cachedUsers[userId]?.locale ??
-      user.cachedGuilds[guildId]?.locale)
+    ? (user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale)
     : user.cachedGuilds[guildId]?.locale;
 
   if (!config.gacha) {
-    throw new NonFetalError(
-      i18n.get('maintenance-gacha', locale),
-    );
+    throw new NonFetalError(i18n.get('maintenance-gacha', locale));
   }
 
-  gacha.rngPull({ userId, guildId, guarantee })
+  return gacha
+    .rngPull({ userId, guildId, guarantee })
     .then((pull) => {
       return pullAnimation({ token, userId, guildId, mention, quiet, pull });
     })
@@ -559,14 +419,14 @@ function start(
       if (err instanceof NoPullsError) {
         return await new discord.Message()
           .addEmbed(
-            new discord.Embed()
-              .setDescription(i18n.get('gacha-no-more-pulls', locale)),
+            new discord.Embed().setDescription(
+              i18n.get('gacha-no-more-pulls', locale)
+            )
           )
           .addEmbed(
-            new discord.Embed()
-              .setDescription(
-                i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`),
-              ),
+            new discord.Embed().setDescription(
+              i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`)
+            )
           )
           .patch(token);
       }
@@ -578,13 +438,13 @@ function start(
               i18n.get(
                 'gacha-no-guarantees',
                 locale,
-                `${guarantee}${discord.emotes.smolStar}`,
-              ),
-            ),
+                `${guarantee}${discord.emotes.smolStar}`
+              )
+            )
           )
           .addComponents([
             new discord.Component()
-              // deno-lint-ignore no-non-null-assertion
+
               .setId('buy', 'bguaranteed', userId!, `${guarantee}`)
               .setLabel(`/buy guaranteed ${guarantee}`),
           ])
@@ -597,13 +457,14 @@ function start(
             new discord.Embed().setDescription(
               typeof guarantee === 'number'
                 ? i18n.get(
-                  'gacha-no-more-characters-left',
-                  locale,
-                  `${guarantee}${discord.emotes.smolStar}`,
-                )
-                : i18n.get('gacha-no-more-in-range', locale),
-            ),
-          ).patch(token);
+                    'gacha-no-more-characters-left',
+                    locale,
+                    `${guarantee}${discord.emotes.smolStar}`
+                  )
+                : i18n.get('gacha-no-more-in-range', locale)
+            )
+          )
+          .patch(token);
       }
 
       if (!config.sentry) {
@@ -614,16 +475,6 @@ function start(
 
       await discord.Message.internal(refId).patch(token);
     });
-
-  const loading = discord.Message.spinner();
-
-  if (mention) {
-    loading
-      .setContent(`<@${userId}>`)
-      .setPing();
-  }
-
-  return loading;
 }
 
 const gacha = {
@@ -632,7 +483,6 @@ const gacha = {
   rngPull,
   pullAnimation,
   guaranteedPool,
-  rangeFallbackPool,
   likedPool,
   rngPool,
   start,

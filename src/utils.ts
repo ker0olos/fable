@@ -1,27 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// import mime from 'mime';
+
 import nacl from 'tweetnacl';
 
-import { chunk } from '$std/collections/chunk.ts';
+import { nanoid } from 'nanoid';
 
-import { basename, extname } from '$std/path/mod.ts';
-import { extensionsByType } from '$std/media_types/mod.ts';
+import { captureException } from '@sentry/cloudflare';
 
-import {
-  captureException as _captureException,
-  init as _initSentry,
-} from 'sentry';
-
-import { json, serve, serveStatic, validateRequest } from 'sift';
-
-import { distance as levenshtein } from 'levenshtein';
-
-import { proxy as _proxy } from 'images-proxy';
+import { distance as levenshtein } from 'fastest-levenshtein';
 
 import {
   RECHARGE_DAILY_TOKENS_HOURS,
-  RECHARGE_KEYS_MINS,
   RECHARGE_MINS,
   STEAL_COOLDOWN_HOURS,
-} from '~/db/mod.ts';
+} from '~/db/index.ts';
 
 import type { Attachment } from '~/src/discord.ts';
 
@@ -59,27 +51,124 @@ class LehmerRNG {
   }
 }
 
+export function json(
+  jsobj: Parameters<typeof JSON.stringify>[0],
+  {
+    status = 200,
+    statusText = 'OK',
+  }: { status?: number; statusText?: string } = {}
+): Response {
+  const headers = new Headers();
+
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json; charset=utf-8');
+  }
+
+  return new Response(JSON.stringify(jsobj) + '\n', {
+    status,
+    statusText,
+    headers,
+  });
+}
+
 function getRandomFloat(): number {
   const randomInt = crypto.getRandomValues(new Uint32Array(1))[0];
   return randomInt / 2 ** 32;
 }
 
-function nanoid(size = 16): string {
-  return crypto.getRandomValues(new Uint8Array(size)).reduce((id, byte) => {
-    byte &= 63;
-    if (byte < 36) {
-      // `0-9a-z`
-      id += byte.toString(36);
-    } else if (byte < 62) {
-      // `A-Z`
-      id += (byte - 26).toString(36).toLowerCase();
-    } else if (byte > 62) {
-      id += '-';
-    } else {
-      id += '_';
+export async function validateRequest(
+  request: Request,
+  terms: any
+): Promise<{
+  error?: { message: string; status: number };
+  body?: { [key: string]: unknown };
+}> {
+  let body = {};
+
+  // Validate the method.
+  if (!terms[request.method]) {
+    return {
+      error: {
+        message: `method ${request.method} is not allowed for the URL`,
+        status: 405,
+      },
+    };
+  }
+
+  // Validate the params if defined in the terms.
+  if (
+    terms[request.method]?.params &&
+    terms[request.method].params!.length > 0
+  ) {
+    const requestParams: string[] = [];
+
+    const { searchParams } = new URL(request.url);
+
+    for (const param of searchParams.keys()) {
+      requestParams.push(param);
     }
-    return id;
-  }, '');
+
+    for (const param of terms[request.method].params!) {
+      if (!requestParams.includes(param)) {
+        return {
+          error: {
+            message: `param '${param}' is required to process the request`,
+            status: 400,
+          },
+        };
+      }
+    }
+  }
+
+  // Validate the headers if defined in the terms.
+  if (
+    terms[request.method].headers &&
+    terms[request.method].headers!.length > 0
+  ) {
+    // Collect the headers into an array.
+    const requestHeaderKeys: string[] = [];
+
+    for (const header of request.headers.keys()) {
+      requestHeaderKeys.push(header);
+    }
+
+    // Loop through the headers defined in the terms and check if they
+    // are present in the request.
+    for (const header of terms[request.method].headers!) {
+      if (!requestHeaderKeys.includes(header.toLowerCase())) {
+        return {
+          error: {
+            message: `header '${header}' not available`,
+            status: 400,
+          },
+        };
+      }
+    }
+  }
+
+  // Validate the body of the request if defined in the terms.
+  if (terms[request.method].body && terms[request.method].body!.length > 0) {
+    const requestBody: any = await request.json();
+
+    const bodyKeys = Object.keys(requestBody);
+
+    for (const key of terms[request.method].body!) {
+      if (!bodyKeys.includes(key)) {
+        return {
+          error: {
+            message: `field '${key}' is not available in the body`,
+            status: 400,
+          },
+        };
+      }
+    }
+
+    // We store and return the body as once the request.json() is called
+    // the user cannot call request.json() again.
+    body = requestBody;
+  }
+
+  return { body };
 }
 
 function hexToInt(hex?: string): number | undefined {
@@ -100,7 +189,7 @@ function shuffle<T>(array: T[], seed?: string): void {
   const rng = seed ? () => new LehmerRNG(seed).nextFloat() : Math.random;
 
   for (
-    let i = 0, length = array.length, swap = 0, temp = null;
+    let i = 0, length = array.length, swap = 0, temp: T | null = null;
     i < length;
     i++
   ) {
@@ -118,7 +207,7 @@ function sleep(secs: number): Promise<void> {
 async function fetchWithRetry(
   input: RequestInfo | URL,
   init: RequestInit,
-  n = 0,
+  n = 0
 ): Promise<Response> {
   try {
     const response = await fetch(input, init);
@@ -133,7 +222,7 @@ async function fetchWithRetry(
       throw err;
     }
 
-    await sleep(0.250 * n);
+    await sleep(0.25 * n);
 
     return fetchWithRetry(input, init, n + 1);
   }
@@ -150,7 +239,7 @@ function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
     throw new Error(`Sum of ${chances} is ${sum} when it should be 100`);
   }
 
-  const _ = [];
+  const _: number[] = [];
 
   for (let i = 0; i < chances.length; i++) {
     // if chance is 5 - add 5 items to the array
@@ -172,14 +261,10 @@ function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
   };
 }
 
-function truncate(
-  str: string | undefined,
-  n: number,
-): string | undefined {
+function truncate(str: string | undefined, n: number): string | undefined {
   if (str && str.length > n) {
     const s = str.substring(0, n - 2);
-    return s.slice(0, s.lastIndexOf(' ')) +
-      '...';
+    return s.slice(0, s.lastIndexOf(' ')) + '...';
   }
 
   return str;
@@ -188,7 +273,7 @@ function truncate(
 function wrap(text: string, width = 32): string {
   return text.replace(
     new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'),
-    '$1\n',
+    '$1\n'
   );
 }
 
@@ -218,8 +303,7 @@ function compact(n: number): string {
   const index = Math.floor(Math.log10(Math.abs(n)) / 3);
   const value = n / Math.pow(10, index * 3);
 
-  const formattedValue = value.toFixed(1)
-    .replace(/\.0+$/, '');
+  const formattedValue = value.toFixed(1).replace(/\.0+$/, '');
 
   return formattedValue + units[index];
 }
@@ -229,9 +313,11 @@ function comma(n: number): string {
 }
 
 function distance(a: string, b: string): number {
-  return 100 -
+  return (
+    100 -
     (100 * levenshtein(a.toLowerCase(), b.toLowerCase())) /
-      (a.length + b.length);
+      (a.length + b.length)
+  );
 }
 
 function _parseInt(query?: string): number | undefined {
@@ -267,7 +353,7 @@ function decodeDescription(s?: string): string | undefined {
   s = s.replace(/<b.*?>([\S\s]*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
   s = s.replace(
     /<strike.*?>([\S\s]*)<\/?strike>/g,
-    (_, s) => `~~${s.trim()}~~`,
+    (_, s) => `~~${s.trim()}~~`
   );
 
   s = s.replace(/<\/?br\/?>|<\/?hr\/?>/gm, '\n');
@@ -285,37 +371,30 @@ function hexToUint8Array(hex: string): Uint8Array | undefined {
   }
 }
 
-function verifySignature(
-  { publicKey, signature, timestamp, body }: {
-    publicKey?: string;
-    signature?: string | null;
-    timestamp?: string | null;
-    body: string;
-  },
-): { valid: boolean; body: string } {
+function verifySignature({
+  publicKey,
+  signature,
+  timestamp,
+  body,
+}: {
+  publicKey?: string;
+  signature?: string | null;
+  timestamp?: string | null;
+  body: string;
+}): { valid: boolean; body: string } {
   if (!signature || !timestamp || !publicKey) {
     return { valid: false, body };
   }
 
   const valid = nacl.sign.detached.verify(
     new TextEncoder().encode(timestamp + body),
-    // deno-lint-ignore no-non-null-assertion
+
     hexToUint8Array(signature)!,
-    // deno-lint-ignore no-non-null-assertion
-    hexToUint8Array(publicKey)!,
+
+    hexToUint8Array(publicKey)!
   );
 
   return { valid, body };
-}
-
-async function readJson<T>(filePath: string): Promise<T> {
-  try {
-    const jsonString = await Deno.readTextFile(filePath);
-    return JSON.parse(jsonString);
-  } catch (err) {
-    (err as Error).message = `${filePath}: ${(err as Error).message}`;
-    throw err;
-  }
 }
 
 function normalTimestamp(v?: Date): string {
@@ -349,17 +428,6 @@ function rechargeDailyTimestamp(v?: Date): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeKeysTimestamp(v?: Date): string {
-  const parsed = v ?? new Date();
-
-  parsed.setMinutes(parsed.getMinutes() + RECHARGE_KEYS_MINS);
-
-  const ts = parsed.getTime();
-
-  // discord uses seconds not milliseconds
-  return Math.floor(ts / 1000).toString();
-}
-
 function rechargeStealTimestamp(v?: Date): string {
   const parsed = v ?? new Date();
 
@@ -383,18 +451,6 @@ function diffInMinutes(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 60000);
 }
 
-function captureException(err: Error, opts?: {
-  // deno-lint-ignore no-explicit-any
-  extra?: any;
-}): string {
-  return _captureException(err, {
-    extra: {
-      ...(err.cause ?? {}),
-      ...(opts?.extra ?? {}),
-    },
-  });
-}
-
 function nonNullable<T>(value: T): value is NonNullable<T> {
   return Boolean(value);
 }
@@ -409,7 +465,7 @@ function pagination<T, X extends string>(
   url: URL,
   collection: T[],
   collectionName: X,
-  defaultLimit = 20,
+  defaultLimit = 20
 ): { [K in X]: T[] } & { length: number; offset: number; limit: number } {
   const limit = +(url.searchParams.get('limit') ?? defaultLimit);
   const offset = +(url.searchParams.get('offset') ?? 0);
@@ -438,42 +494,116 @@ function getDayOfWeek(): DayOfWeek {
   return days[new Date().getUTCDay()] as DayOfWeek;
 }
 
-function initSentry(dsn?: string): void {
-  const DENO_DEPLOYMENT_ID = Deno.env.get('DENO_DEPLOYMENT_ID');
+async function proxy(
+  url?: string,
+  size?: ImageSize
+): Promise<Attachment | null> {
+  try {
+    let response = await fetch(url ?? '');
+    let contentType = response.headers.get('Content-Type');
 
-  if (dsn) {
-    _initSentry({ dsn, release: DENO_DEPLOYMENT_ID });
+    const sizes: Record<string, [number, number]> = {
+      preview: [32, 32],
+      thumbnail: [110, 155],
+      medium: [230, 325],
+      large: [450, 635],
+    };
+
+    if (contentType?.startsWith('text/html')) {
+      const xml = await response.text();
+
+      const re = /<meta.*?property="og:image".*?content="(.*?)"/;
+
+      const match = xml.match(re);
+
+      if (match) {
+        const imageUrl = new URL(match[1]);
+
+        if (imageUrl.hostname === 'i.imgur.com') {
+          imageUrl.search = '';
+        }
+
+        response = await fetch(imageUrl.toString());
+        contentType = response.headers.get('Content-Type');
+      } else {
+        throw new Error('html page has no og:image');
+      }
+    }
+
+    if (!contentType) {
+      throw new Error('no content type header');
+    } else if (
+      !['image/jpeg', 'image/png', 'image/webp'].includes(contentType)
+    ) {
+      throw new Error(`image type ${contentType} is not supported`);
+    }
+
+    console.log(`${response.status} ${contentType} ${url}`);
+
+    const data = await response
+      .arrayBuffer()
+      .then((buffer) => new Uint8Array(buffer));
+
+    const photon = await import('@cf-wasm/photon');
+
+    const image = photon.PhotonImage.new_from_byteslice(new Uint8Array(data));
+
+    const resizeToFit = async ([width, height]: [number, number]) => {
+      const wraito = width / image.get_width();
+      const hratio = height / image.get_height();
+
+      const ratio = Math.max(wraito, hratio);
+
+      const newWidth = Math.max(Math.round(image.get_width() * ratio), 1);
+      const newHeight = Math.max(Math.round(image.get_height() * ratio), 1);
+
+      const resized = photon.resize(image, newWidth, newHeight, 4);
+
+      const _ratio = image.get_width() * height;
+      const _nratio = width * image.get_height();
+
+      if (_nratio > _ratio) {
+        return photon.crop(
+          resized,
+          0,
+          (resized.get_height() - height) / 2,
+          width,
+          height
+        );
+      } else {
+        return photon.crop(
+          resized,
+          (resized.get_width() - width) / 2,
+          0,
+          width,
+          height
+        );
+      }
+    };
+
+    const final = await resizeToFit(sizes[size ?? ImageSize.Large]);
+    const bytes = final.get_bytes_webp();
+
+    image.free();
+    final.free();
+
+    return {
+      filename: crypto.randomUUID() + '.webp',
+      arrayBuffer: bytes,
+      type: 'image/webp',
+    };
+  } catch (err) {
+    console.error(`${url}`);
+    throw err;
   }
 }
 
-async function proxy(
-  url?: string,
-  size?: ImageSize,
-): Promise<Attachment> {
-  let filename = url ? basename(url) : 'default.webp';
-
-  const file = await _proxy(url ?? '', size);
-
-  if (extname(filename) === '') {
-    const ext = extensionsByType(file.format);
-
-    if (ext?.length) {
-      filename = `${filename}.${ext[0]}`;
-    }
+function chunks<T>(array: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
   }
-
-  const asciiFilename = Array.from(filename)
-    .map((char) => char.charCodeAt(0))
-    .map((code) => code < 128 ? String.fromCharCode(code) : '-')
-    .join('')
-    .replaceAll('_', '-')
-    .replace(/\s+/g, '');
-
-  return {
-    filename: asciiFilename,
-    arrayBuffer: file.image,
-    type: file.format,
-  };
+  return result;
 }
 
 const utils = {
@@ -481,8 +611,7 @@ const utils = {
   LehmerRNG,
   isWithin14Days,
   capitalize,
-  captureException,
-  chunks: chunk,
+  chunks,
   comma,
   compact,
   nonNullable,
@@ -495,19 +624,15 @@ const utils = {
   fetchWithRetry,
   getRandomFloat,
   hexToInt,
-  initSentry,
+  captureException,
   json,
   nanoid,
   parseInt: _parseInt,
-  readJson,
   normalTimestamp,
   rechargeTimestamp,
   rechargeDailyTimestamp,
-  rechargeKeysTimestamp,
   rechargeStealTimestamp,
   rng,
-  serve,
-  serveStatic,
   shuffle,
   sleep,
   truncate,

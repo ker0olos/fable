@@ -10,7 +10,8 @@
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20community%20server&color=blue)][discord]
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deploy.yml?branch=main&label=tests&logo=github)
-[![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC&label=codecov&logo=codecov)](https://app.codecov.io/github/ker0olos/fable)
+
+<!-- [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC&label=codecov&logo=codecov)](https://app.codecov.io/github/ker0olos/fable) -->
 
 [![Buy me a coffee](https://img.shields.io/badge/-buy%20me%20a%20coffee-yellow?logo=buymeacoffee&logoColor=white&color=yellow)][buymeacoffee]
 

@@ -1,12 +1,8 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertObjectMatch } from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
-
+import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
@@ -30,11 +26,9 @@ describe('db.likeCharacter()', () => {
 
     const user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertObjectMatch(user!, {
+    expect(user).toMatchObject({
       discordId: 'user-id',
-      likes: [
-        { characterId: 'character-id' },
-      ],
+      likes: [{ characterId: 'character-id' }],
     });
   });
 
@@ -48,13 +42,10 @@ describe('db.likeCharacter()', () => {
 
     const user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertObjectMatch(user!, {
+    expect(user).toMatchObject({
       _id: insertedId,
       discordId: 'user-id',
-      likes: [
-        { characterId: 'character-1' },
-        { characterId: 'character-2' },
-      ],
+      likes: [{ characterId: 'character-1' }, { characterId: 'character-2' }],
     });
   });
 });
@@ -77,11 +68,9 @@ describe('db.likeMedia()', () => {
 
     const user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertObjectMatch(user!, {
+    expect(user).toMatchObject({
       discordId: 'user-id',
-      likes: [
-        { mediaId: 'media-id' },
-      ],
+      likes: [{ mediaId: 'media-id' }],
     });
   });
 
@@ -95,13 +84,10 @@ describe('db.likeMedia()', () => {
 
     const user = await client.users().findOne({ discordId: 'user-id' });
 
-    assertObjectMatch(user!, {
+    expect(user).toMatchObject({
       _id: insertedId,
       discordId: 'user-id',
-      likes: [
-        { mediaId: 'media-1' },
-        { mediaId: 'media-2' },
-      ],
+      likes: [{ mediaId: 'media-1' }, { mediaId: 'media-2' }],
     });
   });
 });

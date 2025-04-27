@@ -1,4 +1,4 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 import type { WithId } from 'mongodb';
 
@@ -8,7 +8,7 @@ export async function assignCharacter(
   userId: string,
   guildId: string,
   characterId: string,
-  spot?: 1 | 2 | 3 | 4 | 5,
+  spot?: 1 | 2 | 3 | 4 | 5
 ): Promise<Schema.Character> {
   const db = new Mongo();
 
@@ -17,9 +17,9 @@ export async function assignCharacter(
   try {
     await db.connect();
 
-    const character = await db.characters().findOne(
-      { userId, guildId, characterId },
-    );
+    const character = await db
+      .characters()
+      .findOne({ userId, guildId, characterId });
 
     if (!character) {
       throw new Error();
@@ -27,7 +27,6 @@ export async function assignCharacter(
 
     result = character;
 
-    // deno-lint-ignore no-non-null-assertion
     const inventory = (await db.inventories().findOne({ userId, guildId }))!;
 
     // remove character from party
@@ -74,10 +73,9 @@ export async function assignCharacter(
       inventory.party.member5Id = character._id;
     }
 
-    await db.inventories().updateOne(
-      { _id: inventory._id },
-      { $set: { party: inventory.party } },
-    );
+    await db
+      .inventories()
+      .updateOne({ _id: inventory._id }, { $set: { party: inventory.party } });
   } finally {
     await db.close();
   }
@@ -88,7 +86,7 @@ export async function assignCharacter(
 export async function swapSpots(
   inventory: WithId<Schema.Inventory>,
   a: 1 | 2 | 3 | 4 | 5,
-  b: 1 | 2 | 3 | 4 | 5,
+  b: 1 | 2 | 3 | 4 | 5
 ): Promise<void> {
   const db = new Mongo();
 
@@ -100,10 +98,9 @@ export async function swapSpots(
     inventory.party[`member${a}Id`] = inventory.party[`member${b}Id`];
     inventory.party[`member${b}Id`] = temp;
 
-    await db.inventories().updateOne(
-      { _id: inventory._id },
-      { $set: { party: inventory.party } },
-    );
+    await db
+      .inventories()
+      .updateOne({ _id: inventory._id }, { $set: { party: inventory.party } });
   } finally {
     await db.close();
   }
@@ -112,17 +109,19 @@ export async function swapSpots(
 export async function unassignCharacter(
   userId: string,
   guildId: string,
-  spot: 1 | 2 | 3 | 4 | 5,
+  spot: 1 | 2 | 3 | 4 | 5
 ): Promise<void> {
   const db = new Mongo();
 
   try {
     await db.connect();
 
-    await db.inventories().updateOne(
-      { userId, guildId },
-      { $set: { [`party.member${spot}Id`]: undefined } },
-    );
+    await db
+      .inventories()
+      .updateOne(
+        { userId, guildId },
+        { $set: { [`party.member${spot}Id`]: undefined } }
+      );
   } finally {
     await db.close();
   }
@@ -130,7 +129,7 @@ export async function unassignCharacter(
 
 export async function clearParty(
   userId: string,
-  guildId: string,
+  guildId: string
 ): Promise<void> {
   const db = new Mongo();
 
@@ -149,7 +148,7 @@ export async function clearParty(
             member5Id: null,
           },
         },
-      },
+      }
     );
   } finally {
     await db.close();

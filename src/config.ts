@@ -1,5 +1,4 @@
 const config: {
-  deploy: boolean;
   appId?: string;
   publicKey?: string;
   mongoUri?: string;
@@ -13,15 +12,10 @@ const config: {
   stealing?: boolean;
   synthesis?: boolean;
   shop?: boolean;
-  communityPacks?: boolean;
   communityPacksMaintainerAPI?: boolean;
   communityPacksBrowseAPI?: boolean;
-  combat?: boolean;
-  //
-  defaultServerDupes?: boolean;
   disableImagesProxy?: boolean;
 } = {
-  deploy: false,
   appId: undefined,
   publicKey: undefined,
   mongoUri: undefined,
@@ -35,77 +29,56 @@ const config: {
   stealing: undefined,
   synthesis: undefined,
   shop: undefined,
-  communityPacks: undefined,
   communityPacksMaintainerAPI: undefined,
   communityPacksBrowseAPI: undefined,
-  combat: undefined,
   //
   disableImagesProxy: undefined,
-  defaultServerDupes: undefined,
 };
 
 export async function initConfig(): Promise<void> {
-  const query = await Deno.permissions.query({ name: 'env' });
+  config.sentry = process.env.SENTRY_DSN;
 
-  if (query?.state === 'granted') {
-    config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
+  config.appId = process.env.APP_ID;
 
-    config.sentry = Deno.env.get('SENTRY_DSN');
+  config.publicKey = process.env.PUBLIC_KEY;
 
-    config.appId = Deno.env.get('APP_ID');
+  config.mongoUri = process.env.MONGO_URI;
 
-    config.publicKey = Deno.env.get('PUBLIC_KEY');
+  config.packsUrl = process.env.PACKS_URL;
 
-    config.mongoUri = Deno.env.get('MONGO_URI');
+  config.notice = process.env.NOTICE;
 
-    config.packsUrl = Deno.env.get('PACKS_URL');
+  // feature flags
+  config.global = !('GLOBAL' in process.env) || process.env.GLOBAL === '1';
 
-    config.notice = Deno.env.get('NOTICE');
+  config.gacha = !('GACHA' in process.env) || process.env.GACHA === '1';
 
-    // feature flags
-    config.global = !Deno.env.has('GLOBAL') ||
-      Deno.env.get('GLOBAL') === '1';
+  config.trading = !('TRADING' in process.env) || process.env.TRADING === '1';
 
-    config.gacha = !Deno.env.has('GACHA') ||
-      Deno.env.get('GACHA') === '1';
+  config.stealing =
+    !('STEALING' in process.env) || process.env.STEALING === '1';
 
-    config.trading = !Deno.env.has('TRADING') ||
-      Deno.env.get('TRADING') === '1';
+  config.synthesis =
+    !('SYNTHESIS' in process.env) || process.env.SYNTHESIS === '1';
 
-    config.stealing = !Deno.env.has('STEALING') ||
-      Deno.env.get('STEALING') === '1';
+  config.shop = !('SHOP' in process.env) || process.env.SHOP === '1';
 
-    config.synthesis = !Deno.env.has('SYNTHESIS') ||
-      Deno.env.get('SYNTHESIS') === '1';
+  config.communityPacksMaintainerAPI =
+    !('COMMUNITY_PACKS_MAINTAINER_API' in process.env) ||
+    process.env.COMMUNITY_PACKS_MAINTAINER_API === '1';
 
-    config.shop = !Deno.env.has('SHOP') ||
-      Deno.env.get('SHOP') === '1';
+  config.communityPacksBrowseAPI =
+    !('COMMUNITY_PACKS_BROWSE_API' in process.env) ||
+    process.env.COMMUNITY_PACKS_BROWSE_API === '1';
 
-    config.communityPacks = !Deno.env.has('COMMUNITY_PACKS') ||
-      Deno.env.get('COMMUNITY_PACKS') === '1';
+  config.disableImagesProxy = process.env.DISABLE_IMAGES_PROXY === '1';
 
-    config.communityPacksMaintainerAPI =
-      !Deno.env.has('COMMUNITY_PACKS_MAINTAINER_API') ||
-      Deno.env.get('COMMUNITY_PACKS_MAINTAINER_API') === '1';
-
-    config.communityPacksBrowseAPI =
-      !Deno.env.has('COMMUNITY_PACKS_BROWSE_API') ||
-      Deno.env.get('COMMUNITY_PACKS_BROWSE_API') === '1';
-
-    config.combat = !Deno.env.has('COMBAT') ||
-      Deno.env.get('COMBAT') === '1';
-
-    //
-    config.disableImagesProxy = Deno.env.get('DISABLE_IMAGES_PROXY') === '1';
-    config.defaultServerDupes = Deno.env.get('DEFAULT_SERVER_DUPES') === '1';
-
-    config.origin = undefined;
-  }
+  config.origin = undefined;
 }
 
 export function clearConfig(): void {
-  Object.keys(config).forEach((key) =>
-    delete config[key as keyof typeof config]
+  Object.keys(config).forEach(
+    (key) => delete config[key as keyof typeof config]
   );
 }
 

@@ -1,36 +1,217 @@
-// deno-lint-ignore-file no-explicit-any
+import { z } from 'zod';
 
-import Ajv from 'ajv';
+import type { Manifest, MergedManifest } from '~/src/types.ts';
 
-import { prettify } from 'awesome-ajv';
+const idSchema = z
+  .string()
+  .min(1)
+  .max(20)
+  .regex(/^[-_a-z0-9]+$/);
 
-import { AssertionError } from '$std/assert/mod.ts';
+const aliasSchema = z
+  .object({
+    english: z.string().min(1).max(128),
+    alternative: z.array(z.string().min(1).max(128)).optional(),
+  })
+  .strict();
 
-import alias from '~/json/alias.json' with {
-  type: 'json',
-};
+const imageSchema = z
+  .object({
+    url: z
+      .string()
+      .describe(
+        'A url of the image (Fable forces the aspect-ratio of all images to 230:325) (recommended size: 450x635)'
+      ),
+  })
+  .strict();
 
-import image from '~/json/image.json' with {
-  type: 'json',
-};
+const externalLinksSchema = z
+  .object({
+    site: z.string(),
+    url: z
+      .string()
+      .regex(
+        /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|netflix\.com|crunchyroll\.com|tapas\.io|webtoons\.com|amazon\.com)[\S]*$/,
+        { message: 'Must be a valid URL from a supported site' }
+      ),
+  })
+  .strict();
 
-import media from '~/json/media.json' with {
-  type: 'json',
-};
+const characterSchema = z
+  .object({
+    _id: z.string(),
 
-import character from '~/json/character.json' with {
-  type: 'json',
-};
+    id: idSchema,
+    packId: idSchema,
 
-import index from '~/json/schema.json' with {
-  type: 'json',
-};
+    added: z.string().datetime().optional(),
+    updated: z.string().datetime().optional(),
 
-import { Manifest } from '~/src/types.ts';
+    name: aliasSchema,
+
+    description: z
+      .string()
+      .max(2048, 'Description must be at most 2048 characters')
+      .optional(),
+
+    rating: z.number().int().min(1).max(5),
+
+    gender: z.string().optional(),
+    age: z.string().optional(),
+
+    images: z.array(imageSchema).optional(),
+    externalLinks: z.array(externalLinksSchema).optional(),
+
+    media: z
+      .array(
+        z
+          .object({
+            role: z.enum(['MAIN', 'SUPPORTING', 'BACKGROUND']),
+            mediaId: z
+              .string()
+              .regex(
+                /^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/,
+                'mediaId must be in the format [pack:]id'
+              ),
+          })
+          .strict()
+      )
+      .optional(),
+  })
+  .strict();
+
+export const mediaSchema = z
+  .object({
+    _id: z.string(),
+
+    id: idSchema,
+    packId: idSchema,
+
+    added: z.string().datetime().optional(),
+    updated: z.string().datetime().optional(),
+
+    type: z.enum(['ANIME', 'MANGA', 'OTHER']),
+
+    format: z
+      .enum([
+        'TV',
+        'TV_SHORT',
+        'MOVIE',
+        'SPECIAL',
+        'OVA',
+        'ONA',
+        'MUSIC',
+        'MANGA',
+        'VIDEO_GAME',
+        'NOVEL',
+        'ONE_SHOT',
+      ])
+      .optional(),
+
+    title: aliasSchema,
+
+    popularity: z.number().int().min(0).max(2147483647),
+
+    description: z
+      .string()
+      .max(2048, 'Description must be at most 2048 characters')
+      .optional(),
+
+    images: z.array(imageSchema).optional(),
+    externalLinks: z.array(externalLinksSchema).optional(),
+
+    trailer: z
+      .object({
+        site: z.enum(['youtube']),
+        id: z.string().regex(/([A-Za-z0-9_-]{11})/, {
+          message: 'Must be a valid YouTube video ID',
+        }),
+      })
+      .strict()
+      .optional(),
+
+    relations: z
+      .array(
+        z
+          .object({
+            relation: z.enum([
+              'PREQUEL',
+              'SEQUEL',
+              'PARENT',
+              'CONTAINS',
+              'SIDE_STORY',
+              'SPIN_OFF',
+              'ADAPTATION',
+              'OTHER',
+            ]),
+            mediaId: z.string().regex(/^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/),
+          })
+          .strict()
+      )
+      .optional(),
+
+    characters: z
+      .array(
+        z
+          .object({
+            role: z.enum(['MAIN', 'SUPPORTING', 'BACKGROUND']),
+            characterId: z.string().regex(/^([-_a-z0-9]+)(:[-_a-z0-9]+)?$/),
+          })
+          .strict()
+      )
+      .optional(),
+  })
+  .strict();
+
+export const manifestSchema = z.object({
+  id: idSchema,
+
+  title: z.string().max(128, 'Title cannot exceed 128 characters').optional(),
+
+  description: z
+    .string()
+    .max(2048, 'Description cannot exceed 2048 characters')
+    .optional(),
+
+  author: z.string().optional(),
+
+  image: z.string().optional(),
+
+  url: z.string().optional(),
+
+  webhookUrl: z.string().optional(),
+
+  nsfw: z.boolean().optional(),
+
+  private: z.boolean().optional(),
+
+  conflicts: z
+    .array(
+      z
+        .string()
+        .regex(
+          /^[-_a-z0-9]+:[-_a-z0-9]+$/,
+          "Conflict must be in format 'pack:id'"
+        )
+    )
+    .max(20, 'Cannot have more than 20 conflicts')
+    .optional(),
+
+  maintainers: z
+    .array(
+      z.string().regex(/^[0-9]+$/, 'Maintainer ID must a valid Discord User ID')
+    )
+    .max(10, 'Cannot have more than 10 maintainers')
+    .optional(),
+
+  media: z.array(mediaSchema).optional(),
+  characters: z.array(characterSchema).optional(),
+});
 
 const reservedIds = ['fable', 'anilist'];
 
 export const purgeReservedProps = (data: Manifest): Manifest => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const purged: any = {};
 
   Object.keys(data).forEach((key) => {
@@ -44,43 +225,24 @@ export const purgeReservedProps = (data: Manifest): Manifest => {
   return purged as Manifest;
 };
 
-export const assertValidManifest = (data: Manifest) => {
-  const validate = new Ajv({ strict: false, allErrors: true })
-    .addSchema(alias)
-    .addSchema(image)
-    .addSchema(media)
-    .addSchema(character)
-    .compile(index);
-
-  if (!validate(data)) {
-    throw new AssertionError(prettify(validate, {
-      bigNumbers: false,
-      data,
-    }));
-  }
-};
-
-export default (data: Manifest) => {
+export default (data: MergedManifest) => {
   data = purgeReservedProps(data);
 
-  // deno-lint-ignore ban-ts-comment
-  //@ts-ignore
-  index.additionalProperties = false;
+  const result = manifestSchema.safeParse(data);
 
-  const validate = new Ajv({ strict: false, allErrors: true })
-    .addSchema(alias)
-    .addSchema(image)
-    .addSchema(media)
-    .addSchema(character)
-    .compile(index);
+  console.log('Validating manifest', result);
 
   if (reservedIds.includes(data.id)) {
-    return { errors: [`${data.id} is a reserved id`] };
-  } else if (!validate(data)) {
     return {
-      errors: validate.errors,
+      ok: false,
+      errors: `${data.id} is a reserved id`,
+    };
+  } else if (!result.success) {
+    return {
+      ok: false,
+      errors: result.error.errors,
     };
   } else {
-    return { errors: [] };
+    return { ok: true };
   }
 };

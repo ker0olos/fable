@@ -1,4 +1,7 @@
 .env
-
-cov_profile
-lcov.info
+.dev.vars
+.wrangler
+node_modules
+db/migrate/*.json
+/*.sql
+prisma/generated

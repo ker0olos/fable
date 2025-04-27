@@ -34,7 +34,6 @@
   "available-pull": "Tirada disponível",
   "available-pulls": "Tiradas disponíveis",
   "available-key": "Chave disponível",
-  "available-keys": "Chaves disponíveis",
   "daily-token": "Token diário",
   "daily-tokens": "Token diário disponível",
   "steal-cooldown-ends": "_Cooldown de roubo termina em {0}_",
@@ -52,7 +51,6 @@
   "won": "Ganhou",
 
   "key": "Chave",
-  "keys": "Chaves",
   "reclear": "Reclear",
   "floor": "Piso",
   "next-floor": "Próximo piso",
@@ -143,8 +141,6 @@
   "gacha-no-guarantees": "Você não tem {0}tiradas",
   "gacha-no-more-characters-left": "Não tem mais {0}personagens sobrando.",
   "gacha-no-more-in-range": "Não tem mais personagens nessa escala",
-
-  "combat-no-more-keys": "Você não tem mais chaves!",
 
   "no-packs-installed": "Servidor não tem nenhum pacote instalado.",
 
@@ -240,7 +236,6 @@
   "help-page10-tower": "Use `/battle tower` para escalar, todo servidor tem uma torre única e inimigos únicos.",
   "help-page10-reclear": "Suba seus personagens de nível e ganhe estatíscas extras por de pontos usando `/reclear` no mesmo piso algumas vezes.",
   "help-page10-distribution": "> Pontos de estatística ganhados por subir de nível são distribuídos aleatoriamnete baseados na proporção de suas estatísticas iniciais,  gained from leveling up is random distributed based on the ratio of your starting stats, Pontos de habilidades podem ser usados para serem obtios or melhorar `/skills`",
-  "help-page10-keys": "> Desafiando e limpando novamente pisos precisam de chaves, você ganha uma chave a cada {0} minutos, você também pode obter mais chaves em `/Shop`",
 
   "help-page5-title": "Loja",
   "help-page5-shop": "A loja é um jeito de comprar tiradas extras e tiradas garantidas.",
@@ -303,7 +298,7 @@
 
   "/buy normal": "use tokens para comprar tiradas normais",
   "/buy guaranteed": "use tokens para comprar tiradas com um ranking específico",
-  "/buy keys": "use tokens para comprar chaves de torres",
+  "/buy ": "use tokens para comprar chaves de torres",
 
   "/installed packs": "lista todos os pacotes instalados em um servidor",
   "/logs": "lista últimos personagens achados de certo usuário",
@@ -311,7 +306,6 @@
   "/packs install": "instala um pacote da comunidade",
   "/packs uninstall": "desinstala um pacote da comunidade",
 
-  "/stats": "gerencie os pontos de estátisticas e habilidades de seus personagens",
 
   "/battle tower": "Escale a torre até a glória e se torne um fable",
   "/battle challenge": "Desafie o próximo andar da torre",
@@ -347,7 +341,6 @@
   "$picture": "Mostre a foto do personagem (mas você só pode ver um personagem por vez)",
 
   "$buy-normal-amount": "quantidade de tiradas que você quer comprar",
-  "$buy-keys-amount": "quantidade de chaves que você quer comprar",
   "$buy-guaranteed-stars": "a classificação de estrela que você quer comprar",
 
   "$party-spot": "o lugar que você quer este personagem",

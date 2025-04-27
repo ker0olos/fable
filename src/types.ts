@@ -1,11 +1,3 @@
-import type { Keys } from '~/src/i18n.ts';
-
-import type { AcquiredCharacterSkill, CharacterStats } from '~/db/schema.ts';
-
-import { skills } from '~/src/skills.ts';
-
-import type { PartyMember } from '~/src/battle.types.ts';
-
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export enum MediaType {
@@ -52,8 +44,6 @@ export enum CharacterRole {
 
 export type Alias = {
   english?: string;
-  romaji?: string;
-  native?: string;
   alternative?: string[];
 };
 
@@ -73,7 +63,7 @@ export interface Media {
   id: string;
   title: Alias;
   type: MediaType;
-  packId?: string;
+  packId: string;
   added?: string;
   updated?: string;
   format?: MediaFormat;
@@ -96,25 +86,28 @@ export interface Media {
   };
 }
 
-export type DisaggregatedMedia = Modify<Media, {
-  relations?: {
-    relation: MediaRelation;
-    mediaId: string;
-  }[];
-  characters?: {
-    role: CharacterRole;
-    characterId: string;
-  }[];
-}>;
+export type DisaggregatedMedia = Modify<
+  Media,
+  {
+    relations?: {
+      relation: MediaRelation;
+      mediaId: string;
+    }[];
+    characters?: {
+      role: CharacterRole;
+      characterId: string;
+    }[];
+  }
+>;
 
 export interface Character {
   id: string;
   name: Alias;
-  packId?: string;
+  packId: string;
   added?: string;
   updated?: string;
   description?: string;
-  popularity?: number;
+  rating: number;
   gender?: string;
   age?: string;
   images?: Image[];
@@ -127,16 +120,19 @@ export interface Character {
   };
 }
 
-export type DisaggregatedCharacter = Modify<Character, {
-  media?: {
-    role: CharacterRole;
-    mediaId: string;
-  }[];
-}>;
+export type DisaggregatedCharacter = Modify<
+  Character,
+  {
+    media?: {
+      role: CharacterRole;
+      mediaId: string;
+    }[];
+  }
+>;
 
 export type Pool = {
   [key: string]: {
-    'ALL': { id: string; mediaId: string; rating: number }[];
+    ALL: { id: string; mediaId: string; rating: number }[];
     [CharacterRole.Main]: { id: string; mediaId: string; rating: number }[];
     [CharacterRole.Supporting]: {
       id: string;
@@ -163,66 +159,9 @@ export interface Manifest {
   private?: boolean;
   maintainers?: string[];
   conflicts?: string[];
-  media?: {
-    new?: DisaggregatedMedia[];
-  };
-  characters?: {
-    new?: DisaggregatedCharacter[];
-  };
 }
 
-// Combat
-
-export type SkillKey = keyof typeof skills;
-
-export type CharacterBattleStats = CharacterStats & {
-  skills: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
-  hp: number;
-  maxHP: number;
-};
-
-export interface SkillOutput {
-  damage?: number;
-  heal?: number;
-  stun?: boolean;
-}
-
-export const skillCategories = [
-  'buff',
-  'debuff',
-  'support',
-  'offensive',
-  'heal',
-] as const;
-
-export type SkillCategory = typeof skillCategories[number];
-
-export interface CharacterSkill {
-  key: Keys;
-  descKey: Keys;
-  max: number;
-
-  categories: SkillCategory[];
-
-  cost: number;
-
-  activation?: (
-    args: {
-      lvl: number;
-      attacking: PartyMember;
-      receiving?: PartyMember;
-      damage?: number;
-      combo?: number;
-    },
-  ) => SkillOutput;
-
-  stats: CharacterAdditionalStat[];
-}
-
-export interface CharacterAdditionalStat {
-  key: Keys;
-  scale?: number[];
-  factor?: number;
-  prefix?: string;
-  suffix?: string;
+export interface MergedManifest extends Manifest {
+  characters?: DisaggregatedCharacter[];
+  media?: DisaggregatedMedia[];
 }

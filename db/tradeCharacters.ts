@@ -1,4 +1,4 @@
-import { Mongo, type ObjectId } from '~/db/mod.ts';
+import { Mongo, type ObjectId } from '~/db/index.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -12,19 +12,17 @@ import type { AnyBulkWriteOperation } from 'mongodb';
 
 export const STEAL_COOLDOWN_HOURS = 3 * 24;
 
-export async function giveCharacters(
-  {
-    aUserId,
-    bUserId,
-    guildId,
-    giveIds,
-  }: {
-    aUserId: string;
-    bUserId: string;
-    guildId: string;
-    giveIds: string[];
-  },
-): Promise<void> {
+export async function giveCharacters({
+  aUserId,
+  bUserId,
+  guildId,
+  giveIds,
+}: {
+  aUserId: string;
+  bUserId: string;
+  guildId: string;
+  giveIds: string[];
+}): Promise<void> {
   const db = new Mongo();
 
   const session = db.startSession();
@@ -34,7 +32,9 @@ export async function giveCharacters(
 
     session.startTransaction();
 
-    const giveCharacters = await db.characters().aggregate()
+    const giveCharacters = (await db
+      .characters()
+      .aggregate()
       .match({
         characterId: { $in: giveIds },
         userId: aUserId,
@@ -47,7 +47,7 @@ export async function giveCharacters(
         as: 'inventory',
       })
       .unwind('$inventory')
-      .toArray() as Schema.PopulatedCharacter[];
+      .toArray()) as Schema.PopulatedCharacter[];
 
     if (giveCharacters.length !== giveIds.length) {
       throw new NonFetalError('NOT_OWNED');
@@ -64,24 +64,28 @@ export async function giveCharacters(
     ].filter(utils.nonNullable);
 
     if (
-      giveCharacters
-        .some(({ _id }) => aParty.some((member) => member.equals(_id)))
+      giveCharacters.some(({ _id }) =>
+        aParty.some((member) => member.equals(_id))
+      )
     ) {
       throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
-    // deno-lint-ignore no-non-null-assertion
-    const bInventory = (await db.inventories().findOneAndUpdate(
-      { userId: bUserId, guildId },
-      { $setOnInsert: newInventory(guildId, bUserId) },
-      { upsert: true, returnDocument: 'after' },
-    ))!;
+    const bInventory = (await db
+      .inventories()
+      .findOneAndUpdate(
+        { userId: bUserId, guildId },
+        { $setOnInsert: newInventory(guildId, bUserId) },
+        { upsert: true, returnDocument: 'after' }
+      ))!;
 
-    await db.characters().updateMany(
-      { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
-      { $set: { userId: bUserId, inventoryId: bInventory._id } },
-      { session },
-    );
+    await db
+      .characters()
+      .updateMany(
+        { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
+        { $set: { userId: bUserId, inventoryId: bInventory._id } },
+        { session }
+      );
 
     await session.commitTransaction();
   } catch (err) {
@@ -99,21 +103,19 @@ export async function giveCharacters(
   }
 }
 
-export async function tradeCharacters(
-  {
-    aUserId,
-    bUserId,
-    guildId,
-    giveIds,
-    takeIds,
-  }: {
-    aUserId: string;
-    bUserId: string;
-    guildId: string;
-    giveIds: string[];
-    takeIds: string[];
-  },
-): Promise<void> {
+export async function tradeCharacters({
+  aUserId,
+  bUserId,
+  guildId,
+  giveIds,
+  takeIds,
+}: {
+  aUserId: string;
+  bUserId: string;
+  guildId: string;
+  giveIds: string[];
+  takeIds: string[];
+}): Promise<void> {
   const db = new Mongo();
 
   const session = db.startSession();
@@ -147,7 +149,9 @@ export async function tradeCharacters(
     //  },
     //
 
-    const giveCharacters = await db.characters().aggregate()
+    const giveCharacters = (await db
+      .characters()
+      .aggregate()
       .match({
         characterId: { $in: giveIds },
         userId: aUserId,
@@ -160,9 +164,11 @@ export async function tradeCharacters(
         as: 'inventory',
       })
       .unwind('$inventory')
-      .toArray() as Schema.PopulatedCharacter[];
+      .toArray()) as Schema.PopulatedCharacter[];
 
-    const takeCharacters = await db.characters().aggregate()
+    const takeCharacters = (await db
+      .characters()
+      .aggregate()
       .match({
         characterId: { $in: takeIds },
         userId: bUserId,
@@ -175,7 +181,7 @@ export async function tradeCharacters(
         as: 'inventory',
       })
       .unwind('$inventory')
-      .toArray() as Schema.PopulatedCharacter[];
+      .toArray()) as Schema.PopulatedCharacter[];
 
     if (
       giveCharacters.length !== giveIds.length ||
@@ -204,33 +210,31 @@ export async function tradeCharacters(
     ].filter(utils.nonNullable);
 
     if (
-      giveCharacters
-        .some(({ _id }) => aParty.some((member) => member.equals(_id))) ||
-      takeCharacters
-        .some(({ _id }) => bParty.some((member) => member.equals(_id)))
+      giveCharacters.some(({ _id }) =>
+        aParty.some((member) => member.equals(_id))
+      ) ||
+      takeCharacters.some(({ _id }) =>
+        bParty.some((member) => member.equals(_id))
+      )
     ) {
       throw new NonFetalError('CHARACTER_IN_PARTY');
     }
 
     const bulk: AnyBulkWriteOperation<Schema.Character>[] = [];
 
-    bulk.push(
-      {
-        updateMany: {
-          filter: { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
-          update: { $set: { userId: bUserId, inventoryId: bInventory._id } },
-        },
+    bulk.push({
+      updateMany: {
+        filter: { _id: { $in: giveCharacters.map(({ _id }) => _id) } },
+        update: { $set: { userId: bUserId, inventoryId: bInventory._id } },
       },
-    );
+    });
 
-    bulk.push(
-      {
-        updateMany: {
-          filter: { _id: { $in: takeCharacters.map(({ _id }) => _id) } },
-          update: { $set: { userId: aUserId, inventoryId: aInventory._id } },
-        },
+    bulk.push({
+      updateMany: {
+        filter: { _id: { $in: takeCharacters.map(({ _id }) => _id) } },
+        update: { $set: { userId: aUserId, inventoryId: aInventory._id } },
       },
-    );
+    });
 
     await db.characters().bulkWrite(bulk, { session });
 
@@ -253,7 +257,7 @@ export async function tradeCharacters(
 export async function stealCharacter(
   userId: string,
   guildId: string,
-  characterOId: ObjectId,
+  characterOId: ObjectId
 ): Promise<void> {
   const db = new Mongo();
 
@@ -264,7 +268,9 @@ export async function stealCharacter(
 
     session.startTransaction();
 
-    const [character] = await db.characters().aggregate()
+    const [character] = (await db
+      .characters()
+      .aggregate()
       .match({
         _id: characterOId,
       })
@@ -275,7 +281,7 @@ export async function stealCharacter(
         as: 'inventory',
       })
       .unwind('$inventory')
-      .toArray() as Schema.PopulatedCharacter[];
+      .toArray()) as Schema.PopulatedCharacter[];
 
     if (!character) {
       throw new NonFetalError('NOT_FOUND');
@@ -296,27 +302,35 @@ export async function stealCharacter(
       const target = character.inventory;
 
       if (character._id.equals(target.party[memberId])) {
-        await db.inventories().updateOne(
-          { _id: target._id },
-          { $unset: { [`party.${memberId}`]: '' } },
-          { session },
-        );
+        await db
+          .inventories()
+          .updateOne(
+            { _id: target._id },
+            { $unset: { [`party.${memberId}`]: '' } },
+            { session }
+          );
       }
     });
 
-    const inventory = await db.inventories().findOneAndUpdate(
-      { userId, guildId },
-      { $set: { stealTimestamp: new Date() } },
-      { session },
-    );
+    const inventory = await db
+      .inventories()
+      .findOneAndUpdate(
+        { userId, guildId },
+        { $set: { stealTimestamp: new Date() } },
+        { session }
+      );
 
     if (!inventory) {
       throw new Error();
     }
 
-    await db.characters().updateOne({ _id: character._id }, {
-      $set: { userId, inventoryId: inventory._id },
-    }, { session });
+    await db.characters().updateOne(
+      { _id: character._id },
+      {
+        $set: { userId, inventoryId: inventory._id },
+      },
+      { session }
+    );
 
     await session.commitTransaction();
   } catch (err) {
@@ -336,7 +350,7 @@ export async function stealCharacter(
 
 export async function failSteal(
   guildId: string,
-  userId: string,
+  userId: string
 ): Promise<void> {
   const db = new Mongo();
 
@@ -349,7 +363,7 @@ export async function failSteal(
         $setOnInsert: newInventory(guildId, userId, ['stealTimestamp']),
         $set: { stealTimestamp: new Date() },
       },
-      { upsert: true },
+      { upsert: true }
     );
   } finally {
     await db.close();

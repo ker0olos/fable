@@ -1,11 +1,8 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertEquals, assertObjectMatch } from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
+import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
@@ -25,7 +22,8 @@ describe('db.assignCharacter()', () => {
   });
 
   it('1st spot (auto)', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -38,7 +36,8 @@ describe('db.assignCharacter()', () => {
         },
       } as any);
 
-    const { insertedId: characterInsertedId } = await client.characters()
+    const { insertedId: characterInsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -49,10 +48,10 @@ describe('db.assignCharacter()', () => {
     const character = await db.assignCharacter(
       'user-id',
       'guild-id',
-      'character-id',
+      'character-id'
     );
 
-    assertEquals(character!, {
+    expect(character).toEqual({
       _id: characterInsertedId,
       userId: 'user-id',
       guildId: 'guild-id',
@@ -60,11 +59,11 @@ describe('db.assignCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    const inventory = await client.inventories().findOne(
-      { userId: 'user-id', guildId: 'guild-id' },
-    );
+    const inventory = await client
+      .inventories()
+      .findOne({ userId: 'user-id', guildId: 'guild-id' });
 
-    assertObjectMatch(inventory!, {
+    expect(inventory).toMatchObject({
       party: {
         member1Id: characterInsertedId,
         member2Id: null,
@@ -76,7 +75,8 @@ describe('db.assignCharacter()', () => {
   });
 
   it('3rd spot (auto)', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -89,7 +89,8 @@ describe('db.assignCharacter()', () => {
         },
       } as any);
 
-    const { insertedId: characterInsertedId } = await client.characters()
+    const { insertedId: characterInsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -100,10 +101,10 @@ describe('db.assignCharacter()', () => {
     const character = await db.assignCharacter(
       'user-id',
       'guild-id',
-      'character-id',
+      'character-id'
     );
 
-    assertEquals(character!, {
+    expect(character).toEqual({
       _id: characterInsertedId,
       userId: 'user-id',
       guildId: 'guild-id',
@@ -111,11 +112,11 @@ describe('db.assignCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    const inventory = await client.inventories().findOne(
-      { userId: 'user-id', guildId: 'guild-id' },
-    );
+    const inventory = await client
+      .inventories()
+      .findOne({ userId: 'user-id', guildId: 'guild-id' });
 
-    assertObjectMatch(inventory!, {
+    expect(inventory).toMatchObject({
       party: {
         member1Id: 'character-1',
         member2Id: 'character-2',
@@ -127,7 +128,8 @@ describe('db.assignCharacter()', () => {
   });
 
   it('1st spot (specified spot)', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -140,7 +142,8 @@ describe('db.assignCharacter()', () => {
         },
       } as any);
 
-    const { insertedId: characterInsertedId } = await client.characters()
+    const { insertedId: characterInsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
@@ -152,10 +155,10 @@ describe('db.assignCharacter()', () => {
       'user-id',
       'guild-id',
       'character-id',
-      1,
+      1
     );
 
-    assertEquals(character!, {
+    expect(character).toEqual({
       _id: characterInsertedId,
       userId: 'user-id',
       guildId: 'guild-id',
@@ -163,11 +166,11 @@ describe('db.assignCharacter()', () => {
       characterId: 'character-id',
     } as any);
 
-    const inventory = await client.inventories().findOne(
-      { userId: 'user-id', guildId: 'guild-id' },
-    );
+    const inventory = await client
+      .inventories()
+      .findOne({ userId: 'user-id', guildId: 'guild-id' });
 
-    assertObjectMatch(inventory!, {
+    expect(inventory).toMatchObject({
       party: {
         member1Id: characterInsertedId,
         member2Id: 'character-2',
@@ -179,44 +182,44 @@ describe('db.assignCharacter()', () => {
   });
 
   it('reassign (specified spot)', async () => {
-    const { insertedId: characterInsertedId } = await client.characters()
+    const { insertedId: characterInsertedId } = await client
+      .characters()
       .insertOne({
         userId: 'user-id',
         guildId: 'guild-id',
         characterId: 'character-id',
       } as any);
 
-    const { insertedId: _inventoryInsertedId } = await client.inventories()
-      .insertOne({
-        userId: 'user-id',
-        guildId: 'guild-id',
-        party: {
-          member1Id: undefined,
-          member2Id: undefined,
-          member3Id: undefined,
-          member4Id: undefined,
-          member5Id: characterInsertedId,
-        },
-      } as any);
+    await client.inventories().insertOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      party: {
+        member1Id: undefined,
+        member2Id: undefined,
+        member3Id: undefined,
+        member4Id: undefined,
+        member5Id: characterInsertedId,
+      },
+    } as any);
 
     const character = await db.assignCharacter(
       'user-id',
       'guild-id',
-      'character-id',
+      'character-id'
     );
 
-    assertEquals(character!, {
+    expect(character).toEqual({
       _id: characterInsertedId,
       userId: 'user-id',
       guildId: 'guild-id',
       characterId: 'character-id',
     } as any);
 
-    const inventory = await client.inventories().findOne(
-      { userId: 'user-id', guildId: 'guild-id' },
-    );
+    const inventory = await client
+      .inventories()
+      .findOne({ userId: 'user-id', guildId: 'guild-id' });
 
-    assertObjectMatch(inventory!, {
+    expect(inventory).toMatchObject({
       party: {
         member1Id: characterInsertedId,
         member2Id: null,
@@ -242,32 +245,31 @@ describe('db.swapCharacters()', () => {
   });
 
   it('1-to-undefined', async () => {
-    const inventory = await client.inventories()
-      .findOneAndUpdate(
-        {},
-        {
-          $setOnInsert: {
-            userId: 'user-id',
-            guildId: 'guild-id',
-            party: {
-              member1Id: 'character-1',
-              member2Id: undefined,
-              member3Id: undefined,
-              member4Id: undefined,
-              member5Id: undefined,
-            } as any,
-          },
+    const inventory = await client.inventories().findOneAndUpdate(
+      {},
+      {
+        $setOnInsert: {
+          userId: 'user-id',
+          guildId: 'guild-id',
+          party: {
+            member1Id: 'character-1',
+            member2Id: undefined,
+            member3Id: undefined,
+            member4Id: undefined,
+            member5Id: undefined,
+          } as any,
         },
-        { upsert: true, returnDocument: 'after' },
-      );
+      },
+      { upsert: true, returnDocument: 'after' }
+    );
 
     await db.swapSpots(inventory!, 1, 3);
 
-    const inventoryUpdated = await client.inventories().findOne(
-      { userId: 'user-id', guildId: 'guild-id' },
-    );
+    const inventoryUpdated = await client
+      .inventories()
+      .findOne({ userId: 'user-id', guildId: 'guild-id' });
 
-    assertObjectMatch(inventoryUpdated!, {
+    expect(inventoryUpdated).toMatchObject({
       party: {
         member1Id: null,
         member2Id: null,
@@ -279,32 +281,31 @@ describe('db.swapCharacters()', () => {
   });
 
   it('1-to-1', async () => {
-    const inventory = await client.inventories()
-      .findOneAndUpdate(
-        {},
-        {
-          $setOnInsert: {
-            userId: 'user-id',
-            guildId: 'guild-id',
-            party: {
-              member1Id: 'character-1',
-              member2Id: 'character-2',
-              member3Id: 'character-3',
-              member4Id: 'character-4',
-              member5Id: 'character-5',
-            } as any,
-          },
+    const inventory = await client.inventories().findOneAndUpdate(
+      {},
+      {
+        $setOnInsert: {
+          userId: 'user-id',
+          guildId: 'guild-id',
+          party: {
+            member1Id: 'character-1',
+            member2Id: 'character-2',
+            member3Id: 'character-3',
+            member4Id: 'character-4',
+            member5Id: 'character-5',
+          } as any,
         },
-        { upsert: true, returnDocument: 'after' },
-      );
+      },
+      { upsert: true, returnDocument: 'after' }
+    );
 
     await db.swapSpots(inventory!, 1, 3);
 
-    const inventoryUpdated = await client.inventories().findOne(
-      { userId: 'user-id', guildId: 'guild-id' },
-    );
+    const inventoryUpdated = await client
+      .inventories()
+      .findOne({ userId: 'user-id', guildId: 'guild-id' });
 
-    assertObjectMatch(inventoryUpdated!, {
+    expect(inventoryUpdated).toMatchObject({
       party: {
         member1Id: 'character-3',
         member2Id: 'character-2',
@@ -330,28 +331,27 @@ describe('db.unassignCharacter()', () => {
   });
 
   it('normal', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
-      .insertOne(
-        {
-          userId: 'user-id',
-          guildId: 'guild-id',
-          party: {
-            member1Id: 'character-1',
-            member2Id: 'character-2',
-            member3Id: 'character-3',
-            member4Id: 'character-4',
-            member5Id: 'character-5',
-          },
-        } as any,
-      );
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        party: {
+          member1Id: 'character-1',
+          member2Id: 'character-2',
+          member3Id: 'character-3',
+          member4Id: 'character-4',
+          member5Id: 'character-5',
+        },
+      } as any);
 
     await db.unassignCharacter('user-id', 'guild-id', 3);
 
-    const inventoryUpdated = await client.inventories().findOne(
-      { _id: inventoryInsertedId },
-    );
+    const inventoryUpdated = await client
+      .inventories()
+      .findOne({ _id: inventoryInsertedId });
 
-    assertObjectMatch(inventoryUpdated!, {
+    expect(inventoryUpdated).toMatchObject({
       party: {
         member1Id: 'character-1',
         member2Id: 'character-2',
@@ -377,28 +377,27 @@ describe('db.clearParty()', () => {
   });
 
   it('normal', async () => {
-    const { insertedId: inventoryInsertedId } = await client.inventories()
-      .insertOne(
-        {
-          userId: 'user-id',
-          guildId: 'guild-id',
-          party: {
-            member1Id: 'character-1',
-            member2Id: 'character-2',
-            member3Id: 'character-3',
-            member4Id: 'character-4',
-            member5Id: 'character-5',
-          },
-        } as any,
-      );
+    const { insertedId: inventoryInsertedId } = await client
+      .inventories()
+      .insertOne({
+        userId: 'user-id',
+        guildId: 'guild-id',
+        party: {
+          member1Id: 'character-1',
+          member2Id: 'character-2',
+          member3Id: 'character-3',
+          member4Id: 'character-4',
+          member5Id: 'character-5',
+        },
+      } as any);
 
     await db.clearParty('user-id', 'guild-id');
 
-    const inventoryUpdated = await client.inventories().findOne(
-      { _id: inventoryInsertedId },
-    );
+    const inventoryUpdated = await client
+      .inventories()
+      .findOne({ _id: inventoryInsertedId });
 
-    assertObjectMatch(inventoryUpdated!, {
+    expect(inventoryUpdated).toMatchObject({
       party: {
         member1Id: null,
         member2Id: null,

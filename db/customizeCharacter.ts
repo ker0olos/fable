@@ -1,4 +1,4 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 import type { WithId } from 'mongodb';
 
@@ -8,7 +8,7 @@ export async function setCharacterNickname(
   userId: string,
   guildId: string,
   characterId: string,
-  nickname?: string,
+  nickname?: string
 ): Promise<WithId<Schema.Character> | null> {
   const db = new Mongo();
 
@@ -17,11 +17,13 @@ export async function setCharacterNickname(
   try {
     await db.connect();
 
-    result = await db.characters().findOneAndUpdate(
-      { userId, guildId, characterId },
-      nickname ? { $set: { nickname } } : { $unset: { nickname: '' } },
-      { returnDocument: 'after' },
-    );
+    result = await db
+      .characters()
+      .findOneAndUpdate(
+        { userId, guildId, characterId },
+        nickname ? { $set: { nickname } } : { $unset: { nickname: '' } },
+        { returnDocument: 'after' }
+      );
   } finally {
     await db.close();
   }
@@ -33,7 +35,7 @@ export async function setCharacterImage(
   userId: string,
   guildId: string,
   characterId: string,
-  image?: string,
+  image?: string
 ): Promise<WithId<Schema.Character> | null> {
   const db = new Mongo();
 
@@ -42,11 +44,13 @@ export async function setCharacterImage(
   try {
     await db.connect();
 
-    result = await db.characters().findOneAndUpdate(
-      { userId, guildId, characterId },
-      image ? { $set: { image } } : { $unset: { image: '' } },
-      { returnDocument: 'after' },
-    );
+    result = await db
+      .characters()
+      .findOneAndUpdate(
+        { userId, guildId, characterId },
+        image ? { $set: { image } } : { $unset: { image: '' } },
+        { returnDocument: 'after' }
+      );
   } finally {
     await db.close();
   }

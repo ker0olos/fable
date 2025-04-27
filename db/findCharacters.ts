@@ -1,20 +1,22 @@
-import { Mongo } from '~/db/mod.ts';
+import { Mongo } from '~/db/index.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
 async function populateCharacters(
   matchCondition: import('mongodb').Document,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<Schema.PopulatedCharacter[]> {
   db ??= new Mongo();
 
   let results: Schema.PopulatedCharacter[];
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
-    const _results = await db.characters().aggregate()
+    const _results = (await db
+      .characters()
+      .aggregate()
       .match(matchCondition)
       .lookup({
         localField: 'inventoryId',
@@ -22,7 +24,7 @@ async function populateCharacters(
         from: 'inventories',
         as: 'inventory',
       })
-      .toArray() as Schema.PopulatedCharacter[];
+      .toArray()) as Schema.PopulatedCharacter[];
 
     results = _results.map((char) => {
       if (Array.isArray(char.inventory) && char.inventory.length) {
@@ -34,7 +36,7 @@ async function populateCharacters(
       return char;
     });
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return results;
@@ -43,19 +45,21 @@ async function populateCharacters(
 export async function findGuildCharacters(
   guildId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<Schema.Character[]> {
   db ??= new Mongo();
 
   let results: Schema.Character[];
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
-    results = await db.characters().find({ guildId })
-      .toArray() as Schema.Character[];
+    results = (await db
+      .characters()
+      .find({ guildId })
+      .toArray()) as Schema.Character[];
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return results;
@@ -65,14 +69,14 @@ export async function findCharacter(
   guildId: string,
   characterId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<Schema.PopulatedCharacter[]> {
-  return (await populateCharacters({
+  return await populateCharacters({
     characterId,
     guildId,
     db,
     manual,
-  }));
+  });
 }
 
 export async function findOneCharacter(
@@ -80,22 +84,24 @@ export async function findOneCharacter(
   userId: string,
   characterId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<Schema.PopulatedCharacter | undefined> {
-  return (await populateCharacters({
-    characterId,
-    userId,
-    guildId,
-    db,
-    manual,
-  }))[0];
+  return (
+    await populateCharacters({
+      characterId,
+      userId,
+      guildId,
+      db,
+      manual,
+    })
+  )[0];
 }
 
 export async function findCharacters(
   guildId: string,
   charactersIds: string[],
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<(Schema.PopulatedCharacter | undefined)[]> {
   const result = await populateCharacters({
     characterId: { $in: charactersIds },

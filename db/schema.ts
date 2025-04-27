@@ -1,6 +1,6 @@
 import type { ObjectId, WithId } from 'mongodb';
 
-import type { Manifest, SkillKey } from '~/src/types.ts';
+import type { Manifest } from '~/src/types.ts';
 
 export interface Guild {
   discordId: string;
@@ -26,14 +26,9 @@ export interface Inventory {
   guildId: string;
 
   availablePulls: number;
-  availableKeys: number;
 
-  floorsCleared: number;
-
-  lastPVE?: Date;
   lastPull?: Date;
   rechargeTimestamp?: Date;
-  keysTimestamp?: Date;
   stealTimestamp?: Date;
 
   party: {
@@ -66,10 +61,9 @@ export interface Character {
 
   createdAt: Date;
 
-  combat: CharacterCombat;
-
   guildId: string;
   userId: string;
+
   inventoryId: ObjectId;
 }
 
@@ -84,32 +78,6 @@ export interface Pack {
   manifest: Manifest;
   approved: boolean;
   hidden: boolean;
-}
-
-export interface BattleData {
-  createdAt: Date;
-}
-
-export interface AcquiredCharacterSkill {
-  level: number;
-}
-
-export interface CharacterCombat {
-  exp: number;
-  level: number;
-
-  skillPoints: number;
-  skills: Partial<Record<SkillKey, AcquiredCharacterSkill>>;
-
-  curStats: CharacterStats;
-  baseStats: CharacterStats;
-}
-
-export interface CharacterStats {
-  attack: number;
-  defense: number;
-  speed: number;
-  hp: number;
 }
 
 export interface Like {

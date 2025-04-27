@@ -1,6 +1,4 @@
-import { Mongo, STEAL_COOLDOWN_HOURS } from '~/db/mod.ts';
-
-import config from '~/src/config.ts';
+import { Mongo, STEAL_COOLDOWN_HOURS } from '~/db/index.ts';
 
 import utils from '~/src/utils.ts';
 
@@ -11,16 +9,13 @@ import type { WithId } from 'mongodb';
 export const MAX_PULLS = 5;
 export const MAX_NEW_PULLS = 10;
 
-export const MAX_KEYS = 5;
-
 export const RECHARGE_MINS = 30;
-export const RECHARGE_KEYS_MINS = 10;
 
 export const RECHARGE_DAILY_TOKENS_HOURS = 12;
 
 export const newUser = (
   userId: string,
-  omit?: (keyof Schema.User)[],
+  omit?: (keyof Schema.User)[]
 ): Schema.User => {
   const user: Schema.User = {
     discordId: userId,
@@ -39,12 +34,12 @@ export const newUser = (
 
 export const newGuild = (
   guildId: string,
-  omit?: (keyof Schema.Guild)[],
+  omit?: (keyof Schema.Guild)[]
 ): Schema.Guild => {
   const guild: Schema.Guild = {
     excluded: false,
     discordId: guildId,
-    options: { dupes: config.defaultServerDupes ?? true },
+    options: { dupes: false },
     packIds: ['anilist', 'vtubers'],
   };
 
@@ -58,14 +53,12 @@ export const newGuild = (
 export const newInventory = (
   guildId: string,
   userId: string,
-  omit?: (keyof Schema.Inventory)[],
+  omit?: (keyof Schema.Inventory)[]
 ): Schema.Inventory => {
   const inventory: Schema.Inventory = {
     guildId,
     userId,
     availablePulls: MAX_NEW_PULLS,
-    availableKeys: MAX_KEYS,
-    floorsCleared: 0,
     party: {
       member1Id: null,
       member2Id: null,
@@ -85,23 +78,22 @@ export const newInventory = (
 export async function getUser(
   userId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<WithId<Schema.User>> {
   db ??= new Mongo();
 
   let result: WithId<Schema.User>;
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
-    // deno-lint-ignore no-non-null-assertion
     result = (await db.users().findOneAndUpdate(
       { discordId: userId },
       { $setOnInsert: newUser(userId) }, // only invoked if document isn't found
-      { upsert: true, returnDocument: 'after' },
+      { upsert: true, returnDocument: 'after' }
     ))!;
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return result;
@@ -126,25 +118,26 @@ export async function forceNewUser(userId: string): Promise<Schema.User> {
 export async function getGuild(
   guildId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<Schema.PopulatedGuild> {
   db ??= new Mongo();
 
   let _result: Schema.PopulatedGuild;
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
-    // deno-lint-ignore no-non-null-assertion
     const { _id } = (await db.guilds().findOneAndUpdate(
       { discordId: guildId },
       { $setOnInsert: newGuild(guildId) }, // only invoked if document isn't found
-      { upsert: true, returnDocument: 'after' },
+      { upsert: true, returnDocument: 'after' }
     ))!;
 
     // populate the guild with the relevant relations
     // unfortunately cannot be done in the same step as findOrInsert
-    const [result] = await db.guilds().aggregate()
+    const [result] = await db
+      .guilds()
+      .aggregate()
       .match({ _id })
       .lookup({
         localField: 'packIds',
@@ -156,7 +149,7 @@ export async function getGuild(
 
     _result = result as Schema.PopulatedGuild;
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return _result;
@@ -166,25 +159,26 @@ export async function getInventory(
   guildId: string,
   userId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<Schema.PopulatedInventory> {
   db ??= new Mongo();
 
   let _result: Schema.PopulatedInventory;
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
-    // deno-lint-ignore no-non-null-assertion
     const { _id } = (await db.inventories().findOneAndUpdate(
       { guildId, userId },
       { $setOnInsert: newInventory(guildId, userId) }, // only invoked if document isn't found
-      { upsert: true, returnDocument: 'after' },
+      { upsert: true, returnDocument: 'after' }
     ))!;
 
     // populate the inventory with the relevant relations
     // unfortunately cannot be done in the same step as findOrInsert
-    const [result] = await db.inventories().aggregate()
+    const [result] = (await db
+      .inventories()
+      .aggregate()
       .match({ _id })
       //
       .lookup({
@@ -223,10 +217,8 @@ export async function getInventory(
         from: 'characters',
         as: 'party.member5',
       })
-      .toArray() as Schema.PopulatedInventory[];
+      .toArray()) as Schema.PopulatedInventory[];
 
-    // deno-lint-ignore ban-ts-comment
-    // @ts-ignore
     if (Array.isArray(result.user)) {
       result.user = result.user.length
         ? result.user[0]
@@ -235,36 +227,30 @@ export async function getInventory(
 
     // manually unwind relation arrays
 
-    // deno-lint-ignore ban-ts-comment
-    // @ts-ignore
     if (Array.isArray(result.party.member1)) {
       result.party.member1 = result.party.member1.length
         ? result.party.member1[0]
         : undefined;
     }
-    // deno-lint-ignore ban-ts-comment
-    // @ts-ignore
+
     if (Array.isArray(result.party.member2)) {
       result.party.member2 = result.party.member2.length
         ? result.party.member2[0]
         : undefined;
     }
-    // deno-lint-ignore ban-ts-comment
-    // @ts-ignore
+
     if (Array.isArray(result.party.member3)) {
       result.party.member3 = result.party.member3.length
         ? result.party.member3[0]
         : undefined;
     }
-    // deno-lint-ignore ban-ts-comment
-    // @ts-ignore
+
     if (Array.isArray(result.party.member4)) {
       result.party.member4 = result.party.member4.length
         ? result.party.member4[0]
         : undefined;
     }
-    // deno-lint-ignore ban-ts-comment
-    // @ts-ignore
+
     if (Array.isArray(result.party.member5)) {
       result.party.member5 = result.party.member5.length
         ? result.party.member5[0]
@@ -273,7 +259,7 @@ export async function getInventory(
 
     _result = result as Schema.PopulatedInventory;
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return _result;
@@ -283,68 +269,51 @@ export async function rechargeConsumables(
   guildId: string,
   userId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<Schema.PopulatedInventory> {
   db ??= new Mongo();
 
   let result: Schema.PopulatedInventory;
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
     const inventory = await getInventory(guildId, userId, db, true);
 
     const { user } = inventory;
 
-    const keysTimestamp = inventory.keysTimestamp ?? new Date();
     const pullsTimestamp = inventory.rechargeTimestamp ?? new Date();
 
     const currentPulls = inventory.availablePulls;
-    const currentKeys = inventory.availableKeys;
 
     const newPulls = Math.max(
       0,
       Math.min(
         MAX_PULLS - currentPulls,
         Math.trunc(
-          utils.diffInMinutes(pullsTimestamp, new Date()) / RECHARGE_MINS,
-        ),
-      ),
-    );
-
-    const newKeys = Math.max(
-      0,
-      Math.min(
-        MAX_KEYS - currentKeys,
-        Math.trunc(
-          utils.diffInMinutes(keysTimestamp, new Date()) / RECHARGE_KEYS_MINS,
-        ),
-      ),
+          utils.diffInMinutes(pullsTimestamp, new Date()) / RECHARGE_MINS
+        )
+      )
     );
 
     const { dailyTimestamp } = user;
 
-    const newDailyTokens = utils.diffInHours(dailyTimestamp, new Date()) >=
+    const newDailyTokens =
+      utils.diffInHours(dailyTimestamp, new Date()) >=
       RECHARGE_DAILY_TOKENS_HOURS;
 
     const stealTimestamp = inventory.stealTimestamp;
 
-    const resetSteal = stealTimestamp &&
-      utils.diffInHours(stealTimestamp, new Date()) >=
-        STEAL_COOLDOWN_HOURS;
+    const resetSteal =
+      stealTimestamp &&
+      utils.diffInHours(stealTimestamp, new Date()) >= STEAL_COOLDOWN_HOURS;
 
-    if (
-      !newPulls &&
-      !newKeys &&
-      !newDailyTokens &&
-      !resetSteal
-    ) {
-      !manual && await db.close();
+    if (!newPulls && !newDailyTokens && !resetSteal) {
+      if (!manual) await db.close();
       return inventory;
     }
 
     const rechargedPulls = currentPulls + newPulls;
-    const rechargedKeys = currentKeys + newKeys;
 
     const $userSet: Partial<Schema.User> = {};
 
@@ -352,22 +321,13 @@ export async function rechargeConsumables(
     const $unset: Partial<{ [K in keyof Schema.Inventory]: '' }> = {};
 
     $set.availablePulls = Math.min(99, rechargedPulls);
-    $set.availableKeys = Math.min(99, rechargedKeys);
 
     if (rechargedPulls < MAX_PULLS) {
       $set.rechargeTimestamp = new Date(
-        pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS * 60000),
+        pullsTimestamp.getTime() + newPulls * RECHARGE_MINS * 60000
       );
     } else {
       $unset.rechargeTimestamp = '';
-    }
-
-    if (rechargedKeys < MAX_KEYS) {
-      $set.keysTimestamp = new Date(
-        keysTimestamp.getTime() + (newKeys * RECHARGE_KEYS_MINS * 60000),
-      );
-    } else {
-      $unset.keysTimestamp = '';
     }
 
     if (newDailyTokens) {
@@ -387,19 +347,19 @@ export async function rechargeConsumables(
       $userSet.dailyTimestamp = new Date();
       $userSet.availableTokens = user.availableTokens + newTokens;
 
-      await db.users().updateOne({ discordId: user.discordId }, {
-        $set: $userSet,
-      });
+      await db.users().updateOne(
+        { discordId: user.discordId },
+        {
+          $set: $userSet,
+        }
+      );
     }
 
     if (resetSteal) {
       $unset.stealTimestamp = '';
     }
 
-    await db.inventories().updateOne(
-      { _id: inventory._id },
-      { $set, $unset },
-    );
+    await db.inventories().updateOne({ _id: inventory._id }, { $set, $unset });
 
     result = { ...inventory, ...$set };
 
@@ -409,7 +369,7 @@ export async function rechargeConsumables(
       delete result[key as keyof Schema.PopulatedInventory];
     });
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return result;
@@ -418,7 +378,7 @@ export async function rechargeConsumables(
 export async function getActiveUsersIfLiked(
   guildId: string,
   characterId: string,
-  mediaIds: string[],
+  mediaIds: string[]
 ): Promise<string[]> {
   const db = new Mongo();
 
@@ -426,33 +386,33 @@ export async function getActiveUsersIfLiked(
 
   const twoWeeks = new Date();
 
-  twoWeeks.setDate(twoWeeks.getDate() - (7 * 2));
+  twoWeeks.setDate(twoWeeks.getDate() - 7 * 2);
 
   try {
     await db.connect();
 
-    results = (await db.inventories().aggregate()
-      .match({
-        guildId,
-        $or: [
-          { lastPull: { $gte: twoWeeks } },
-          { lastPVE: { $gte: twoWeeks } },
-        ],
-      })
-      .lookup({
-        localField: 'userId',
-        foreignField: 'discordId',
-        from: 'users',
-        as: 'user',
-      })
-      .match({
-        $or: [
-          { 'user.likes': { $in: mediaIds.map((mediaId) => ({ mediaId })) } },
-          { 'user.likes': { $in: [{ characterId }] } },
-        ],
-      })
-      .toArray())
-      .map(({ userId }) => userId);
+    results = (
+      await db
+        .inventories()
+        .aggregate()
+        .match({
+          guildId,
+          $or: [{ lastPull: { $gte: twoWeeks } }],
+        })
+        .lookup({
+          localField: 'userId',
+          foreignField: 'discordId',
+          from: 'users',
+          as: 'user',
+        })
+        .match({
+          $or: [
+            { 'user.likes': { $in: mediaIds.map((mediaId) => ({ mediaId })) } },
+            { 'user.likes': { $in: [{ characterId }] } },
+          ],
+        })
+        .toArray()
+    ).map(({ userId }) => userId);
   } finally {
     await db.close();
   }
@@ -464,20 +424,26 @@ export async function getUserCharacters(
   userId: string,
   guildId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<WithId<Schema.Character>[]> {
   db ??= new Mongo();
 
   let result: WithId<Schema.Character>[];
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
-    result = await db.characters().find({ userId, guildId }, {
-      sort: { createdAt: 1 },
-    }).toArray();
+    result = await db
+      .characters()
+      .find(
+        { userId, guildId },
+        {
+          sort: { createdAt: 1 },
+        }
+      )
+      .toArray();
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return result;
@@ -486,18 +452,18 @@ export async function getUserCharacters(
 export async function getGuildCharacters(
   guildId: string,
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<string[]> {
   db ??= new Mongo();
 
   let result: WithId<Schema.Character>[];
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
     result = await db.characters().find({ guildId }).toArray();
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return result.map(({ characterId }) => characterId);
@@ -507,21 +473,24 @@ export async function getMediaCharacters(
   guildId: string,
   mediaIds: string[],
   db?: Mongo,
-  manual?: boolean,
+  manual?: boolean
 ): Promise<Schema.Character[]> {
   db ??= new Mongo();
 
   let results: Schema.Character[];
 
   try {
-    !manual && await db.connect();
+    if (!manual) await db.connect();
 
-    results = await db.characters().find({
-      mediaId: { $in: mediaIds },
-      guildId,
-    }).toArray();
+    results = await db
+      .characters()
+      .find({
+        mediaId: { $in: mediaIds },
+        guildId,
+      })
+      .toArray();
   } finally {
-    !manual && await db.close();
+    if (!manual) await db.close();
   }
 
   return results;

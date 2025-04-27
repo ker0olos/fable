@@ -1,0 +1,11 @@
+name = "fable"
+compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2025-04-01"
+main = "src/interactions.ts"
+
+[assets]
+directory = "./assets/public"
+binding = "ASSETS"
+
+[observability.logs]
+enabled = true

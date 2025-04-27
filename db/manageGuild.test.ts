@@ -1,12 +1,8 @@
-// deno-lint-ignore-file no-explicit-any no-non-null-assertion
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { afterEach, beforeEach, describe, it } from '$std/testing/bdd.ts';
-import { assertObjectMatch } from '$std/assert/mod.ts';
-
-import db, { Mongo } from '~/db/mod.ts';
-
+import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
 let mongod: MongoMemoryServer;
@@ -35,7 +31,7 @@ describe('db.invertDupes()', () => {
 
     const guild = await client.guilds().findOne({ discordId: 'guild-id' });
 
-    assertObjectMatch(guild!, {
+    expect(guild).toMatchObject({
       _id: insertedId,
       discordId: 'guild-id',
       options: { dupes: true },
@@ -52,7 +48,7 @@ describe('db.invertDupes()', () => {
 
     const guild = await client.guilds().findOne({ discordId: 'guild-id' });
 
-    assertObjectMatch(guild!, {
+    expect(guild).toMatchObject({
       _id: insertedId,
       discordId: 'guild-id',
       options: { dupes: false },

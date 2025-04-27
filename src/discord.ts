@@ -1,8 +1,6 @@
-import { basename, extname } from '$std/path/mod.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { contentType } from '$std/media_types/mod.ts';
-
-import { json } from 'sift';
+import { json } from '~/src/utils.ts';
 
 import i18n from '~/src/i18n.ts';
 
@@ -18,7 +16,7 @@ enum CommandType {
 }
 
 export type Attachment = {
-  arrayBuffer: ArrayBuffer;
+  arrayBuffer: Uint8Array;
   filename: string;
   type: string;
 };
@@ -164,9 +162,7 @@ export type Member = {
 export type User = {
   id: string;
   username: string;
-  // deno-lint-ignore camelcase
   display_name?: string;
-  // deno-lint-ignore camelcase
   global_name?: string;
   avatar?: string;
 };
@@ -174,11 +170,14 @@ export type User = {
 type Resolved = {
   users?: Record<string, User>;
   members?: Record<string, Omit<Member, 'user'>>;
-  attachments?: Record<string, {
-    ephemeral: boolean;
-    content_type: string;
-    url: string;
-  }>;
+  attachments?: Record<
+    string,
+    {
+      ephemeral: boolean;
+      content_type: string;
+      url: string;
+    }
+  >;
 };
 
 type AllowedPings = {
@@ -189,7 +188,7 @@ type AllowedPings = {
 
 type ComponentInternal = {
   type: number;
-  // deno-lint-ignore camelcase
+
   custom_id?: string;
   style?: ButtonStyle | TextInputStyle;
   label?: string;
@@ -197,13 +196,13 @@ type ComponentInternal = {
   placeholder?: string;
   disabled?: boolean;
   url?: string;
-  // deno-lint-ignore camelcase
+
   min_values?: number;
-  // deno-lint-ignore camelcase
+
   max_values?: number;
-  // deno-lint-ignore camelcase
+
   min_length?: number;
-  // deno-lint-ignore camelcase
+
   max_length?: number;
   options?: {
     label: string;
@@ -234,12 +233,12 @@ type EmbedInternal = {
   author?: {
     name?: string;
     url?: string;
-    // deno-lint-ignore camelcase
+
     icon_url?: string;
   };
   footer?: {
     text?: string;
-    // deno-lint-ignore camelcase
+
     icon_url?: string;
   };
 };
@@ -250,10 +249,7 @@ export type Emote = {
   animated?: boolean;
 };
 
-export const getAvatar = (
-  member: Member,
-  guildId: string,
-) => {
+export const getAvatar = (member: Member, guildId: string) => {
   const base = 'https://cdn.discordapp.com';
 
   if (member.avatar) {
@@ -316,11 +312,13 @@ export class Interaction<Options> {
       target_id?: string;
       values?: string[];
       options?: CommandOption[];
-    } & { // Message Component
+    } & {
+      // Message Component
       custom_id: string;
       component_type: ComponentType;
       values?: unknown[];
-    } & { // Modal Submit
+    } & {
+      // Modal Submit
       custom_id: string;
       components: { type: 1; components: unknown[] }[];
     } = obj.data;
@@ -500,7 +498,6 @@ export class Component {
     return this;
   }
 
-  // deno-lint-ignore no-explicit-any
   json(): any {
     if (!this.#data.style) {
       switch (this.#data.type) {
@@ -525,10 +522,8 @@ export class Component {
 
 export class Embed {
   #data: EmbedInternal;
-  #files: File[];
 
   constructor(type: 'rich' = 'rich') {
-    this.#files = [];
     this.#data = { type };
   }
 
@@ -552,14 +547,17 @@ export class Embed {
     // max characters for embed descriptions is 4096
     this.#data.description = utils.truncate(
       utils.decodeDescription(description),
-      4096,
+      4096
     );
     return this;
   }
 
-  setAuthor(
-    author: { name?: string; url?: string; icon_url?: string; proxy?: boolean },
-  ): Embed {
+  setAuthor(author: {
+    name?: string;
+    url?: string;
+    icon_url?: string;
+    proxy?: boolean;
+  }): Embed {
     if (author.name) {
       this.#data.author = {
         ...author,
@@ -607,22 +605,6 @@ export class Embed {
     return this;
   }
 
-  setImageFile(path: string): Attachment {
-    const filename = encodeURIComponent(basename(path));
-
-    const arrayBuffer = Deno.readFileSync(path);
-
-    this.#data.image = { url: `attachment://${filename}` };
-
-    const type = contentType(extname(path));
-
-    if (type) {
-      return { type, arrayBuffer, filename };
-    } else {
-      throw new Error(`${extname(path)}: unsupported`);
-    }
-  }
-
   async setImageWithProxy(image: {
     url?: string;
     default?: boolean;
@@ -631,14 +613,14 @@ export class Embed {
     image.default = image.default ?? true;
 
     if (config.disableImagesProxy) {
-      // deno-lint-ignore no-non-null-assertion
       this.#data.image = { url: image.url! };
     } else {
       const attachment = await utils.proxy(image.url, image.size);
 
-      this.#data.image = { url: `attachment://${attachment.filename}` };
+      if (attachment)
+        this.#data.image = { url: `attachment://${attachment.filename}` };
 
-      return attachment;
+      return attachment || undefined;
     }
   }
 
@@ -650,14 +632,14 @@ export class Embed {
     image.default = image.default ?? true;
 
     if (config.disableImagesProxy) {
-      // deno-lint-ignore no-non-null-assertion
       this.#data.thumbnail = { url: image.url! };
     } else {
       const attachment = await utils.proxy(image.url, image.size);
 
-      this.#data.thumbnail = { url: `attachment://${attachment.filename}` };
+      if (attachment)
+        this.#data.thumbnail = { url: `attachment://${attachment.filename}` };
 
-      return attachment;
+      return attachment || undefined;
     }
   }
 
@@ -672,7 +654,6 @@ export class Embed {
     return this;
   }
 
-  // deno-lint-ignore no-explicit-any
   json(): any {
     return this.#data;
   }
@@ -690,12 +671,9 @@ export class Message {
     custom_id?: string;
     flags?: number;
     content?: string;
-    // deno-lint-ignore no-explicit-any
     attachments: any[];
     embeds: unknown[];
     components: unknown[];
-    // title?: string;
-    // custom_id?: string;
     allowed_mentions?: AllowedPings;
   };
 
@@ -762,7 +740,7 @@ export class Message {
       this.#files.push(
         new File([attachment.arrayBuffer], attachment.filename, {
           type: attachment.type,
-        }),
+        })
       );
     }
 
@@ -772,9 +750,10 @@ export class Message {
   clearEmbedsAndAttachments(offset?: number): Message {
     this.#files = [];
     this.#data.attachments = [];
-    this.#data.embeds = typeof offset === 'number'
-      ? this.#data.embeds.slice(offset - 1, offset)
-      : [];
+    this.#data.embeds =
+      typeof offset === 'number'
+        ? this.#data.embeds.slice(offset - 1, offset)
+        : [];
     return this;
   }
 
@@ -822,12 +801,14 @@ export class Message {
   }
 
   addComponents(components: Component[]): Message {
-    this.#data.components.push(...components.map((component) => {
-      const comp = component.json();
-      // labels have maximum of 80 characters
-      // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
-      return (comp.label = utils.truncate(comp.label, 80), comp);
-    }));
+    this.#data.components.push(
+      ...components.map((component) => {
+        const comp = component.json();
+        // labels have maximum of 80 characters
+        // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
+        return (comp.label = utils.truncate(comp.label, 80)), comp;
+      })
+    );
 
     return this;
   }
@@ -838,7 +819,7 @@ export class Message {
         const comp = component.json();
         // labels have maximum of 80 characters
         // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
-        return (comp.label = utils.truncate(comp.label, 80), comp);
+        return (comp.label = utils.truncate(comp.label, 80)), comp;
       }),
       ...this.#data.components,
     ];
@@ -865,7 +846,6 @@ export class Message {
     return this;
   }
 
-  // deno-lint-ignore no-explicit-any
   json(): any {
     switch (this.#type) {
       case MessageType.Suggestions:
@@ -936,10 +916,7 @@ export class Message {
     });
   }
 
-  async #http(
-    url: string,
-    method: 'PATCH' | 'POST',
-  ): Promise<Response> {
+  async #http(url: string, method: 'PATCH' | 'POST'): Promise<Response> {
     const formData = new FormData();
 
     formData.append('payload_json', JSON.stringify(this.json().data));
@@ -951,18 +928,13 @@ export class Message {
     let response: Response | undefined = undefined;
 
     try {
-      response = await utils.fetchWithRetry(
-        url,
-        {
-          method,
-          body: formData,
-          headers: {
-            'User-Agent': `Fable (https://github.com/ker0olos/fable, ${
-              Deno.env.get('DENO_DEPLOYMENT_ID') ?? 'localhost'
-            })`,
-          },
+      response = await utils.fetchWithRetry(url, {
+        method,
+        body: formData,
+        headers: {
+          'User-Agent': `Fable (https://github.com/ker0olos/fable)`,
         },
-      );
+      });
     } catch (err) {
       if (!config.sentry) {
         throw err;
@@ -977,33 +949,30 @@ export class Message {
       });
     }
 
-    // deno-lint-ignore no-non-null-assertion
     return response!;
   }
 
   patch(token: string): Promise<Response> {
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
-      'PATCH',
-    )
-      .finally(() => {
-        // WORKAROUND double patch messages
-        if (config.deploy) {
-          utils.sleep(0.250)
-            .then(() => {
-              return this.#http(
-                `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
-                'PATCH',
-              );
-            });
-        }
-      });
+      'PATCH'
+    ).finally(() => {
+      // // WORKAROUND double patch messages
+      // if (config.deploy) {
+      //   utils.sleep(0.25).then(() => {
+      //     return this.#http(
+      //       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
+      //       'PATCH'
+      //     );
+      //   });
+      // }
+    });
   }
 
   followup(token: string): Promise<Response> {
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}`,
-      'POST',
+      'POST'
     );
   }
 
@@ -1015,29 +984,34 @@ export class Message {
     const embed = new Embed();
     const loading = new Message();
 
-    const image = embed.setImageFile(
-      landscape ? 'assets/public/spinner3.gif' : 'assets/public/spinner.gif',
+    embed.setImageUrl(
+      landscape
+        ? `${config.origin}/spinner3.gif`
+        : `${config.origin}/spinner.gif`
     );
 
-    return loading
-      .addEmbed(embed)
-      .addAttachment(image);
+    return loading.addEmbed(embed);
   }
 
-  static page(
-    { message, type, target, index, total, next, locale }: {
-      type: string;
-      message: Message;
-      index: number;
-      target?: string;
-      next?: boolean;
-      total?: number;
-      locale?: AvailableLocales;
-    },
-  ): Message {
+  static page({
+    message,
+    type,
+    target,
+    index,
+    total,
+    next,
+    locale,
+  }: {
+    type: string;
+    message: Message;
+    index: number;
+    target?: string;
+    next?: boolean;
+    total?: number;
+    locale?: AvailableLocales;
+  }): Message {
     const group: Component[] = [];
 
-    // deno-lint-ignore no-non-null-assertion
     const prevId = index - 1 >= 0 ? index - 1 : total! - 1;
 
     const nextId = next ? index + 1 : 0;
@@ -1046,54 +1020,52 @@ export class Message {
       group.push(
         new Component()
           .setId(type, target ?? '', `${prevId}`, 'prev')
-          .setLabel(i18n.get('prev', locale)),
+          .setLabel(i18n.get('prev', locale))
       );
     }
 
     group.push(
-      new Component().setId('_')
-        .setLabel(
-          `${index + 1}${total ? `/${total}` : ''}`,
-        )
-        .toggle(),
+      new Component()
+        .setId('_')
+        .setLabel(`${index + 1}${total ? `/${total}` : ''}`)
+        .toggle()
     );
 
     if (next || total) {
       group.push(
         new Component()
           .setId(type, target ?? '', `${nextId}`, 'next')
-          .setLabel(i18n.get('next', locale)),
+          .setLabel(i18n.get('next', locale))
       );
     }
 
     return message.insertComponents(group);
   }
 
-  static dialog(
-    {
-      type,
-      description,
-      message,
-      confirm,
-      confirmText,
-      cancelText,
-      userId,
-      targetId,
-      locale,
-    }: {
-      type?: string;
-      userId?: string;
-      targetId?: string;
-      description?: string;
-      confirm: string | string[];
-      message: Message;
-      confirmText?: string;
-      cancelText?: string;
-      locale?: AvailableLocales;
-    },
-  ): Message {
-    const confirmComponent = new Component()
-      .setLabel(confirmText ?? i18n.get('confirm', locale));
+  static dialog({
+    type,
+    description,
+    message,
+    confirm,
+    confirmText,
+    cancelText,
+    userId,
+    targetId,
+    locale,
+  }: {
+    type?: string;
+    userId?: string;
+    targetId?: string;
+    description?: string;
+    confirm: string | string[];
+    message: Message;
+    confirmText?: string;
+    cancelText?: string;
+    locale?: AvailableLocales;
+  }): Message {
+    const confirmComponent = new Component().setLabel(
+      confirmText ?? i18n.get('confirm', locale)
+    );
 
     const cancelComponent = new Component()
       .setStyle(ButtonStyle.Red)
@@ -1102,7 +1074,6 @@ export class Message {
     if (Array.isArray(confirm)) {
       confirmComponent.setId(...confirm);
     } else {
-      // deno-lint-ignore no-non-null-assertion
       confirmComponent.setId(type!, confirm);
     }
 
@@ -1115,23 +1086,17 @@ export class Message {
     }
 
     if (description) {
-      message
-        .addEmbed(new Embed().setDescription(description));
+      message.addEmbed(new Embed().setDescription(description));
     }
 
-    return message
-      .insertComponents([
-        confirmComponent,
-        cancelComponent,
-      ]);
+    return message.insertComponents([confirmComponent, cancelComponent]);
   }
 
   static internal(id: string): Message {
-    return new Message()
-      .addEmbed(
-        new Embed().setDescription(
-          `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``,
-        ),
-      );
+    return new Message().addEmbed(
+      new Embed().setDescription(
+        `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``
+      )
+    );
   }
 }

@@ -1,6 +1,7 @@
-import { assertMonochromeSnapshot } from '~/tests/utils.test.ts';
-import { commands } from '~/update_commands.ts';
+import { expect, test } from 'vitest';
 
-Deno.test('commands', async (test) => {
-  await assertMonochromeSnapshot(test, commands);
+import { commands } from './update_commands.ts';
+
+test('commands', async () => {
+  expect(commands).toMatchSnapshot();
 });

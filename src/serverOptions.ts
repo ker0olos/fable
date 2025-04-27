@@ -1,11 +1,7 @@
-import config from '~/src/config.ts';
-
 import * as discord from '~/src/discord.ts';
 
-import db from '~/db/mod.ts';
+import db from '~/db/index.ts';
 import i18n from '~/src/i18n.ts';
-
-import utils from '~/src/utils.ts';
 
 import user from '~/src/user.ts';
 
@@ -13,7 +9,7 @@ import type { Guild } from '~/db/schema.ts';
 
 const getOptionsEmbed = (
   guild: Guild,
-  locale: discord.AvailableLocales,
+  locale: discord.AvailableLocales
 ): discord.Message => {
   const message = new discord.Message();
   const embed = new discord.Embed();
@@ -21,11 +17,11 @@ const getOptionsEmbed = (
   embed.addField({
     name: i18n.get(
       guild.options?.dupes ? 'dupes-allowed' : 'dupes-disallowed',
-      locale,
+      locale
     ),
     value: i18n.get(
       guild.options?.dupes ? 'server-dupes-allowed' : 'server-dupes-disallowed',
-      locale,
+      locale
     ),
   });
 
@@ -34,75 +30,43 @@ const getOptionsEmbed = (
       .setLabel(
         i18n.get(
           guild.options?.dupes ? 'disallow-dupes' : 'allow-dupes',
-          locale,
-        ),
+          locale
+        )
       )
       .setId('options', 'dupes'),
   ]);
 
-  message
-    .addEmbed(embed);
+  message.addEmbed(embed);
 
   return message;
 };
 
-function view(
-  { token, userId, guildId }: {
-    token: string;
-    userId: string;
-    guildId: string;
-  },
-): discord.Message {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
+async function view({ userId, guildId }: { userId: string; guildId: string }) {
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  db.getGuild(guildId)
-    .then((guild) => {
-      const message = getOptionsEmbed(guild, locale);
+  const guild = await db.getGuild(guildId);
 
-      return message.patch(token);
-    })
-    .catch(async (err) => {
-      if (!config.sentry) {
-        throw err;
-      }
+  const message = getOptionsEmbed(guild, locale);
 
-      const refId = utils.captureException(err);
-
-      await discord.Message.internal(refId).patch(token);
-    });
-
-  return discord.Message.spinner(true)
-    .setFlags(discord.MessageFlags.Ephemeral);
+  return message;
 }
 
-function invertDupes(
-  { token, userId, guildId }: {
-    token: string;
-    userId: string;
-    guildId: string;
-  },
-): discord.Message {
-  const locale = user.cachedUsers[userId]?.locale ??
-    user.cachedGuilds[guildId]?.locale;
+async function invertDupes({
+  userId,
+  guildId,
+}: {
+  userId: string;
+  guildId: string;
+}) {
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
-  db.invertDupes(guildId)
-    .then((guild) => {
-      const message = getOptionsEmbed(guild, locale);
+  const guild = await db.invertDupes(guildId);
 
-      return message.patch(token);
-    })
-    .catch(async (err) => {
-      if (!config.sentry) {
-        throw err;
-      }
+  const message = getOptionsEmbed(guild, locale);
 
-      const refId = utils.captureException(err);
-
-      await discord.Message.internal(refId).patch(token);
-    });
-
-  return discord.Message.spinner(true);
+  return message;
 }
 
 const serverOptions = {

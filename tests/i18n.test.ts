@@ -1,12 +1,23 @@
-// deno-lint-ignore-file no-explicit-any prefer-ascii
-
-import { assertEquals } from '$std/assert/mod.ts';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, it, expect, beforeEach } from 'vitest';
 import i18n from '~/src/i18n.ts';
 
-Deno.test('es-ES', async (test) => {
-  await test.step('return value if exists', () => {
-    try {
+describe('i18n', () => {
+  // Store original dictionary and restore it after each test
+  let originalDict: typeof i18n.dict;
+
+  beforeEach(() => {
+    // Save original dictionary before each test
+    originalDict = i18n.dict;
+
+    // Restore original dictionary after each test
+    return () => {
+      i18n.dict = originalDict;
+    };
+  });
+
+  describe('es-ES', () => {
+    it('return value if exists', () => {
       const key = 'someKey';
 
       const enValue = 'Value in English';
@@ -15,10 +26,6 @@ Deno.test('es-ES', async (test) => {
       const mockEN = { [key]: enValue };
       const mockES = { [key]: esValue };
 
-      // deno-lint-ignore ban-ts-comment
-      //@ts-ignore
-      i18n._dict = i18n.dict;
-
       i18n.dict = {
         'en-US': mockEN,
         'es-ES': mockES,
@@ -26,20 +33,14 @@ Deno.test('es-ES', async (test) => {
 
       // Test Spanish translation
       const resultES = i18n.get(key as any, 'es-ES');
-      assertEquals(resultES, esValue);
+      expect(resultES).toBe(esValue);
 
       // Test English translation
       const resultEN = i18n.get(key as any, 'en-US');
-      assertEquals(resultEN, enValue);
-    } finally {
-      // deno-lint-ignore ban-ts-comment
-      //@ts-ignore
-      i18n.dict = i18n._dict;
-    }
-  });
+      expect(resultEN).toBe(enValue);
+    });
 
-  await test.step('fallback to english', () => {
-    try {
+    it('fallback to english', () => {
       const key = 'someKey';
 
       const enValue = 'Value in English';
@@ -47,10 +48,6 @@ Deno.test('es-ES', async (test) => {
       const mockEN = { [key]: enValue };
       const mockES = {};
 
-      // deno-lint-ignore ban-ts-comment
-      //@ts-ignore
-      i18n._dict = i18n.dict;
-
       i18n.dict = {
         'en-US': mockEN,
         'es-ES': mockES,
@@ -58,30 +55,20 @@ Deno.test('es-ES', async (test) => {
 
       // Test Spanish translation
       const resultES = i18n.get(key as any, 'es-ES');
-      assertEquals(resultES, enValue);
+      expect(resultES).toBe(enValue);
 
       // Test English translation
       const resultEN = i18n.get(key as any, 'en-US');
-      assertEquals(resultEN, enValue);
-    } finally {
-      // deno-lint-ignore ban-ts-comment
-      //@ts-ignore
-      i18n.dict = i18n._dict;
-    }
+      expect(resultEN).toBe(enValue);
+    });
   });
-});
 
-Deno.test('sub template strings', () => {
-  try {
+  it('sub template strings', () => {
     const key = 'someKey';
 
     const mockEN = {
       [key]: 'Hello, {0}',
     };
-
-    // deno-lint-ignore ban-ts-comment
-    //@ts-ignore
-    i18n._dict = i18n.dict;
 
     i18n.dict = {
       'en-US': mockEN,
@@ -89,24 +76,14 @@ Deno.test('sub template strings', () => {
 
     const resultDefault = i18n.get(key as any, 'en-US', 'World');
 
-    assertEquals(resultDefault, 'Hello, World');
-  } finally {
-    // deno-lint-ignore ban-ts-comment
-    //@ts-ignore
-    i18n.dict = i18n._dict;
-  }
-});
+    expect(resultDefault).toBe('Hello, World');
+  });
 
-Deno.test('fallback to key if not found', () => {
-  try {
+  it('fallback to key if not found', () => {
     const key = 'someKey';
 
     const mockEN = {};
     const mockES = {};
-
-    // deno-lint-ignore ban-ts-comment
-    //@ts-ignore
-    i18n._dict = i18n.dict;
 
     i18n.dict = {
       'en-US': mockEN,
@@ -115,10 +92,6 @@ Deno.test('fallback to key if not found', () => {
 
     const resultDefault = i18n.get(key as any, 'es-ES');
 
-    assertEquals(resultDefault, key);
-  } finally {
-    // deno-lint-ignore ban-ts-comment
-    //@ts-ignore
-    i18n.dict = i18n._dict;
-  }
+    expect(resultDefault).toBe(key);
+  });
 });
