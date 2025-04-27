@@ -1,5 +1,7 @@
+name = "fable"
 compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
 compatibility_date = "2024-09-23"
+main = "src/interactions.ts"
 
 [assets]
 directory = "./assets/public"
