@@ -54,6 +54,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           # accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4.x'
           secrets: |
             APP_ID
             BOT_TOKEN
