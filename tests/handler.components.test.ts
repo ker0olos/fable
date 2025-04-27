@@ -57,16 +57,13 @@ describe('Components Handler', () => {
             }) as any
         );
 
-      const setTypeSpy = vi.fn(() => ({
-        send: () => true,
-      }));
+      const searchStub = vi
+        .spyOn(search, 'media')
+        .mockImplementation(() => ({ setType: () => true }) as any);
 
-      const searchStub = vi.spyOn(search, 'media').mockImplementation(
-        () =>
-          ({
-            setType: setTypeSpy,
-          }) as any
-      );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -80,7 +77,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -95,15 +92,34 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(searchStub).toHaveBeenCalledWith({
           token: 'token',
           id: 'media_id',
           guildId: 'guild_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -141,16 +157,16 @@ describe('Components Handler', () => {
             }) as any
         );
 
-      const setTypeSpy = vi.fn(() => ({
-        send: () => true,
-      }));
-
       const searchStub = vi.spyOn(search, 'character').mockImplementation(
         () =>
           ({
-            setType: setTypeSpy,
+            setType: () => true,
           }) as any
       );
+
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -164,7 +180,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -179,16 +195,34 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(searchStub).toHaveBeenCalledWith({
           token: 'token',
           guildId: 'guild_id',
           userId: 'user_id',
           id: 'character_id',
         });
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
 
-        expect(response).toBe(true);
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -224,16 +258,13 @@ describe('Components Handler', () => {
             }) as any
         );
 
-      const setTypeSpy = vi.fn(() => ({
-        send: () => true,
-      }));
+      const searchStub = vi
+        .spyOn(search, 'character')
+        .mockImplementation(() => ({ setType: () => true }) as any);
 
-      const searchStub = vi.spyOn(search, 'character').mockImplementation(
-        () =>
-          ({
-            setType: setTypeSpy,
-          }) as any
-      );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -247,7 +278,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -262,8 +293,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.New);
-
         expect(searchStub).toHaveBeenCalledWith({
           token: 'token',
           guildId: 'guild_id',
@@ -271,7 +300,28 @@ describe('Components Handler', () => {
           id: 'character_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 4,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -309,16 +359,16 @@ describe('Components Handler', () => {
             }) as any
         );
 
-      const setTypeSpy = vi.fn(() => ({
-        send: () => true,
-      }));
-
       const searchStub = vi.spyOn(search, 'mediaCharacters').mockImplementation(
         () =>
           ({
-            setType: setTypeSpy,
+            setType: () => true,
           }) as any
       );
+
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -332,7 +382,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -347,8 +397,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(searchStub).toHaveBeenCalledWith({
           id: 'media_id',
           userId: 'user_id',
@@ -357,7 +405,28 @@ describe('Components Handler', () => {
           token: 'token',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -395,16 +464,16 @@ describe('Components Handler', () => {
             }) as any
         );
 
-      const setTypeSpy = vi.fn(() => ({
-        send: () => true,
-      }));
-
       const userStub = vi.spyOn(user, 'list').mockImplementation(
         () =>
           ({
-            setType: setTypeSpy,
+            setType: () => true,
           }) as any
       );
+
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -418,7 +487,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -433,8 +502,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(userStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -445,7 +512,28 @@ describe('Components Handler', () => {
           picture: false,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -481,16 +569,16 @@ describe('Components Handler', () => {
             }) as any
         );
 
-      const setTypeSpy = vi.fn(() => ({
-        send: () => true,
-      }));
-
       const userStub = vi.spyOn(user, 'list').mockImplementation(
         () =>
           ({
-            setType: setTypeSpy,
+            setType: () => true,
           }) as any
       );
+
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -504,7 +592,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -519,8 +607,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(userStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -531,7 +617,28 @@ describe('Components Handler', () => {
           picture: true,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -567,16 +674,16 @@ describe('Components Handler', () => {
             }) as any
         );
 
-      const setTypeSpy = vi.fn(() => ({
-        send: () => true,
-      }));
-
       const userStub = vi.spyOn(user, 'list').mockImplementation(
         () =>
           ({
-            setType: setTypeSpy,
+            setType: () => true,
           }) as any
       );
+
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -590,7 +697,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -605,8 +712,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(userStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -617,7 +722,28 @@ describe('Components Handler', () => {
           picture: false,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -663,6 +789,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -676,7 +805,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -691,8 +820,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(userStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -703,7 +830,28 @@ describe('Components Handler', () => {
           picture: true,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -752,6 +900,10 @@ describe('Components Handler', () => {
           }) as any
       );
 
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
+
       config.publicKey = 'publicKey';
 
       try {
@@ -764,7 +916,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -779,8 +931,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(userStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -788,7 +938,28 @@ describe('Components Handler', () => {
           index: 5,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner3.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -832,6 +1003,9 @@ describe('Components Handler', () => {
             send: () => true,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -845,7 +1019,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -869,7 +1043,28 @@ describe('Components Handler', () => {
           undo: false,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 4,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -911,6 +1106,9 @@ describe('Components Handler', () => {
             send: () => true,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -924,7 +1122,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -948,7 +1146,28 @@ describe('Components Handler', () => {
           undo: false,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 4,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -996,6 +1215,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1009,7 +1231,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1024,8 +1246,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(userStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -1035,7 +1255,28 @@ describe('Components Handler', () => {
           index: 1,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -1081,6 +1322,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1094,7 +1338,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1109,8 +1353,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(userStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -1120,7 +1362,28 @@ describe('Components Handler', () => {
           index: 0,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -1166,6 +1429,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1179,7 +1445,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1194,8 +1460,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(userStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -1205,7 +1469,28 @@ describe('Components Handler', () => {
           index: 0,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -1253,6 +1538,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1266,7 +1554,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1281,8 +1569,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(searchStub).toHaveBeenCalledWith({
           index: 1,
           token: 'token',
@@ -1291,7 +1577,28 @@ describe('Components Handler', () => {
           guildId: 'guild_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -1337,6 +1644,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1350,7 +1660,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1365,8 +1675,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(searchStub).toHaveBeenCalledWith({
           index: 1,
           token: 'token',
@@ -1375,7 +1683,28 @@ describe('Components Handler', () => {
           guildId: 'guild_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -1419,6 +1748,9 @@ describe('Components Handler', () => {
             send: () => true,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1432,7 +1764,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1456,7 +1788,30 @@ describe('Components Handler', () => {
           guildId: 'guild_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 4,
+          data: {
+            allowed_mentions: { parse: [] },
+            content: '<@user_id>',
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -1498,6 +1853,9 @@ describe('Components Handler', () => {
             send: () => true,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1511,7 +1869,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1535,7 +1893,30 @@ describe('Components Handler', () => {
           guildId: 'guild_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 4,
+          data: {
+            allowed_mentions: { parse: [] },
+            content: '<@user_id>',
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -1577,6 +1958,9 @@ describe('Components Handler', () => {
             send: () => true,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1590,7 +1974,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1614,7 +1998,30 @@ describe('Components Handler', () => {
           guildId: 'guild_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 4,
+          data: {
+            allowed_mentions: { parse: [] },
+            content: '<@user_id>',
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -1662,6 +2069,7 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
 
@@ -1675,7 +2083,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1689,8 +2097,6 @@ describe('Components Handler', () => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         });
-
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
 
         expect(shopStub).toHaveBeenCalledWith({
           userId: 'user_id',
@@ -1744,6 +2150,7 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
 
@@ -1757,7 +2164,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1771,8 +2178,6 @@ describe('Components Handler', () => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         });
-
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
 
         expect(shopStub).toHaveBeenCalledWith({
           userId: 'user_id',
@@ -1825,6 +2230,7 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
 
@@ -1838,7 +2244,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1852,8 +2258,6 @@ describe('Components Handler', () => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         });
-
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
 
         expect(shopStub).toHaveBeenCalledWith({
           userId: 'user_id',
@@ -1895,6 +2299,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1908,7 +2315,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -1983,6 +2390,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -1996,7 +2406,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2084,6 +2494,7 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
 
@@ -2097,7 +2508,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2157,6 +2568,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -2170,7 +2584,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2254,6 +2668,7 @@ describe('Components Handler', () => {
             send: () => true,
           }) as any
       );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
 
@@ -2267,7 +2682,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2336,6 +2751,7 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
 
@@ -2349,7 +2765,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2363,8 +2779,6 @@ describe('Components Handler', () => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         });
-
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
 
         expect(helpStub).toHaveBeenCalledWith({
           userId: 'user_id',
@@ -2420,6 +2834,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -2433,7 +2850,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2448,8 +2865,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(tradeStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -2458,7 +2873,28 @@ describe('Components Handler', () => {
           guildId: 'guild_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner3.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -2493,6 +2929,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -2506,7 +2945,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2595,6 +3034,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -2608,7 +3050,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2622,8 +3064,6 @@ describe('Components Handler', () => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         });
-
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
 
         expect(tradeStub).toHaveBeenCalledWith({
           token: 'token',
@@ -2642,7 +3082,28 @@ describe('Components Handler', () => {
           guildId: 'guild_id',
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner3.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -2678,6 +3139,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -2691,7 +3155,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2779,6 +3243,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -2792,7 +3259,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2807,8 +3274,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(synthesisStub).toHaveBeenCalledWith({
           token: 'test_token',
           userId: 'user_id',
@@ -2816,7 +3281,28 @@ describe('Components Handler', () => {
           target: 5,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/spinner.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -2851,6 +3337,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -2864,7 +3353,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2952,6 +3441,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -2965,7 +3457,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -2980,8 +3472,6 @@ describe('Components Handler', () => {
           publicKey: 'publicKey',
         });
 
-        expect(setTypeSpy).toHaveBeenCalledWith(discord.MessageType.Update);
-
         expect(tradeStub).toHaveBeenCalledWith({
           token: 'token',
           userId: 'user_id',
@@ -2991,7 +3481,28 @@ describe('Components Handler', () => {
           pre: 40,
         });
 
-        expect(response).toBe(true);
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            embeds: [
+              {
+                type: 'rich',
+                image: {
+                  url: 'http://localhost:8000/steal2.gif',
+                },
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
       } finally {
         delete config.publicKey;
       }
@@ -3041,9 +3552,9 @@ describe('Components Handler', () => {
             send: () => true,
           }) as any
       );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
-      config.communityPacks = true;
 
       try {
         const request = new Request('http://localhost:8000', {
@@ -3055,7 +3566,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3079,7 +3590,6 @@ describe('Components Handler', () => {
         expect(response).toBe(true);
       } finally {
         delete config.publicKey;
-        delete config.communityPacks;
       }
     });
   });
@@ -3131,9 +3641,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
-      config.communityPacks = true;
 
       try {
         const request = new Request('http://localhost:8000', {
@@ -3145,7 +3655,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3169,7 +3679,6 @@ describe('Components Handler', () => {
         expect(response).toBe(true);
       } finally {
         delete config.publicKey;
-        delete config.communityPacks;
       }
     });
 
@@ -3208,9 +3717,11 @@ describe('Components Handler', () => {
         );
 
       vi.spyOn(packs, 'all').mockResolvedValue([pack as any]);
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
-      config.communityPacks = true;
 
       try {
         const request = new Request('http://localhost:8000', {
@@ -3222,7 +3733,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3265,7 +3776,6 @@ describe('Components Handler', () => {
         });
       } finally {
         delete config.publicKey;
-        delete config.communityPacks;
       }
     });
   });
@@ -3313,9 +3823,9 @@ describe('Components Handler', () => {
               setType: setTypeSpy,
             }) as any
         );
+      const ctxStub = {};
 
       config.publicKey = 'publicKey';
-      config.communityPacks = true;
 
       try {
         const request = new Request('http://localhost:8000', {
@@ -3327,7 +3837,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3345,13 +3855,11 @@ describe('Components Handler', () => {
         expect(invertDupesStub).toHaveBeenCalledWith({
           userId: 'user_id',
           guildId: 'guild_id',
-          token: 'token',
         });
 
         expect(response).toBe(true);
       } finally {
         delete config.publicKey;
-        delete config.communityPacks;
       }
     });
   });
@@ -3397,6 +3905,9 @@ describe('Components Handler', () => {
             setType: setTypeSpy,
           }) as any
       );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -3410,7 +3921,7 @@ describe('Components Handler', () => {
           },
         });
 
-        await handler(request);
+        await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3465,6 +3976,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -3478,7 +3992,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3555,6 +4069,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -3568,7 +4085,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3641,6 +4158,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -3654,7 +4174,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3727,6 +4247,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -3740,7 +4263,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {
@@ -3815,6 +4338,9 @@ describe('Components Handler', () => {
               body,
             }) as any
         );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
 
       config.publicKey = 'publicKey';
 
@@ -3828,7 +4354,7 @@ describe('Components Handler', () => {
           },
         });
 
-        const response = await handler(request);
+        const response = await handler(request, ctxStub as any);
 
         expect(validateStub).toHaveBeenCalledWith(request, {
           POST: {

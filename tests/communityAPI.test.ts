@@ -210,7 +210,9 @@ describe('/publish', () => {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
         headers: { authorization: 'Bearer token' },
-        body: JSON.stringify({ manifest: { id: 'pack_id' } }),
+        body: JSON.stringify({
+          manifest: { id: 'pack_id', characters: [], media: [] },
+        }),
       });
 
       const response = await communityAPI.publish(request);
@@ -226,9 +228,14 @@ describe('/publish', () => {
         }
       );
 
-      expect(publishPackStub).toHaveBeenCalledWith('user_id', {
-        id: 'pack_id',
-      });
+      expect(publishPackStub).toHaveBeenCalledWith(
+        'user_id',
+        {
+          id: 'pack_id',
+        },
+        [],
+        []
+      );
 
       expect(response.ok).toBe(true);
       expect(response.status).toBe(201);
@@ -314,13 +321,11 @@ describe('/publish', () => {
       expect(await response.json()).toEqual({
         errors: [
           {
-            dataPath: '',
-            keyword: 'required',
-            message: "should have required property 'id'",
-            params: {
-              missingProperty: 'id',
-            },
-            schemaPath: '#/required',
+            code: 'invalid_type',
+            expected: 'string',
+            message: 'Required',
+            path: ['id'],
+            received: 'undefined',
           },
         ],
       });
@@ -367,9 +372,14 @@ describe('/publish', () => {
         }
       );
 
-      expect(publishPackStub).toHaveBeenCalledWith('user_id', {
-        id: 'pack_id',
-      });
+      expect(publishPackStub).toHaveBeenCalledWith(
+        'user_id',
+        {
+          id: 'pack_id',
+        },
+        undefined,
+        undefined
+      );
 
       expect(response.ok).toBe(false);
       expect(response.status).toBe(403);
@@ -417,9 +427,14 @@ describe('/publish', () => {
         }
       );
 
-      expect(publishPackStub).toHaveBeenCalledWith('user_id', {
-        id: 'pack_id',
-      });
+      expect(publishPackStub).toHaveBeenCalledWith(
+        'user_id',
+        {
+          id: 'pack_id',
+        },
+        undefined,
+        undefined
+      );
 
       expect(response.ok).toBe(false);
       expect(response.status).toBe(501);

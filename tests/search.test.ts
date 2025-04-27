@@ -41,8 +41,6 @@ describe('/media', () => {
       popularity: 0,
       title: {
         english: 'english title',
-        romaji: 'romaji title',
-        native: 'native title',
       },
       images: [
         {
@@ -58,30 +56,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -125,7 +114,7 @@ describe('/media', () => {
       description: 'long description',
       popularity: 0,
       title: {
-        native: 'native title',
+        english: 'native title',
       },
       images: [
         {
@@ -141,30 +130,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'native title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -224,30 +204,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -313,30 +284,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -413,30 +375,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -499,30 +452,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -592,6 +536,7 @@ describe('/media', () => {
             node: {
               id: '5',
               packId: 'pack-id',
+              rating: 1,
               name: {
                 english: 'main character name',
               },
@@ -610,6 +555,7 @@ describe('/media', () => {
             node: {
               id: '5',
               packId: 'pack-id',
+              rating: 1,
               name: {
                 english: 'supporting character name',
               },
@@ -626,6 +572,7 @@ describe('/media', () => {
             node: {
               id: '5',
               packId: 'pack-id',
+              rating: 1,
               name: {
                 english: 'background character name',
               },
@@ -648,30 +595,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -712,7 +650,7 @@ describe('/media', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://maincharacterurl.webp',
+            url: 'attachment://main character url.webp',
           },
         },
         {
@@ -724,7 +662,7 @@ describe('/media', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://supportingcharacterurl.webp',
+            url: 'attachment://supporting character url.webp',
           },
         },
       ],
@@ -743,8 +681,8 @@ describe('/media', () => {
       ],
       attachments: [
         { filename: 'image-url.webp', id: '0' },
-        { filename: 'maincharacterurl.webp', id: '1' },
-        { filename: 'supportingcharacterurl.webp', id: '2' },
+        { filename: 'main character url.webp', id: '1' },
+        { filename: 'supporting character url.webp', id: '2' },
       ],
     });
   });
@@ -855,30 +793,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1023,30 +952,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1151,30 +1071,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1243,6 +1154,7 @@ describe('/media', () => {
             relation: MediaRelation.Other,
             node: {
               id: '5',
+              packId: 'pack-id',
               type: MediaType.Anime,
               format: MediaFormat.Music,
               popularity: 0,
@@ -1256,6 +1168,7 @@ describe('/media', () => {
             relation: MediaRelation.Other,
             node: {
               id: '10',
+              packId: 'pack-id',
               type: MediaType.Anime,
               format: MediaFormat.Music,
               popularity: 0,
@@ -1269,6 +1182,7 @@ describe('/media', () => {
             relation: MediaRelation.Other,
             node: {
               id: '15',
+              packId: 'pack-id',
               type: MediaType.Anime,
               format: MediaFormat.Music,
               popularity: 0,
@@ -1288,30 +1202,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1431,30 +1336,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1535,30 +1431,33 @@ describe('/media', () => {
             role: CharacterRole.Main,
             node: {
               id: '5',
+              packId: 'pack-id',
               name: {
                 english: 'main character name',
               },
-              popularity: 0,
+              rating: 1,
             },
           },
           {
             role: CharacterRole.Supporting,
             node: {
               id: '10',
+              packId: 'pack-id',
               name: {
                 english: 'supporting character name',
               },
-              popularity: 100,
+              rating: 2,
             },
           },
           {
             role: CharacterRole.Background,
             node: {
               id: '15',
+              packId: 'pack-id',
               name: {
                 english: 'background character name',
               },
-              popularity: 50,
+              rating: 3,
             },
           },
         ],
@@ -1571,30 +1470,21 @@ describe('/media', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1680,26 +1570,10 @@ describe('/media', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'x'.repeat(100),
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1730,6 +1604,7 @@ describe('/media', () => {
   it('no titles', async () => {
     const media: Media = {
       id: '1',
+      packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {},
@@ -1761,8 +1636,7 @@ describe('/media debug', () => {
       popularity: 0,
       title: {
         english: 'english title',
-        romaji: 'romaji title',
-        native: 'native title',
+        alternative: ['romaji title', 'native title'],
       },
       images: [
         {
@@ -1778,31 +1652,22 @@ describe('/media debug', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
       debug: true,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1873,31 +1738,22 @@ describe('/media debug', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.media({
+    await search.media({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'english title',
       debug: true,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1954,6 +1810,7 @@ describe('/media debug', () => {
 
     const media: Media = {
       id: '1',
+      packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {},
@@ -1990,7 +1847,7 @@ describe('/character', () => {
           url: 'image_url',
         },
       ],
-      popularity: 1_000_000,
+      rating: 5,
       age: '420',
       gender: 'male',
     };
@@ -2003,31 +1860,22 @@ describe('/character', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       search: 'full name',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2084,6 +1932,7 @@ describe('/character', () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -2111,31 +1960,22 @@ describe('/character', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       search: 'full name',
       guildId: 'guild_id',
       userId: 'user_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2189,6 +2029,7 @@ describe('/character', () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -2223,31 +2064,22 @@ describe('/character', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       search: 'full name',
       guildId: 'guild_id',
       userId: 'user_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2301,6 +2133,7 @@ describe('/character', () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -2335,31 +2168,22 @@ describe('/character', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       search: 'full name',
       guildId: 'guild_id',
       userId: 'user_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2414,6 +2238,7 @@ describe('/character', () => {
       id: '1',
       packId: 'pack-id',
       description: 'long description',
+      rating: 1,
       name: {
         english: 'full name',
       },
@@ -2447,31 +2272,22 @@ describe('/character', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       search: 'full name',
       guildId: 'guild_id',
       userId: 'user_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2525,6 +2341,7 @@ describe('/character', () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -2545,31 +2362,22 @@ describe('/character', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       search: 'full name',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2626,6 +2434,7 @@ describe('/character', () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -2647,30 +2456,22 @@ describe('/character', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = await search.character({
+    await await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       search: 'full name',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2728,14 +2529,11 @@ describe('/character', () => {
       id: '1',
       packId: 'pack-id',
       description: 'long description',
+      rating: 1,
       name: {
         english: 'full name',
       },
-      images: [
-        {
-          url: 'image_url',
-        },
-      ],
+      images: [{ url: 'image_url' }],
       media: {
         edges: [
           {
@@ -2763,31 +2561,22 @@ describe('/character', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'full name',
       userId: 'user_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2847,6 +2636,7 @@ describe('/character', () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
+      rating: 1,
       name: {
         english: 'full name',
       },
@@ -2861,30 +2651,22 @@ describe('/character', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       search: 'full name',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2947,27 +2729,11 @@ describe('/character', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       search: 'x'.repeat(100),
       userId: 'user_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -3011,19 +2777,24 @@ describe('media embed', () => {
   it('normal', async () => {
     const media: DisaggregatedMedia = {
       id: '1',
+      packId: 'pack-id',
       description: 'long description',
       title: {
         english: 'full title',
       },
-      images: [
-        {
-          url: 'image_url',
-        },
-      ],
+      images: [{ url: 'image_url' }],
       popularity: 1_000_000,
       type: MediaType.Anime,
       format: MediaFormat.TV,
     };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3048,6 +2819,7 @@ describe('media embed', () => {
   it('minimized', async () => {
     const media: DisaggregatedMedia = {
       id: '1',
+      packId: 'pack-id',
       description: 'long description',
       title: {
         english: 'full title',
@@ -3061,6 +2833,14 @@ describe('media embed', () => {
       type: MediaType.Anime,
       format: MediaFormat.TV,
     };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3087,6 +2867,7 @@ describe('media embed', () => {
   it('default image', async () => {
     const media: DisaggregatedMedia = {
       id: '1',
+      packId: 'pack-id',
       description: 'long description',
       title: {
         english: 'full title',
@@ -3095,6 +2876,14 @@ describe('media embed', () => {
       type: MediaType.Anime,
       format: MediaFormat.TV,
     };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3132,6 +2921,7 @@ describe('character embed', () => {
   it('normal', async () => {
     const character: DisaggregatedCharacter = {
       id: '1',
+      packId: 'pack-id',
       description: 'long description',
       name: {
         english: 'full name',
@@ -3141,10 +2931,18 @@ describe('character embed', () => {
           url: 'image_url',
         },
       ],
-      popularity: 1_000_000,
+      rating: 5,
       age: '420',
       gender: 'male',
     };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3178,6 +2976,7 @@ describe('character embed', () => {
   it('media title', async () => {
     const character: Character = {
       id: '1',
+      packId: 'pack-id',
       description: 'long description',
       name: {
         english: 'full name',
@@ -3187,7 +2986,7 @@ describe('character embed', () => {
           url: 'image_url',
         },
       ],
-      popularity: 1_000_000,
+      rating: 5,
       age: '420',
       gender: 'male',
       media: {
@@ -3196,6 +2995,7 @@ describe('character embed', () => {
             role: CharacterRole.Main,
             node: {
               id: 'media_id',
+              packId: 'pack-id',
               title: { english: 'media title' },
               type: MediaType.Anime,
             },
@@ -3203,6 +3003,14 @@ describe('character embed', () => {
         ],
       },
     };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3241,6 +3049,7 @@ describe('character embed', () => {
   it('minimized', async () => {
     const character: DisaggregatedCharacter = {
       id: '1',
+      packId: 'pack-id',
       description: 'long description',
       name: {
         english: 'full name',
@@ -3250,10 +3059,18 @@ describe('character embed', () => {
           url: 'image_url',
         },
       ],
-      popularity: 1_000_000,
+      rating: 5,
       age: '420',
       gender: 'male',
     };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3284,6 +3101,7 @@ describe('character embed', () => {
   it('custom', async () => {
     const character: DisaggregatedCharacter = {
       id: '1',
+      packId: 'pack-id',
       description: 'long description',
       name: {
         english: 'full name',
@@ -3293,10 +3111,18 @@ describe('character embed', () => {
           url: 'image_url',
         },
       ],
-      popularity: 1_000_000,
+      rating: 5,
       age: '420',
       gender: 'male',
     };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3339,10 +3165,19 @@ describe('character embed', () => {
       name: {
         english: 'full name',
       },
-      popularity: 1_000_000,
+      rating: 5,
+      packId: 'pack-id',
       age: '420',
       gender: 'male',
     };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
@@ -3398,7 +3233,7 @@ describe('/character debug', () => {
       ],
       age: '420',
       gender: 'male',
-      popularity: 1_000_000,
+      rating: 5,
     };
 
     vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
@@ -3409,32 +3244,22 @@ describe('/character debug', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       search: 'full name',
       debug: true,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -3490,11 +3315,6 @@ describe('/character debug', () => {
               value: 'undefined',
             },
             {
-              inline: true,
-              name: 'Popularity',
-              value: '1,000,000',
-            },
-            {
               name: '**WARN**',
               value:
                 'Character not available in gacha.\nAdd at least one media to the character.',
@@ -3509,6 +3329,7 @@ describe('/character debug', () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -3530,32 +3351,22 @@ describe('/character debug', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       search: 'full name',
       debug: true,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -3611,11 +3422,6 @@ describe('/character debug', () => {
               value: 'undefined',
             },
             {
-              inline: true,
-              name: 'Popularity',
-              value: '0',
-            },
-            {
               name: '**WARN**',
               value:
                 'Character not available in gacha.\nAdd at least one media to the character.',
@@ -3639,6 +3445,7 @@ describe('/character debug', () => {
           url: 'image_url',
         },
       ],
+      rating: 1,
       age: '420',
       gender: 'male',
       media: {
@@ -3665,32 +3472,22 @@ describe('/character debug', () => {
     vi.spyOn(db, 'findCharacter').mockReturnValue(undefined as any);
     vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       search: 'full name',
       debug: true,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -3745,11 +3542,6 @@ describe('/character debug', () => {
               name: 'Role',
               value: 'Main',
             },
-            {
-              inline: true,
-              name: 'Popularity',
-              value: '10',
-            },
           ],
         },
       ],
@@ -3760,6 +3552,7 @@ describe('/character debug', () => {
     const character: Character = {
       id: '1',
       packId: 'pack-id',
+      rating: 1,
       name: {
         english: 'full name',
       },
@@ -3773,32 +3566,22 @@ describe('/character debug', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.character({
+    await search.character({
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       search: 'full name',
       debug: true,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -3854,11 +3637,6 @@ describe('/character debug', () => {
               value: 'undefined',
             },
             {
-              inline: true,
-              name: 'Popularity',
-              value: '0',
-            },
-            {
               name: '**WARN**',
               value:
                 'Character not available in gacha.\nAdd at least one media to the character.',
@@ -3897,6 +3675,7 @@ describe('media characters', () => {
       character: {
         id: '2',
         packId: 'pack-id',
+        rating: 1,
         name: {
           english: 'name',
         },
@@ -3908,32 +3687,22 @@ describe('media characters', () => {
     vi.spyOn(db, 'findCharacter').mockReturnValue(undefined as any);
     vi.spyOn(packs, 'all').mockResolvedValue([]);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaCharacters({
+    await search.mediaCharacters({
       token: 'test_token',
       id: 'pack-id:1',
       userId: 'user_id',
       guildId: 'guild_id',
       index: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4016,6 +3785,7 @@ describe('media characters', () => {
       character: {
         id: '2',
         packId: 'pack-id',
+        rating: 1,
         name: {
           english: 'name',
         },
@@ -4035,32 +3805,22 @@ describe('media characters', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
     vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
-
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaCharacters({
+    await search.mediaCharacters({
       token: 'test_token',
       id: 'pack-id:1',
       userId: 'user_id',
       guildId: 'guild_id',
       index: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4134,6 +3894,7 @@ describe('media characters', () => {
       next: false,
       media: {
         id: '1',
+        packId: 'pack-id',
         type: MediaType.Anime,
         title: {
           english: 'title',
@@ -4141,6 +3902,8 @@ describe('media characters', () => {
       },
       character: {
         id: '2',
+        packId: 'pack-id',
+        rating: 1,
         name: {
           english: 'name',
         },
@@ -4157,28 +3920,12 @@ describe('media characters', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaCharacters({
+    await search.mediaCharacters({
       token: 'test_token',
       id: 'pack-id:1',
       userId: 'user_id',
       guildId: 'guild_id',
       index: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4211,6 +3958,7 @@ describe('media characters', () => {
       next: false,
       media: {
         id: '1',
+        packId: 'pack-id',
         type: MediaType.Anime,
         title: {
           english: 'title',
@@ -4228,28 +3976,12 @@ describe('media characters', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaCharacters({
+    await search.mediaCharacters({
       token: 'test_token',
       id: 'pack-id:1',
       userId: 'user_id',
       guildId: 'guild_id',
       index: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4282,6 +4014,7 @@ describe('media characters', () => {
       next: false,
       media: {
         id: '1',
+        packId: 'pack-id',
         type: MediaType.Anime,
         title: {
           english: 'title',
@@ -4296,28 +4029,12 @@ describe('media characters', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaCharacters({
+    await search.mediaCharacters({
       token: 'test_token',
       id: 'pack-id:1',
       userId: 'user_id',
       guildId: 'guild_id',
       index: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4355,28 +4072,12 @@ describe('media characters', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaCharacters({
+    await search.mediaCharacters({
       token: 'test_token',
       id: 'pack-id:1',
       userId: 'user_id',
       guildId: 'guild_id',
       index: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4434,6 +4135,7 @@ describe('/found', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 2,
         name: {
           english: 'name',
         },
@@ -4449,6 +4151,7 @@ describe('/found', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 4,
         name: {
           english: 'name 2',
         },
@@ -4485,32 +4188,22 @@ describe('/found', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaFound({
+    await search.mediaFound({
       index: 0,
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       id: 'anilist:3',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4611,6 +4304,7 @@ describe('/found', () => {
         name: {
           english: 'name',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -4626,6 +4320,7 @@ describe('/found', () => {
         name: {
           english: 'name 2',
         },
+        rating: 4,
         media: {
           edges: [
             {
@@ -4642,6 +4337,7 @@ describe('/found', () => {
         name: {
           english: 'name 3',
         },
+        rating: 4,
         media: {
           edges: [
             {
@@ -4685,28 +4381,12 @@ describe('/found', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaFound({
+    await search.mediaFound({
       index: 0,
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       id: 'anilist:4',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4788,28 +4468,12 @@ describe('/found', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaFound({
+    await search.mediaFound({
       index: 0,
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       id: 'anilist:2',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -4856,32 +4520,19 @@ describe('/found', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = search.mediaFound({
+    await search.mediaFound({
       index: 0,
       token: 'test_token',
       guildId: 'guild_id',
       userId: 'user_id',
       id: 'anilist:2',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();

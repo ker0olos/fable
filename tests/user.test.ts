@@ -664,6 +664,7 @@ describe('/nick', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'name 1',
       },
@@ -695,33 +696,24 @@ describe('/nick', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.nick({
+      await user.nick({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
         id: 'anilist:1',
         nick: 'new_nickname',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -782,6 +774,7 @@ describe('/nick', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'name 1',
       },
@@ -800,6 +793,7 @@ describe('/nick', () => {
     const fetchStub = vi
       .spyOn(utils, 'fetchWithRetry')
       .mockReturnValue(undefined as any);
+
     vi.spyOn(db, 'setCharacterNickname').mockReturnValue({
       id: 'anilist:1',
       mediaId: 'anilist:0',
@@ -813,32 +807,23 @@ describe('/nick', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.nick({
+      await user.nick({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
         id: 'anilist:1',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -899,33 +884,24 @@ describe('/nick', () => {
     ] as any);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.nick({
+      await user.nick({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
         id: 'anilist:1',
         nick: 'new_nick',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -963,6 +939,7 @@ describe('/nick', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -985,34 +962,25 @@ describe('/nick', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.nick({
+      await user.nick({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
 
         id: 'anilist:1',
         nick: 'new_nick',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1061,6 +1029,7 @@ describe('/nick', () => {
     const characters: Character[] = [
       {
         id: '1',
+        rating: 1,
         packId: 'anilist',
         name: {
           english: 'name 1',
@@ -1085,33 +1054,24 @@ describe('/nick', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.nick({
+      await user.nick({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
         id: 'anilist:1',
         nick: 'new_nick',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1178,6 +1138,7 @@ describe('/image', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'name 1',
       },
@@ -1212,33 +1173,24 @@ describe('/image', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.image({
+      await user.image({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
         id: 'anilist:1',
         image: 'new_image',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1298,6 +1250,7 @@ describe('/image', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'name 1',
       },
@@ -1330,32 +1283,23 @@ describe('/image', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.image({
+      await user.image({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
         id: 'anilist:1',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1416,33 +1360,24 @@ describe('/image', () => {
     ] as any);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue([]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.image({
+      await user.image({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
         id: 'anilist:1',
         image: 'new_image',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1480,6 +1415,7 @@ describe('/image', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -1502,33 +1438,24 @@ describe('/image', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.image({
+      await user.image({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
         id: 'anilist:1',
         image: 'new_image',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1578,6 +1505,7 @@ describe('/image', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -1601,33 +1529,24 @@ describe('/image', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue([]);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.image({
+      await user.image({
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
         id: 'anilist:1',
         image: 'new_image',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1738,6 +1657,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -1753,6 +1673,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -1768,6 +1689,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 3',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -1783,6 +1705,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 4',
         },
+        rating: 4,
         media: {
           edges: [
             {
@@ -1798,6 +1721,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 5',
         },
+        rating: 5,
         media: {
           edges: [
             {
@@ -1813,6 +1737,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 6',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -1880,33 +1805,24 @@ describe('/collection stars', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         rating: 1,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2034,6 +1950,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         description: 'small description',
         media: {
           edges: [
@@ -2050,6 +1967,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -2065,6 +1983,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 3',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -2080,6 +1999,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 4',
         },
+        rating: 4,
         media: {
           edges: [
             {
@@ -2095,6 +2015,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 5',
         },
+        rating: 5,
         media: {
           edges: [
             {
@@ -2110,6 +2031,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 6',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -2177,34 +2099,25 @@ describe('/collection stars', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         rating: 1,
         picture: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2336,6 +2249,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -2351,6 +2265,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -2366,6 +2281,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 3',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -2381,6 +2297,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 4',
         },
+        rating: 4,
         media: {
           edges: [
             {
@@ -2396,6 +2313,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 5',
         },
+        rating: 5,
         media: {
           edges: [
             {
@@ -2411,6 +2329,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 6',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -2483,33 +2402,24 @@ describe('/collection stars', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         rating: 1,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2637,6 +2547,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -2652,6 +2563,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -2667,6 +2579,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 3',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -2682,6 +2595,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 4',
         },
+        rating: 4,
         media: {
           edges: [
             {
@@ -2697,6 +2611,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 5',
         },
+        rating: 5,
         media: {
           edges: [
             {
@@ -2712,6 +2627,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 6',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -2780,33 +2696,24 @@ describe('/collection stars', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         rating: 1,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2896,6 +2803,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -2911,6 +2819,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -2968,33 +2877,24 @@ describe('/collection stars', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         rating: 1,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -3077,6 +2977,7 @@ describe('/collection stars', () => {
       },
       {
         id: '2',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title 2',
@@ -3091,6 +2992,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -3106,6 +3008,7 @@ describe('/collection stars', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -3154,32 +3057,23 @@ describe('/collection stars', () => {
       (id) => id === 'anilist:1'
     );
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -3267,34 +3161,25 @@ describe('/collection stars', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         nick: true,
         userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
         rating: 5,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -3356,33 +3241,24 @@ describe('/collection stars', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         rating: 5,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -3462,6 +3338,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -3477,6 +3354,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -3524,33 +3402,24 @@ describe('/collection media', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         id: 'anilist:2',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -3626,6 +3495,7 @@ describe('/collection media', () => {
       },
       {
         id: '4',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title 2',
@@ -3640,6 +3510,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -3655,6 +3526,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -3704,33 +3576,24 @@ describe('/collection media', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         id: 'anilist:2',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -3830,6 +3693,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -3845,6 +3709,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -3861,6 +3726,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 3',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -3913,33 +3779,24 @@ describe('/collection media', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         id: 'anilist:4',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -4040,6 +3897,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         description: 'small description',
         media: {
           edges: [
@@ -4056,6 +3914,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -4103,34 +3962,25 @@ describe('/collection media', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         id: 'anilist:2',
         picture: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -4207,6 +4057,7 @@ describe('/collection media', () => {
     const media: Media[] = [
       {
         id: '2',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title 1',
@@ -4214,6 +4065,7 @@ describe('/collection media', () => {
       },
       {
         id: '4',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title 2',
@@ -4228,6 +4080,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -4243,6 +4096,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
         media: {
           edges: [
             {
@@ -4294,33 +4148,24 @@ describe('/collection media', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(true);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         id: 'anilist:2',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -4357,6 +4202,7 @@ describe('/collection media', () => {
     const media: Media[] = [
       {
         id: '2',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title 1',
@@ -4364,6 +4210,7 @@ describe('/collection media', () => {
       },
       {
         id: '4',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title 2',
@@ -4378,6 +4225,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
       },
       {
         id: '3',
@@ -4385,6 +4233,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
       },
     ];
 
@@ -4417,34 +4266,25 @@ describe('/collection media', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
         id: 'anilist:2',
         nick: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -4482,6 +4322,7 @@ describe('/collection media', () => {
     const media: Media[] = [
       {
         id: '2',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title 1',
@@ -4489,6 +4330,7 @@ describe('/collection media', () => {
       },
       {
         id: '4',
+        packId: 'anilist',
         type: MediaType.Anime,
         title: {
           english: 'title 2',
@@ -4503,6 +4345,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
       },
       {
         id: '3',
@@ -4510,6 +4353,7 @@ describe('/collection media', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
       },
     ];
 
@@ -4538,33 +4382,24 @@ describe('/collection media', () => {
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'media').mockResolvedValue(media);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.list({
+      await user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         id: 'anilist:2',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -4658,26 +4493,10 @@ describe('/collection sum', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.sum({
+      await user.sum({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -4760,26 +4579,10 @@ describe('/collection sum', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.sum({
+      await user.sum({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -4862,26 +4665,10 @@ describe('/collection sum', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.sum({
+      await user.sum({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -4964,26 +4751,10 @@ describe('/collection sum', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.sum({
+      await user.sum({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -5124,27 +4895,11 @@ describe('/collection show', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.showcase({
+      await user.showcase({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         index: 0,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -5302,27 +5057,11 @@ describe('/collection show', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.showcase({
+      await user.showcase({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         index: 0,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -5457,27 +5196,11 @@ describe('/collection show', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.showcase({
+      await user.showcase({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         index: 0,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -5604,27 +5327,11 @@ describe('/collection show', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.showcase({
+      await user.showcase({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         index: 0,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -5756,27 +5463,11 @@ describe('/collection show', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.showcase({
+      await user.showcase({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         index: 0,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -5908,27 +5599,11 @@ describe('/collection show', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.showcase({
+      await user.showcase({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         index: 0,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6020,27 +5695,11 @@ describe('/collection show', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.showcase({
+      await user.showcase({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         index: 0,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6113,28 +5772,12 @@ describe('/collection show', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.showcase({
+      await user.showcase({
         userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
         index: 0,
         nick: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6181,12 +5824,14 @@ describe('/like', () => {
       name: {
         english: 'character',
       },
+      rating: 1,
       media: {
         edges: [
           {
             role: CharacterRole.Main,
             node: {
               id: '2',
+              packId: 'pack-id',
               type: MediaType.Anime,
               title: {
                 english: 'title',
@@ -6210,34 +5855,25 @@ describe('/like', () => {
     vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
 
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.like({
+      await user.like({
         userId: 'user_id',
         guildId: 'guild_id',
 
         token: 'test_token',
         search: 'character',
         undo: false,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6303,12 +5939,14 @@ describe('/like', () => {
       name: {
         english: 'character',
       },
+      rating: 1,
       media: {
         edges: [
           {
             role: CharacterRole.Main,
             node: {
               id: '2',
+              packId: 'pack-id',
               type: MediaType.Anime,
               title: {
                 english: 'title',
@@ -6332,12 +5970,19 @@ describe('/like', () => {
     vi.spyOn(db, 'likeCharacter').mockReturnValue('' as any);
 
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.like({
+      await user.like({
         userId: 'user_id',
         guildId: 'guild_id',
 
@@ -6345,22 +5990,6 @@ describe('/like', () => {
         search: 'character',
         mention: true,
         undo: false,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6428,12 +6057,14 @@ describe('/like', () => {
       name: {
         english: 'character',
       },
+      rating: 1,
       media: {
         edges: [
           {
             role: CharacterRole.Main,
             node: {
               id: '2',
+              packId: 'pack-id',
               type: MediaType.Anime,
               title: {
                 english: 'title',
@@ -6457,33 +6088,24 @@ describe('/like', () => {
     vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
 
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.like({
+      await user.like({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         search: 'character',
         undo: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6537,12 +6159,14 @@ describe('/like', () => {
       name: {
         english: 'character',
       },
+      rating: 1,
       media: {
         edges: [
           {
             role: CharacterRole.Main,
             node: {
               id: '2',
+              packId: 'pack-id',
               type: MediaType.Anime,
               title: {
                 english: 'title',
@@ -6566,34 +6190,25 @@ describe('/like', () => {
     vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
 
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.like({
+      await user.like({
         userId: 'user_id',
         guildId: 'guild_id',
 
         token: 'test_token',
         search: 'character',
         undo: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6647,12 +6262,14 @@ describe('/like', () => {
       name: {
         english: 'character',
       },
+      rating: 1,
       media: {
         edges: [
           {
             role: CharacterRole.Main,
             node: {
               id: '2',
+              packId: 'pack-id',
               type: MediaType.Anime,
               title: {
                 english: 'title',
@@ -6676,34 +6293,25 @@ describe('/like', () => {
     vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
 
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.like({
+      await user.like({
         userId: 'user_id',
         guildId: 'guild_id',
 
         token: 'test_token',
         search: 'character',
         undo: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6758,34 +6366,25 @@ describe('/like', () => {
       .mockReturnValue(undefined as any);
 
     vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(undefined);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.like({
+      await user.like({
         userId: 'user_id',
         guildId: 'guild_id',
 
         token: 'test_token',
         search: 'character',
         undo: false,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6853,34 +6452,25 @@ describe('/likeall', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeall({
+      await user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
 
         token: 'test_token',
         search: 'title',
         undo: false,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -6960,34 +6550,28 @@ describe('/likeall', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeall({
+      await user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
 
         token: 'test_token',
         search: 'title',
         undo: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -7042,34 +6626,21 @@ describe('/likeall', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeall({
+      await user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
 
         token: 'test_token',
         search: 'title',
         undo: false,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -7117,6 +6688,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
       },
       {
         id: '2',
@@ -7124,6 +6696,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 2',
         },
+        rating: 1,
       },
       {
         id: '3',
@@ -7131,6 +6704,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 3',
         },
+        rating: 1,
       },
       {
         id: '4',
@@ -7138,6 +6712,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 4',
         },
+        rating: 1,
       },
       {
         id: '5',
@@ -7145,6 +6720,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 5',
         },
+        rating: 1,
       },
       {
         id: '6',
@@ -7152,6 +6728,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 6',
         },
+        rating: 1,
       },
     ];
 
@@ -7182,32 +6759,19 @@ describe('/likeslist', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeslist({
+      await user.likeslist({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -7298,6 +6862,7 @@ describe('/likeslist', () => {
       name: {
         english: 'character',
       },
+      rating: 3,
       media: {
         edges: [
           {
@@ -7340,32 +6905,19 @@ describe('/likeslist', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeslist({
+      await user.likeslist({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -7438,6 +6990,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 1',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -7460,6 +7013,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 2',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -7482,6 +7036,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 3',
         },
+        rating: 1,
         media: {
           edges: [
             {
@@ -7532,33 +7087,20 @@ describe('/likeslist', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeslist({
+      await user.likeslist({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         filter: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -7636,6 +7178,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 1',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -7658,6 +7201,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 2',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -7680,6 +7224,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 3',
         },
+        rating: 3,
         media: {
           edges: [
             {
@@ -7730,34 +7275,21 @@ describe('/likeslist', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeslist({
+      await user.likeslist({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
         filter: true,
         ownedBy: 'another_user_id',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -7836,6 +7368,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
       },
       {
         id: '2',
@@ -7843,6 +7376,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 2',
         },
+        rating: 1,
       },
       {
         id: '3',
@@ -7850,6 +7384,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 3',
         },
+        rating: 1,
       },
       {
         id: '4',
@@ -7857,6 +7392,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 4',
         },
+        rating: 1,
       },
       {
         id: '5',
@@ -7864,6 +7400,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 5',
         },
+        rating: 1,
       },
       {
         id: '6',
@@ -7871,6 +7408,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 6',
         },
+        rating: 1,
       },
     ];
 
@@ -7891,32 +7429,19 @@ describe('/likeslist', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeslist({
+      await user.likeslist({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -7957,6 +7482,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
       },
       {
         id: '2',
@@ -7964,6 +7490,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 2',
         },
+        rating: 1,
       },
       {
         id: '3',
@@ -7971,6 +7498,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 3',
         },
+        rating: 1,
       },
       {
         id: '4',
@@ -7978,6 +7506,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 4',
         },
+        rating: 1,
       },
       {
         id: '5',
@@ -7985,6 +7514,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 5',
         },
+        rating: 1,
       },
       {
         id: '6',
@@ -7992,6 +7522,7 @@ describe('/likeslist', () => {
         name: {
           english: 'character 6',
         },
+        rating: 1,
       },
     ];
 
@@ -8012,33 +7543,20 @@ describe('/likeslist', () => {
     ] as any);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.likeslist({
+      await user.likeslist({
         index: 0,
         userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
         nick: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -8086,6 +7604,7 @@ describe('/logs', () => {
         name: {
           english: 'character 1',
         },
+        rating: 4,
       },
       {
         id: '2',
@@ -8093,6 +7612,7 @@ describe('/logs', () => {
         name: {
           english: 'character 2',
         },
+        rating: 4,
       },
       {
         id: '3',
@@ -8100,6 +7620,7 @@ describe('/logs', () => {
         name: {
           english: 'character 3',
         },
+        rating: 4,
       },
       {
         id: '4',
@@ -8107,6 +7628,7 @@ describe('/logs', () => {
         name: {
           english: 'character 4',
         },
+        rating: 4,
       },
       {
         id: '5',
@@ -8114,6 +7636,7 @@ describe('/logs', () => {
         name: {
           english: 'character 5',
         },
+        rating: 4,
       },
       {
         id: '6',
@@ -8121,6 +7644,7 @@ describe('/logs', () => {
         name: {
           english: 'character 6',
         },
+        rating: 4,
       },
       {
         id: '7',
@@ -8128,6 +7652,7 @@ describe('/logs', () => {
         name: {
           english: 'character 7',
         },
+        rating: 4,
       },
       {
         id: '8',
@@ -8135,6 +7660,7 @@ describe('/logs', () => {
         name: {
           english: 'character 8',
         },
+        rating: 4,
       },
       {
         id: '9',
@@ -8142,6 +7668,7 @@ describe('/logs', () => {
         name: {
           english: 'character 9',
         },
+        rating: 4,
       },
       {
         id: '10',
@@ -8149,6 +7676,7 @@ describe('/logs', () => {
         name: {
           english: 'character 10',
         },
+        rating: 4,
       },
       {
         id: '11',
@@ -8156,6 +7684,7 @@ describe('/logs', () => {
         name: {
           english: 'character 11',
         },
+        rating: 4,
       },
     ];
 
@@ -8196,26 +7725,10 @@ describe('/logs', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.logs({
+      await user.logs({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -8267,6 +7780,7 @@ describe('/logs', () => {
         name: {
           english: 'character 1',
         },
+        rating: 1,
       },
       {
         id: '2',
@@ -8274,6 +7788,7 @@ describe('/logs', () => {
         name: {
           english: 'character 2',
         },
+        rating: 2,
       },
       {
         id: '3',
@@ -8281,6 +7796,7 @@ describe('/logs', () => {
         name: {
           english: 'character 3',
         },
+        rating: 3,
       },
       {
         id: '4',
@@ -8288,6 +7804,7 @@ describe('/logs', () => {
         name: {
           english: 'character 4',
         },
+        rating: 4,
       },
       {
         id: '5',
@@ -8295,6 +7812,7 @@ describe('/logs', () => {
         name: {
           english: 'character 5',
         },
+        rating: 5,
       },
       {
         id: '6',
@@ -8302,6 +7820,7 @@ describe('/logs', () => {
         name: {
           english: 'character 6',
         },
+        rating: 1,
       },
       {
         id: '7',
@@ -8309,6 +7828,7 @@ describe('/logs', () => {
         name: {
           english: 'character 7',
         },
+        rating: 2,
       },
       {
         id: '8',
@@ -8316,6 +7836,7 @@ describe('/logs', () => {
         name: {
           english: 'character 8',
         },
+        rating: 3,
       },
       {
         id: '9',
@@ -8323,6 +7844,7 @@ describe('/logs', () => {
         name: {
           english: 'character 9',
         },
+        rating: 4,
       },
       {
         id: '10',
@@ -8330,6 +7852,7 @@ describe('/logs', () => {
         name: {
           english: 'character 10',
         },
+        rating: 5,
       },
       {
         id: '11',
@@ -8337,6 +7860,7 @@ describe('/logs', () => {
         name: {
           english: 'character 11',
         },
+        rating: 1,
       },
     ];
 
@@ -8432,26 +7956,10 @@ describe('/logs', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.logs({
+      await user.logs({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -8518,26 +8026,10 @@ describe('/logs', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.logs({
+      await user.logs({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -8592,27 +8084,11 @@ describe('/logs', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.logs({
+      await user.logs({
         userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
         nick: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();

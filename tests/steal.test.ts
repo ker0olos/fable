@@ -511,6 +511,7 @@ describe('/steal', () => {
   const character: Character = {
     id: '1',
     packId: 'id',
+    rating: 1,
     description: 'long description',
     name: {
       english: 'full name',
@@ -561,31 +562,20 @@ describe('/steal', () => {
       },
     ] as any);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.pre({
+    await steal.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'character_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -667,27 +657,11 @@ describe('/steal', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.pre({
+    await steal.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'character_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -744,31 +718,20 @@ describe('/steal', () => {
       },
     ] as any);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.pre({
+    await steal.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'character_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -860,31 +823,20 @@ describe('/steal', () => {
       },
     ] as any);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.pre({
+    await steal.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'character_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -958,31 +910,20 @@ describe('/steal', () => {
       },
     ] as any);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.pre({
+    await steal.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'character_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1070,27 +1011,11 @@ describe('/steal', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.pre({
+    await steal.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'character_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1132,27 +1057,11 @@ describe('/steal', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.pre({
+    await steal.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'character_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1198,31 +1107,20 @@ describe('/steal', () => {
 
     vi.spyOn(db, 'findCharacter').mockResolvedValue(undefined as any);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.pre({
+    await steal.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'character_id',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1289,6 +1187,7 @@ describe('attempt', () => {
   const character: Character = {
     id: '1',
     packId: 'id',
+    rating: 2,
     description: 'long description',
     name: {
       english: 'full name',
@@ -1356,34 +1255,22 @@ describe('attempt', () => {
     } as any);
 
     vi.spyOn(db, 'stealCharacter').mockResolvedValue('_' as any);
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.stealing = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.attempt({
+    await steal.attempt({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       characterId: 'character_id',
       targetUserId: 'another_user_id',
       pre: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/steal2.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1534,29 +1421,13 @@ describe('attempt', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.attempt({
+    await steal.attempt({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       characterId: 'character_id',
       targetUserId: 'another_user_id',
       pre: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/steal2.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1615,29 +1486,13 @@ describe('attempt', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.attempt({
+    await steal.attempt({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       characterId: 'character_id',
       targetUserId: 'another_user_id',
       pre: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/steal2.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1692,29 +1547,13 @@ describe('attempt', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.attempt({
+    await steal.attempt({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       characterId: 'character_id',
       targetUserId: 'another_user_id',
       pre: 100,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/steal2.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1764,29 +1603,13 @@ describe('attempt', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.attempt({
+    await steal.attempt({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       characterId: 'character_id',
       targetUserId: 'another_user_id',
       pre: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/steal2.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1846,29 +1669,13 @@ describe('attempt', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.attempt({
+    await steal.attempt({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       characterId: 'character_id',
       targetUserId: 'another_user_id',
       pre: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/steal2.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1923,29 +1730,13 @@ describe('attempt', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = steal.attempt({
+    await steal.attempt({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       characterId: 'character_id',
       targetUserId: 'another_user_id',
       pre: 0,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/steal2.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();

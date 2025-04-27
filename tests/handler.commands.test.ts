@@ -22,8 +22,6 @@ import merge from '~/src/merge.ts';
 import reward from '~/src/reward.ts';
 import serverOptions from '~/src/serverOptions.ts';
 
-import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
-
 import type { Manifest } from '~/src/types.ts';
 
 config.global = true;
@@ -59,6 +57,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'media')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -72,7 +73,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -95,7 +96,33 @@ describe('search command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(ctxStub.waitUntil).toHaveBeenCalledOnce();
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -127,6 +154,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'media')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -140,7 +170,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -163,7 +193,31 @@ describe('search command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -195,6 +249,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'media')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -208,7 +265,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -231,7 +288,31 @@ describe('search command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -263,6 +344,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'media')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -276,7 +360,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -299,7 +383,31 @@ describe('search command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -331,6 +439,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'media')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -344,7 +455,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -367,7 +478,31 @@ describe('search command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -403,6 +538,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'media')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -416,7 +554,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -439,7 +577,31 @@ describe('search command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -471,6 +633,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'media')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -484,7 +649,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -507,7 +672,31 @@ describe('search command handlers', () => {
         id: 'uuid',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -548,6 +737,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'mediaCharacters')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -561,7 +753,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -585,7 +777,31 @@ describe('search command handlers', () => {
         token: 'token',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -626,6 +842,9 @@ describe('search command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'mediaCharacters')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -639,7 +858,7 @@ describe('search command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -663,7 +882,31 @@ describe('search command handlers', () => {
         token: 'token',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -706,6 +949,9 @@ describe('character command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'character')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -719,7 +965,7 @@ describe('character command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -743,7 +989,31 @@ describe('character command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -784,6 +1054,9 @@ describe('character command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'character')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -797,7 +1070,7 @@ describe('character command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -821,7 +1094,31 @@ describe('character command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -858,6 +1155,9 @@ describe('character command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'character')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -871,7 +1171,7 @@ describe('character command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -895,7 +1195,31 @@ describe('character command handlers', () => {
         id: 'uuid',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -944,6 +1268,9 @@ describe('party command handlers', () => {
     const partySpy = vi
       .spyOn(party, 'view')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -957,7 +1284,7 @@ describe('party command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -978,7 +1305,31 @@ describe('party command handlers', () => {
         guildId: 'guild_id',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1015,6 +1366,9 @@ describe('party command handlers', () => {
     const partySpy = vi
       .spyOn(party, 'view')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1028,7 +1382,7 @@ describe('party command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1049,7 +1403,31 @@ describe('party command handlers', () => {
         guildId: 'guild_id',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1092,6 +1470,9 @@ describe('party command handlers', () => {
     const partySpy = vi
       .spyOn(party, 'assign')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1105,7 +1486,7 @@ describe('party command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1129,7 +1510,31 @@ describe('party command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1176,6 +1581,9 @@ describe('party command handlers', () => {
     const partySpy = vi
       .spyOn(party, 'assign')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1189,7 +1597,7 @@ describe('party command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1213,7 +1621,31 @@ describe('party command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1256,6 +1688,9 @@ describe('party command handlers', () => {
     const partySpy = vi
       .spyOn(party, 'assign')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1269,7 +1704,7 @@ describe('party command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1293,7 +1728,31 @@ describe('party command handlers', () => {
         id: 'uuid',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1340,6 +1799,9 @@ describe('party command handlers', () => {
     const partySpy = vi
       .spyOn(party, 'swap')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1353,7 +1815,7 @@ describe('party command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1376,7 +1838,31 @@ describe('party command handlers', () => {
         b: 1,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1419,6 +1905,9 @@ describe('party command handlers', () => {
     const partySpy = vi
       .spyOn(party, 'remove')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1432,7 +1921,7 @@ describe('party command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1454,7 +1943,31 @@ describe('party command handlers', () => {
         spot: 5,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1491,6 +2004,9 @@ describe('party command handlers', () => {
     const partySpy = vi
       .spyOn(party, 'clear')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1504,7 +2020,7 @@ describe('party command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1525,7 +2041,31 @@ describe('party command handlers', () => {
         guildId: 'guild_id',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1578,6 +2118,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1591,7 +2134,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1618,7 +2161,31 @@ describe('collection command handlers', () => {
         picture: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1665,6 +2232,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1678,7 +2248,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1705,7 +2275,31 @@ describe('collection command handlers', () => {
         picture: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1752,6 +2346,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as never);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1765,7 +2362,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1792,7 +2389,31 @@ describe('collection command handlers', () => {
         picture: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1839,6 +2460,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1852,7 +2476,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1879,7 +2503,31 @@ describe('collection command handlers', () => {
         picture: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -1930,6 +2578,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -1943,7 +2594,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -1970,7 +2621,31 @@ describe('collection command handlers', () => {
         picture: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2017,6 +2692,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2030,7 +2708,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2057,7 +2735,31 @@ describe('collection command handlers', () => {
         picture: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2104,6 +2806,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2117,7 +2822,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2144,7 +2849,31 @@ describe('collection command handlers', () => {
         picture: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2191,6 +2920,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2204,7 +2936,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2231,7 +2963,31 @@ describe('collection command handlers', () => {
         picture: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2282,6 +3038,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'list')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2295,7 +3054,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2322,7 +3081,31 @@ describe('collection command handlers', () => {
         picture: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2359,6 +3142,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'sum')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2372,7 +3158,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2391,10 +3177,33 @@ describe('collection command handlers', () => {
         token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
-        nick: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2437,6 +3246,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'sum')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2450,7 +3262,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2469,10 +3281,33 @@ describe('collection command handlers', () => {
         token: 'token',
         userId: 'another_user_id',
         guildId: 'guild_id',
-        nick: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2509,6 +3344,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'showcase')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2522,7 +3360,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2545,7 +3383,31 @@ describe('collection command handlers', () => {
         nick: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2588,6 +3450,9 @@ describe('collection command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'showcase')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2601,7 +3466,7 @@ describe('collection command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2624,7 +3489,31 @@ describe('collection command handlers', () => {
         nick: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2667,6 +3556,9 @@ describe('likeslist command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'likeslist')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2680,7 +3572,7 @@ describe('likeslist command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2705,7 +3597,31 @@ describe('likeslist command handlers', () => {
         index: 0,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2742,6 +3658,9 @@ describe('likeslist command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'likeslist')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2755,7 +3674,7 @@ describe('likeslist command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2780,7 +3699,31 @@ describe('likeslist command handlers', () => {
         index: 0,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2821,6 +3764,9 @@ describe('likeslist command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'likeslist')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2834,7 +3780,7 @@ describe('likeslist command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2859,7 +3805,31 @@ describe('likeslist command handlers', () => {
         index: 0,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2904,6 +3874,9 @@ describe('likeslist command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'likeslist')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2917,7 +3890,7 @@ describe('likeslist command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -2942,7 +3915,31 @@ describe('likeslist command handlers', () => {
         index: 0,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -2985,6 +3982,9 @@ describe('logs command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'logs')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -2998,7 +3998,7 @@ describe('logs command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3020,7 +4020,31 @@ describe('logs command handlers', () => {
         nick: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -3057,6 +4081,9 @@ describe('logs command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'logs')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -3070,7 +4097,7 @@ describe('logs command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3092,7 +4119,31 @@ describe('logs command handlers', () => {
         nick: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -3129,6 +4180,9 @@ describe('logs command handlers', () => {
     const userSpy = vi
       .spyOn(user, 'logs')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -3142,7 +4196,7 @@ describe('logs command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3164,7 +4218,31 @@ describe('logs command handlers', () => {
         nick: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -3207,6 +4285,9 @@ describe('found command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'mediaFound')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -3220,7 +4301,7 @@ describe('found command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3244,7 +4325,31 @@ describe('found command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -3281,6 +4386,9 @@ describe('found command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'mediaFound')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -3294,7 +4402,7 @@ describe('found command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3318,7 +4426,31 @@ describe('found command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -3355,6 +4487,9 @@ describe('found command handlers', () => {
     const searchSpy = vi
       .spyOn(search, 'mediaFound')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -3368,7 +4503,7 @@ describe('found command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3392,7 +4527,31 @@ describe('found command handlers', () => {
         id: 'uuid',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -3429,6 +4588,7 @@ describe('now command handlers', () => {
     const searchSpy = vi
       .spyOn(user, 'now')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -3442,7 +4602,7 @@ describe('now command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3493,6 +4653,7 @@ describe('now command handlers', () => {
     const searchSpy = vi
       .spyOn(user, 'now')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -3506,7 +4667,7 @@ describe('now command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3594,6 +4755,9 @@ describe('trade command handlers', () => {
       .spyOn(trade, 'pre')
       .mockReturnValue({ send: () => true } as any);
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.trading = true;
     config.publicKey = 'publicKey';
 
@@ -3607,7 +4771,7 @@ describe('trade command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3639,7 +4803,129 @@ describe('trade command handlers', () => {
         ],
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
+    } finally {
+      delete config.trading;
+      delete config.publicKey;
+    }
+  });
+
+  test('with yourself', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'trade',
+        options: [
+          {
+            name: 'user',
+            value: 'user_id',
+          },
+          {
+            name: 'give',
+            value: 'give_character_id',
+          },
+          {
+            name: 'take',
+            value: 'take_character_id',
+          },
+        ],
+      },
+    });
+
+    const validateSpy = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
+    const signatureSpy = vi
+      .spyOn(utils, 'verifySignature')
+      .mockReturnValue({ valid: true, body });
+
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
+    config.trading = true;
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request, ctxStub as any);
+
+      expect(validateSpy).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureSpy).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              description: "You can't trade with yourself!",
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.trading;
       delete config.publicKey;
@@ -3686,6 +4972,9 @@ describe('trade command handlers', () => {
       .spyOn(trade, 'pre')
       .mockReturnValue({ send: () => true } as any);
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.trading = true;
     config.publicKey = 'publicKey';
 
@@ -3699,7 +4988,7 @@ describe('trade command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3723,7 +5012,31 @@ describe('trade command handlers', () => {
         take: ['take_character_id_3'],
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.trading;
       delete config.publicKey;
@@ -3767,6 +5080,9 @@ describe('trade command handlers', () => {
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.trading = false;
     config.publicKey = 'publicKey';
 
@@ -3780,7 +5096,7 @@ describe('trade command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -3872,11 +5188,13 @@ describe('give command handlers', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
-    const setFlagsSpy = vi.fn(() => undefined);
     const tradeSpy = vi
       .spyOn(trade, 'pre')
-      .mockReturnValue({ setFlags: setFlagsSpy, send: () => true } as any);
+      .mockReturnValue({ setFlags: () => undefined, send: () => true } as any);
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.trading = true;
     config.publicKey = 'publicKey';
 
@@ -3890,15 +5208,13 @@ describe('give command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
           headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
         },
       });
-
-      expect(setFlagsSpy).toHaveBeenCalledWith(64);
 
       expect(signatureSpy).toHaveBeenCalledWith({
         body,
@@ -3920,7 +5236,126 @@ describe('give command handlers', () => {
         take: [],
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
+    } finally {
+      delete config.trading;
+      delete config.publicKey;
+    }
+  });
+
+  test('give yourself', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'give',
+        options: [
+          {
+            name: 'user',
+            value: 'user_id',
+          },
+          {
+            name: 'give',
+            value: 'give_character_id',
+          },
+        ],
+      },
+    });
+
+    const validateSpy = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
+    const signatureSpy = vi
+      .spyOn(utils, 'verifySignature')
+      .mockReturnValue({ valid: true, body });
+
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
+    config.trading = true;
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request, ctxStub as any);
+
+      expect(validateSpy).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureSpy).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              description: "You can't gift yourself!",
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.trading;
       delete config.publicKey;
@@ -3959,11 +5394,13 @@ describe('give command handlers', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
-    const setFlagsSpy = vi.fn(() => undefined);
     const tradeSpy = vi
       .spyOn(trade, 'pre')
-      .mockReturnValue({ setFlags: setFlagsSpy, send: () => true } as any);
+      .mockReturnValue({ setFlags: () => undefined, send: () => true } as any);
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.trading = true;
     config.publicKey = 'publicKey';
 
@@ -3977,15 +5414,13 @@ describe('give command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
           headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
         },
       });
-
-      expect(setFlagsSpy).toHaveBeenCalledWith(64);
 
       expect(signatureSpy).toHaveBeenCalledWith({
         body,
@@ -4003,7 +5438,32 @@ describe('give command handlers', () => {
         take: [],
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.trading;
       delete config.publicKey;
@@ -4043,6 +5503,9 @@ describe('give command handlers', () => {
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.trading = false;
     config.publicKey = 'publicKey';
 
@@ -4056,7 +5519,7 @@ describe('give command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4136,10 +5599,12 @@ describe('steal command handlers', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
-    const setFlagsSpy = vi.fn(() => ({ send: () => true }));
     const stealSpy = vi
       .spyOn(steal, 'pre')
-      .mockReturnValue({ setFlags: setFlagsSpy } as any);
+      .mockReturnValue({ setFlags: { send: () => true } } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4153,7 +5618,7 @@ describe('steal command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4168,8 +5633,6 @@ describe('steal command handlers', () => {
         publicKey: 'publicKey',
       });
 
-      expect(setFlagsSpy).toHaveBeenCalledWith(64);
-
       expect(stealSpy).toHaveBeenCalledWith({
         token: 'token',
         userId: 'user_id',
@@ -4178,7 +5641,32 @@ describe('steal command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -4212,10 +5700,12 @@ describe('steal command handlers', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
-    const setFlagsSpy = vi.fn(() => ({ send: () => true }));
     const stealSpy = vi
       .spyOn(steal, 'pre')
-      .mockReturnValue({ setFlags: setFlagsSpy } as any);
+      .mockReturnValue({ setFlags: { send: () => true } } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4229,7 +5719,7 @@ describe('steal command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4244,8 +5734,6 @@ describe('steal command handlers', () => {
         publicKey: 'publicKey',
       });
 
-      expect(setFlagsSpy).toHaveBeenCalledWith(64);
-
       expect(stealSpy).toHaveBeenCalledWith({
         token: 'token',
         userId: 'user_id',
@@ -4254,7 +5742,32 @@ describe('steal command handlers', () => {
         id: 'character_id',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -4287,6 +5800,9 @@ describe('gacha command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4300,7 +5816,7 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4333,6 +5849,9 @@ describe('gacha command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4346,7 +5865,7 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4385,6 +5904,9 @@ describe('gacha command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4398,7 +5920,7 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4437,6 +5959,9 @@ describe('gacha command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4450,7 +5975,7 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4483,6 +6008,9 @@ describe('gacha command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4496,7 +6024,7 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4531,6 +6059,9 @@ describe('gacha command handlers', () => {
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.trading = false;
     config.publicKey = 'publicKey';
 
@@ -4544,7 +6075,7 @@ describe('gacha command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4629,6 +6160,9 @@ describe('buy command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(shop, 'normal').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4642,7 +6176,7 @@ describe('buy command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4687,6 +6221,9 @@ describe('buy command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(shop, 'normal').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4700,7 +6237,7 @@ describe('buy command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4745,6 +6282,9 @@ describe('buy command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(shop, 'guaranteed').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4758,7 +6298,7 @@ describe('buy command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4803,6 +6343,9 @@ describe('buy command handlers', () => {
       .mockReturnValue({} as any);
     vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
     vi.spyOn(shop, 'guaranteed').mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4816,7 +6359,7 @@ describe('buy command handlers', () => {
         },
       });
 
-      await handler(request);
+      await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4875,6 +6418,7 @@ describe('reward command handlers', () => {
     const rewardSpy = vi
       .spyOn(reward, 'pulls')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -4888,7 +6432,7 @@ describe('reward command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4952,6 +6496,9 @@ describe('like command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'like')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -4965,7 +6512,7 @@ describe('like command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -4989,7 +6536,31 @@ describe('like command handlers', () => {
         undo: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5026,6 +6597,9 @@ describe('like command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'like')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5039,7 +6613,7 @@ describe('like command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5063,7 +6637,31 @@ describe('like command handlers', () => {
         undo: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5100,6 +6698,9 @@ describe('like command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'like')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5113,7 +6714,7 @@ describe('like command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5137,7 +6738,31 @@ describe('like command handlers', () => {
         undo: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5174,6 +6799,9 @@ describe('like command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'like')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5187,7 +6815,7 @@ describe('like command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5211,7 +6839,31 @@ describe('like command handlers', () => {
         undo: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5248,6 +6900,9 @@ describe('like command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'like')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5261,7 +6916,7 @@ describe('like command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5285,7 +6940,31 @@ describe('like command handlers', () => {
         undo: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5322,6 +7001,9 @@ describe('like command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'like')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5335,7 +7017,7 @@ describe('like command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5359,7 +7041,31 @@ describe('like command handlers', () => {
         undo: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5402,6 +7108,9 @@ describe('likeall command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'likeall')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5415,7 +7124,7 @@ describe('likeall command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5439,7 +7148,31 @@ describe('likeall command handlers', () => {
         undo: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5476,6 +7209,9 @@ describe('likeall command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'likeall')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5489,7 +7225,7 @@ describe('likeall command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5513,7 +7249,31 @@ describe('likeall command handlers', () => {
         undo: false,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5550,6 +7310,9 @@ describe('likeall command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'likeall')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5563,7 +7326,7 @@ describe('likeall command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5587,7 +7350,31 @@ describe('likeall command handlers', () => {
         undo: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5624,6 +7411,9 @@ describe('likeall command handlers', () => {
     const shopSpy = vi
       .spyOn(user, 'like')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -5637,7 +7427,7 @@ describe('likeall command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5661,7 +7451,31 @@ describe('likeall command handlers', () => {
         undo: true,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -5698,6 +7512,7 @@ describe('help command handlers', () => {
     const helpSpy = vi
       .spyOn(help, 'pages')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -5711,7 +7526,7 @@ describe('help command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5762,6 +7577,7 @@ describe('help command handlers', () => {
     const helpSpy = vi
       .spyOn(help, 'pages')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -5775,7 +7591,7 @@ describe('help command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5826,6 +7642,7 @@ describe('help command handlers', () => {
     const helpSpy = vi
       .spyOn(help, 'pages')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -5839,7 +7656,7 @@ describe('help command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5890,6 +7707,7 @@ describe('help command handlers', () => {
     const helpSpy = vi
       .spyOn(help, 'pages')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -5903,7 +7721,7 @@ describe('help command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -5960,6 +7778,7 @@ describe('help command handlers', () => {
     const helpSpy = vi
       .spyOn(help, 'pages')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -5973,7 +7792,7 @@ describe('help command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6040,6 +7859,9 @@ describe('nick command handlers', () => {
     const customSpy = vi
       .spyOn(user, 'nick')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -6053,7 +7875,7 @@ describe('nick command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6077,7 +7899,31 @@ describe('nick command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -6118,6 +7964,9 @@ describe('nick command handlers', () => {
     const customSpy = vi
       .spyOn(user, 'nick')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -6131,7 +7980,7 @@ describe('nick command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6155,7 +8004,31 @@ describe('nick command handlers', () => {
         id: 'character_id',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -6202,6 +8075,9 @@ describe('image command handlers', () => {
     const customSpy = vi
       .spyOn(user, 'image')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -6215,7 +8091,7 @@ describe('image command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6239,7 +8115,31 @@ describe('image command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -6280,6 +8180,9 @@ describe('image command handlers', () => {
     const customSpy = vi
       .spyOn(user, 'image')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -6293,7 +8196,7 @@ describe('image command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6317,7 +8220,31 @@ describe('image command handlers', () => {
         id: 'character_id',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -6358,6 +8285,9 @@ describe('image command handlers', () => {
     const customSpy = vi
       .spyOn(user, 'image')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -6371,7 +8301,7 @@ describe('image command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6395,7 +8325,31 @@ describe('image command handlers', () => {
         id: undefined,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.publicKey;
     }
@@ -6439,6 +8393,9 @@ describe('merge/automerge command handlers', () => {
       .spyOn(merge, 'synthesize')
       .mockReturnValue({ send: () => true } as any);
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.synthesis = true;
     config.publicKey = 'publicKey';
 
@@ -6452,7 +8409,7 @@ describe('merge/automerge command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6475,7 +8432,31 @@ describe('merge/automerge command handlers', () => {
         target: 4,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.trading;
       delete config.publicKey;
@@ -6514,6 +8495,9 @@ describe('merge/automerge command handlers', () => {
       .spyOn(merge, 'synthesize')
       .mockReturnValue({ send: () => true } as any);
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.synthesis = true;
     config.publicKey = 'publicKey';
 
@@ -6527,7 +8511,7 @@ describe('merge/automerge command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6550,7 +8534,31 @@ describe('merge/automerge command handlers', () => {
         target: 5,
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.trading;
       delete config.publicKey;
@@ -6589,6 +8597,9 @@ describe('merge/automerge command handlers', () => {
       .spyOn(merge, 'synthesize')
       .mockReturnValue({ send: () => true } as any);
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.synthesis = true;
     config.publicKey = 'publicKey';
 
@@ -6602,7 +8613,7 @@ describe('merge/automerge command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6624,7 +8635,31 @@ describe('merge/automerge command handlers', () => {
         mode: 'min',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.trading;
       delete config.publicKey;
@@ -6663,6 +8698,9 @@ describe('merge/automerge command handlers', () => {
       .spyOn(merge, 'synthesize')
       .mockReturnValue({ send: () => true } as any);
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.synthesis = true;
     config.publicKey = 'publicKey';
 
@@ -6676,7 +8714,7 @@ describe('merge/automerge command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6698,7 +8736,31 @@ describe('merge/automerge command handlers', () => {
         mode: 'max',
       });
 
-      expect(response).toBe(true);
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              image: {
+                url: 'http://localhost:8000/spinner3.gif',
+              },
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      });
     } finally {
       delete config.trading;
       delete config.publicKey;
@@ -6734,6 +8796,9 @@ describe('merge/automerge command handlers', () => {
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
 
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
     config.synthesis = false;
     config.publicKey = 'publicKey';
 
@@ -6747,7 +8812,7 @@ describe('merge/automerge command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6830,6 +8895,7 @@ describe('installed packs', () => {
     const packsSpy = vi
       .spyOn(packs, 'pages')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -6843,7 +8909,7 @@ describe('installed packs', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6906,6 +8972,7 @@ describe('community packs command handlers', () => {
     const packsSpy = vi
       .spyOn(packs, 'pages')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -6919,7 +8986,7 @@ describe('community packs command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -6982,6 +9049,7 @@ describe('community packs command handlers', () => {
     const packsSpy = vi
       .spyOn(packs, 'install')
       .mockReturnValue({ send: () => true } as any);
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -6995,7 +9063,7 @@ describe('community packs command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -7064,8 +9132,10 @@ describe('community packs command handlers', () => {
     vi.spyOn(packs, 'all').mockReturnValue(
       Promise.resolve([{ manifest } as any])
     );
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
-    config.communityPacks = true;
     config.publicKey = 'publicKey';
 
     try {
@@ -7078,7 +9148,7 @@ describe('community packs command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -7140,7 +9210,6 @@ describe('community packs command handlers', () => {
       });
     } finally {
       delete config.publicKey;
-      delete config.communityPacks;
     }
   });
 
@@ -7180,10 +9249,11 @@ describe('community packs command handlers', () => {
       .mockReturnValue({ valid: true, body });
 
     vi.spyOn(packs, 'all').mockReturnValue(Promise.resolve([]));
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
-
-    config.communityPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -7195,7 +9265,7 @@ describe('community packs command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -7237,7 +9307,6 @@ describe('community packs command handlers', () => {
       });
     } finally {
       delete config.publicKey;
-      delete config.communityPacks;
     }
   });
 });
@@ -7275,9 +9344,13 @@ describe('server options command handlers', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
-    const packsSpy = vi
-      .spyOn(serverOptions, 'view')
-      .mockReturnValue({ send: () => true } as any);
+    const packsSpy = vi.spyOn(serverOptions, 'view').mockReturnValue({
+      setFlags: () => ({
+        send: () => true,
+      }),
+    } as any);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -7291,7 +9364,7 @@ describe('server options command handlers', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -7309,7 +9382,6 @@ describe('server options command handlers', () => {
       expect(packsSpy).toHaveBeenCalledWith({
         userId: 'user_id',
         guildId: 'guild_id',
-        token: 'token',
       });
 
       expect(response).toBe(true);
@@ -7331,6 +9403,9 @@ describe('invalid request', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockImplementation(({ body }) => ({ valid: false, body }));
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -7341,7 +9416,7 @@ describe('invalid request', () => {
         headers: {},
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -7393,6 +9468,9 @@ describe('unimplemented interaction', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -7406,7 +9484,7 @@ describe('unimplemented interaction', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -7466,6 +9544,9 @@ describe('ping interaction', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
+    const ctxStub = {
+      waitUntil: vi.fn(() => Promise.resolve()),
+    };
 
     config.publicKey = 'publicKey';
 
@@ -7479,7 +9560,7 @@ describe('ping interaction', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
@@ -7506,283 +9587,6 @@ describe('ping interaction', () => {
 
       expect(await response?.json()).toEqual({
         type: 1,
-      });
-    } finally {
-      delete config.publicKey;
-    }
-  });
-});
-
-describe('not found error', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  test('not found', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      data: {
-        name: 'search',
-        options: [
-          {
-            name: 'title',
-            value: 'title',
-          },
-        ],
-      },
-    });
-
-    const validateSpy = vi
-      .spyOn(utils, 'validateRequest')
-      .mockReturnValue({} as any);
-    const signatureSpy = vi
-      .spyOn(utils, 'verifySignature')
-      .mockReturnValue({ valid: true, body });
-    vi.spyOn(search, 'media').mockReturnValue({
-      send: () => {
-        throw new Error('404');
-      },
-    } as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      expect(validateSpy).toHaveBeenCalledWith(request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-        },
-      });
-
-      expect(signatureSpy).toHaveBeenCalledWith({
-        body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      });
-
-      expect(response?.ok).toBe(true);
-      expect(response?.redirected).toBe(false);
-
-      expect(response?.status).toBe(200);
-      expect(response?.statusText).toBe('OK');
-
-      const json = JSON.parse(
-        (await response?.formData()).get('payload_json')!.toString()
-      );
-
-      expect(json).toEqual({
-        type: 4,
-        data: {
-          content: '',
-          embeds: [
-            {
-              type: 'rich',
-              description: 'Found _nothing_ matching that query!',
-            },
-          ],
-          attachments: [],
-          components: [],
-          flags: 64,
-        },
-      });
-    } finally {
-      delete config.publicKey;
-    }
-  });
-});
-
-describe('not fetal error', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  test('not fetal', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      data: {
-        name: 'search',
-        options: [
-          {
-            name: 'title',
-            value: 'title',
-          },
-        ],
-      },
-    });
-
-    const validateSpy = vi
-      .spyOn(utils, 'validateRequest')
-      .mockReturnValue({} as any);
-    const signatureSpy = vi
-      .spyOn(utils, 'verifySignature')
-      .mockReturnValue({ valid: true, body });
-    vi.spyOn(search, 'media').mockReturnValue({
-      send: () => {
-        throw new NonFetalError('not_fetal');
-      },
-    } as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      expect(validateSpy).toHaveBeenCalledWith(request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-        },
-      });
-
-      expect(signatureSpy).toHaveBeenCalledWith({
-        body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      });
-
-      expect(response?.ok).toBe(true);
-      expect(response?.redirected).toBe(false);
-
-      expect(response?.status).toBe(200);
-      expect(response?.statusText).toBe('OK');
-
-      const json = JSON.parse(
-        (await response?.formData()).get('payload_json')!.toString()
-      );
-
-      expect(json).toEqual({
-        type: 4,
-        data: {
-          content: '',
-          embeds: [
-            {
-              type: 'rich',
-              description: 'not_fetal',
-            },
-          ],
-          attachments: [],
-          components: [],
-          flags: 64,
-        },
-      });
-    } finally {
-      delete config.publicKey;
-    }
-  });
-});
-
-describe('no permission error', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  test('no permission', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      data: {
-        name: 'search',
-        options: [
-          {
-            name: 'title',
-            value: 'title',
-          },
-        ],
-      },
-    });
-
-    const validateSpy = vi
-      .spyOn(utils, 'validateRequest')
-      .mockReturnValue({} as any);
-    const signatureSpy = vi
-      .spyOn(utils, 'verifySignature')
-      .mockReturnValue({ valid: true, body });
-    vi.spyOn(search, 'media').mockReturnValue({
-      send: () => {
-        throw new NoPermissionError();
-      },
-    } as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      expect(validateSpy).toHaveBeenCalledWith(request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-        },
-      });
-
-      expect(signatureSpy).toHaveBeenCalledWith({
-        body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      });
-
-      expect(response?.ok).toBe(true);
-      expect(response?.redirected).toBe(false);
-
-      expect(response?.status).toBe(200);
-      expect(response?.statusText).toBe('OK');
-
-      const json = JSON.parse(
-        (await response?.formData()).get('payload_json')!.toString()
-      );
-
-      expect(json).toEqual({
-        type: 4,
-        data: {
-          content: '',
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                "You don't have permission to complete this interaction!",
-            },
-          ],
-          attachments: [],
-          components: [],
-          flags: 64,
-        },
       });
     } finally {
       delete config.publicKey;
@@ -7818,12 +9622,16 @@ describe('internal error', () => {
     const signatureSpy = vi
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
-    vi.spyOn(search, 'media').mockReturnValue({
-      send: () => {
-        throw new Error();
-      },
-    } as any);
+
+    vi.spyOn(search, 'media').mockReturnValue({} as any);
+
     vi.spyOn(utils, 'captureException').mockReturnValue('error_id');
+
+    const ctxStub = {
+      waitUntil: vi.fn(() => {
+        throw new Error('error');
+      }),
+    };
 
     config.sentry = '_';
     config.publicKey = 'publicKey';
@@ -7838,7 +9646,7 @@ describe('internal error', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {

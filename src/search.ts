@@ -497,7 +497,7 @@ async function characterEmbed(
     }
   } else if (options?.rating) {
     if (typeof options.rating === 'boolean' && options.rating) {
-      options.rating = Rating.fromCharacter(character as Character);
+      options.rating = new Rating({ stars: character.rating });
     }
 
     if (options.rating instanceof Rating) {

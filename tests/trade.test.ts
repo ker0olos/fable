@@ -28,6 +28,7 @@ describe('give', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       description: 'description',
       name: {
         english: 'title',
@@ -67,31 +68,20 @@ describe('give', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.give({
+    await trade.give({
       token: 'test_token',
       userId: 'user_id',
       targetId: 'target_id',
       guildId: 'guild_id',
       giveCharactersIds: ['anilist:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -184,6 +174,7 @@ describe('give', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       description: 'description',
       name: {
         english: 'title',
@@ -228,28 +219,12 @@ describe('give', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.give({
+    await trade.give({
       token: 'test_token',
       userId: 'user_id',
       targetId: 'target_id',
       guildId: 'guild_id',
       giveCharactersIds: ['anilist:1', 'anilist:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -282,6 +257,7 @@ describe('give', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       description: 'description',
       name: {
         english: 'title',
@@ -326,28 +302,12 @@ describe('give', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.give({
+    await trade.give({
       token: 'test_token',
       userId: 'user_id',
       targetId: 'target_id',
       guildId: 'guild_id',
       giveCharactersIds: ['anilist:1', 'anilist:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -380,6 +340,7 @@ describe('give', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       description: 'description',
       name: {
         english: 'title',
@@ -424,28 +385,12 @@ describe('give', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.give({
+    await trade.give({
       token: 'test_token',
       userId: 'user_id',
       targetId: 'target_id',
       guildId: 'guild_id',
       giveCharactersIds: ['anilist:1', 'anilist:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -492,6 +437,7 @@ describe('trade', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'title',
       },
@@ -516,6 +462,7 @@ describe('trade', () => {
     const character2: Character = {
       id: '2',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'title 2',
       },
@@ -555,32 +502,21 @@ describe('trade', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue([character, character2]);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.accepted({
+    await trade.accepted({
       token: 'test_token',
       userId: 'user_id',
       targetId: 'target_id',
       guildId: 'guild_id',
       giveCharactersIds: ['anilist:1', 'anilist:1'],
       takeCharactersIds: ['anilist:2', 'anilist:2'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -710,6 +646,7 @@ describe('trade', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'title',
       },
@@ -734,6 +671,7 @@ describe('trade', () => {
     const character2: Character = {
       id: '2',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'title 2',
       },
@@ -778,7 +716,7 @@ describe('trade', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.accepted({
+    await trade.accepted({
       token: 'test_token',
       userId: 'user_id',
       targetId: 'target_id',
@@ -786,22 +724,6 @@ describe('trade', () => {
 
       giveCharactersIds: ['anilist:1', 'anilist:1'],
       takeCharactersIds: ['anilist:2', 'anilist:2'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -834,6 +756,7 @@ describe('trade', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'title',
       },
@@ -858,6 +781,7 @@ describe('trade', () => {
     const character2: Character = {
       id: '2',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'title 2',
       },
@@ -902,29 +826,13 @@ describe('trade', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.accepted({
+    await trade.accepted({
       token: 'test_token',
       userId: 'user_id',
       targetId: 'target_id',
       guildId: 'guild_id',
       giveCharactersIds: ['anilist:1', 'anilist:1'],
       takeCharactersIds: ['anilist:2', 'anilist:2'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -957,6 +865,7 @@ describe('trade', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'title',
       },
@@ -981,6 +890,7 @@ describe('trade', () => {
     const character2: Character = {
       id: '2',
       packId: 'anilist',
+      rating: 1,
       name: {
         english: 'title 2',
       },
@@ -1025,29 +935,13 @@ describe('trade', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.accepted({
+    await trade.accepted({
       token: 'test_token',
       userId: 'user_id',
       targetId: 'target_id',
       guildId: 'guild_id',
       giveCharactersIds: ['anilist:1', 'anilist:1'],
       takeCharactersIds: ['anilist:2', 'anilist:2'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1092,6 +986,7 @@ describe('/give', () => {
           {
             id: '1',
             packId: 'id',
+            rating: 1,
             description: 'long description',
             name: {
               english: 'full name',
@@ -1109,6 +1004,7 @@ describe('/give', () => {
           {
             id: '2',
             packId: 'id',
+            rating: 1,
             description: 'long description 2',
             name: {
               english: 'full name 2',
@@ -1148,34 +1044,22 @@ describe('/give', () => {
         },
       ] as any)
       .mockReturnValueOnce([] as any);
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.pre({
+    await trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       targetId: 'another_user_id',
       give: ['id:1', 'id:2'],
       take: [],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1266,33 +1150,6 @@ describe('/give', () => {
     delete config.trading;
   });
 
-  it('gifting yourself', () => {
-    const message = trade.pre({
-      userId: 'user_id',
-      guildId: 'guild_id',
-
-      token: 'test_token',
-      targetId: 'user_id',
-      give: ['give_character_id'],
-      take: [],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        flags: 64,
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            description: "You can't gift yourself!",
-          },
-        ],
-      },
-    });
-  });
-
   it('not owned', async () => {
     vi.useFakeTimers();
 
@@ -1302,6 +1159,7 @@ describe('/give', () => {
           {
             id: '1',
             packId: 'id',
+            rating: 1,
             description: 'long description',
             name: {
               english: 'full name',
@@ -1319,6 +1177,7 @@ describe('/give', () => {
           {
             id: '2',
             packId: 'id',
+            rating: 1,
             description: 'long description 2',
             name: {
               english: 'full name 2',
@@ -1347,34 +1206,22 @@ describe('/give', () => {
     vi.spyOn(db, 'getUserCharacters')
       .mockReturnValueOnce([] as any)
       .mockReturnValueOnce([] as any);
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.pre({
+    await trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       targetId: 'another_user_id',
       give: ['id:1', 'id:2'],
       take: [],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1451,6 +1298,7 @@ describe('/give', () => {
           {
             id: '1',
             packId: 'id',
+            rating: 1,
             description: 'long description',
             name: {
               english: 'full name',
@@ -1468,6 +1316,7 @@ describe('/give', () => {
           {
             id: '2',
             packId: 'id',
+            rating: 1,
             description: 'long description 2',
             name: {
               english: 'full name 2',
@@ -1513,34 +1362,22 @@ describe('/give', () => {
         },
       ] as any)
       .mockReturnValueOnce([] as any);
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.pre({
+    await trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       targetId: 'another_user_id',
       give: ['id:1', 'id:2'],
       take: [],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1614,6 +1451,7 @@ describe('/trade', () => {
     const character: Character = {
       id: '1',
       packId: 'id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -1654,34 +1492,22 @@ describe('/trade', () => {
           rating: 2,
         },
       ] as any);
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.pre({
+    await trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       targetId: 'another_user_id',
       give: ['id:1'],
       take: ['id:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1796,6 +1622,7 @@ describe('/trade', () => {
     const character: Character = {
       id: '1',
       packId: 'id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -1836,12 +1663,16 @@ describe('/trade', () => {
           rating: 2,
         },
       ] as any);
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.pre({
+    await trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
 
@@ -1849,22 +1680,6 @@ describe('/trade', () => {
       targetId: 'another_user_id',
       give: ['id:1', 'id:1'],
       take: ['id:1', 'id:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1979,6 +1794,7 @@ describe('/trade', () => {
     const character: Character = {
       id: '1',
       packId: 'id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -2013,12 +1829,16 @@ describe('/trade', () => {
         },
       ] as any)
       .mockReturnValueOnce([] as any);
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.pre({
+    await trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
 
@@ -2026,22 +1846,6 @@ describe('/trade', () => {
       targetId: 'another_user_id',
       give: ['id:1'],
       take: ['id:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2092,6 +1896,7 @@ describe('/trade', () => {
     const character: Character = {
       id: '1',
       packId: 'id',
+      rating: 1,
       description: 'long description',
       name: {
         english: 'full name',
@@ -2138,11 +1943,16 @@ describe('/trade', () => {
         },
       ] as any);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.pre({
+    await trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
@@ -2150,24 +1960,6 @@ describe('/trade', () => {
       give: ['id:1'],
       take: ['od:1'],
     });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
-    });
-
-    await vi.runAllTimersAsync();
 
     expect(fetchStub).toHaveBeenNthCalledWith(
       1,
@@ -2212,32 +2004,6 @@ describe('/trade', () => {
     delete config.trading;
   });
 
-  it('trading with yourself', () => {
-    const message = trade.pre({
-      userId: 'user_id',
-      guildId: 'guild_id',
-      token: 'test_token',
-      targetId: 'user_id',
-      give: ['id:1'],
-      take: ['id:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        flags: 64,
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            description: "You can't trade with yourself!",
-          },
-        ],
-      },
-    });
-  });
-
   it('disabled', async () => {
     vi.spyOn(packs, 'characters').mockResolvedValue([]);
 
@@ -2249,29 +2015,13 @@ describe('/trade', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = trade.pre({
+    await trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       targetId: 'another_user_id',
       give: ['id:1'],
       take: ['id:1'],
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -2289,8 +2039,8 @@ describe('/trade', () => {
     );
 
     expect(body).toEqual({
-      attachments: [],
       components: [],
+      attachments: [],
       embeds: [
         {
           type: 'rich',

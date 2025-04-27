@@ -24,8 +24,7 @@ describe('/server options', () => {
     } as any);
     vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
 
-    const message = serverOptions.view({
-      token: 'test_token',
+    const message = await serverOptions.view({
       guildId: 'guild_id',
       userId: 'user_id',
     });
@@ -35,55 +34,32 @@ describe('/server options', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        flags: 64,
         attachments: [],
-        components: [],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'options=dupes',
+                label: 'Disallow Dupes',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
         embeds: [
           {
             type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
+            fields: [
+              {
+                name: 'Dupes are allowed (Experimental)',
+                value: 'Multiple users can own the same character.',
+              },
+            ],
           },
         ],
       },
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalled();
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0];
-    expect(fetchCall[1]?.method).toBe('PATCH');
-
-    const payloadJson = JSON.parse(
-      (fetchCall[1]?.body as FormData)?.get('payload_json') as any
-    );
-    expect(payloadJson).toEqual({
-      attachments: [],
-      components: [
-        {
-          type: 1,
-          components: [
-            {
-              custom_id: 'options=dupes',
-              label: 'Disallow Dupes',
-              style: 2,
-              type: 2,
-            },
-          ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'Dupes are allowed (Experimental)',
-              value: 'Multiple users can own the same character.',
-            },
-          ],
-        },
-      ],
     });
   });
 
@@ -93,8 +69,7 @@ describe('/server options', () => {
     } as any);
     vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
 
-    const message = serverOptions.view({
-      token: 'test_token',
+    const message = await serverOptions.view({
       guildId: 'guild_id',
       userId: 'user_id',
     });
@@ -104,55 +79,32 @@ describe('/server options', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        flags: 64,
         attachments: [],
-        components: [],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'options=dupes',
+                label: 'Allow Dupes',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
         embeds: [
           {
             type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
+            fields: [
+              {
+                name: 'Dupes are disallowed',
+                value: 'Only one user can own a character.',
+              },
+            ],
           },
         ],
       },
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalled();
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0];
-    expect(fetchCall[1]?.method).toBe('PATCH');
-
-    const payloadJson = JSON.parse(
-      (fetchCall[1]?.body as FormData)?.get('payload_json') as any
-    );
-    expect(payloadJson).toEqual({
-      attachments: [],
-      components: [
-        {
-          type: 1,
-          components: [
-            {
-              custom_id: 'options=dupes',
-              label: 'Allow Dupes',
-              style: 2,
-              type: 2,
-            },
-          ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'Dupes are disallowed',
-              value: 'Only one user can own a character.',
-            },
-          ],
-        },
-      ],
     });
   });
 
@@ -160,8 +112,7 @@ describe('/server options', () => {
     vi.spyOn(db, 'getGuild').mockResolvedValue({ options: undefined } as any);
     vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
 
-    const message = serverOptions.view({
-      token: 'test_token',
+    const message = await serverOptions.view({
       guildId: 'guild_id',
       userId: 'user_id',
     });
@@ -171,55 +122,32 @@ describe('/server options', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
-        flags: 64,
         attachments: [],
-        components: [],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'options=dupes',
+                label: 'Allow Dupes',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
         embeds: [
           {
             type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
+            fields: [
+              {
+                name: 'Dupes are disallowed',
+                value: 'Only one user can own a character.',
+              },
+            ],
           },
         ],
       },
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalled();
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0];
-    expect(fetchCall[1]?.method).toBe('PATCH');
-
-    const payloadJson = JSON.parse(
-      (fetchCall[1]?.body as FormData)?.get('payload_json') as any
-    );
-    expect(payloadJson).toEqual({
-      attachments: [],
-      components: [
-        {
-          type: 1,
-          components: [
-            {
-              custom_id: 'options=dupes',
-              label: 'Allow Dupes',
-              style: 2,
-              type: 2,
-            },
-          ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'Dupes are disallowed',
-              value: 'Only one user can own a character.',
-            },
-          ],
-        },
-      ],
     });
   });
 });
@@ -242,8 +170,7 @@ describe('invert dupes', () => {
     } as any);
     vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
 
-    const message = serverOptions.invertDupes({
-      token: 'test_token',
+    const message = await serverOptions.invertDupes({
       guildId: 'guild_id',
       userId: 'user_id',
     });
@@ -254,53 +181,31 @@ describe('invert dupes', () => {
       type: 4,
       data: {
         attachments: [],
-        components: [],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'options=dupes',
+                label: 'Disallow Dupes',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
         embeds: [
           {
             type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
+            fields: [
+              {
+                name: 'Dupes are allowed (Experimental)',
+                value: 'Multiple users can own the same character.',
+              },
+            ],
           },
         ],
       },
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalled();
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0];
-    expect(fetchCall[1]?.method).toBe('PATCH');
-
-    const payloadJson = JSON.parse(
-      (fetchCall[1]?.body as FormData)?.get('payload_json') as any
-    );
-    expect(payloadJson).toEqual({
-      attachments: [],
-      components: [
-        {
-          type: 1,
-          components: [
-            {
-              custom_id: 'options=dupes',
-              label: 'Disallow Dupes',
-              style: 2,
-              type: 2,
-            },
-          ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'Dupes are allowed (Experimental)',
-              value: 'Multiple users can own the same character.',
-            },
-          ],
-        },
-      ],
     });
   });
 });

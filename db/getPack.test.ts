@@ -297,7 +297,7 @@ describe('db.getPack()', () => {
     expect(pack).toEqual({
       _id: insertedId,
       owner: 'maintainer-id',
-      manifest: { id: 'pack-id' },
+      manifest: { id: 'pack-id', media: [], characters: [] },
     } as any);
   });
 
@@ -329,7 +329,7 @@ describe('db.getPack()', () => {
     expect(pack).toEqual({
       _id: insertedId,
       owner: 'maintainer-id',
-      manifest: { private: true, id: 'pack-id' },
+      manifest: { private: true, id: 'pack-id', media: [], characters: [] },
     } as any);
   });
 
@@ -350,6 +350,8 @@ describe('db.getPack()', () => {
       owner: 'maintainer-2',
       manifest: {
         private: true,
+        media: [],
+        characters: [],
         id: 'pack-id',
         maintainers: ['maintainer-id'],
       },

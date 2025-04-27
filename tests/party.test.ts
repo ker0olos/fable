@@ -35,6 +35,7 @@ describe('/party view', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -42,6 +43,7 @@ describe('/party view', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 2,
         name: {
           english: 'name 2',
         },
@@ -49,6 +51,7 @@ describe('/party view', () => {
       {
         id: '3',
         packId: 'anilist',
+        rating: 3,
         name: {
           english: 'name 3',
         },
@@ -56,6 +59,7 @@ describe('/party view', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 4,
         name: {
           english: 'name 4',
         },
@@ -63,6 +67,7 @@ describe('/party view', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 5,
         name: {
           english: 'name 5',
         },
@@ -117,29 +122,18 @@ describe('/party view', () => {
 
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.view({
+    await party.view({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -256,6 +250,7 @@ describe('/party view', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -263,6 +258,7 @@ describe('/party view', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 2,
         name: {
           english: 'name 2',
         },
@@ -270,6 +266,7 @@ describe('/party view', () => {
       {
         id: '3',
         packId: 'anilist',
+        rating: 3,
         name: {
           english: 'name 3',
         },
@@ -277,6 +274,7 @@ describe('/party view', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 4,
         name: {
           english: 'name 4',
         },
@@ -284,6 +282,7 @@ describe('/party view', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 5,
         name: {
           english: 'name 5',
         },
@@ -348,29 +347,18 @@ describe('/party view', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.view({
+    await party.view({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -390,11 +378,11 @@ describe('/party view', () => {
     ).toEqual({
       components: [],
       attachments: [
-        { filename: 'image1.webp', id: '0' },
-        { filename: 'image2.webp', id: '1' },
-        { filename: 'image3.webp', id: '2' },
-        { filename: 'image4.webp', id: '3' },
-        { filename: 'image5.webp', id: '4' },
+        { filename: 'image 1.webp', id: '0' },
+        { filename: 'image 2.webp', id: '1' },
+        { filename: 'image 3.webp', id: '2' },
+        { filename: 'image 4.webp', id: '3' },
+        { filename: 'image 5.webp', id: '4' },
       ],
       embeds: [
         {
@@ -406,7 +394,7 @@ describe('/party view', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image1.webp',
+            url: 'attachment://image 1.webp',
           },
           description:
             '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -420,7 +408,7 @@ describe('/party view', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image2.webp',
+            url: 'attachment://image 2.webp',
           },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -434,7 +422,7 @@ describe('/party view', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image3.webp',
+            url: 'attachment://image 3.webp',
           },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -448,7 +436,7 @@ describe('/party view', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image4.webp',
+            url: 'attachment://image 4.webp',
           },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
@@ -462,7 +450,7 @@ describe('/party view', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image5.webp',
+            url: 'attachment://image 5.webp',
           },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -487,6 +475,7 @@ describe('/party view', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -494,6 +483,7 @@ describe('/party view', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 2,
         name: {
           english: 'name 2',
         },
@@ -501,6 +491,7 @@ describe('/party view', () => {
       {
         id: '3',
         packId: 'anilist',
+        rating: 3,
         name: {
           english: 'name 3',
         },
@@ -508,6 +499,7 @@ describe('/party view', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 4,
         name: {
           english: 'name 4',
         },
@@ -515,6 +507,7 @@ describe('/party view', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 5,
         name: {
           english: 'name 5',
         },
@@ -561,29 +554,18 @@ describe('/party view', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.view({
+    await party.view({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -676,6 +658,7 @@ describe('/party view', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -683,6 +666,7 @@ describe('/party view', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 2,
         name: {
           english: 'name 2',
         },
@@ -690,6 +674,7 @@ describe('/party view', () => {
       {
         id: '3',
         packId: 'anilist',
+        rating: 3,
         name: {
           english: 'name 3',
         },
@@ -697,6 +682,7 @@ describe('/party view', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 4,
         name: {
           english: 'name 4',
         },
@@ -704,6 +690,7 @@ describe('/party view', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 5,
         name: {
           english: 'name 5',
         },
@@ -765,26 +752,10 @@ describe('/party view', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.view({
+    await party.view({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -842,6 +813,7 @@ describe('/party assign', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -874,31 +846,24 @@ describe('/party assign', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.assign({
+    await party.assign({
       spot: 1,
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       id: 'anilist:1',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -958,6 +923,7 @@ describe('/party assign', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -992,31 +958,24 @@ describe('/party assign', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.assign({
+    await party.assign({
       spot: 1,
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'anilist:1',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1076,6 +1035,7 @@ describe('/party assign', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -1106,33 +1066,25 @@ describe('/party assign', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.assign({
+    await party.assign({
       spot: 1,
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
       id: 'anilist:1',
     });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
-    });
-
     await vi.runAllTimersAsync();
 
     expect(fetchStub.mock.calls[0][0]).toBe(
@@ -1195,6 +1147,7 @@ describe('/party swap', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -1202,6 +1155,7 @@ describe('/party swap', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 2,
         name: {
           english: 'name 2',
         },
@@ -1209,6 +1163,7 @@ describe('/party swap', () => {
       {
         id: '3',
         packId: 'anilist',
+        rating: 3,
         name: {
           english: 'name 3',
         },
@@ -1216,6 +1171,7 @@ describe('/party swap', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 4,
         name: {
           english: 'name 4',
         },
@@ -1223,6 +1179,7 @@ describe('/party swap', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 5,
         name: {
           english: 'name 5',
         },
@@ -1279,31 +1236,20 @@ describe('/party swap', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.swap({
+    await party.swap({
       a: 1,
       b: 2,
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1420,6 +1366,7 @@ describe('/party swap', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -1427,6 +1374,7 @@ describe('/party swap', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 2,
         name: {
           english: 'name 2',
         },
@@ -1434,6 +1382,7 @@ describe('/party swap', () => {
       {
         id: '3',
         packId: 'anilist',
+        rating: 3,
         name: {
           english: 'name 3',
         },
@@ -1441,6 +1390,7 @@ describe('/party swap', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 4,
         name: {
           english: 'name 4',
         },
@@ -1448,6 +1398,7 @@ describe('/party swap', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 5,
         name: {
           english: 'name 5',
         },
@@ -1514,31 +1465,20 @@ describe('/party swap', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.swap({
+    await party.swap({
       a: 1,
       b: 2,
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1558,11 +1498,11 @@ describe('/party swap', () => {
     ).toEqual({
       components: [],
       attachments: [
-        { filename: 'image1.webp', id: '0' },
-        { filename: 'image2.webp', id: '1' },
-        { filename: 'image3.webp', id: '2' },
-        { filename: 'image4.webp', id: '3' },
-        { filename: 'image5.webp', id: '4' },
+        { filename: 'image 1.webp', id: '0' },
+        { filename: 'image 2.webp', id: '1' },
+        { filename: 'image 3.webp', id: '2' },
+        { filename: 'image 4.webp', id: '3' },
+        { filename: 'image 5.webp', id: '4' },
       ],
       embeds: [
         {
@@ -1574,7 +1514,7 @@ describe('/party swap', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image1.webp',
+            url: 'attachment://image 1.webp',
           },
           description:
             '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1588,7 +1528,7 @@ describe('/party swap', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image2.webp',
+            url: 'attachment://image 2.webp',
           },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1602,7 +1542,7 @@ describe('/party swap', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image3.webp',
+            url: 'attachment://image 3.webp',
           },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1616,7 +1556,7 @@ describe('/party swap', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image4.webp',
+            url: 'attachment://image 4.webp',
           },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
@@ -1630,7 +1570,7 @@ describe('/party swap', () => {
             },
           ],
           thumbnail: {
-            url: 'attachment://image5.webp',
+            url: 'attachment://image 5.webp',
           },
           description:
             '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -1652,6 +1592,7 @@ describe('/party remove', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -1688,30 +1629,19 @@ describe('/party remove', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.remove({
+    await party.remove({
       spot: 1,
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1771,6 +1701,7 @@ describe('/party remove', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -1809,30 +1740,19 @@ describe('/party remove', () => {
 
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
 
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.remove({
+    await party.remove({
       spot: 1,
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1892,6 +1812,7 @@ describe('/party remove', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -1923,27 +1844,11 @@ describe('/party remove', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.remove({
+    await party.remove({
       spot: 1,
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1997,6 +1902,7 @@ describe('/party clear', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name 1',
         },
@@ -2030,26 +1936,10 @@ describe('/party clear', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = party.clear({
+    await party.clear({
       userId: 'user_id',
       guildId: 'guild_id',
       token: 'test_token',
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        components: [],
-        attachments: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();

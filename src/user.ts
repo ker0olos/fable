@@ -1001,7 +1001,8 @@ function likeslist({
             end: 1,
           });
 
-          const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
+          const rating =
+            existing?.rating ?? new Rating({ stars: char.rating }).stars;
 
           const media = char.media?.edges?.[0]?.node;
 

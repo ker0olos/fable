@@ -10,6 +10,7 @@ import config from '~/src/config.ts';
 import { handler } from '~/src/interactions.ts';
 
 import packs from '~/src/packs.ts';
+import { MediaType } from '~/src/types.ts';
 
 config.global = true;
 
@@ -51,11 +52,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -69,7 +76,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -148,11 +155,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -166,7 +179,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -245,11 +258,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -263,7 +282,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -342,11 +361,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -360,7 +385,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -439,11 +464,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -457,7 +488,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -536,11 +567,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -554,7 +591,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -633,11 +670,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -651,7 +694,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -730,11 +773,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -748,7 +797,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -827,11 +876,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -845,7 +900,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -930,11 +985,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -948,7 +1009,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1033,11 +1094,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1051,7 +1118,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1136,11 +1203,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1154,7 +1227,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1232,11 +1305,17 @@ describe('media suggestions', () => {
 
     const searchStub = vi.spyOn(packs, '_searchManyMedia').mockResolvedValue([
       {
-        id: 'packId:id',
-        title: ['english title'],
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+        type: MediaType.Anime,
         popularity: 1,
       },
-    ] as any);
+    ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1250,7 +1329,7 @@ describe('media suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1332,12 +1411,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1351,7 +1434,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1386,7 +1469,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -1432,12 +1515,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1451,7 +1538,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1485,7 +1572,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -1535,12 +1622,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1554,7 +1645,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1588,7 +1679,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -1634,12 +1725,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1653,7 +1748,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1687,7 +1782,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -1733,12 +1828,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1752,7 +1851,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1786,7 +1885,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -1832,12 +1931,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1851,7 +1954,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1885,7 +1988,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -1931,12 +2034,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -1950,7 +2057,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -1984,7 +2091,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2030,12 +2137,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2049,7 +2160,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2084,7 +2195,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2130,12 +2241,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2149,7 +2264,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2184,7 +2299,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2229,12 +2344,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2248,7 +2367,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2283,7 +2402,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2328,11 +2447,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2346,7 +2470,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2432,12 +2556,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2451,7 +2579,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2486,7 +2614,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2537,12 +2665,16 @@ describe('character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2556,7 +2688,7 @@ describe('character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2591,7 +2723,7 @@ describe('character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2650,12 +2782,16 @@ describe('party assign character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2669,7 +2805,7 @@ describe('party assign character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2704,7 +2840,7 @@ describe('party assign character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2761,12 +2897,16 @@ describe('party assign character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2780,7 +2920,7 @@ describe('party assign character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2815,7 +2955,7 @@ describe('party assign character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2872,12 +3012,16 @@ describe('party assign character suggestions', () => {
       .spyOn(packs, '_searchManyCharacters')
       .mockResolvedValue([
         {
-          id: 'packId:id',
-          name: ['english name'],
-          mediaTitle: ['anime title'],
-          popularity: 1,
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
         },
-      ] as any);
+      ]);
+
+    const ctxStub = {};
 
     config.publicKey = 'publicKey';
 
@@ -2891,7 +3035,7 @@ describe('party assign character suggestions', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -2926,7 +3070,7 @@ describe('party assign character suggestions', () => {
         data: {
           choices: [
             {
-              name: 'english name (anime title)',
+              name: 'english name',
               value: 'id=packId:id',
             },
           ],
@@ -2985,6 +3129,8 @@ describe('community packs', () => {
       } as any,
     ]);
 
+    const ctxStub = {};
+
     config.publicKey = 'publicKey';
 
     try {
@@ -2997,7 +3143,7 @@ describe('community packs', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -3014,7 +3160,6 @@ describe('community packs', () => {
 
       expect(listStub).toHaveBeenCalledWith({
         guildId: 'guild_id',
-        filter: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -3101,6 +3246,8 @@ describe('community packs', () => {
       } as any,
     ]);
 
+    const ctxStub = {};
+
     config.publicKey = 'publicKey';
 
     try {
@@ -3113,7 +3260,7 @@ describe('community packs', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -3130,7 +3277,6 @@ describe('community packs', () => {
 
       expect(listStub).toHaveBeenCalledWith({
         guildId: 'guild_id',
-        filter: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -3216,6 +3362,8 @@ describe('community packs', () => {
       } as any,
     ]);
 
+    const ctxStub = {};
+
     config.publicKey = 'publicKey';
 
     try {
@@ -3228,7 +3376,7 @@ describe('community packs', () => {
         },
       });
 
-      const response = await handler(request);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateStub).toHaveBeenCalledWith(request, {
         POST: {
@@ -3245,7 +3393,6 @@ describe('community packs', () => {
 
       expect(listStub).toHaveBeenCalledWith({
         guildId: 'guild_id',
-        filter: true,
       });
 
       expect(response?.ok).toBe(true);

@@ -31,7 +31,6 @@ describe('Config', () => {
     process.env.STEALING = '1';
     process.env.SYNTHESIS = '1';
     process.env.SHOP = '1';
-    process.env.COMMUNITY_PACKS = '1';
     process.env.COMMUNITY_PACKS_MAINTAINER_API = '1';
     process.env.COMMUNITY_PACKS_BROWSE_API = '1';
     process.env.DISABLE_IMAGES_PROXY = '1';
@@ -51,7 +50,6 @@ describe('Config', () => {
       stealing: true,
       synthesis: true,
       shop: true,
-      communityPacks: true,
       communityPacksMaintainerAPI: true,
       communityPacksBrowseAPI: true,
       disableImagesProxy: true,
@@ -81,7 +79,6 @@ describe('Config', () => {
       stealing: true,
       synthesis: true,
       shop: true,
-      communityPacks: true,
       communityPacksMaintainerAPI: true,
       communityPacksBrowseAPI: true,
       disableImagesProxy: false,
@@ -102,7 +99,6 @@ describe('Config', () => {
     process.env.STEALING = '0';
     process.env.SYNTHESIS = '0';
     process.env.SHOP = '0';
-    process.env.COMMUNITY_PACKS = '0';
     process.env.COMMUNITY_PACKS_MAINTAINER_API = '0';
     process.env.COMMUNITY_PACKS_BROWSE_API = '0';
     process.env.DISABLE_IMAGES_PROXY = '0';
@@ -122,7 +118,6 @@ describe('Config', () => {
       stealing: false,
       synthesis: false,
       shop: false,
-      communityPacks: false,
       communityPacksMaintainerAPI: false,
       communityPacksBrowseAPI: false,
       disableImagesProxy: false,

@@ -12,9 +12,7 @@ import Rating from '~/src/rating.ts';
 
 import merge from '~/src/merge.ts';
 
-import db from '~/db/index.ts';
-
-import searchIndex, { IndexedCharacter } from '~/search-index-mod/index.ts';
+import db, { ObjectId } from '~/db/index.ts';
 
 import {
   Character,
@@ -355,6 +353,7 @@ describe('synthesis confirmed', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 2,
       name: {
         english: 'name',
       },
@@ -379,24 +378,23 @@ describe('synthesis confirmed', () => {
       { manifest: { id: 'anilist' } },
     ] as any);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
-    vi.spyOn(searchIndex, 'pool').mockResolvedValue(
-      new Map([
-        [
-          '',
-          [
-            new IndexedCharacter(
-              'anilist:1',
-              '',
-              [],
-              [],
-              0,
-              2,
-              CharacterRole.Main
-            ),
-          ],
+    vi.spyOn(db, 'ratingPool').mockResolvedValue([
+      {
+        id: '1',
+        _id: new ObjectId(),
+        packId: 'anilist',
+        name: {
+          english: 'name',
+        },
+        rating: 2,
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:anime',
+          },
         ],
-      ])
-    );
+      },
+    ]);
     vi.spyOn(merge, 'getFilteredCharacters').mockResolvedValue([
       {
         characterId: 'anilist:1',
@@ -426,31 +424,23 @@ describe('synthesis confirmed', () => {
     } as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
     vi.spyOn(db, 'findCharacter').mockResolvedValue([]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = merge.confirmed({
+    await merge.confirmed({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -569,6 +559,7 @@ describe('synthesis confirmed', () => {
     const character: Character = {
       id: '1',
       packId: 'anilist',
+      rating: 2,
       name: {
         english: 'name',
       },
@@ -592,24 +583,23 @@ describe('synthesis confirmed', () => {
     ]);
     vi.spyOn(db, 'addCharacter').mockResolvedValue({ ok: true } as any);
     vi.spyOn(packs, 'characters').mockResolvedValue([character]);
-    vi.spyOn(searchIndex, 'pool').mockResolvedValue(
-      new Map([
-        [
-          '',
-          [
-            new IndexedCharacter(
-              'anilist:1',
-              '',
-              [],
-              [],
-              0,
-              2,
-              CharacterRole.Main
-            ),
-          ],
+    vi.spyOn(db, 'ratingPool').mockResolvedValue([
+      {
+        id: '1',
+        _id: new ObjectId(),
+        packId: 'anilist',
+        name: {
+          english: 'name',
+        },
+        rating: 2,
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:anime',
+          },
         ],
-      ])
-    );
+      },
+    ]);
     vi.spyOn(merge, 'getFilteredCharacters').mockResolvedValue([
       {
         characterId: 'anilist:1',
@@ -642,31 +632,23 @@ describe('synthesis confirmed', () => {
     } as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
     vi.spyOn(db, 'findCharacter').mockResolvedValue([]);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = merge.confirmed({
+    await merge.confirmed({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -732,27 +714,11 @@ describe('synthesis confirmed', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = merge.confirmed({
+    await merge.confirmed({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -810,27 +776,11 @@ describe('synthesis confirmed', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = merge.confirmed({
+    await merge.confirmed({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -878,6 +828,7 @@ describe('/merge', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 1',
         },
@@ -888,6 +839,7 @@ describe('/merge', () => {
               role: CharacterRole.Main,
               node: {
                 id: 'anime',
+                packId: 'anilist',
                 type: MediaType.Anime,
                 title: {
                   english: 'media title',
@@ -903,6 +855,7 @@ describe('/merge', () => {
         name: {
           english: 'character 2',
         },
+        rating: 1,
         images: [{ url: 'image_url' }],
         media: {
           edges: [
@@ -910,6 +863,7 @@ describe('/merge', () => {
               role: CharacterRole.Main,
               node: {
                 id: 'anime',
+                packId: 'anilist',
                 type: MediaType.Anime,
                 title: {
                   english: 'media title',
@@ -925,6 +879,7 @@ describe('/merge', () => {
         name: {
           english: 'character 3',
         },
+        rating: 1,
         images: [{ url: 'image_url' }],
         media: {
           edges: [
@@ -932,6 +887,7 @@ describe('/merge', () => {
               role: CharacterRole.Main,
               node: {
                 id: 'anime',
+                packId: 'anilist',
                 type: MediaType.Anime,
                 title: {
                   english: 'media title',
@@ -944,6 +900,7 @@ describe('/merge', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 4',
         },
@@ -952,6 +909,7 @@ describe('/merge', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 5',
         },
@@ -999,33 +957,24 @@ describe('/merge', () => {
     ] as any);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.synthesis = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = await merge.synthesize({
+    await merge.synthesize({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       mode: 'target',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1145,6 +1094,7 @@ describe('/merge', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 1',
         },
@@ -1153,6 +1103,7 @@ describe('/merge', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 2',
         },
@@ -1161,6 +1112,7 @@ describe('/merge', () => {
       {
         id: '3',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 3',
         },
@@ -1169,6 +1121,7 @@ describe('/merge', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 4',
         },
@@ -1177,6 +1130,7 @@ describe('/merge', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 5',
         },
@@ -1234,33 +1188,24 @@ describe('/merge', () => {
     ] as any);
     vi.spyOn(packs, 'characters').mockResolvedValue(characters);
     vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.synthesis = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = await merge.synthesize({
+    await await merge.synthesize({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       mode: 'target',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1365,6 +1310,7 @@ describe('/merge', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 1',
         },
@@ -1373,6 +1319,7 @@ describe('/merge', () => {
       {
         id: '2',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 2',
         },
@@ -1381,6 +1328,7 @@ describe('/merge', () => {
       {
         id: '3',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 3',
         },
@@ -1389,6 +1337,7 @@ describe('/merge', () => {
       {
         id: '4',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 4',
         },
@@ -1397,6 +1346,7 @@ describe('/merge', () => {
       {
         id: '5',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'character 5',
         },
@@ -1448,33 +1398,24 @@ describe('/merge', () => {
     vi.spyOn(packs, 'isDisabled').mockImplementation(
       (id) => id === 'anilist:m'
     );
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
-    const message = await merge.synthesize({
+    await await merge.synthesize({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       mode: 'target',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1639,28 +1580,12 @@ describe('/merge', () => {
     config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
-    const message = await merge.synthesize({
+    await await merge.synthesize({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       mode: 'target',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1764,28 +1689,12 @@ describe('/merge', () => {
     config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
-    const message = await merge.synthesize({
+    await await merge.synthesize({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       mode: 'target',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1881,28 +1790,12 @@ describe('/merge', () => {
     config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
-    const message = await merge.synthesize({
+    await await merge.synthesize({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       mode: 'target',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();
@@ -1952,28 +1845,12 @@ describe('/merge', () => {
     config.origin = 'http://localhost:8000';
     config.synthesis = true;
 
-    const message = await merge.synthesize({
+    await await merge.synthesize({
       token: 'test_token',
       userId: 'user_id',
       guildId: 'guild_id',
       mode: 'target',
       target: 2,
-    });
-
-    expect(message.json()).toEqual({
-      type: 4,
-      data: {
-        attachments: [],
-        components: [],
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/spinner3.gif',
-            },
-          },
-        ],
-      },
     });
 
     await vi.runAllTimersAsync();

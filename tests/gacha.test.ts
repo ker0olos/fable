@@ -6,8 +6,7 @@ import gacha, { Pull } from '~/src/gacha.ts';
 import utils from '~/src/utils.ts';
 import packs from '~/src/packs.ts';
 import config from '~/src/config.ts';
-import db from '~/db/index.ts';
-import searchIndex, { IndexedCharacter } from '~/search-index-mod/index.ts';
+import db, { ObjectId } from '~/db/index.ts';
 
 import {
   Character,
@@ -31,26 +30,23 @@ describe('adding character to inventory', () => {
       rating: 1,
     };
 
-    const poolStub = vi
-      .spyOn(searchIndex, 'pool')
-      .mockResolvedValue(
-        new Map([
-          [
-            '',
-            [
-              new IndexedCharacter(
-                'anilist:1',
-                '',
-                [],
-                [],
-                2000,
-                1,
-                CharacterRole.Main
-              ),
-            ],
-          ],
-        ])
-      );
+    const poolStub = vi.spyOn(db, 'ratingPool').mockResolvedValue([
+      {
+        id: '1',
+        _id: new ObjectId(),
+        packId: 'anilist',
+        name: {
+          english: 'name',
+        },
+        rating: 1,
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:anime',
+          },
+        ],
+      },
+    ]);
 
     vi.spyOn(utils, 'rng')
       .mockReturnValueOnce({ value: false, chance: NaN })
@@ -66,122 +62,15 @@ describe('adding character to inventory', () => {
     vi.spyOn(packs, 'all').mockResolvedValue([
       { manifest: { id: 'anilist' } },
     ] as any);
-
-    vi.spyOn(packs, 'characters').mockResolvedValue([
-      {
-        id: '1',
-        packId: 'anilist',
-        name: {
-          english: 'name',
-        },
-        media: {
-          edges: [
-            {
-              role: CharacterRole.Main,
-              node: {
-                id: 'anime',
-                packId: 'anilist',
-                popularity: 2500,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title',
-                },
-              },
-            },
-          ],
-        },
-      },
-    ]);
-
-    vi.spyOn(db, 'newMongo').mockReturnValue({
-      connect: () => ({
-        close: () => undefined,
-      }),
-    } as any);
-
-    const result = await gacha.rngPull({
-      userId: 'user_id',
-      guildId: 'guild_id',
-    });
-
-    expect(result).toMatchObject({
-      character: {
-        id: '1',
-        packId: 'anilist',
-        media: {
-          edges: [
-            {
-              node: {
-                format: MediaFormat.TV,
-                id: 'anime',
-                packId: 'anilist',
-                popularity: 2500,
-                title: {
-                  english: 'title',
-                },
-                type: MediaType.Anime,
-              },
-              role: CharacterRole.Main,
-            },
-          ],
-        },
-        name: {
-          english: 'name',
-        },
-      },
-    });
-
-    expect(poolStub).toHaveBeenCalledTimes(1);
-  });
-
-  test('fallback pool', async () => {
-    const variables = {
-      rating: 1,
-    };
-
-    const poolStub = vi
-      .spyOn(searchIndex, 'pool')
-      .mockResolvedValueOnce(new Map())
-      .mockResolvedValueOnce(
-        new Map([
-          [
-            '',
-            [
-              new IndexedCharacter(
-                'anilist:1',
-                '',
-                [],
-                [],
-                2000,
-                1,
-                CharacterRole.Main
-              ),
-            ],
-          ],
-        ])
-      );
-
-    vi.spyOn(utils, 'rng')
-      .mockReturnValueOnce({ value: false, chance: NaN })
-      .mockReturnValueOnce({ value: variables.rating, chance: NaN });
-
-    vi.spyOn(utils, 'fetchWithRetry').mockImplementation(
-      () => undefined as any
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
     );
-    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
-    vi.spyOn(db, 'getActiveUsersIfLiked').mockReturnValue([] as any);
-    vi.spyOn(db, 'addCharacter').mockReturnValue({ ok: true } as any);
-    vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
-
-    vi.spyOn(packs, 'all').mockResolvedValue([
-      { manifest: { id: 'anilist' } },
-    ] as any);
 
     vi.spyOn(packs, 'characters').mockResolvedValue([
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name',
         },
@@ -228,110 +117,6 @@ describe('adding character to inventory', () => {
                 id: 'anime',
                 packId: 'anilist',
                 popularity: 2500,
-                title: {
-                  english: 'title',
-                },
-                type: MediaType.Anime,
-              },
-              role: CharacterRole.Main,
-            },
-          ],
-        },
-        name: {
-          english: 'name',
-        },
-      },
-    });
-
-    expect(poolStub).toHaveBeenCalledTimes(2);
-  });
-
-  test('guarantee pool', async () => {
-    const poolStub = vi
-      .spyOn(searchIndex, 'pool')
-      .mockResolvedValue(
-        new Map([
-          [
-            '',
-            [
-              new IndexedCharacter(
-                'anilist:1',
-                '',
-                [],
-                [],
-                10000000,
-                5,
-                CharacterRole.Main
-              ),
-            ],
-          ],
-        ])
-      );
-
-    vi.spyOn(utils, 'rng').mockReturnValue({} as any);
-    vi.spyOn(utils, 'fetchWithRetry').mockImplementation(
-      () => undefined as any
-    );
-    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
-    vi.spyOn(db, 'getActiveUsersIfLiked').mockReturnValue([] as any);
-    vi.spyOn(db, 'addCharacter').mockReturnValue({ ok: true } as any);
-    vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
-
-    vi.spyOn(packs, 'all').mockResolvedValue([
-      { manifest: { id: 'anilist' } },
-    ] as any);
-
-    vi.spyOn(packs, 'characters').mockResolvedValue([
-      {
-        id: '1',
-        packId: 'anilist',
-        name: {
-          english: 'name',
-        },
-        media: {
-          edges: [
-            {
-              role: CharacterRole.Main,
-              node: {
-                id: 'anime',
-                packId: 'anilist',
-                popularity: 10000000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title',
-                },
-              },
-            },
-          ],
-        },
-      },
-    ]);
-
-    vi.spyOn(db, 'newMongo').mockReturnValue({
-      connect: () => ({
-        close: () => undefined,
-      }),
-    } as any);
-
-    const result = await gacha.rngPull({
-      userId: 'user_id',
-      guildId: 'guild_id',
-      guarantee: 5,
-    });
-
-    expect(result).toMatchObject({
-      character: {
-        id: '1',
-        packId: 'anilist',
-        media: {
-          edges: [
-            {
-              node: {
-                format: MediaFormat.TV,
-                id: 'anime',
-                packId: 'anilist',
-                popularity: 10000000,
                 title: {
                   english: 'title',
                 },
@@ -351,28 +136,22 @@ describe('adding character to inventory', () => {
   });
 
   test('liked pool (one liked character)', async () => {
-    const mediaPoolStub = vi
-      .spyOn(searchIndex, 'pool')
-      .mockResolvedValue(new Map());
-
-    const charPoolStub = vi
-      .spyOn(searchIndex, 'charIdPool')
-      .mockResolvedValue(
-        new Map([
-          [
-            'anilist:1',
-            new IndexedCharacter(
-              'anilist:1',
-              'anilist:media_id',
-              [],
-              [],
-              10000000,
-              5,
-              CharacterRole.Main
-            ),
-          ],
-        ])
-      );
+    const mediaPoolStub = vi.spyOn(db, 'likesPool').mockResolvedValue([
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'name',
+        },
+        rating: 5,
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:anime',
+          },
+        ],
+      },
+    ]);
 
     vi.spyOn(utils, 'rng').mockReturnValue({ value: true, chance: NaN });
     vi.spyOn(utils, 'fetchWithRetry').mockImplementation(
@@ -386,15 +165,18 @@ describe('adding character to inventory', () => {
     vi.spyOn(db, 'findCharacters').mockReturnValue([undefined] as any);
     vi.spyOn(db, 'addCharacter').mockReturnValue({ ok: true } as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
-
     vi.spyOn(packs, 'all').mockResolvedValue([
       { manifest: { id: 'anilist' } },
     ] as any);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     vi.spyOn(packs, 'characters').mockResolvedValue([
       {
         id: '1',
         packId: 'anilist',
+        rating: 5,
         name: {
           english: 'name',
         },
@@ -405,7 +187,7 @@ describe('adding character to inventory', () => {
               node: {
                 id: 'anime',
                 packId: 'anilist',
-                popularity: 10000000,
+                popularity: 100000,
                 type: MediaType.Anime,
                 format: MediaFormat.TV,
                 title: {
@@ -440,7 +222,6 @@ describe('adding character to inventory', () => {
                 format: MediaFormat.TV,
                 id: 'anime',
                 packId: 'anilist',
-                popularity: 10000000,
                 title: {
                   english: 'title',
                 },
@@ -457,34 +238,25 @@ describe('adding character to inventory', () => {
     });
 
     expect(mediaPoolStub).toHaveBeenCalledTimes(1);
-    expect(charPoolStub).toHaveBeenCalledTimes(1);
   });
 
   test('liked pool (one media)', async () => {
-    const mediaPoolStub = vi
-      .spyOn(searchIndex, 'pool')
-      .mockResolvedValue(
-        new Map([
-          [
-            'anilist:media_id',
-            [
-              new IndexedCharacter(
-                'anilist:1',
-                'anilist:media_id',
-                [],
-                [],
-                10000000,
-                5,
-                CharacterRole.Main
-              ),
-            ],
-          ],
-        ])
-      );
-
-    const charPoolStub = vi
-      .spyOn(searchIndex, 'charIdPool')
-      .mockResolvedValue(new Map());
+    const mediaPoolStub = vi.spyOn(db, 'likesPool').mockResolvedValue([
+      {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'name',
+        },
+        rating: 5,
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:anime',
+          },
+        ],
+      },
+    ]);
 
     vi.spyOn(utils, 'rng').mockReturnValue({ value: true, chance: NaN });
     vi.spyOn(utils, 'fetchWithRetry').mockImplementation(
@@ -498,15 +270,18 @@ describe('adding character to inventory', () => {
     vi.spyOn(db, 'findCharacters').mockReturnValue([undefined] as any);
     vi.spyOn(db, 'addCharacter').mockReturnValue({ ok: true } as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
-
     vi.spyOn(packs, 'all').mockResolvedValue([
       { manifest: { id: 'anilist' } },
     ] as any);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
 
     vi.spyOn(packs, 'characters').mockResolvedValue([
       {
         id: '1',
         packId: 'anilist',
+        rating: 5,
         name: {
           english: 'name',
         },
@@ -517,7 +292,7 @@ describe('adding character to inventory', () => {
               node: {
                 id: 'anime',
                 packId: 'anilist',
-                popularity: 10000000,
+                popularity: 100000,
                 type: MediaType.Anime,
                 format: MediaFormat.TV,
                 title: {
@@ -552,7 +327,6 @@ describe('adding character to inventory', () => {
                 format: MediaFormat.TV,
                 id: 'anime',
                 packId: 'anilist',
-                popularity: 10000000,
                 title: {
                   english: 'title',
                 },
@@ -569,7 +343,6 @@ describe('adding character to inventory', () => {
     });
 
     expect(mediaPoolStub).toHaveBeenCalledTimes(1);
-    expect(charPoolStub).toHaveBeenCalledTimes(1);
   });
 
   test('character exists', async () => {
@@ -577,26 +350,23 @@ describe('adding character to inventory', () => {
       rating: 1,
     };
 
-    const poolStub = vi
-      .spyOn(searchIndex, 'pool')
-      .mockResolvedValue(
-        new Map([
-          [
-            '',
-            [
-              new IndexedCharacter(
-                'anilist:1',
-                '',
-                [],
-                [],
-                2000,
-                1,
-                CharacterRole.Main
-              ),
-            ],
-          ],
-        ])
-      );
+    const poolStub = vi.spyOn(db, 'ratingPool').mockResolvedValue([
+      {
+        id: '1',
+        _id: new ObjectId(),
+        packId: 'anilist',
+        name: {
+          english: 'name',
+        },
+        rating: 1,
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:anime',
+          },
+        ],
+      },
+    ]);
 
     vi.spyOn(utils, 'rng')
       .mockReturnValueOnce({ value: false, chance: NaN })
@@ -620,6 +390,7 @@ describe('adding character to inventory', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name',
         },
@@ -664,26 +435,23 @@ describe('adding character to inventory', () => {
       rating: 1,
     };
 
-    const poolStub = vi
-      .spyOn(searchIndex, 'pool')
-      .mockResolvedValue(
-        new Map([
-          [
-            '',
-            [
-              new IndexedCharacter(
-                'anilist:1',
-                '',
-                [],
-                [],
-                2000,
-                1,
-                CharacterRole.Main
-              ),
-            ],
-          ],
-        ])
-      );
+    const poolStub = vi.spyOn(db, 'ratingPool').mockResolvedValue([
+      {
+        id: '1',
+        _id: new ObjectId(),
+        packId: 'anilist',
+        name: {
+          english: 'name',
+        },
+        rating: 1,
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:anime',
+          },
+        ],
+      },
+    ]);
 
     vi.spyOn(utils, 'rng')
       .mockReturnValueOnce({ value: false, chance: NaN })
@@ -706,6 +474,7 @@ describe('adding character to inventory', () => {
     vi.spyOn(packs, 'characters').mockResolvedValue([
       {
         id: '1',
+        rating: 1,
         packId: 'anilist',
         name: {
           english: 'name',
@@ -751,26 +520,23 @@ describe('adding character to inventory', () => {
       rating: 1,
     };
 
-    const poolStub = vi
-      .spyOn(searchIndex, 'pool')
-      .mockResolvedValue(
-        new Map([
-          [
-            '',
-            [
-              new IndexedCharacter(
-                'anilist:1',
-                '',
-                [],
-                [],
-                2000,
-                1,
-                CharacterRole.Main
-              ),
-            ],
-          ],
-        ])
-      );
+    const poolStub = vi.spyOn(db, 'ratingPool').mockResolvedValue([
+      {
+        id: '1',
+        _id: new ObjectId(),
+        packId: 'anilist',
+        name: {
+          english: 'name',
+        },
+        rating: 1,
+        media: [
+          {
+            role: CharacterRole.Main,
+            mediaId: 'anilist:anime',
+          },
+        ],
+      },
+    ]);
 
     vi.spyOn(utils, 'rng')
       .mockReturnValueOnce({ value: false, chance: NaN })
@@ -783,6 +549,7 @@ describe('adding character to inventory', () => {
       {
         id: '1',
         packId: 'anilist',
+        rating: 1,
         name: {
           english: 'name',
         },
@@ -854,143 +621,6 @@ describe('variables', () => {
   });
 });
 
-describe('rating', () => {
-  test('1 star', () => {
-    let rating = new Rating({
-      role: CharacterRole.Background,
-      popularity: 1000000,
-    });
-
-    expect(rating.stars).toBe(1);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-
-    rating = new Rating({ role: CharacterRole.Main, popularity: 0 });
-
-    expect(rating.stars).toBe(1);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-
-    rating = new Rating({ popularity: 0 });
-
-    expect(rating.stars).toBe(1);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-  });
-
-  test('2 stars', () => {
-    let rating = new Rating({
-      role: CharacterRole.Supporting,
-      popularity: 199999,
-    });
-
-    expect(rating.stars).toBe(2);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-
-    rating = new Rating({
-      popularity: 199999,
-    });
-
-    expect(rating.stars).toBe(2);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-  });
-
-  test('3 stars', () => {
-    let rating = new Rating({ role: CharacterRole.Main, popularity: 199999 });
-
-    expect(rating.stars).toBe(3);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-
-    rating = new Rating({ role: CharacterRole.Supporting, popularity: 250000 });
-
-    expect(rating.stars).toBe(3);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-
-    rating = new Rating({ popularity: 250000 });
-
-    expect(rating.stars).toBe(3);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-  });
-
-  test('4 stars', () => {
-    let rating = new Rating({ role: CharacterRole.Main, popularity: 250000 });
-
-    expect(rating.stars).toBe(4);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>'
-    );
-
-    rating = new Rating({ role: CharacterRole.Supporting, popularity: 500000 });
-
-    expect(rating.stars).toBe(4);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>'
-    );
-
-    rating = new Rating({ popularity: 500000 });
-
-    expect(rating.stars).toBe(4);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>'
-    );
-  });
-
-  test('5 stars', () => {
-    let rating = new Rating({ role: CharacterRole.Main, popularity: 400000 });
-
-    expect(rating.stars).toBe(5);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>'
-    );
-
-    rating = new Rating({ popularity: 1000000 });
-
-    expect(rating.stars).toBe(5);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>'
-    );
-  });
-
-  test('fixed rating', () => {
-    const rating = new Rating({
-      stars: 1,
-    });
-
-    expect(rating.stars).toBe(1);
-    expect(rating.emotes).toBe(
-      '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>'
-    );
-  });
-
-  test('defaults', () => {
-    let rating = new Rating({
-      role: CharacterRole.Main,
-      popularity: undefined as any,
-    });
-
-    expect(rating.stars).toBe(1);
-
-    rating = new Rating({
-      popularity: undefined as any,
-    });
-
-    expect(rating.stars).toBe(1);
-  });
-});
-
 describe('/gacha', () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -1003,7 +633,7 @@ describe('/gacha', () => {
       packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
-      popularity: 100,
+      popularity: 1,
       title: {
         english: 'title',
       },
@@ -1017,6 +647,7 @@ describe('/gacha', () => {
     const character: Character = {
       id: '2',
       packId: 'pack-id-2',
+      rating: 1,
       name: {
         english: 'name',
       },
@@ -1038,7 +669,7 @@ describe('/gacha', () => {
     const pull: Pull = {
       media,
       character,
-      rating: new Rating({ popularity: 100 }),
+      rating: new Rating({ stars: 1 }),
     };
 
     vi.useFakeTimers();
@@ -1056,250 +687,24 @@ describe('/gacha', () => {
         close: () => undefined,
       }),
     } as any);
-
-    config.gacha = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = gacha.start({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
-      });
-
-      await vi.runAllTimersAsync();
-
-      expect(fetchStub).toHaveBeenCalledTimes(3);
-
-      expect(fetchStub).toHaveBeenNthCalledWith(
-        1,
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-        expect.objectContaining({
-          method: 'PATCH',
-          body: expect.any(FormData),
-        })
-      );
-
-      expect(
-        JSON.parse(
-          (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
-            'payload_json'
-          ) as any
-        )
-      ).toEqual({
-        embeds: [
-          {
-            type: 'rich',
-            title: 'title',
-            image: {
-              url: 'attachment://media-image-url.webp',
-            },
-          },
-        ],
-        components: [],
-        attachments: [{ filename: 'media-image-url.webp', id: '0' }],
-      });
-
-      expect(fetchStub).toHaveBeenNthCalledWith(
-        2,
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-        expect.objectContaining({
-          method: 'PATCH',
-          body: expect.any(FormData),
-        })
-      );
-
-      expect(
-        JSON.parse(
-          (fetchStub.mock.calls[1][1]?.body as FormData)?.get(
-            'payload_json'
-          ) as any
-        )
-      ).toEqual({
-        embeds: [
-          {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/stars/1.gif',
-            },
-          },
-        ],
-        components: [],
-        attachments: [],
-      });
-
-      expect(fetchStub).toHaveBeenNthCalledWith(
-        3,
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-        expect.objectContaining({
-          method: 'PATCH',
-          body: expect.any(FormData),
-        })
-      );
-
-      expect(
-        JSON.parse(
-          (fetchStub.mock.calls[2][1]?.body as FormData)?.get(
-            'payload_json'
-          ) as any
-        )
-      ).toEqual({
-        attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        embeds: [
-          {
-            type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
-            fields: [
-              {
-                name: 'title',
-                value: '**name**',
-              },
-            ],
-            image: {
-              url: 'attachment://character-image-url.webp',
-            },
-          },
-        ],
-        components: [
-          {
-            type: 1,
-            components: [
-              {
-                custom_id: 'gacha=user_id',
-                label: '/gacha',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'character=pack-id-2:2=1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'like=pack-id-2:2',
-                label: '/like',
-                style: 2,
-                type: 2,
-              },
-            ],
-          },
-        ],
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.gacha;
-    }
-  });
-
-  test('fallback', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      popularity: 100,
-      title: {
-        english: 'title',
-      },
-      images: [
-        {
-          url: 'media_image_url',
-        },
-      ],
-      relations: {
-        edges: [],
-      },
-    };
-
-    const character: Character = {
-      id: '2',
-      packId: 'pack-id-2',
-      name: {
-        english: 'name',
-      },
-      images: [
-        {
-          url: 'character_image_url',
-        },
-      ],
-      media: {
-        edges: [
-          {
-            role: CharacterRole.Main,
-            node: media,
-          },
-        ],
-      },
-    };
-
-    vi.useFakeTimers();
-
-    const fetchStub = vi
-      .spyOn(utils, 'fetchWithRetry')
-      .mockImplementation(() => undefined as any);
-    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
-    vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
-    vi.spyOn(db, 'findCharacter').mockResolvedValue([]);
-    vi.spyOn(db, 'getActiveUsersIfLiked').mockReturnValue([] as any);
-    vi.spyOn(gacha, 'rngPool').mockResolvedValue({
-      pool: new Map(),
-      validate: () => false,
-    });
-    vi.spyOn(packs, 'characters').mockReturnValue([character] as any);
-    vi.spyOn(gacha, 'rangeFallbackPool').mockResolvedValue(
-      new Map([['', [character]]]) as any
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
     );
-    vi.spyOn(db, 'addCharacter').mockImplementation(async () => undefined);
-    vi.spyOn(db, 'newMongo').mockReturnValue({
-      connect: () => ({
-        close: () => undefined,
-      }),
-    } as any);
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
 
     config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1383,7 +788,7 @@ describe('/gacha', () => {
         embeds: [
           {
             type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
+            description: new Rating({ stars: 1 }).emotes,
             fields: [
               {
                 name: 'title',
@@ -1434,7 +839,6 @@ describe('/gacha', () => {
       packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
-      popularity: 100,
       title: {
         english: 'title',
       },
@@ -1448,6 +852,7 @@ describe('/gacha', () => {
     const character: Character = {
       id: '2',
       packId: 'pack-id-2',
+      rating: 1,
       name: {
         english: 'name',
       },
@@ -1469,7 +874,7 @@ describe('/gacha', () => {
     const pull: Pull = {
       media,
       character,
-      rating: new Rating({ popularity: 100 }),
+      rating: new Rating({ stars: 1 }),
     };
 
     vi.useFakeTimers();
@@ -1487,35 +892,25 @@ describe('/gacha', () => {
         close: () => undefined,
       }),
     } as any);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
 
     config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         mention: true,
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          content: '<@user_id>',
-          allowed_mentions: { parse: [] },
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1605,7 +1000,7 @@ describe('/gacha', () => {
         embeds: [
           {
             type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
+            description: new Rating({ stars: 1 }).emotes,
             fields: [
               {
                 name: 'title',
@@ -1656,7 +1051,6 @@ describe('/gacha', () => {
       packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
-      popularity: 100,
       title: {
         english: 'title',
       },
@@ -1670,6 +1064,7 @@ describe('/gacha', () => {
     const character: Character = {
       id: '2',
       packId: 'pack-id-2',
+      rating: 1,
       name: {
         english: 'name',
       },
@@ -1691,7 +1086,7 @@ describe('/gacha', () => {
     const pull: Pull = {
       media,
       character,
-      rating: new Rating({ popularity: 100 }),
+      rating: new Rating({ stars: 1 }),
     };
 
     vi.useFakeTimers();
@@ -1709,33 +1104,25 @@ describe('/gacha', () => {
         close: () => undefined,
       }),
     } as any);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
 
     config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
         quiet: true,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1762,7 +1149,7 @@ describe('/gacha', () => {
         embeds: [
           {
             type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
+            description: new Rating({ stars: 1 }).emotes,
             fields: [
               {
                 name: 'title',
@@ -1813,7 +1200,6 @@ describe('/gacha', () => {
       packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
-      popularity: 100,
       title: {
         english: 'title',
       },
@@ -1827,6 +1213,7 @@ describe('/gacha', () => {
     const character: Character = {
       id: '2',
       packId: 'pack-id-2',
+      rating: 1,
       name: {
         english: 'name',
       },
@@ -1848,7 +1235,7 @@ describe('/gacha', () => {
     const pull: Pull = {
       media,
       character,
-      rating: new Rating({ popularity: 100 }),
+      rating: new Rating({ stars: 1 }),
     };
 
     vi.useFakeTimers();
@@ -1868,32 +1255,24 @@ describe('/gacha', () => {
         close: () => undefined,
       }),
     } as any);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
 
     config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -1977,7 +1356,7 @@ describe('/gacha', () => {
         embeds: [
           {
             type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
+            description: new Rating({ stars: 1 }).emotes,
             fields: [
               {
                 name: 'title',
@@ -2065,7 +1444,6 @@ describe('/gacha', () => {
       packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
-      popularity: 100,
       title: {
         english: 'title',
       },
@@ -2079,6 +1457,7 @@ describe('/gacha', () => {
     const character: Character = {
       id: '2',
       packId: 'pack-id-2',
+      rating: 1,
       name: {
         english: 'name',
       },
@@ -2100,7 +1479,7 @@ describe('/gacha', () => {
     const pull: Pull = {
       media,
       character,
-      rating: new Rating({ popularity: 100 }),
+      rating: new Rating({ stars: 1 }),
     };
 
     vi.useFakeTimers();
@@ -2120,32 +1499,24 @@ describe('/gacha', () => {
         close: () => undefined,
       }),
     } as any);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
 
     config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2229,7 +1600,7 @@ describe('/gacha', () => {
         embeds: [
           {
             type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
+            description: new Rating({ stars: 1 }).emotes,
             fields: [
               {
                 name: 'title',
@@ -2317,7 +1688,6 @@ describe('/gacha', () => {
       packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
-      popularity: 100,
       title: {
         english: 'title',
       },
@@ -2346,6 +1716,7 @@ describe('/gacha', () => {
     const character: Character = {
       id: '2',
       packId: 'pack-id-2',
+      rating: 1,
       name: {
         english: 'name',
       },
@@ -2367,7 +1738,7 @@ describe('/gacha', () => {
     const pull: Pull = {
       media,
       character,
-      rating: new Rating({ popularity: 100 }),
+      rating: new Rating({ stars: 1 }),
     };
 
     vi.useFakeTimers();
@@ -2387,32 +1758,24 @@ describe('/gacha', () => {
         close: () => undefined,
       }),
     } as any);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
 
     config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2496,7 +1859,7 @@ describe('/gacha', () => {
         embeds: [
           {
             type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
+            description: new Rating({ stars: 1 }).emotes,
             fields: [
               {
                 name: 'title',
@@ -2600,25 +1963,9 @@ describe('/gacha', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2680,27 +2027,11 @@ describe('/gacha', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
         guarantee: 5,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2758,11 +2089,7 @@ describe('/gacha', () => {
     const fetchStub = vi
       .spyOn(utils, 'fetchWithRetry')
       .mockImplementation(() => undefined as any);
-    vi.spyOn(gacha, 'rngPool').mockResolvedValue({
-      pool: new Map(),
-      validate: () => false,
-    });
-    vi.spyOn(gacha, 'rangeFallbackPool').mockResolvedValue(new Map());
+    vi.spyOn(gacha, 'rngPool').mockResolvedValue([]);
     vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
     vi.spyOn(db, 'findCharacter').mockResolvedValue([]);
@@ -2777,25 +2104,9 @@ describe('/gacha', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();
@@ -2840,10 +2151,7 @@ describe('/gacha', () => {
     const fetchStub = vi
       .spyOn(utils, 'fetchWithRetry')
       .mockImplementation(() => undefined as any);
-    vi.spyOn(gacha, 'guaranteedPool').mockResolvedValue({
-      pool: new Map(),
-      validate: () => false,
-    });
+    vi.spyOn(gacha, 'guaranteedPool').mockResolvedValue([]);
     vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
     vi.spyOn(db, 'findCharacter').mockResolvedValue([]);
@@ -2858,26 +2166,10 @@ describe('/gacha', () => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({
+      await gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
         guarantee: 5,
-      });
-
-      expect(message.json()).toEqual({
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-        },
       });
 
       await vi.runAllTimersAsync();

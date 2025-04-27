@@ -65,21 +65,4 @@ export default class Rating {
       5 - this.#stars
     )}`;
   }
-
-  static fromCharacter(character: Character): Rating {
-    if (character.popularity) {
-      return new Rating({ popularity: character.popularity });
-    }
-
-    if (character.media?.edges?.length) {
-      const edge = character.media.edges[0];
-
-      return new Rating({
-        popularity: edge.node.popularity,
-        role: edge.role,
-      });
-    }
-
-    return new Rating({ popularity: 0 });
-  }
 }

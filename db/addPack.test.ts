@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet, MongoMemoryServer } from 'mongodb-memory-server';
 import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
 import db, { Mongo } from '~/db/index.ts';
 import config from '~/src/config.ts';
 
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryServer | MongoMemoryReplSet;
 let client: Mongo;
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
@@ -196,7 +196,7 @@ describe('db.removePack()', () => {
 
 describe('db.publishPack()', () => {
   beforeEach(async () => {
-    mongod = await MongoMemoryServer.create();
+    mongod = await MongoMemoryReplSet.create();
     client = new Mongo(mongod.getUri());
     config.mongoUri = mongod.getUri();
   });

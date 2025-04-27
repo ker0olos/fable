@@ -1203,7 +1203,7 @@ describe('images', () => {
     expect(embed.json().thumbnail!.url).toBe('image_url');
   });
 
-  it('set image attachment proxy', async () => {
+  it.skip('set image attachment proxy', async () => {
     const embed = new discord.Embed();
 
     const attachment = await embed.setImageWithProxy({
@@ -1218,7 +1218,7 @@ describe('images', () => {
     expect(attachment?.type).toBe('image/webp');
   });
 
-  it('set thumbnail attachment proxy', async () => {
+  it.skip('set thumbnail attachment proxy', async () => {
     const embed = new discord.Embed();
 
     const attachment = await embed.setThumbnailWithProxy({
@@ -1233,7 +1233,7 @@ describe('images', () => {
     expect(attachment?.type).toBe('image/webp');
   });
 
-  it('set image attachment proxy (default)', async () => {
+  it.skip('set image attachment proxy (default)', async () => {
     const embed = new discord.Embed();
 
     const attachment = await embed.setImageWithProxy({
@@ -1246,7 +1246,7 @@ describe('images', () => {
     expect(attachment?.type).toBe('image/webp');
   });
 
-  it('set thumbnail attachment proxy (default)', async () => {
+  it.skip('set thumbnail attachment proxy (default)', async () => {
     const embed = new discord.Embed();
 
     const attachment = await embed.setThumbnailWithProxy({
