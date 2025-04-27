@@ -177,6 +177,7 @@ async function rngPull({
       const rating = pool[index].rating;
       const characterId = `${pool[index].packId}:${pool[index].id}`;
 
+
       if (!guild.options?.dupes && Array.isArray(exists[characterId])) {
         continue;
       }
@@ -185,6 +186,10 @@ async function rngPull({
         userId &&
         guild.options?.dupes &&
         Array.isArray(exists[characterId]) &&
+        exists[characterId].includes(userId);
+
+      const sameUser = userId &&
+        guild.options?.dupes && Array.isArray(exists[characterId]) &&
         exists[characterId].includes(userId);
 
       const results = await packs.characters({ guildId, ids: [characterId] });
