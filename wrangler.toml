@@ -6,3 +6,6 @@ main = "src/interactions.ts"
 [assets]
 directory = "./assets/public"
 binding = "ASSETS"
+
+[observability.logs]
+enabled = true

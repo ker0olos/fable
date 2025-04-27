@@ -68,12 +68,15 @@ await db.inventories().insertMany(
 );
 
 await db.characters().insertMany(
-  characters.map((c) => ({
-    ...c,
-    _id: ObjectId.createFromHexString(c._id),
-    inventoryId: ObjectId.createFromHexString(c.inventoryId),
-    createdAt: new Date(c.createdAt),
-  }))
+  characters.map((c) => {
+    delete c.combat;
+    return {
+      ...c,
+      _id: ObjectId.createFromHexString(c._id),
+      inventoryId: ObjectId.createFromHexString(c.inventoryId),
+      createdAt: new Date(c.createdAt),
+    };
+  })
 );
 
 await db.packs().insertMany(
