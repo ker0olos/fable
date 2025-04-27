@@ -41,7 +41,7 @@ jobs:
       - run: npm run test
 
   deploy:
-    if: github.event_name == 'push' # event push only runs on main
+    # if: github.event_name == 'push' # event push only runs on main
     runs-on: ubuntu-latest
     needs: test
     permissions:
