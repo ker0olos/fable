@@ -7,5 +7,6 @@ import prettier from 'eslint-plugin-prettier/recommended';
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
-  prettier
+  prettier,
+  { ignores: ['worker-configuration.d.ts', '**/node_modules/**', '.wrangler'] }
 );

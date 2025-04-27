@@ -27,6 +27,8 @@ await db.users().insertMany(
 );
 
 await db.guilds().insertMany(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
   guilds.map((g) => ({
     ...g,
     _id: ObjectId.createFromHexString(g._id),
@@ -68,6 +70,8 @@ await db.inventories().insertMany(
 );
 
 await db.characters().insertMany(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
   characters.map((c) => ({
     ...c,
     _id: ObjectId.createFromHexString(c._id),
@@ -77,6 +81,8 @@ await db.characters().insertMany(
 );
 
 await db.packs().insertMany(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
   packs.map((p) => {
     delete p.manifest.characters;
     delete p.manifest.media;
@@ -89,6 +95,8 @@ await db.packs().insertMany(
   })
 );
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-expect-error
 for (const p of packs) {
   p.manifest.characters?.new?.forEach((c) => {
     const _media = c.media?.[0];
@@ -135,8 +143,12 @@ for (const p of packs) {
   if (p.manifest.media?.new?.length)
     await db.packMedia().insertMany(p.manifest.media.new);
 }
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-expect-error
 await db.packCharacters().insertMany(anime_characters);
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-expect-error
 await db.packMedia().insertMany(anime_media);
 
 console.log('Data migrated successfully!');

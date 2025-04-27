@@ -12,7 +12,8 @@
     "paths": {
       "~/*": ["./*"]
     },
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "skipLibCheck": true
   },
   "include": ["."]
 }

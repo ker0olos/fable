@@ -617,9 +617,10 @@ export class Embed {
     } else {
       const attachment = await utils.proxy(image.url, image.size);
 
-      this.#data.image = { url: `attachment://${attachment.filename}` };
+      if (attachment)
+        this.#data.image = { url: `attachment://${attachment.filename}` };
 
-      return attachment;
+      return attachment || undefined;
     }
   }
 
@@ -635,9 +636,10 @@ export class Embed {
     } else {
       const attachment = await utils.proxy(image.url, image.size);
 
-      this.#data.thumbnail = { url: `attachment://${attachment.filename}` };
+      if (attachment)
+        this.#data.thumbnail = { url: `attachment://${attachment.filename}` };
 
-      return attachment;
+      return attachment || undefined;
     }
   }
 

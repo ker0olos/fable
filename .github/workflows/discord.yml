@@ -25,7 +25,7 @@ jobs:
         run: echo "GUILD_ID=${{ secrets.DUMMY_GUILD }}" >> "$GITHUB_ENV"
 
       - name: Update Commands
-        run: tsx vite-node.ts update_commands.ts
+        run: npx tsx vite-node.ts update_commands.ts
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}

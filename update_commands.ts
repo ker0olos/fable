@@ -565,18 +565,6 @@ export const commands = [
         choices: spots.slice(1).reverse(),
         type: Type.INTEGER,
       }),
-      Option({
-        name: 'min',
-        description: '/merge min',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
-      Option({
-        name: 'max',
-        description: '/merge max',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
     ],
   }),
   ...Command({
