@@ -50,26 +50,30 @@ async function createInventoriesIndexes(db: Mongo) {
 }
 
 async function createCharactersIndexes(db: Mongo) {
-  await db
-    .characters() // Uniqueness Index
-    .createIndex({
+  await db.characters().createIndex({
+    characterId: Direction.ascending,
+    guildId: Direction.ascending,
+  });
+
+  await db.characters().createIndex(
+    {
+      userId: Direction.ascending,
       characterId: Direction.ascending,
       guildId: Direction.ascending,
-    });
+    },
+    { unique: true }
+  );
 
-  // @getInventory.getMediaCharacters
   // @getInventory.getUserCharacters
+  // @getInventory.getMediaCharacters
+  // @getInventory.getGuildCharacters
   await db
     .characters() // Compound Index (speeds up queries)
     .createIndexes([
       { key: { userId: Direction.ascending, guildId: Direction.ascending } },
       { key: { mediaId: Direction.ascending, guildId: Direction.ascending } },
+      { key: { guildId: Direction.ascending } },
     ]);
-
-  // @getInventory.getGuildCharacters
-  await db
-    .characters() // Normal Index (speeds up queries)
-    .createIndexes([{ key: { guildId: Direction.ascending } }]);
 }
 
 async function createPacksIndexes(db: Mongo) {
