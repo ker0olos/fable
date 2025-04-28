@@ -316,6 +316,7 @@ async function _searchManyCharacters({
       {
         $search: {
           text: {
+            index: 'default',
             query: search,
             path: ['name.english', 'name.alternative'],
             fuzzy: {
@@ -406,6 +407,7 @@ async function _searchManyMedia({
       {
         $search: {
           text: {
+            index: 'default',
             query: search,
             path: ['title.english', 'title.alternative'],
             fuzzy: {

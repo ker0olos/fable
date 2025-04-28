@@ -50,26 +50,30 @@ async function createInventoriesIndexes(db: Mongo) {
 }
 
 async function createCharactersIndexes(db: Mongo) {
-  await db
-    .characters() // Uniqueness Index
-    .createIndex({
+  await db.characters().createIndex(
+    {
+      userId: Direction.ascending,
       characterId: Direction.ascending,
       guildId: Direction.ascending,
-    });
+    },
+    { unique: true }
+  );
 
-  // @getInventory.getMediaCharacters
+  await db.characters().createIndex({
+    characterId: Direction.ascending,
+    guildId: Direction.ascending,
+  });
+
   // @getInventory.getUserCharacters
+  // @getInventory.getMediaCharacters
+  // @getInventory.getGuildCharacters
   await db
     .characters() // Compound Index (speeds up queries)
     .createIndexes([
       { key: { userId: Direction.ascending, guildId: Direction.ascending } },
       { key: { mediaId: Direction.ascending, guildId: Direction.ascending } },
+      { key: { guildId: Direction.ascending } },
     ]);
-
-  // @getInventory.getGuildCharacters
-  await db
-    .characters() // Normal Index (speeds up queries)
-    .createIndexes([{ key: { guildId: Direction.ascending } }]);
 }
 
 async function createPacksIndexes(db: Mongo) {
@@ -100,8 +104,9 @@ async function createPacksIndexes(db: Mongo) {
     { unique: true }
   );
 
+  //
+
   await db.packCharacters().createIndex({
-    rating: Direction.descending,
     packId: Direction.ascending,
   });
 
@@ -109,8 +114,11 @@ async function createPacksIndexes(db: Mongo) {
     rating: Direction.descending,
   });
 
+  //
+
   await db.packCharacters().createSearchIndex({
     definition: {
+      name: 'default',
       mappings: {
         dynamic: false,
         fields: {
@@ -128,7 +136,35 @@ async function createPacksIndexes(db: Mongo) {
     },
   });
 
+  await db.packCharacters().createSearchIndex({
+    name: 'gacha',
+    definition: {
+      mappings: {
+        dynamic: false,
+        fields: {
+          packId: {
+            type: 'token',
+          },
+          rating: {
+            type: 'number',
+          },
+        },
+      },
+      storedSource: {
+        include: [
+          'id',
+          'packId',
+          'rating',
+          'name.english',
+          'media.mediaId',
+          'images',
+        ],
+      },
+    },
+  });
+
   await db.packMedia().createSearchIndex({
+    name: 'default',
     definition: {
       mappings: {
         dynamic: false,
@@ -148,8 +184,6 @@ async function createPacksIndexes(db: Mongo) {
   });
 }
 
-{
-  await ensureIndexes();
+await ensureIndexes();
 
-  console.log(green('Ensured Database Indexes'));
-}
+console.log(green('Ensured Database Indexes'));
