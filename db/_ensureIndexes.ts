@@ -123,12 +123,8 @@ async function createPacksIndexes(db: Mongo) {
         fields: {
           name: {
             fields: {
-              alternative: {
-                type: 'string',
-              },
-              english: {
-                type: 'string',
-              },
+              alternative: [{ type: 'string' }, { type: 'autocomplete' }],
+              english: [{ type: 'string' }, { type: 'autocomplete' }],
             },
             type: 'document',
           },
@@ -177,16 +173,12 @@ async function createPacksIndexes(db: Mongo) {
         dynamic: false,
         fields: {
           popularity: {
-            type: 'string',
+            type: 'number',
           },
           title: {
             fields: {
-              alternative: {
-                type: 'string',
-              },
-              english: {
-                type: 'string',
-              },
+              alternative: [{ type: 'string' }, { type: 'autocomplete' }],
+              english: [{ type: 'string' }, { type: 'autocomplete' }],
             },
             type: 'document',
           },
