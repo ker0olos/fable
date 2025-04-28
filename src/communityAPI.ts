@@ -94,11 +94,22 @@ export async function publish(req: Request): Promise<Response> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { id: userId }: any = await auth.json();
 
-  const {
+  let {
+    // eslint-disable-next-line prefer-const
     manifest: { characters, media, ...manifest },
   } = body as {
     manifest: MergedManifest;
   };
+
+  characters = characters?.map((character) => ({
+    ...character,
+    packId: manifest.id,
+  }));
+
+  media = media?.map((mediaItem) => ({
+    ...mediaItem,
+    packId: manifest.id,
+  }));
 
   const valid = validate({ characters, media, ...manifest });
 
