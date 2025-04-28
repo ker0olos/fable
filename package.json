@@ -6,7 +6,8 @@
     "dev": "concurrently \"deno run -A --env src/deno.ts\" \"ngrok http 127.0.0.1:8000\" \"tsx start_dev.ts\"",
     "lint": "eslint . --config ./eslint.config.mjs",
     "check": "tsc --noEmit",
-    "test": "vitest tests db"
+    "test": "vitest tests db",
+    "deploy": "deployctl deploy --project fable --entrypoint src/deno.ts --prod --save-config"
   },
   "dependencies": {
     "@cf-wasm/photon": "^0.1.29",

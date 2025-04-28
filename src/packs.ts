@@ -327,17 +327,17 @@ async function _searchManyCharacters({
                   path: 'name.english',
                 },
               },
-              {
-                text: {
-                  query: search,
-                  path: ['name.english', 'name.alternative'],
-                  fuzzy: {
-                    maxEdits: 2,
-                    prefixLength: 0,
-                    maxExpansions: 50,
-                  },
-                },
-              },
+              // {
+              //   text: {
+              //     query: search,
+              //     path: ['name.english', 'name.alternative'],
+              //     fuzzy: {
+              //       maxEdits: 2,
+              //       prefixLength: 0,
+              //       maxExpansions: 50,
+              //     },
+              //   },
+              // },
             ],
           },
           sort: { rating: -1, score: { $meta: 'searchScore' } },
@@ -433,17 +433,17 @@ async function _searchManyMedia({
                   path: 'title.english',
                 },
               },
-              {
-                text: {
-                  query: search,
-                  path: ['title.english', 'title.alternative'],
-                  fuzzy: {
-                    maxEdits: 2,
-                    prefixLength: 0,
-                    maxExpansions: 50,
-                  },
-                },
-              },
+              // {
+              //   text: {
+              //     query: search,
+              //     path: ['title.english', 'title.alternative'],
+              //     fuzzy: {
+              //       maxEdits: 2,
+              //       prefixLength: 0,
+              //       maxExpansions: 50,
+              //     },
+              //   },
+              // },
             ],
           },
           sort: { popularity: -1, score: { $meta: 'searchScore' } },
