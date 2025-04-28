@@ -212,7 +212,6 @@ async function rngPull({
       });
 
       const edge = candidate.media?.edges?.[0];
-      console.log(edge);
 
       if (!edge) {
         continue;
