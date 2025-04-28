@@ -24,7 +24,29 @@ export async function ratingPool({
 
     const characters = await db
       .packCharacters()
-      .find({ packId: { $in: packIds }, rating })
+      .aggregate<DisaggregatedCharacter>([
+        {
+          $search: {
+            index: 'gacha',
+            compound: {
+              must: [
+                {
+                  in: {
+                    path: 'packId',
+                    value: packIds,
+                  },
+                },
+                {
+                  equals: {
+                    path: 'rating',
+                    value: rating,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ])
       .toArray();
 
     if (!characters) {

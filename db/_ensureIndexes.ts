@@ -100,8 +100,9 @@ async function createPacksIndexes(db: Mongo) {
     { unique: true }
   );
 
+  //
+
   await db.packCharacters().createIndex({
-    rating: Direction.descending,
     packId: Direction.ascending,
   });
 
@@ -109,8 +110,11 @@ async function createPacksIndexes(db: Mongo) {
     rating: Direction.descending,
   });
 
+  //
+
   await db.packCharacters().createSearchIndex({
     definition: {
+      name: 'default',
       mappings: {
         dynamic: false,
         fields: {
@@ -128,7 +132,26 @@ async function createPacksIndexes(db: Mongo) {
     },
   });
 
+  await db.packCharacters().createSearchIndex({
+    name: 'gacha',
+    definition: {
+      mappings: {
+        dynamic: false,
+        fields: {
+          packId: {
+            type: 'token',
+          },
+          rating: {
+            type: 'number',
+          },
+        },
+      },
+      storedSource: true,
+    },
+  });
+
   await db.packMedia().createSearchIndex({
+    name: 'default',
     definition: {
       mappings: {
         dynamic: false,
@@ -148,8 +171,6 @@ async function createPacksIndexes(db: Mongo) {
   });
 }
 
-{
-  await ensureIndexes();
+await ensureIndexes();
 
-  console.log(green('Ensured Database Indexes'));
-}
+console.log(green('Ensured Database Indexes'));
