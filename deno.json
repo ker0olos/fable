@@ -1,5 +1,4 @@
 {
-  "name": "fable",
   "imports": {
     "~/": "./"
   },
@@ -9,6 +8,6 @@
       "**/node_modules"
     ],
     "include": [],
-    "entrypoint": "src/interactions.ts"
+    "entrypoint": "src/deno.ts"
   }
 }
