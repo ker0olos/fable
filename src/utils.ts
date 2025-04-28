@@ -5,7 +5,9 @@ import nacl from 'tweetnacl';
 
 import { nanoid } from 'nanoid';
 
-import { captureException } from '@sentry/cloudflare';
+import config from '~/src/config.ts';
+
+import { captureException } from '@sentry/deno';
 
 import { distance as levenshtein } from 'fastest-levenshtein';
 
@@ -499,7 +501,7 @@ async function proxy(
   size?: ImageSize
 ): Promise<Attachment | null> {
   try {
-    let response = await fetch(url ?? '');
+    let response = await fetch(url ?? `${config.origin}/default.webp`);
     let contentType = response.headers.get('Content-Type');
 
     const sizes: Record<string, [number, number]> = {
