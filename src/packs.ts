@@ -317,9 +317,10 @@ async function _searchManyCharacters({
     .aggregate([
       {
         $search: {
+          index: 'default',
+          returnStoredSource,
           text: {
             query: search,
-            returnStoredSource,
             path: ['name.english', 'name.alternative'],
             fuzzy: {
               maxEdits: 2,
