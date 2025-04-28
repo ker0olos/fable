@@ -12,7 +12,7 @@ import Rating from '~/src/rating.ts';
 
 import merge from '~/src/merge.ts';
 
-import db, { ObjectId } from '~/db/index.ts';
+import db from '~/db/index.ts';
 
 import {
   Character,
@@ -377,11 +377,9 @@ describe('synthesis confirmed', () => {
     vi.spyOn(packs, 'all').mockResolvedValue([
       { manifest: { id: 'anilist' } },
     ] as any);
-    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
     vi.spyOn(db, 'ratingPool').mockResolvedValue([
       {
         id: '1',
-        _id: new ObjectId(),
         packId: 'anilist',
         name: {
           english: 'name',
@@ -424,9 +422,9 @@ describe('synthesis confirmed', () => {
     } as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
     vi.spyOn(db, 'findCharacter').mockResolvedValue([]);
-    vi.spyOn(packs, 'aggregate').mockImplementation(
-      async (t) => t.media ?? t.character
-    );
+    vi.spyOn(packs, 'aggregate')
+      .mockResolvedValueOnce(character)
+      .mockImplementation(async (t) => t.media ?? t.character);
     vi.spyOn(utils, 'proxy').mockImplementation(
       async (t) =>
         ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
@@ -582,11 +580,9 @@ describe('synthesis confirmed', () => {
       'another_user_id',
     ]);
     vi.spyOn(db, 'addCharacter').mockResolvedValue({ ok: true } as any);
-    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
     vi.spyOn(db, 'ratingPool').mockResolvedValue([
       {
         id: '1',
-        _id: new ObjectId(),
         packId: 'anilist',
         name: {
           english: 'name',
@@ -632,9 +628,9 @@ describe('synthesis confirmed', () => {
     } as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
     vi.spyOn(db, 'findCharacter').mockResolvedValue([]);
-    vi.spyOn(packs, 'aggregate').mockImplementation(
-      async (t) => t.media ?? t.character
-    );
+    vi.spyOn(packs, 'aggregate')
+      .mockResolvedValueOnce(character)
+      .mockImplementation(async (t) => t.media ?? t.character);
     vi.spyOn(utils, 'proxy').mockImplementation(
       async (t) =>
         ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any

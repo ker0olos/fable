@@ -181,8 +181,6 @@ async function rngPull({
       const rating = pool[index].rating;
       const characterId = `${pool[index].packId}:${pool[index].id}`;
 
-      console.log({ characterId, rating });
-
       if (!guild.options?.dupes && Array.isArray(exists[characterId])) {
         continue;
       }
@@ -214,6 +212,7 @@ async function rngPull({
       });
 
       const edge = candidate.media?.edges?.[0];
+      console.log(edge);
 
       if (!edge) {
         continue;
