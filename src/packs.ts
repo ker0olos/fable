@@ -315,8 +315,8 @@ async function _searchManyCharacters({
     .aggregate([
       {
         $search: {
+          index: 'default',
           text: {
-            index: 'default',
             query: search,
             path: ['name.english', 'name.alternative'],
             fuzzy: {
@@ -406,8 +406,8 @@ async function _searchManyMedia({
     .aggregate([
       {
         $search: {
+          index: 'default',
           text: {
-            index: 'default',
             query: search,
             path: ['title.english', 'title.alternative'],
             fuzzy: {
