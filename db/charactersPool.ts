@@ -28,6 +28,7 @@ export async function ratingPool({
         {
           $search: {
             index: 'gacha',
+            returnStoredSource: true,
             compound: {
               must: [
                 {
@@ -47,6 +48,7 @@ export async function ratingPool({
           },
         },
       ])
+      .limit(15000)
       .toArray();
 
     if (!characters) {

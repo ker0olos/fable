@@ -151,7 +151,6 @@ async function rngPull({
     if (!Array.isArray(exists[characterId])) {
       exists[characterId] = [];
     }
-
     exists[characterId].push(userId);
   });
 
@@ -182,22 +181,35 @@ async function rngPull({
       const rating = pool[index].rating;
       const characterId = `${pool[index].packId}:${pool[index].id}`;
 
+      console.log({ characterId, rating });
+
       if (!guild.options?.dupes && Array.isArray(exists[characterId])) {
         continue;
       }
 
-      const sameUserDupe =
-        userId &&
-        guild.options?.dupes &&
-        Array.isArray(exists[characterId]) &&
-        exists[characterId].includes(userId);
+      if (!rating) {
+        continue;
+      }
 
-      const results = await packs.characters({ guildId, ids: [characterId] });
+      const result = pool[index];
+
+      if (!result.media?.[0]?.mediaId) {
+        continue;
+      }
+
+      const mediaId = packs.parseId(result.media[0].mediaId, result.packId);
+
+      if (
+        !mediaId ||
+        packs.isDisabled(`${mediaId[0]}:${mediaId[1]}`, guildId)
+      ) {
+        continue;
+      }
 
       // aggregate will filter out any disabled media
       const candidate = await packs.aggregate<Character>({
         guildId,
-        character: results[0],
+        character: pool[index],
         end: 1,
       });
 
@@ -207,26 +219,30 @@ async function rngPull({
         continue;
       }
 
-      if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
-        continue;
-      }
-
-      if (!rating) {
-        continue;
-      }
-
       // add character to user's inventory
-      if (userId && !sameUserDupe) {
-        await db.addCharacter({
-          characterId,
-          guildId,
-          userId,
-          mediaId: `${edge.node.packId}:${edge.node.id}`,
-          guaranteed: typeof guarantee === 'number',
-          sacrifices,
-          rating,
-          mongo,
-        });
+      if (userId) {
+        try {
+          await db.addCharacter({
+            characterId,
+            guildId,
+            userId,
+            mediaId: `${edge.node.packId}:${edge.node.id}`,
+            guaranteed: typeof guarantee === 'number',
+            sacrifices,
+            rating,
+            mongo,
+          });
+        } catch (err) {
+          if (
+            // same user dupe (skip)
+            err.message?.includes('userId_1_characterId_1_guildId_1 dup key')
+          ) {
+            console.warn(`skipping dupe for ${userId} ${characterId}`);
+            continue;
+          }
+
+          throw err;
+        }
       }
 
       media = edge.node;
