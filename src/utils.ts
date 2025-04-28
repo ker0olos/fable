@@ -528,7 +528,8 @@ async function proxy(
         response = await fetch(imageUrl.toString());
         contentType = response.headers.get('Content-Type');
       } else {
-        throw new Error('html page has no og:image');
+        console.warn('html page has no og:image');
+        return proxy(undefined, size);
       }
     }
 
@@ -537,7 +538,8 @@ async function proxy(
     } else if (
       !['image/jpeg', 'image/png', 'image/webp'].includes(contentType)
     ) {
-      throw new Error(`image type ${contentType} is not supported`);
+      console.warn(`image type ${contentType} is not supported`);
+      return proxy(undefined, size);
     }
 
     console.log(`${response.status} ${contentType} ${url}`);
