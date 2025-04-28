@@ -110,7 +110,7 @@ export const mediaSchema = z
 
     title: aliasSchema,
 
-    popularity: z.number().int().min(0).max(2147483647),
+    popularity: z.number().int().min(0).max(2147483647).optional(),
 
     description: z
       .string()
