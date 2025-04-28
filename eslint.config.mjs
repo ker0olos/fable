@@ -8,5 +8,5 @@ export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   prettier,
-  { ignores: ['worker-configuration.d.ts', '**/node_modules/**', '.wrangler'] }
+  { ignores: ['**/node_modules/**'] }
 );

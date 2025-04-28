@@ -18,7 +18,15 @@ Deno.serve(async (request: Request) => {
   const url = new URL(request.url);
 
   if (url.pathname === '/') {
-    return handler(request);
+    // WORKAROUND required in cf workers but not in deno deploy
+    // we don't want to remove it from the code
+    const ctx = {
+      waitUntil: (promise: Promise<unknown>) => {
+        return promise;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
+    return handler(request, ctx);
   }
 
   if (url.pathname === '/api/user') {

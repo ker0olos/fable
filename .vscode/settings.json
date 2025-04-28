@@ -2,7 +2,7 @@
   "files.exclude": {
     ".git": true,
     "node_modules": true,
-    ".wrangler": true,
+    ".vite": true,
     "__snapshots__": true
   },
   "discord.enabled": true,

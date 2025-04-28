@@ -22,19 +22,9 @@ import config from '~/src/config.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-export const handler = async (r: Request, _ctx?: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const handler = async (r: Request, ctx: any) => {
   const { origin } = new URL(r.url);
-
-  // WORKAROUND required in cf workers but not in deno deploy
-  // we don't want to remove it from the code
-  const ctx = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    waitUntil: (promise: Promise<any>) => {
-      return promise;
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
 
   const { error } = await utils.validateRequest(r, {
     POST: {
