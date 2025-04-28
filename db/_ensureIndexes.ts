@@ -118,21 +118,28 @@ async function createPacksIndexes(db: Mongo) {
 
   await db.packCharacters().createSearchIndex({
     definition: {
-      name: 'default',
       mappings: {
         dynamic: false,
         fields: {
           name: {
             fields: {
-              english: { type: 'string' },
-              alternative: { type: 'string' },
+              alternative: {
+                type: 'string',
+              },
+              english: {
+                type: 'string',
+              },
             },
             type: 'document',
           },
-          rating: { type: 'number' },
+          rating: {
+            type: 'number',
+          },
         },
       },
-      storedSource: true,
+      storedSource: {
+        include: ['name.english', 'id', 'packId'],
+      },
     },
   });
 
@@ -169,17 +176,25 @@ async function createPacksIndexes(db: Mongo) {
       mappings: {
         dynamic: false,
         fields: {
+          popularity: {
+            type: 'string',
+          },
           title: {
             fields: {
-              english: { type: 'string' },
-              alternative: { type: 'string' },
+              alternative: {
+                type: 'string',
+              },
+              english: {
+                type: 'string',
+              },
             },
             type: 'document',
           },
-          popularity: { type: 'string' },
         },
       },
-      storedSource: true,
+      storedSource: {
+        include: ['packId', 'id', 'title.english'],
+      },
     },
   });
 }
