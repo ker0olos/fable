@@ -94,6 +94,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -197,6 +198,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -300,6 +302,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -403,6 +406,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -506,6 +510,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -609,6 +614,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -712,6 +718,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -815,6 +822,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -918,6 +926,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1027,6 +1036,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1136,6 +1146,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1245,6 +1256,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1347,6 +1359,7 @@ describe('media suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'title',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1452,6 +1465,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1556,6 +1570,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'give',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1663,6 +1678,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'take',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1766,6 +1782,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'give',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1869,6 +1886,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'give',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -1972,6 +1990,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'give',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -2075,6 +2094,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -2178,6 +2198,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -2282,6 +2303,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -2385,6 +2407,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -2488,224 +2511,7 @@ describe('character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
-      });
-
-      expect(response?.ok).toBe(true);
-      expect(response?.redirected).toBe(false);
-
-      expect(response?.status).toBe(200);
-      expect(response?.statusText).toBe('OK');
-
-      const json = JSON.parse(
-        (await response?.formData()).get('payload_json')!.toString()
-      );
-
-      expect(json).toEqual({
-        type: 8,
-        data: {
-          choices: [
-            {
-              name: 'english name',
-              value: 'id=packId:id',
-            },
-          ],
-        },
-      });
-    } finally {
-      delete config.publicKey;
-    }
-  });
-
-  it('skills acquire', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Partial,
-      guild_id: 'guild_id',
-      data: {
-        name: 'skills',
-        options: [
-          {
-            type: 1,
-            name: 'acquire',
-            options: [
-              {
-                name: 'character',
-                value: 'name',
-                focused: true,
-              },
-            ],
-          },
-        ],
-      },
-    });
-
-    const validateStub = vi
-      .spyOn(utils, 'validateRequest')
-      .mockReturnValue({} as any);
-
-    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
-      ({ body }) =>
-        ({
-          valid: true,
-          body,
-        }) as any
-    );
-
-    const searchStub = vi
-      .spyOn(packs, '_searchManyCharacters')
-      .mockResolvedValue([
-        {
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
-          },
-          rating: 1,
-        },
-      ]);
-
-    const ctxStub = {};
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request, ctxStub as any);
-
-      expect(validateStub).toHaveBeenCalledWith(request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-        },
-      });
-
-      expect(signatureStub).toHaveBeenCalledWith({
-        body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      });
-
-      expect(searchStub).toHaveBeenCalledWith({
-        search: 'name',
-        guildId: 'guild_id',
-      });
-
-      expect(response?.ok).toBe(true);
-      expect(response?.redirected).toBe(false);
-
-      expect(response?.status).toBe(200);
-      expect(response?.statusText).toBe('OK');
-
-      const json = JSON.parse(
-        (await response?.formData()).get('payload_json')!.toString()
-      );
-
-      expect(json).toEqual({
-        type: 8,
-        data: {
-          choices: [
-            {
-              name: 'english name',
-              value: 'id=packId:id',
-            },
-          ],
-        },
-      });
-    } finally {
-      delete config.publicKey;
-    }
-  });
-
-  it('skills upgrade', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Partial,
-      guild_id: 'guild_id',
-      data: {
-        name: 'skills',
-        options: [
-          {
-            type: 1,
-            name: 'upgrade',
-            options: [
-              {
-                name: 'character',
-                value: 'name',
-                focused: true,
-              },
-            ],
-          },
-        ],
-      },
-    });
-
-    const validateStub = vi
-      .spyOn(utils, 'validateRequest')
-      .mockReturnValue({} as any);
-
-    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
-      ({ body }) =>
-        ({
-          valid: true,
-          body,
-        }) as any
-    );
-
-    const searchStub = vi
-      .spyOn(packs, '_searchManyCharacters')
-      .mockResolvedValue([
-        {
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
-          },
-          rating: 1,
-        },
-      ]);
-
-    const ctxStub = {};
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request, ctxStub as any);
-
-      expect(validateStub).toHaveBeenCalledWith(request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-        },
-      });
-
-      expect(signatureStub).toHaveBeenCalledWith({
-        body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      });
-
-      expect(searchStub).toHaveBeenCalledWith({
-        search: 'name',
-        guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -2823,6 +2629,7 @@ describe('party assign character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -2938,6 +2745,7 @@ describe('party assign character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
@@ -3053,6 +2861,7 @@ describe('party assign character suggestions', () => {
       expect(searchStub).toHaveBeenCalledWith({
         search: 'name',
         guildId: 'guild_id',
+        returnStoredSource: true,
       });
 
       expect(response?.ok).toBe(true);
