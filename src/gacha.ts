@@ -128,12 +128,17 @@ async function rngPull({
 }): Promise<Pull> {
   const mongo = await db.newMongo().connect();
 
+  // const pool =
+  //   typeof guarantee === 'number'
+  //     ? await gacha.guaranteedPool({ guildId, guarantee })
+  //     : utils.rng(variables.liked).value && userId
+  //       ? await gacha.likedPool({ guildId, userId })
+  //       : await gacha.rngPool({ guildId });
+
   const pool =
     typeof guarantee === 'number'
       ? await gacha.guaranteedPool({ guildId, guarantee })
-      : utils.rng(variables.liked).value && userId
-        ? await gacha.likedPool({ guildId, userId })
-        : await gacha.rngPool({ guildId });
+      : await gacha.rngPool({ guildId });
 
   const [guild, existing] = await Promise.all([
     db.getGuild(guildId, mongo, true),
