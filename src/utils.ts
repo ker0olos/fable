@@ -546,7 +546,7 @@ async function proxy(
       .arrayBuffer()
       .then((buffer) => new Uint8Array(buffer));
 
-    const photon = await import('@cf-wasm/photon');
+    const photon = await import('@cf-wasm/photon/node');
 
     const image = photon.PhotonImage.new_from_byteslice(new Uint8Array(data));
 

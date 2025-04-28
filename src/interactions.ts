@@ -1,5 +1,3 @@
-import { withSentry } from '@sentry/cloudflare';
-
 import * as discord from '~/src/discord.ts';
 
 import search, { idPrefix } from '~/src/search.ts';
@@ -20,14 +18,23 @@ import serverOptions from '~/src/serverOptions.ts';
 
 import merge from '~/src/merge.ts';
 
-import * as communityAPI from '~/src/communityAPI.ts';
-
-import config, { initConfig } from '~/src/config.ts';
+import config from '~/src/config.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
-export const handler = async (r: Request, ctx: ExecutionContext) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+export const handler = async (r: Request, _ctx?: any) => {
   const { origin } = new URL(r.url);
+
+  // WORKAROUND required in cf workers but not in deno deploy
+  // we don't want to remove it from the code
+  const ctx = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    waitUntil: (promise: Promise<any>) => {
+      return promise;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any;
 
   const { error } = await utils.validateRequest(r, {
     POST: {
@@ -1338,61 +1345,53 @@ export const handler = async (r: Request, ctx: ExecutionContext) => {
     .send();
 };
 
-export default withSentry(
-  (env) => ({
-    dsn: env.SENTRY_DSN,
-    tracesSampleRate: 0.2,
-  }),
-  {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-expect-error
-    async fetch(request, env, ctx): Promise<Response> {
-      await initConfig();
+// export default {
+//   async fetch(request, env, ctx): Promise<Response> {
+//     await initConfig();
 
-      const url = new URL(request.url);
+//     const url = new URL(request.url);
 
-      if (url.pathname === '/') {
-        return handler(request, ctx);
-      }
+//     if (url.pathname === '/') {
+//       return handler(request, ctx);
+//     }
 
-      if (url.pathname === '/api/user') {
-        return communityAPI.user(request);
-      }
+//     if (url.pathname === '/api/user') {
+//       return communityAPI.user(request);
+//     }
 
-      if (url.pathname === '/api/publish') {
-        return communityAPI.publish(request);
-      }
+//     if (url.pathname === '/api/publish') {
+//       return communityAPI.publish(request);
+//     }
 
-      if (url.pathname === '/api/popular') {
-        return communityAPI.popular(request);
-      }
+//     if (url.pathname === '/api/popular') {
+//       return communityAPI.popular(request);
+//     }
 
-      if (url.pathname === '/api/updated') {
-        return communityAPI.lastUpdated(request);
-      }
+//     if (url.pathname === '/api/updated') {
+//       return communityAPI.lastUpdated(request);
+//     }
 
-      if (url.pathname.startsWith('/api/pack/')) {
-        const packId = url.pathname.substring('/api/pack/'.length);
-        return communityAPI.pack(request, packId);
-      }
+//     if (url.pathname.startsWith('/api/pack/')) {
+//       const packId = url.pathname.substring('/api/pack/'.length);
+//       return communityAPI.pack(request, packId);
+//     }
 
-      if (url.pathname === '/api/search') {
-        return communityAPI.search(request);
-      }
+//     if (url.pathname === '/api/search') {
+//       return communityAPI.search(request);
+//     }
 
-      if (url.pathname === '/invite') {
-        return Response.redirect(
-          `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`
-        );
-      }
+//     if (url.pathname === '/invite') {
+//       return Response.redirect(
+//         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`
+//       );
+//     }
 
-      if (url.pathname === '/robots.txt') {
-        return new Response('User-agent: *\nDisallow: /', {
-          headers: { 'content-type': 'text/plain' },
-        });
-      }
+//     if (url.pathname === '/robots.txt') {
+//       return new Response('User-agent: *\nDisallow: /', {
+//         headers: { 'content-type': 'text/plain' },
+//       });
+//     }
 
-      return new Response('Not Found', { status: 404 });
-    },
-  } satisfies ExportedHandler<Env>
-);
+//     return new Response('Not Found', { status: 404 });
+//   },
+// } satisfies ExportedHandler<Env>;

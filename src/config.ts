@@ -35,6 +35,19 @@ const config: {
   disableImagesProxy: undefined,
 };
 
+// WORKAROUND process.env not being defined in Deno Deploy
+if (!globalThis.process) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
+  globalThis.process = {
+    env: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
+      ...Deno.env.toObject(),
+    },
+  };
+}
+
 export async function initConfig(): Promise<void> {
   config.sentry = process.env.SENTRY_DSN;
 

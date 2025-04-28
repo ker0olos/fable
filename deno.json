@@ -1,0 +1,14 @@
+{
+  "name": "fable",
+  "imports": {
+    "~/": "./"
+  },
+  "deploy": {
+    "project": "ba7fd6e4-6b85-4065-8229-1c172b182329",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "src/interactions.ts"
+  }
+}

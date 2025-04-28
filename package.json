@@ -3,14 +3,14 @@
   "name": "fable",
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently \"cp .env .dev.vars && npx wrangler dev src/interactions.ts\" \"ngrok http 127.0.0.1:8787\" \"tsx start_dev.ts\"",
+    "dev": "concurrently \"deno run -A --env src/interactions.ts\" \"ngrok http 127.0.0.1:8000\" \"tsx start_dev.ts\"",
     "lint": "eslint . --config ./eslint.config.mjs",
     "check": "tsc --noEmit",
     "test": "vitest tests db"
   },
   "dependencies": {
     "@cf-wasm/photon": "^0.1.29",
-    "@sentry/cloudflare": "^9.12.0",
+    "@sentry/deno": "^9.14.0",
     "fastest-levenshtein": "^1.0.16",
     "mongodb": "^6.15.0",
     "nanoid": "^5.1.5",
