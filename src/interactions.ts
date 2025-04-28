@@ -149,6 +149,7 @@ export const handler = async (r: Request, ctx: ExecutionContext) => {
 
           if (search) {
             const results = await packs._searchManyMedia({
+              returnStoredSource: true,
               search,
               guildId,
             });
@@ -182,10 +183,7 @@ export const handler = async (r: Request, ctx: ExecutionContext) => {
             'like',
             'unlike',
             'stats',
-          ].includes(name) ||
-          (name === 'skills' &&
-            ['acquire', 'upgrade'].includes(subcommand!) &&
-            focused === 'character')
+          ].includes(name)
         ) {
           const search = options[focused!] as string;
 
@@ -193,6 +191,7 @@ export const handler = async (r: Request, ctx: ExecutionContext) => {
 
           if (search) {
             const results = await packs._searchManyCharacters({
+              returnStoredSource: true,
               search,
               guildId,
             });

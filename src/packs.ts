@@ -300,9 +300,11 @@ async function findById<T>({
 async function _searchManyCharacters({
   search,
   guildId,
+  returnStoredSource = false,
 }: {
   search: string;
   guildId: string;
+  returnStoredSource?: boolean;
 }): Promise<DisaggregatedCharacter[]> {
   const db = new Mongo();
 
@@ -315,9 +317,9 @@ async function _searchManyCharacters({
     .aggregate([
       {
         $search: {
-          index: 'default',
           text: {
             query: search,
+            returnStoredSource,
             path: ['name.english', 'name.alternative'],
             fuzzy: {
               maxEdits: 2,
@@ -391,9 +393,11 @@ async function searchOneCharacter({
 async function _searchManyMedia({
   search,
   guildId,
+  returnStoredSource = false,
 }: {
   search: string;
   guildId: string;
+  returnStoredSource?: boolean;
 }): Promise<DisaggregatedMedia[]> {
   const db = new Mongo();
 
@@ -407,6 +411,7 @@ async function _searchManyMedia({
       {
         $search: {
           index: 'default',
+          returnStoredSource,
           text: {
             query: search,
             path: ['title.english', 'title.alternative'],
