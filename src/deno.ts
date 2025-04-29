@@ -70,11 +70,7 @@ Deno.serve(async (request: Request) => {
     try {
       const filename = url.pathname.substring('/'.length);
       const file = await fs.promises.readFile(`./assets/public/${filename}`);
-      const contentType = filename.endsWith('.gif')
-        ? 'image/gif'
-        : filename.endsWith('.webp')
-          ? 'image/webp'
-          : 'text/plain';
+      const contentType = 'image/gif';
       return new Response(file, {
         headers: {
           'content-type': contentType,

@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import mime from 'mime';
 
 import nacl from 'tweetnacl';
 
 import { nanoid } from 'nanoid';
-
-import config from '~/src/config.ts';
 
 import { captureException } from '@sentry/deno';
 
@@ -501,7 +498,11 @@ async function proxy(
   size?: ImageSize
 ): Promise<Attachment | null> {
   try {
-    let response = await fetch(url ?? `${config.origin}/default.webp`);
+    let response = await fetch(
+      url ??
+        'https://raw.githubusercontent.com/ker0olos/fable/refs/heads/main/assets/default.webp'
+    );
+
     let contentType = response.headers.get('Content-Type');
 
     const sizes: Record<string, [number, number]> = {
