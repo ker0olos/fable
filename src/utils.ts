@@ -552,37 +552,49 @@ async function proxy(
 
     const image = photon.PhotonImage.new_from_byteslice(new Uint8Array(data));
 
-    const resizeToFit = async ([width, height]: [number, number]) => {
-      const wraito = width / image.get_width();
-      const hratio = height / image.get_height();
+    const resizeToFit = async ([desiredWidth, desiredHeight]: [
+      number,
+      number,
+    ]) => {
+      const [currentWidth, currentHeight] = [
+        image.get_width(),
+        image.get_height(),
+      ];
+
+      const wraito = desiredWidth / currentWidth;
+      const hratio = desiredHeight / currentHeight;
 
       const ratio = Math.max(wraito, hratio);
 
-      const newWidth = Math.max(Math.round(image.get_width() * ratio), 1);
-      const newHeight = Math.max(Math.round(image.get_height() * ratio), 1);
+      let newWidth = Math.max(Math.round(currentWidth * ratio), 1);
+      let newHeight = Math.max(Math.round(currentHeight * ratio), 1);
 
-      const resized = photon.resize(image, newWidth, newHeight, 4);
-
-      const _ratio = image.get_width() * height;
-      const _nratio = width * image.get_height();
-
-      if (_nratio > _ratio) {
-        return photon.crop(
-          resized,
-          0,
-          (resized.get_height() - height) / 2,
-          width,
-          height
+      if (newWidth < desiredWidth || newHeight < desiredHeight) {
+        const adjusted = Math.max(
+          desiredWidth / currentWidth,
+          desiredHeight / currentHeight
         );
-      } else {
-        return photon.crop(
-          resized,
-          (resized.get_width() - width) / 2,
-          0,
-          width,
-          height
-        );
+
+        newWidth = currentWidth * adjusted;
+        newHeight = currentHeight * adjusted;
       }
+
+      const resized = photon.resize(image, newWidth, newHeight, 1);
+
+      const cx = Math.floor(resized.get_width() - desiredWidth) / 2;
+      const cy = Math.floor(resized.get_height() - desiredHeight) / 2;
+
+      const final = photon.crop(
+        resized,
+        cx,
+        cy,
+        desiredWidth + cx,
+        desiredHeight + cy
+      );
+
+      resized.free();
+
+      return final;
     };
 
     const final = await resizeToFit(sizes[size ?? ImageSize.Large]);
