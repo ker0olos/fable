@@ -103,6 +103,8 @@
   "give-sent-to": "Gift sent to {0}!",
   "give-received": "{0} sent you a gift",
 
+  "already-owned": "Already owned",
+
   "attempt": "Attempt",
   "stealing-from-yourself": "You can't steal from yourself!",
   "stealing-party-member": "As part of {0}'s party, **{1}** cannot be stolen while {0} is still active",

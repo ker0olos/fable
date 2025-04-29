@@ -34,6 +34,7 @@ export type Pull = {
   character: Character;
   media: Media;
   rating: Rating;
+  dupe: boolean;
 };
 
 const lowest = 1000;
@@ -154,6 +155,7 @@ async function rngPull({
     exists[characterId].push(userId);
   });
 
+  let dupe = false;
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
@@ -244,12 +246,14 @@ async function rngPull({
             // same user dupe (skip)
             err.message?.includes('userId_1_characterId_1_guildId_1 dup key')
           ) {
-            pool.splice(index, 1);
-            console.warn(`skipping dupe for ${userId} ${characterId}`);
-            continue;
+            dupe = true;
+            console.log('same user dupe');
+            // pool.splice(index, 1);
+            // console.warn(`skipping dupe for ${userId} ${characterId}`);
+            // continue;
+          } else {
+            throw err;
           }
-
-          throw err;
         }
       }
 
@@ -269,7 +273,12 @@ async function rngPull({
 
   media = await packs.aggregate<Media>({ media, guildId });
 
-  return { rating: new Rating({ stars: character.rating }), character, media };
+  return {
+    rating: new Rating({ stars: character.rating }),
+    character,
+    media,
+    dupe,
+  };
 }
 
 async function pullAnimation({
@@ -290,6 +299,12 @@ async function pullAnimation({
   components?: boolean;
 }): Promise<void> {
   components ??= true;
+
+  const locale = userId
+    ? user.cachedUsers[userId]?.locale
+    : guildId
+      ? user.cachedGuilds[guildId]?.locale
+      : 'en-US';
 
   const characterId = `${pull.character.packId}:${pull.character.id}`;
 
@@ -364,6 +379,12 @@ async function pullAnimation({
       new discord.Component()
         .setLabel('/character')
         .setId(`character`, characterId, '1'),
+      pull.dupe
+        ? new discord.Component()
+            .setLabel(i18n.get('already-owned', locale))
+            .setId('dupe', characterId)
+            .setDisabled(true)
+        : null,
       new discord.Component().setLabel('/like').setId(`like`, characterId),
     ].filter(utils.nonNullable)
   );
