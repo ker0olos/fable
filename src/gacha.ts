@@ -135,7 +135,7 @@ async function rngPull({
   //       ? await gacha.likedPool({ guildId, userId })
   //       : await gacha.rngPool({ guildId });
 
-  const pool =
+  let pool =
     typeof guarantee === 'number'
       ? await gacha.guaranteedPool({ guildId, guarantee })
       : await gacha.rngPool({ guildId });
@@ -162,6 +162,10 @@ async function rngPull({
   const { signal } = controller;
 
   const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
+
+  if (!pool.length && !guarantee) {
+    pool = await db.fallbackPool({ guildId });
+  }
 
   console.log('final pool length', pool.length);
 

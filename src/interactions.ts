@@ -37,7 +37,6 @@ export const handler = async (r: Request, ctx: any) => {
   }
 
   const signature = r.headers.get('X-Signature-Ed25519')!;
-
   const timestamp = r.headers.get('X-Signature-Timestamp')!;
 
   const { valid, body } = utils.verifySignature({

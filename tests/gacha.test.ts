@@ -2062,6 +2062,7 @@ describe('/gacha', () => {
       .spyOn(utils, 'fetchWithRetry')
       .mockImplementation(() => undefined as any);
     vi.spyOn(gacha, 'rngPool').mockResolvedValue([]);
+    vi.spyOn(db, 'fallbackPool').mockResolvedValue([]);
     vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
     vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
     vi.spyOn(db, 'findCharacter').mockResolvedValue([]);

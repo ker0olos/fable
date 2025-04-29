@@ -65,6 +65,53 @@ export async function ratingPool({
   return [];
 }
 
+export async function fallbackPool({ guildId }: { guildId: string }) {
+  const db = new Mongo();
+
+  const list = await packs.all({ guildId });
+
+  const packIds = list.map(({ manifest }) => manifest.id);
+
+  try {
+    await db.connect();
+
+    const characters = await db
+      .packCharacters()
+      .aggregate<DisaggregatedCharacter>([
+        {
+          $search: {
+            index: 'gacha',
+            returnStoredSource: true,
+            compound: {
+              must: [
+                {
+                  in: {
+                    path: 'packId',
+                    value: packIds,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ])
+      .limit(15000)
+      .toArray();
+
+    if (!characters) {
+      throw new Error();
+    }
+
+    return characters;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await db.close();
+  }
+
+  return [];
+}
+
 export async function likesPool({
   guildId,
   // mediaIds,

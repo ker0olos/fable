@@ -67,7 +67,7 @@ import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
 import { invertDupes } from '~/db/manageGuild.ts';
 
-import { ratingPool, likesPool } from '~/db/charactersPool.ts';
+import { ratingPool, fallbackPool, likesPool } from '~/db/charactersPool.ts';
 
 import type * as Schema from '~/db/schema.ts';
 
@@ -182,6 +182,7 @@ const db = {
   removePack,
   //
   ratingPool,
+  fallbackPool,
   likesPool,
   //
   invertDupes,

@@ -12,7 +12,7 @@ import type { Manifest } from '~/src/types.ts';
 let mongod: MongoMemoryServer;
 let client: Mongo;
 
-describe.skip('db.charactersPool()', () => {
+describe.skip('db.ratingPool()', () => {
   beforeEach(async () => {
     mongod = await MongoMemoryServer.create();
     client = new Mongo(mongod.getUri());
