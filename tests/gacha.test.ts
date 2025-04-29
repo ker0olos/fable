@@ -642,6 +642,7 @@ describe('/gacha', () => {
       media,
       character,
       rating: new Rating({ stars: 1 }),
+      dupe: false,
     };
 
     vi.useFakeTimers();
@@ -805,6 +806,220 @@ describe('/gacha', () => {
     }
   });
 
+  test('dupe', async () => {
+    const media: Media = {
+      id: '1',
+      packId: 'pack-id',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      popularity: 1,
+      title: {
+        english: 'title',
+      },
+      images: [
+        {
+          url: 'media_image_url',
+        },
+      ],
+    };
+
+    const character: Character = {
+      id: '2',
+      packId: 'pack-id-2',
+      rating: 1,
+      name: {
+        english: 'name',
+      },
+      images: [
+        {
+          url: 'character_image_url',
+        },
+      ],
+      media: {
+        edges: [
+          {
+            role: CharacterRole.Main,
+            node: media,
+          },
+        ],
+      },
+    };
+
+    const pull: Pull = {
+      media,
+      character,
+      rating: new Rating({ stars: 1 }),
+      dupe: true,
+    };
+
+    vi.useFakeTimers();
+
+    const fetchStub = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockImplementation(() => undefined as any);
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+    vi.spyOn(db, 'findGuildCharacters').mockResolvedValue([]);
+    vi.spyOn(db, 'findCharacter').mockResolvedValue([]);
+    vi.spyOn(db, 'getActiveUsersIfLiked').mockReturnValue([] as any);
+    vi.spyOn(gacha, 'rngPull').mockResolvedValue(pull);
+    vi.spyOn(db, 'newMongo').mockReturnValue({
+      connect: () => ({
+        close: () => undefined,
+      }),
+    } as any);
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+    vi.spyOn(utils, 'sleep').mockImplementation(() => Promise.resolve());
+
+    config.gacha = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      await gacha.start({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      await vi.runAllTimersAsync();
+
+      expect(fetchStub).toHaveBeenCalledTimes(3);
+
+      expect(fetchStub).toHaveBeenNthCalledWith(
+        1,
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: expect.any(FormData),
+        })
+      );
+
+      expect(
+        JSON.parse(
+          (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+            'payload_json'
+          ) as any
+        )
+      ).toEqual({
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+            image: {
+              url: 'attachment://media-image-url.webp',
+            },
+          },
+        ],
+        components: [],
+        attachments: [{ filename: 'media-image-url.webp', id: '0' }],
+      });
+
+      expect(fetchStub).toHaveBeenNthCalledWith(
+        2,
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: expect.any(FormData),
+        })
+      );
+
+      expect(
+        JSON.parse(
+          (fetchStub.mock.calls[1][1]?.body as FormData)?.get(
+            'payload_json'
+          ) as any
+        )
+      ).toEqual({
+        embeds: [
+          {
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/stars/1.gif',
+            },
+          },
+        ],
+        components: [],
+        attachments: [],
+      });
+
+      expect(fetchStub).toHaveBeenNthCalledWith(
+        3,
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: expect.any(FormData),
+        })
+      );
+
+      expect(
+        JSON.parse(
+          (fetchStub.mock.calls[2][1]?.body as FormData)?.get(
+            'payload_json'
+          ) as any
+        )
+      ).toEqual({
+        attachments: [{ filename: 'character-image-url.webp', id: '0' }],
+        embeds: [
+          {
+            type: 'rich',
+            description: new Rating({ stars: 1 }).emotes,
+            fields: [
+              {
+                name: 'title',
+                value: '**name**',
+              },
+            ],
+            image: {
+              url: 'attachment://character-image-url.webp',
+            },
+          },
+        ],
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'character=pack-id-2:2=1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'dupe=pack-id-2:2',
+                disabled: true,
+                label: 'Already owned',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'like=pack-id-2:2',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          },
+        ],
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.gacha;
+    }
+  });
+
   test('mention', async () => {
     const media: Media = {
       id: '1',
@@ -847,6 +1062,7 @@ describe('/gacha', () => {
       media,
       character,
       rating: new Rating({ stars: 1 }),
+      dupe: false,
     };
 
     vi.useFakeTimers();
@@ -1059,6 +1275,7 @@ describe('/gacha', () => {
       media,
       character,
       rating: new Rating({ stars: 1 }),
+      dupe: false,
     };
 
     vi.useFakeTimers();
@@ -1208,6 +1425,7 @@ describe('/gacha', () => {
       media,
       character,
       rating: new Rating({ stars: 1 }),
+      dupe: false,
     };
 
     vi.useFakeTimers();
@@ -1452,6 +1670,7 @@ describe('/gacha', () => {
       media,
       character,
       rating: new Rating({ stars: 1 }),
+      dupe: false,
     };
 
     vi.useFakeTimers();
@@ -1711,6 +1930,7 @@ describe('/gacha', () => {
       media,
       character,
       rating: new Rating({ stars: 1 }),
+      dupe: false,
     };
 
     vi.useFakeTimers();
