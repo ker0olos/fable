@@ -9592,7 +9592,7 @@ describe('ping interaction', () => {
   });
 });
 
-describe.skip('internal error', () => {
+describe('internal error', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
