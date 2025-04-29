@@ -186,16 +186,19 @@ async function rngPull({
       const characterId = `${pool[index].packId}:${pool[index].id}`;
 
       if (!guild.options?.dupes && Array.isArray(exists[characterId])) {
+        pool.splice(index, 1);
         continue;
       }
 
       if (!rating) {
+        pool.splice(index, 1);
         continue;
       }
 
       const result = pool[index];
 
       if (!result.media?.[0]?.mediaId) {
+        pool.splice(index, 1);
         continue;
       }
 
@@ -205,6 +208,7 @@ async function rngPull({
         !mediaId ||
         packs.isDisabled(`${mediaId[0]}:${mediaId[1]}`, guildId)
       ) {
+        pool.splice(index, 1);
         continue;
       }
 
@@ -218,6 +222,7 @@ async function rngPull({
       const edge = candidate.media?.edges?.[0];
 
       if (!edge) {
+        pool.splice(index, 1);
         continue;
       }
 
@@ -239,6 +244,7 @@ async function rngPull({
             // same user dupe (skip)
             err.message?.includes('userId_1_characterId_1_guildId_1 dup key')
           ) {
+            pool.splice(index, 1);
             console.warn(`skipping dupe for ${userId} ${characterId}`);
             continue;
           }

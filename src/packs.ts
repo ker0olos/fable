@@ -12,6 +12,7 @@ import db, { Mongo } from '~/db/index.ts';
 import {
   Alias,
   Character,
+  CharacterMediaEdge,
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
@@ -733,14 +734,17 @@ async function aggregate<T>({
     const t: Character = {
       ...character,
       media: {
-        edges:
-          character.media
-            ?.slice(start, end)
-            ?.map(({ role, mediaId }) => ({
+        edges: (character.media
+          ?.slice(start, end)
+          ?.map(({ role, mediaId }) => {
+            const id = parseId(mediaId, character?.packId);
+            if (!id) return {};
+            return {
               role,
-              node: mediaRefs[mediaId],
-            }))
-            .filter(({ node }) => Boolean(node)) ?? [],
+              node: mediaRefs[`${id[0]}:${id[1]}`],
+            };
+          })
+          .filter(({ node }) => Boolean(node)) ?? []) as CharacterMediaEdge[],
       },
     };
 
