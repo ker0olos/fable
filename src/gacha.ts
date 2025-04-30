@@ -311,33 +311,33 @@ async function pullAnimation({
     ...(pull.media.relations?.edges?.map(({ node }) => node) ?? []),
   ].map(({ packId, id }) => `${packId}:${id}`);
 
-  const mediaTitles = packs.aliasToArray(pull.media.title);
-
-  const mediaImage = pull.media.images?.[0];
-
-  const embed = new discord.Embed().setTitle(utils.wrap(mediaTitles[0]));
-
-  const mediaImageAttachment = await embed.setImageWithProxy({
-    size: ImageSize.Medium,
-    url: mediaImage?.url,
-  });
-
-  let message = new discord.Message()
-    .addEmbed(embed)
-    .addAttachment(mediaImageAttachment);
-
-  if (mention && userId) {
-    message.setContent(`<@${userId}>`).setPing();
-  }
-
   // animate pull by shown media
   // then showing the star rating
   if (!quiet) {
+    const mediaTitles = packs.aliasToArray(pull.media.title);
+
+    const mediaImage = pull.media.images?.[0];
+
+    let embed = new discord.Embed().setTitle(utils.wrap(mediaTitles[0]));
+
+    const mediaImageAttachment = await embed.setImageWithProxy({
+      size: ImageSize.Medium,
+      url: mediaImage?.url,
+    });
+
+    let message = new discord.Message()
+      .addEmbed(embed)
+      .addAttachment(mediaImageAttachment);
+
+    if (mention && userId) {
+      message.setContent(`<@${userId}>`).setPing();
+    }
+
     await message.patch(token);
 
     await utils.sleep(4);
 
-    const embed = new discord.Embed();
+    embed = new discord.Embed();
 
     embed.setImageUrl(`${config.origin}/stars/${pull.rating.stars}.gif`);
 
@@ -353,7 +353,7 @@ async function pullAnimation({
   }
   //
 
-  message = await search.characterMessage(pull.character, {
+  const message = await search.characterMessage(pull.character, {
     relations: false,
     rating: pull.rating,
     description: false,
