@@ -126,3 +126,54 @@ export async function addCharacter({
     await session.endSession();
   }
 }
+
+export async function losePull({
+  userId,
+  guildId,
+  mongo,
+}: {
+  userId: string;
+  guildId: string;
+  mongo: Mongo;
+}): Promise<void> {
+  const session = mongo.startSession();
+
+  try {
+    session.startTransaction();
+
+    const inventory = await db.rechargeConsumables(
+      guildId,
+      userId,
+      mongo,
+      true
+    );
+
+    if (inventory.availablePulls <= 0) {
+      throw new NoPullsError(inventory.rechargeTimestamp);
+    }
+
+    await mongo.inventories().updateOne(
+      { _id: inventory._id },
+      {
+        $set: {
+          availablePulls: inventory.availablePulls - 1,
+          rechargeTimestamp: inventory.rechargeTimestamp ?? new Date(),
+          lastPull: new Date(),
+        },
+      },
+      { session }
+    );
+
+    await session.commitTransaction();
+  } catch (err) {
+    if (session.transaction.isActive) {
+      await session.abortTransaction();
+    }
+
+    await session.endSession();
+
+    throw err;
+  } finally {
+    await session.endSession();
+  }
+}

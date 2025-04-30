@@ -232,3 +232,35 @@ describe('db.addCharacter()', () => {
     ).rejects.toThrowError('403');
   });
 });
+
+describe('db.losePull()', () => {
+  beforeEach(async () => {
+    mongod = await MongoMemoryReplSet.create();
+    client = new Mongo(mongod.getUri());
+    config.mongoUri = mongod.getUri();
+  });
+
+  afterEach(async () => {
+    delete config.mongoUri;
+    await client.close();
+    await mongod.stop();
+  });
+
+  it('normal', async () => {
+    await db.losePull({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      mongo: client,
+    });
+
+    const inventory = await client.inventories().findOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+    });
+
+    assertWithinLast5secs(inventory!.lastPull!);
+    assertWithinLast5secs(inventory!.rechargeTimestamp!);
+
+    expect(inventory!.availablePulls).toBe(9);
+  });
+});

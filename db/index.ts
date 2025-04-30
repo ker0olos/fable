@@ -17,7 +17,7 @@ import {
   rechargeConsumables,
 } from '~/db/getInventory.ts';
 
-import { addCharacter } from '~/db/addCharacter.ts';
+import { addCharacter, losePull } from '~/db/addCharacter.ts';
 
 import {
   likeCharacter,
@@ -142,6 +142,7 @@ const db = {
   rechargeConsumables,
   getActiveUsersIfLiked,
   //
+  losePull,
   addCharacter,
   //
   likeCharacter,

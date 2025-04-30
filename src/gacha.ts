@@ -248,9 +248,7 @@ async function rngPull({
           ) {
             dupe = true;
             console.log('same user dupe');
-            // pool.splice(index, 1);
-            // console.warn(`skipping dupe for ${userId} ${characterId}`);
-            // continue;
+            await db.losePull({ userId, guildId, mongo });
           } else {
             throw err;
           }
