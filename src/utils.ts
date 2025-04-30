@@ -203,6 +203,29 @@ function sleep(secs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
+async function fastFetchWithRetry(
+  input: RequestInfo | URL,
+  n = 0
+): Promise<Response> {
+  try {
+    const response = await fetch(input);
+
+    if (response.status > 400) {
+      throw new Error(`${response.status}:${response.statusText}`);
+    }
+
+    return response;
+  } catch (err) {
+    if (n > 5) {
+      throw err;
+    }
+
+    await sleep(0.05);
+
+    return fastFetchWithRetry(input, n + 1);
+  }
+}
+
 async function fetchWithRetry(
   input: RequestInfo | URL,
   init: RequestInit,
@@ -498,7 +521,7 @@ async function proxy(
   size?: ImageSize
 ): Promise<Attachment | null> {
   try {
-    let response = await fetch(
+    let response = await fastFetchWithRetry(
       url ??
         'https://raw.githubusercontent.com/ker0olos/fable/refs/heads/main/assets/default.webp'
     );
