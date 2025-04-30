@@ -321,25 +321,23 @@ async function _searchManyCharacters({
           index: 'default',
           returnStoredSource,
           compound: {
-            must: [
+            should: [
               {
                 autocomplete: {
                   query: search,
                   path: 'name.english',
+                  fuzzy: { maxEdits: 2 },
                 },
               },
-              // {
-              //   text: {
-              //     query: search,
-              //     path: ['name.english', 'name.alternative'],
-              //     fuzzy: {
-              //       maxEdits: 2,
-              //       prefixLength: 0,
-              //       maxExpansions: 50,
-              //     },
-              //   },
-              // },
+              {
+                autocomplete: {
+                  query: search,
+                  path: 'name.alternative',
+                  fuzzy: { maxEdits: 2 },
+                },
+              },
             ],
+            minimumShouldMatch: 1,
           },
           sort: { rating: -1, score: { $meta: 'searchScore' } },
         },
@@ -356,6 +354,8 @@ async function _searchManyCharacters({
       },
     ])
     .toArray();
+
+  console.log(results);
 
   await db.close();
 
@@ -415,24 +415,21 @@ async function _searchManyMedia({
           index: 'default',
           returnStoredSource,
           compound: {
-            must: [
+            should: [
               {
                 autocomplete: {
                   query: search,
                   path: 'title.english',
+                  fuzzy: { maxEdits: 2 },
                 },
               },
-              // {
-              //   text: {
-              //     query: search,
-              //     path: ['title.english', 'title.alternative'],
-              //     fuzzy: {
-              //       maxEdits: 2,
-              //       prefixLength: 0,
-              //       maxExpansions: 50,
-              //     },
-              //   },
-              // },
+              {
+                autocomplete: {
+                  query: search,
+                  path: 'title.alternative',
+                  fuzzy: { maxEdits: 2 },
+                },
+              },
             ],
           },
           sort: { popularity: -1, score: { $meta: 'searchScore' } },
