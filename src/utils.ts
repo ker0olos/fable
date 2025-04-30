@@ -210,7 +210,7 @@ async function fastFetchWithRetry(
   try {
     const response = await fetch(input);
 
-    if (response.status > 400) {
+    if (response.status > 500) {
       throw new Error(`${response.status}:${response.statusText}`);
     }
 
