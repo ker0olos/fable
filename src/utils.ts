@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import fs from 'node:fs';
+
 import nacl from 'tweetnacl';
 
 import { nanoid } from 'nanoid';
@@ -210,13 +212,13 @@ async function fastFetchWithRetry(
   try {
     const response = await fetch(input);
 
-    if (response.status > 500) {
+    if (response.status > 400) {
       throw new Error(`${response.status}:${response.statusText}`);
     }
 
     return response;
   } catch (err) {
-    if (n > 5) {
+    if (n > 3) {
       throw err;
     }
 
@@ -521,12 +523,17 @@ async function proxy(
   size?: ImageSize
 ): Promise<Attachment | null> {
   try {
-    let response = await fastFetchWithRetry(
-      url ??
-        'https://raw.githubusercontent.com/ker0olos/fable/refs/heads/main/assets/default.webp'
-    );
+    let response: Response | null = null;
 
-    let contentType = response.headers.get('Content-Type');
+    if (url) {
+      try {
+        response = await fastFetchWithRetry(url);
+      } catch (err) {
+        console.warn(`failed to fetch ${url}`, err);
+      }
+    }
+
+    let contentType = response?.headers.get('Content-Type');
 
     const sizes: Record<string, [number, number]> = {
       preview: [32, 32],
@@ -535,7 +542,7 @@ async function proxy(
       large: [450, 635],
     };
 
-    if (contentType?.startsWith('text/html')) {
+    if (response && contentType?.startsWith('text/html')) {
       const xml = await response.text();
 
       const re = /<meta.*?property="og:image".*?content="(.*?)"/;
@@ -557,20 +564,20 @@ async function proxy(
       }
     }
 
-    if (!contentType) {
-      throw new Error('no content type header');
-    } else if (
+    if (
+      response &&
+      contentType &&
       !['image/jpeg', 'image/png', 'image/webp'].includes(contentType)
     ) {
       console.warn(`image type ${contentType} is not supported`);
       return proxy(undefined, size);
     }
 
-    console.log(`${response.status} ${contentType} ${url}`);
+    console.log(`${response?.status} ${contentType} ${url}`);
 
-    const data = await response
-      .arrayBuffer()
-      .then((buffer) => new Uint8Array(buffer));
+    const data = response
+      ? await response.arrayBuffer().then((buffer) => new Uint8Array(buffer))
+      : await fs.promises.readFile('./assets/default.webp');
 
     const photon = await import('@cf-wasm/photon/node');
 
