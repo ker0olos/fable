@@ -48,7 +48,7 @@ export async function ratingPool({
           },
         },
       ])
-      .limit(15000)
+      .limit(15_000)
       .toArray();
 
     if (!characters) {
@@ -95,7 +95,7 @@ export async function fallbackPool({ guildId }: { guildId: string }) {
           },
         },
       ])
-      .limit(15000)
+      .limit(15_000)
       .toArray();
 
     if (!characters) {
