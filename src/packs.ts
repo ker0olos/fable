@@ -374,13 +374,7 @@ async function searchManyCharacters({
     guildId,
   });
 
-  return Object.values(
-    await packs.findById<Character | DisaggregatedCharacter>({
-      ids: results.map((r) => r.id),
-      key: 'characters',
-      guildId,
-    })
-  );
+  return results;
 }
 
 async function searchOneCharacter({
@@ -395,13 +389,7 @@ async function searchOneCharacter({
     guildId,
   });
 
-  return Object.values(
-    await packs.findById<Character | DisaggregatedCharacter>({
-      ids: [results[0]?.id],
-      key: 'characters',
-      guildId,
-    })
-  )[0];
+  return results[0];
 }
 
 async function _searchManyMedia({
@@ -480,13 +468,7 @@ async function searchManyMedia({
     guildId,
   });
 
-  return Object.values(
-    await packs.findById<Media | DisaggregatedMedia>({
-      ids: results.map((r) => r.id),
-      key: 'media',
-      guildId,
-    })
-  );
+  return results;
 }
 
 async function searchOneMedia({
@@ -501,13 +483,7 @@ async function searchOneMedia({
     guildId,
   });
 
-  return Object.values(
-    await packs.findById<Media | DisaggregatedMedia>({
-      ids: [results[0]?.id],
-      key: 'media',
-      guildId,
-    })
-  )[0];
+  return results[0];
 }
 
 async function media({
