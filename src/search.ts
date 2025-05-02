@@ -635,7 +635,7 @@ function mediaCharacters({
       guildId,
       index,
     })
-    .then(async ({ character, role, media, next, total }) => {
+    .then(async ({ character, media, next, total }) => {
       if (!media || packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
         throw new Error('404');
       }
@@ -666,7 +666,7 @@ function mediaCharacters({
       // ]);
 
       const message = await characterMessage(character, {
-        rating: new Rating({ role, popularity: media.popularity }),
+        rating: new Rating({ stars: character.rating }),
         relations: false,
         description: true,
         externalLinks: true,

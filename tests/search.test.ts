@@ -3675,7 +3675,7 @@ describe('media characters', () => {
       character: {
         id: '2',
         packId: 'pack-id',
-        rating: 1,
+        rating: 3,
         name: {
           english: 'name',
         },

@@ -49,10 +49,6 @@ export type Alias = {
 
 export type Image = {
   url: string;
-  artist?: {
-    username: string;
-    url?: string;
-  };
 };
 
 export type MediaEdge = { node: Media; relation?: MediaRelation };
