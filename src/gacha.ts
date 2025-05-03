@@ -159,24 +159,16 @@ async function rngPull({
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
-  const controller = new AbortController();
-
-  const { signal } = controller;
-
-  const timeoutId = setTimeout(() => controller.abort(), 1 * 60 * 1000);
-
   if (!pool.length && !guarantee) {
     pool = await db.fallbackPool({ guildId });
   }
-
-  console.log('final pool length', pool.length);
 
   if (!pool.length) {
     throw new PoolError();
   }
 
   try {
-    while (!signal.aborted) {
+    while (true) {
       // pool is empty
       if (!pool.length) {
         break;
@@ -261,7 +253,6 @@ async function rngPull({
       break;
     }
   } finally {
-    clearTimeout(timeoutId);
     await mongo.close();
   }
 

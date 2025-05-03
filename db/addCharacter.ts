@@ -116,7 +116,9 @@ export async function addCharacter({
       throw new NonFetalError(i18n.get('failed', locale));
     }
 
-    await session.commitTransaction();
+    await session.commitTransaction({
+      timeoutMS: 5000,
+    });
   } catch (err) {
     if (session.transaction.isActive) {
       await session.abortTransaction();
@@ -170,7 +172,9 @@ export async function losePull({
       { session }
     );
 
-    await session.commitTransaction();
+    await session.commitTransaction({
+      timeoutMS: 5000,
+    });
   } catch (err) {
     if (session.transaction.isActive) {
       await session.abortTransaction();
