@@ -37,7 +37,10 @@ export async function addCharacter({
   const session = mongo.startSession();
 
   try {
-    session.startTransaction();
+    session.startTransaction({
+      readConcern: { level: 'majority' },
+      readPreference: 'primary',
+    });
 
     const { user, ...inventory } = await db.rechargeConsumables(
       guildId,
@@ -139,7 +142,10 @@ export async function losePull({
   const session = mongo.startSession();
 
   try {
-    session.startTransaction();
+    session.startTransaction({
+      readConcern: { level: 'majority' },
+      readPreference: 'primary',
+    });
 
     const inventory = await db.rechargeConsumables(
       guildId,
