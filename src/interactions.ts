@@ -151,10 +151,12 @@ export const handler = async (r: Request, ctx: any) => {
             });
 
             results.forEach((media) => {
-              message.addSuggestions({
-                name: packs.aliasToArray(media.title)[0],
-                value: `${idPrefix}${media.packId}:${media.id}`,
-              });
+              const title = packs.aliasToArray(media.title)[0];
+              if (title)
+                message.addSuggestions({
+                  name: packs.aliasToArray(media.title)[0],
+                  value: `${idPrefix}${media.packId}:${media.id}`,
+                });
             });
           }
 
@@ -193,13 +195,12 @@ export const handler = async (r: Request, ctx: any) => {
             });
 
             results.forEach((character) => {
-              message.addSuggestions({
-                // name: character.mediaTitle?.length
-                //   ? `${character.name[0]} (${character.mediaTitle[0]})`
-                //   : character.name[0],
-                name: packs.aliasToArray(character.name)[0],
-                value: `${idPrefix}${character.packId}:${character.id}`,
-              });
+              const name = packs.aliasToArray(character.name)[0];
+              if (name)
+                message.addSuggestions({
+                  name: packs.aliasToArray(character.name)[0],
+                  value: `${idPrefix}${character.packId}:${character.id}`,
+                });
             });
           }
 
