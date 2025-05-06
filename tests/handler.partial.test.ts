@@ -10,7 +10,7 @@ import config from '~/src/config.ts';
 import { handler } from '~/src/interactions.ts';
 
 import packs from '~/src/packs.ts';
-import { MediaType } from '~/src/types.ts';
+import { CharacterRole, MediaType } from '~/src/types.ts';
 
 config.global = true;
 
@@ -1430,8 +1430,256 @@ describe('character suggestions', () => {
             english: 'english name',
           },
           rating: 1,
+          media: [
+            {
+              mediaId: 'packId:1',
+              role: CharacterRole.Main,
+            },
+          ],
         },
       ]);
+
+    vi.spyOn(packs, 'findById').mockResolvedValue({
+      'packId:1': {
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+      },
+    });
+
+    const ctxStub = {};
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request, ctxStub as any);
+
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
+        returnStoredSource: true,
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 8,
+        data: {
+          choices: [
+            {
+              name: 'english name (english title)',
+              value: 'id=packId:id',
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.publicKey;
+    }
+  });
+
+  it('character 2', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Partial,
+      guild_id: 'guild_id',
+      data: {
+        name: 'character',
+        options: [
+          {
+            name: 'name',
+            value: 'name',
+            focused: true,
+          },
+        ],
+      },
+    });
+
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
+
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
+
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
+          media: [
+            {
+              mediaId: '1',
+              role: CharacterRole.Main,
+            },
+          ],
+        },
+      ]);
+
+    vi.spyOn(packs, 'findById').mockResolvedValue({
+      'packId:1': {
+        id: 'id',
+        packId: 'packId',
+        title: {
+          english: 'english title',
+        },
+      },
+    });
+
+    const ctxStub = {};
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request, ctxStub as any);
+
+      expect(validateStub).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureStub).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(searchStub).toHaveBeenCalledWith({
+        search: 'name',
+        guildId: 'guild_id',
+        returnStoredSource: true,
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 8,
+        data: {
+          choices: [
+            {
+              name: 'english name (english title)',
+              value: 'id=packId:id',
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.publicKey;
+    }
+  });
+
+  it('character 3', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Partial,
+      guild_id: 'guild_id',
+      data: {
+        name: 'character',
+        options: [
+          {
+            name: 'name',
+            value: 'name',
+            focused: true,
+          },
+        ],
+      },
+    });
+
+    const validateStub = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
+
+    const signatureStub = vi.spyOn(utils, 'verifySignature').mockImplementation(
+      ({ body }) =>
+        ({
+          valid: true,
+          body,
+        }) as any
+    );
+
+    const searchStub = vi
+      .spyOn(packs, '_searchManyCharacters')
+      .mockResolvedValue([
+        {
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          rating: 1,
+          media: [
+            {
+              mediaId: '1',
+              role: CharacterRole.Main,
+            },
+          ],
+        },
+      ]);
+
+    vi.spyOn(packs, 'findById').mockResolvedValue({});
 
     const ctxStub = {};
 

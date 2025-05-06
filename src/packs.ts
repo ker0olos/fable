@@ -339,7 +339,24 @@ async function _searchManyCharacters({
             ],
             minimumShouldMatch: 1,
           },
-          sort: { rating: -1, score: { $meta: 'searchScore' } },
+        },
+      },
+      {
+        $addFields: {
+          exactMatch: {
+            $or: [
+              { $eq: ['$name.english', search] },
+              { $in: [search, { $ifNull: ['$name.alternative', []] }] },
+            ],
+          },
+          searchScore: { $meta: 'searchScore' },
+        },
+      },
+      {
+        $sort: {
+          exactMatch: -1,
+          rating: -1,
+          searchScore: -1,
         },
       },
       {
@@ -354,8 +371,6 @@ async function _searchManyCharacters({
       },
     ])
     .toArray();
-
-  console.log(results);
 
   await db.close();
 
@@ -432,7 +447,24 @@ async function _searchManyMedia({
               },
             ],
           },
-          sort: { popularity: -1, score: { $meta: 'searchScore' } },
+        },
+      },
+      {
+        $addFields: {
+          exactMatch: {
+            $or: [
+              { $eq: ['$title.english', search] },
+              { $in: [search, { $ifNull: ['$title.alternative', []] }] },
+            ],
+          },
+          searchScore: { $meta: 'searchScore' },
+        },
+      },
+      {
+        $sort: {
+          exactMatch: -1,
+          rating: -1,
+          searchScore: -1,
         },
       },
       {

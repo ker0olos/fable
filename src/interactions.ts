@@ -22,6 +22,8 @@ import config from '~/src/config.ts';
 
 import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
+import type { DisaggregatedMedia } from '~/src/types.ts';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handler = async (r: Request, ctx: any) => {
   const { origin } = new URL(r.url);
@@ -151,10 +153,12 @@ export const handler = async (r: Request, ctx: any) => {
             });
 
             results.forEach((media) => {
-              message.addSuggestions({
-                name: packs.aliasToArray(media.title)[0],
-                value: `${idPrefix}${media.packId}:${media.id}`,
-              });
+              const title = packs.aliasToArray(media.title)[0];
+              if (title)
+                message.addSuggestions({
+                  name: packs.aliasToArray(media.title)[0],
+                  value: `${idPrefix}${media.packId}:${media.id}`,
+                });
             });
           }
 
@@ -192,14 +196,34 @@ export const handler = async (r: Request, ctx: any) => {
               guildId,
             });
 
+            const mediaIds = results
+              .filter((c) => c.media?.[0]?.mediaId)
+              .map((c) => packs.parseId(c.media![0].mediaId, c.packId))
+              .filter(utils.nonNullable);
+
+            const media = await packs.findById<DisaggregatedMedia>({
+              guildId,
+              ids: mediaIds.map((id) => `${id[0]}:${id[1]}`),
+              key: 'media',
+            });
+
             results.forEach((character) => {
-              message.addSuggestions({
-                // name: character.mediaTitle?.length
-                //   ? `${character.name[0]} (${character.mediaTitle[0]})`
-                //   : character.name[0],
-                name: packs.aliasToArray(character.name)[0],
-                value: `${idPrefix}${character.packId}:${character.id}`,
-              });
+              const name = packs.aliasToArray(character.name)[0];
+              const mediaId = character.media?.[0]?.mediaId;
+              const mediaTitle =
+                media[
+                  mediaId?.includes(':')
+                    ? mediaId
+                    : `${character.packId}:${mediaId}`
+                ]?.title;
+
+              if (name)
+                message.addSuggestions({
+                  name: mediaTitle
+                    ? `${name} (${packs.aliasToArray(mediaTitle)[0]})`
+                    : name,
+                  value: `${idPrefix}${character.packId}:${character.id}`,
+                });
             });
           }
 
