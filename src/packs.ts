@@ -372,8 +372,6 @@ async function _searchManyCharacters({
     ])
     .toArray();
 
-  console.log(results);
-
   await db.close();
 
   return results as DisaggregatedCharacter[];
