@@ -122,11 +122,11 @@ async function createPacksIndexes(db: Mongo) {
         dynamic: false,
         fields: {
           name: {
+            type: 'document',
             fields: {
               alternative: [{ type: 'string' }, { type: 'autocomplete' }],
               english: [{ type: 'string' }, { type: 'autocomplete' }],
             },
-            type: 'document',
           },
           rating: {
             type: 'number',
@@ -134,7 +134,7 @@ async function createPacksIndexes(db: Mongo) {
         },
       },
       storedSource: {
-        include: ['name.english', 'id', 'packId'],
+        include: ['name.english', 'id', 'packId', 'media.mediaId'],
       },
     },
   });
@@ -176,11 +176,11 @@ async function createPacksIndexes(db: Mongo) {
             type: 'number',
           },
           title: {
+            type: 'document',
             fields: {
               alternative: [{ type: 'string' }, { type: 'autocomplete' }],
               english: [{ type: 'string' }, { type: 'autocomplete' }],
             },
-            type: 'document',
           },
         },
       },
