@@ -20,6 +20,7 @@ export async function addCharacter({
   userId,
   guildId,
   sacrifices,
+  quiet,
   mongo,
 }: {
   rating: number;
@@ -29,6 +30,7 @@ export async function addCharacter({
   userId: string;
   guildId: string;
   sacrifices?: ObjectId[];
+  quiet?: boolean;
   mongo: Mongo;
 }): Promise<void> {
   const locale =
@@ -97,6 +99,7 @@ export async function addCharacter({
       );
     } else {
       // if normal pull
+      update.lastPullMode = quiet ? 'q' : 'gacha';
       update.availablePulls = inventory.availablePulls - 1;
       update.rechargeTimestamp = inventory.rechargeTimestamp ?? new Date();
     }
@@ -135,10 +138,12 @@ export async function addCharacter({
 export async function losePull({
   userId,
   guildId,
+  quiet,
   mongo,
 }: {
   userId: string;
   guildId: string;
+  quiet?: boolean;
   mongo: Mongo;
 }): Promise<void> {
   const session = mongo.startSession();
@@ -164,6 +169,7 @@ export async function losePull({
       { _id: inventory._id },
       {
         $set: {
+          lastPullMode: quiet ? 'q' : 'gacha',
           availablePulls: inventory.availablePulls - 1,
           rechargeTimestamp: inventory.rechargeTimestamp ?? new Date(),
           lastPull: new Date(),

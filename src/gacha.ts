@@ -121,11 +121,13 @@ async function rngPull({
   userId,
   guarantee,
   sacrifices,
+  quiet,
 }: {
   guildId: string;
   userId?: string;
   guarantee?: number;
   sacrifices?: ObjectId[];
+  quiet?: boolean;
 }): Promise<Pull> {
   const mongo = await db.newMongo().connect();
 
@@ -231,6 +233,7 @@ async function rngPull({
             guaranteed: typeof guarantee === 'number',
             sacrifices,
             rating,
+            quiet,
             mongo,
           });
         } catch (err) {
@@ -240,7 +243,7 @@ async function rngPull({
           ) {
             dupe = true;
             console.log('same user dupe');
-            await db.losePull({ userId, guildId, mongo });
+            await db.losePull({ userId, guildId, quiet, mongo });
           } else {
             throw err;
           }
@@ -271,16 +274,16 @@ async function rngPull({
 }
 
 async function pullAnimation({
+  pull,
   token,
   userId,
   guildId,
   quiet,
   mention,
   components,
-  pull,
 }: {
-  token: string;
   pull: Pull;
+  token: string;
   userId?: string;
   guildId?: string;
   quiet?: boolean;
@@ -450,7 +453,7 @@ function start({
   }
 
   return gacha
-    .rngPull({ userId, guildId, guarantee })
+    .rngPull({ userId, guildId, guarantee, quiet })
     .then((pull) => {
       return pullAnimation({ token, userId, guildId, mention, quiet, pull });
     })

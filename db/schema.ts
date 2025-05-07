@@ -28,6 +28,7 @@ export interface Inventory {
   availablePulls: number;
 
   lastPull?: Date;
+  lastPullMode?: 'q' | 'gacha';
   rechargeTimestamp?: Date;
   stealTimestamp?: Date;
 
