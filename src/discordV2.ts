@@ -613,23 +613,32 @@ export class Section extends Component {
   #data: {
     type: ComponentType.Section;
     components: TextDisplay[];
-    accessory: Thumbnail | Button;
+    accessory?: Thumbnail | Button;
   };
 
-  constructor(components: TextDisplay[], accessory: Thumbnail | Button) {
+  constructor() {
     super();
     this.#data = {
       type: ComponentType.Section,
-      components,
-      accessory,
+      components: [],
     };
+  }
+
+  addText(component: TextDisplay): Section {
+    this.#data.components.push(component);
+    return this;
+  }
+
+  setAccessory(component: Thumbnail | Button): Section {
+    this.#data.accessory = component;
+    return this;
   }
 
   json(): any {
     return {
       ...this.#data,
       components: this.#data.components.map((component) => component.json()),
-      accessory: this.#data.accessory.json(),
+      accessory: this.#data.accessory?.json(),
     };
   }
 }
