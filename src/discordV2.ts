@@ -103,7 +103,7 @@ export class Button extends Component {
     super();
     this.#data = {
       type: ComponentType.Button,
-      style: ButtonStyle.Blue,
+      style: ButtonStyle.Grey,
       custom_id: '',
     };
   }
@@ -856,11 +856,6 @@ export class Message {
 
   setType(type: MessageType): Message {
     this.#type = type;
-    return this;
-  }
-
-  setContent(content: string): Message {
-    this.#data.content = content;
     return this;
   }
 
