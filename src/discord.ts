@@ -79,6 +79,7 @@ export const emotes = {
   slowed: '<:SLOWED:1215255510706683905>',
   sneaky: '<:sneaky:1215575668490764288>',
   skeleton: '<:loading:1227290168688508959>',
+  notice: '<:notice:1370007386135334972>',
 };
 
 export const join = (...args: string[]): string => {
