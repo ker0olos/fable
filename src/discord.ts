@@ -79,6 +79,7 @@ export const emotes = {
   slowed: '<:SLOWED:1215255510706683905>',
   sneaky: '<:sneaky:1215575668490764288>',
   skeleton: '<:loading:1227290168688508959>',
+  notice: '<:notice:1370007386135334972>',
 };
 
 export const join = (...args: string[]): string => {
@@ -88,6 +89,7 @@ export const join = (...args: string[]): string => {
 export enum MessageFlags {
   Ephemeral = 1 << 6,
   SuppressEmbeds = 1 << 2,
+  ComponentsV2 = 1 << 15,
 }
 
 type CommandOption = {
@@ -133,6 +135,7 @@ export enum ButtonStyle {
   Green = 3,
   Red = 4,
   Url = 5,
+  Premium = 6,
 }
 
 export enum TextInputStyle {
@@ -180,7 +183,7 @@ type Resolved = {
   >;
 };
 
-type AllowedPings = {
+export type AllowedPings = {
   parse?: string[];
   users?: string[];
   roles?: string[];

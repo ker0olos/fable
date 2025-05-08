@@ -24,15 +24,15 @@
   "installed": "Installed",
   "uninstalled": "Uninstalled",
 
-  "+1-pull": "_+1 pull {0}_",
-  "+1-token": "_+1 daily token {0}_",
-  "+1-key": "_+1 key {0}_",
+  "+1-pull": "+1 pull {0}",
+  "+1-token": "+1 daily token {0}",
   "available-pull": "Available Pull",
   "available-pulls": "Available Pulls",
+  "guarantees": "Guarantees",
 
   "daily-token": "Daily Token",
   "daily-tokens": "Daily Tokens",
-  "steal-cooldown-ends": "_Steal cooldown ends {0}_",
+  "steal-cooldown-ends": "Steal cooldown ends {0}",
 
   "token": "token",
   "tokens": "tokens",

@@ -28,9 +28,8 @@
   "installed": "Instalado",
   "uninstalled": "Desinstalado",
 
-  "+1-pull": "_+1 tirada de cartas {0}_",
-  "+1-token": "_+1 token diário {0}_",
-  "+1-key": "_+1 chave {0}_",
+  "+1-pull": "+1 tirada de cartas {0}",
+  "+1-token": "+1 token diário {0}",
   "available-pull": "Tirada disponível",
   "available-pulls": "Tiradas disponíveis",
   "available-key": "Chave disponível",
