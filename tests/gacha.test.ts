@@ -2185,7 +2185,7 @@ describe('/gacha', () => {
             type: 'rich',
             description: "You don't have any more pulls!",
           },
-          { type: 'rich', description: '_+1 pull <t:1675732989:R>_' },
+          { type: 'rich', description: '+1 pull <t:1675732989:R>' },
         ],
         components: [],
         attachments: [],

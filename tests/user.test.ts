@@ -44,26 +44,35 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              title: '**5**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
-            },
-          ],
           components: [
             {
-              type: 1,
+              type: 17,
               components: [
                 {
-                  custom_id: 'gacha=user_id',
-                  label: '/gacha',
-                  style: 2,
-                  type: 2,
+                  type: 9,
+                  components: [
+                    {
+                      type: 10,
+                      content: `**5**\n-# Available Pulls`,
+                    },
+                  ],
+                  accessory: {
+                    custom_id: 'gacha=user_id',
+                    label: '/gacha',
+                    style: 2,
+                    type: 2,
+                  },
+                },
+              ],
+            },
+            {
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Daily Tokens`,
                 },
               ],
             },
@@ -98,19 +107,28 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
+          components: [
             {
-              type: 'rich',
-              title: '**0**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Available Pulls   +1 <t:1675569106:R>`,
+                },
+              ],
             },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+            {
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Daily Tokens`,
+                },
+              ],
+            },
           ],
-          components: [],
         },
       });
     } finally {
@@ -142,21 +160,33 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
-          content: '<@user_id>',
+          flags: 32768,
           allowed_mentions: { parse: [] },
           attachments: [],
-          embeds: [
+          components: [
             {
-              type: 'rich',
-              title: '**0**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
+              content: '<@user_id>',
+              type: 10,
             },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+            {
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Available Pulls   +1 <t:1675569106:R>`,
+                },
+              ],
+            },
+            {
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Daily Tokens`,
+                },
+              ],
+            },
           ],
-          components: [],
         },
       });
     } finally {
@@ -189,26 +219,28 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
+          components: [
             {
-              type: 'rich',
-              title: '**0**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Available Pulls   +1 <t:1675569106:R>`,
+                },
+              ],
             },
             {
-              type: 'rich',
-              title: '**1**',
-              footer: {
-                text: 'Daily Token',
-              },
+              type: 17,
+              components: [
+                {
+                  content: '**1**\n-# Daily Token',
+                  type: 10,
+                },
+              ],
             },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
-          components: [],
         },
       });
     } finally {
@@ -241,26 +273,28 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
+          components: [
             {
-              type: 'rich',
-              title: '**0**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Available Pulls   +1 <t:1675569106:R>`,
+                },
+              ],
             },
             {
-              type: 'rich',
-              title: '**4**',
-              footer: {
-                text: 'Daily Tokens',
-              },
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: '**4**\n-# Daily Tokens',
+                },
+              ],
             },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
-          components: [],
         },
       });
     } finally {
@@ -291,40 +325,46 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              title: '**4**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
-            },
-            {
-              type: 'rich',
-              title: '**28**',
-              footer: {
-                text: 'Daily Tokens',
-              },
-            },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
-          ],
           components: [
             {
-              type: 1,
+              type: 17,
               components: [
                 {
-                  custom_id: 'gacha=user_id',
-                  label: '/gacha',
-                  style: 2,
-                  type: 2,
+                  type: 9,
+                  components: [
+                    {
+                      type: 10,
+                      content: `**4**\n-# Available Pulls   +1 <t:1675569106:R>`,
+                    },
+                  ],
+                  accessory: {
+                    custom_id: 'gacha=user_id',
+                    label: '/gacha',
+                    style: 2,
+                    type: 2,
+                  },
                 },
+              ],
+            },
+            {
+              type: 17,
+              components: [
                 {
-                  custom_id: 'buy=bguaranteed=user_id=5',
-                  label: '/buy guaranteed 5',
-                  style: 2,
-                  type: 2,
+                  type: 9,
+                  components: [
+                    {
+                      type: 10,
+                      content: '**28**\n-# Daily Tokens',
+                    },
+                  ],
+                  accessory: {
+                    custom_id: 'buy=bguaranteed=user_id=5',
+                    label: '/buy 5*',
+                    style: 2,
+                    type: 2,
+                  },
                 },
               ],
             },
@@ -359,40 +399,46 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              title: '**4**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
-            },
-            {
-              type: 'rich',
-              title: '**27**',
-              footer: {
-                text: 'Daily Tokens',
-              },
-            },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
-          ],
           components: [
             {
-              type: 1,
+              type: 17,
               components: [
                 {
-                  custom_id: 'gacha=user_id',
-                  label: '/gacha',
-                  style: 2,
-                  type: 2,
+                  type: 9,
+                  components: [
+                    {
+                      type: 10,
+                      content: `**4**\n-# Available Pulls   +1 <t:1675569106:R>`,
+                    },
+                  ],
+                  accessory: {
+                    custom_id: 'gacha=user_id',
+                    label: '/gacha',
+                    style: 2,
+                    type: 2,
+                  },
                 },
+              ],
+            },
+            {
+              type: 17,
+              components: [
                 {
-                  custom_id: 'buy=bguaranteed=user_id=4',
-                  label: '/buy guaranteed 4',
-                  style: 2,
-                  type: 2,
+                  type: 9,
+                  components: [
+                    {
+                      type: 10,
+                      content: '**27**\n-# Daily Tokens',
+                    },
+                  ],
+                  accessory: {
+                    custom_id: 'buy=bguaranteed=user_id=4',
+                    label: '/buy 4*',
+                    style: 2,
+                    type: 2,
+                  },
                 },
               ],
             },
@@ -430,41 +476,55 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              title: '**4**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description:
-                '5<:smolstar:1107503653956374638>4<:smolstar:1107503653956374638>3<:smolstar:1107503653956374638>',
-            },
-            {
-              type: 'rich',
-              title: '**5**',
-              footer: {
-                text: 'Daily Tokens',
-              },
-            },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
-          ],
           components: [
             {
-              type: 1,
+              type: 17,
               components: [
                 {
-                  style: 2,
-                  type: 2,
-                  custom_id: 'gacha=user_id',
-                  label: '/gacha',
+                  type: 9,
+                  components: [
+                    {
+                      type: 10,
+                      content: `5<:smolstar:1107503653956374638>4<:smolstar:1107503653956374638>3<:smolstar:1107503653956374638>\n-# Guarantees`,
+                    },
+                  ],
+                  accessory: {
+                    custom_id: 'pull=user_id=5',
+                    label: '/pull 5',
+                    style: 2,
+                    type: 2,
+                  },
                 },
+              ],
+            },
+            {
+              type: 17,
+              components: [
                 {
-                  style: 2,
-                  type: 2,
-                  custom_id: 'pull=user_id=5',
-                  label: '/pull 5',
+                  type: 9,
+                  components: [
+                    {
+                      type: 10,
+                      content: `**4**\n-# Available Pulls   +1 <t:1675569106:R>`,
+                    },
+                  ],
+                  accessory: {
+                    custom_id: 'gacha=user_id',
+                    label: '/gacha',
+                    style: 2,
+                    type: 2,
+                  },
+                },
+              ],
+            },
+            {
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: '**5**\n-# Daily Tokens',
                 },
               ],
             },
@@ -476,7 +536,7 @@ describe('/now', () => {
     }
   });
 
-  it('with steal cooldown', async () => {
+  it.skip('with steal cooldown', async () => {
     const timestamp = new Date('2023-02-05T03:21:46.253Z');
     vi.useFakeTimers();
     vi.setSystemTime(timestamp);
@@ -562,23 +622,37 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
+          components: [
             {
-              type: 'rich',
-              title: '**0**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Available Pulls   +1 <t:1675569106:R>`,
+                },
+              ],
             },
             {
-              description: '**test**\n_message_',
-              type: 'rich',
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `**0**\n-# Daily Tokens`,
+                },
+              ],
             },
-            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+            {
+              type: 17,
+              components: [
+                {
+                  type: 10,
+                  content: `<:notice:1370007386135334972> **test**\n_message_`,
+                },
+              ],
+            },
           ],
-          components: [],
         },
       });
     } finally {
@@ -610,27 +684,35 @@ describe('/now', () => {
       expect(message.json()).toEqual({
         type: 4,
         data: {
+          flags: 32768,
           attachments: [],
-          embeds: [
-            {
-              type: 'rich',
-              title: '**5**',
-              footer: {
-                text: 'Available Pulls',
-              },
-              description: undefined,
-            },
-            { type: 'rich', description: '_+1 daily token <t:1675610506:R>_' },
-          ],
           components: [
             {
-              type: 1,
+              type: 17,
               components: [
                 {
-                  custom_id: 'gacha=user_id',
-                  label: '/gacha',
-                  style: 2,
-                  type: 2,
+                  type: 9,
+                  components: [
+                    {
+                      type: 10,
+                      content: `**5**\n-# Available Pulls`,
+                    },
+                  ],
+                  accessory: {
+                    custom_id: 'gacha=user_id',
+                    label: '/gacha',
+                    style: 2,
+                    type: 2,
+                  },
+                },
+              ],
+            },
+            {
+              type: 17,
+              components: [
+                {
+                  content: '**0**\n-# Daily Tokens   +1 <t:1675610506:R>',
+                  type: 10,
                 },
               ],
             },

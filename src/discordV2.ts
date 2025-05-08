@@ -934,6 +934,8 @@ export class Message {
 
     formData.append('payload_json', JSON.stringify(this.json()));
 
+    // console.log('message:', JSON.stringify(this.json()));
+
     // NOTE discord timeouts responds after 3 seconds
     // if an upload will take longer than 3 seconds
     // respond first with a loading message

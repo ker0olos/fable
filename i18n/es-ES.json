@@ -22,7 +22,7 @@
   "installed": "Instalado",
   "uninstalled": "Desinstalado",
 
-  "+1-pull": "_+1 tirada {0}_",
+  "+1-pull": "+1 tirada {0}",
   "available-pull": "Tirada disponible",
   "available-pulls": "Tiradas disponibles",
 

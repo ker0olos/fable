@@ -11,6 +11,7 @@ import Rating from '~/src/rating.ts';
 import { default as srch } from '~/src/search.ts';
 
 import * as discord from '~/src/discord.ts';
+import * as discordV2 from '~/src/discordV2.ts';
 
 import {
   Character,
@@ -42,116 +43,115 @@ async function now({
   userId: string;
   guildId: string;
   mention?: boolean;
-}): Promise<discord.Message> {
+}): Promise<discordV2.Message> {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
   const { user, ...inventory } = await db.rechargeConsumables(guildId, userId);
 
-  const { availablePulls, stealTimestamp, rechargeTimestamp } = inventory;
+  const { availablePulls, rechargeTimestamp } = inventory;
 
   const { dailyTimestamp, availableTokens } = user;
 
-  const message = new discord.Message();
+  const message = new discordV2.Message();
 
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
   const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
-  const stealRecharge = utils.rechargeStealTimestamp(stealTimestamp);
+  const lastPullMode = inventory.lastPullMode ?? 'gacha';
 
   const guarantees = Array.from(new Set(user.guarantees ?? [])).sort(
     (a, b) => b - a
   );
 
-  message.addEmbed(
-    new discord.Embed()
-      .setTitle(`**${availablePulls}**`)
-      .setDescription(
-        `${guarantees.map((r) => `${r}${discord.emotes.smolStar}`).join('')}`
+  if (mention) {
+    message.addComponent(new discordV2.TextDisplay(`<@${userId}>`)).setPing();
+  }
+
+  if (guarantees.length > 0) {
+    const section = new discordV2.Section()
+      .addText(
+        new discordV2.TextDisplay(
+          `${guarantees.map((r) => `${r}${discord.emotes.smolStar}`).join('')}\n-# ${i18n.get('guarantees', locale)}`
+        )
       )
-      .setFooter({
-        text:
-          availablePulls === 1
-            ? i18n.get('available-pull', locale)
-            : i18n.get('available-pulls', locale),
-      })
+      .setAccessory(
+        new discordV2.Button()
+          .setId('pull', userId, `${guarantees[0]}`)
+          .setLabel(`/pull ${guarantees[0]}`)
+      );
+
+    message.addComponent(new discordV2.Container().addComponent(section));
+  }
+
+  if (availablePulls > 0) {
+    const pullSection = new discordV2.Section()
+      .addText(
+        new discordV2.TextDisplay(
+          `**${availablePulls}**\n-# ${
+            availablePulls === 1
+              ? i18n.get('available-pull', locale)
+              : i18n.get('available-pulls', locale)
+          }   ${availablePulls < MAX_PULLS ? `+1 <t:${recharge}:R>` : ''}`.trim()
+        )
+      )
+      .setAccessory(
+        new discordV2.Button()
+          .setId(lastPullMode, userId)
+          .setLabel(`/${lastPullMode}`)
+      );
+
+    message.addComponent(new discordV2.Container().addComponent(pullSection));
+  } else {
+    message.addComponent(
+      new discordV2.Container().addComponent(
+        new discordV2.TextDisplay(
+          `**${availablePulls}**\n-# ${
+            availablePulls === 1
+              ? i18n.get('available-pull', locale)
+              : i18n.get('available-pulls', locale)
+          }   ${availablePulls < MAX_PULLS ? `+1 <t:${recharge}:R>` : ''}`.trim()
+        )
+      )
+    );
+  }
+
+  const text = new discordV2.TextDisplay(
+    `**${availableTokens || 0}**\n-# ${
+      availableTokens === 1
+        ? i18n.get('daily-token', locale)
+        : i18n.get('daily-tokens', locale)
+    }   ${dailyTimestamp ? `+1 <t:${dailyTokenRecharge}:R>` : ''}`.trim()
   );
 
-  if (availableTokens) {
-    message.addEmbed(
-      new discord.Embed().setTitle(`**${availableTokens}**`).setFooter({
-        text:
-          availableTokens === 1
-            ? i18n.get('daily-token', locale)
-            : i18n.get('daily-tokens', locale),
-      })
-    );
+  if (availableTokens && availableTokens >= COSTS.FIVE) {
+    const section = new discordV2.Section()
+      .addText(text)
+      .setAccessory(
+        new discordV2.Button()
+          .setId('buy', 'bguaranteed', userId, '5')
+          .setLabel(`/buy 5*`)
+      );
+
+    message.addComponent(new discordV2.Container().addComponent(section));
+  } else if (availableTokens && availableTokens >= COSTS.FOUR) {
+    const section = new discordV2.Section()
+      .addText(text)
+      .setAccessory(
+        new discordV2.Button()
+          .setId('buy', 'bguaranteed', userId, '4')
+          .setLabel(`/buy 4*`)
+      );
+
+    message.addComponent(new discordV2.Container().addComponent(section));
+  } else {
+    message.addComponent(new discordV2.Container().addComponent(text));
   }
 
   if (config.notice) {
-    message.addEmbed(
-      new discord.Embed().setDescription(config.notice.replaceAll('\\n', '\n'))
+    const notice = new discordV2.TextDisplay(
+      `${discord.emotes.notice} ${config.notice.replaceAll('\\n', '\n')}`
     );
-  }
 
-  if (availablePulls < MAX_PULLS) {
-    message.addEmbed(
-      new discord.Embed().setDescription(
-        i18n.get('+1-pull', locale, `<t:${recharge}:R>`)
-      )
-    );
-  }
-
-  if (dailyTimestamp) {
-    message.addEmbed(
-      new discord.Embed().setDescription(
-        i18n.get('+1-token', locale, `<t:${dailyTokenRecharge}:R>`)
-      )
-    );
-  }
-
-  if (stealTimestamp) {
-    message.addEmbed(
-      new discord.Embed().setDescription(
-        i18n.get('steal-cooldown-ends', locale, `<t:${stealRecharge}:R>`)
-      )
-    );
-  }
-
-  // components
-
-  if (availablePulls > 0) {
-    message.addComponents([
-      // `/gacha` shortcut
-      new discord.Component().setId('gacha', userId).setLabel('/gacha'),
-    ]);
-  }
-
-  if (user.availableTokens && user.availableTokens >= COSTS.FIVE) {
-    // `/buy guaranteed` 5 shortcut
-    message.addComponents([
-      new discord.Component()
-        .setId('buy', 'bguaranteed', userId, '5')
-        .setLabel(`/buy guaranteed 5`),
-    ]);
-  } else if (user.availableTokens && user.availableTokens >= COSTS.FOUR) {
-    // `/buy guaranteed 4` shortcut
-    message.addComponents([
-      new discord.Component()
-        .setId('buy', 'bguaranteed', userId, '4')
-        .setLabel(`/buy guaranteed 4`),
-    ]);
-  }
-
-  if (guarantees.length) {
-    message.addComponents([
-      // `/pull` shortcut
-      new discord.Component()
-        .setId('pull', userId, `${guarantees[0]}`)
-        .setLabel(`/pull ${guarantees[0]}`),
-    ]);
-  }
-
-  if (mention) {
-    message.setContent(`<@${userId}>`).setPing();
+    message.addComponent(new discordV2.Container().addComponent(notice));
   }
 
   return message;
