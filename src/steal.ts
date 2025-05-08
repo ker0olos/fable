@@ -168,6 +168,10 @@ function pre({
         return message.patch(token);
       }
 
+      if (existing.some((e) => e.userId === userId)) {
+        throw new NonFetalError(i18n.get('stealing-from-yourself', locale));
+      }
+
       const chances = sortExisting(existing);
 
       const target = Math.max(...chances);
@@ -179,10 +183,6 @@ function pre({
         (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
       ) {
         throw new Error('404');
-      }
-
-      if (exists.userId === userId) {
-        throw new NonFetalError(i18n.get('stealing-from-yourself', locale));
       }
 
       // means character is in party
