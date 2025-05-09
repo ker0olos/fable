@@ -1096,10 +1096,11 @@ export class Message {
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
       'PATCH'
-    ).then((r) => {
-      console.log(r, r.status, r.statusText);
-      r.text().then(console.log);
-    });
+    );
+    // .then((r) => {
+    //   console.log(r, r.status, r.statusText);
+    //   r.text().then(console.log);
+    // });
   }
 
   followup(token: string): Promise<Response> {
