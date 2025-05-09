@@ -1798,18 +1798,30 @@ describe('Components Handler', () => {
         expect(json).toEqual({
           type: 4,
           data: {
+            flags: 32768,
             allowed_mentions: { parse: [] },
-            content: '<@user_id>',
-            embeds: [
+            attachments: [],
+            components: [
               {
-                type: 'rich',
-                image: {
-                  url: 'http://localhost:8000/spinner.gif',
-                },
+                type: 10,
+                content: '<@user_id>',
+              },
+              {
+                type: 17,
+                components: [
+                  {
+                    type: 12,
+                    items: [
+                      {
+                        media: {
+                          url: 'http://localhost:8000/spinner.gif',
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             ],
-            attachments: [],
-            components: [],
           },
         });
       } finally {
@@ -1903,18 +1915,30 @@ describe('Components Handler', () => {
         expect(json).toEqual({
           type: 4,
           data: {
+            flags: 32768,
             allowed_mentions: { parse: [] },
-            content: '<@user_id>',
-            embeds: [
+            attachments: [],
+            components: [
               {
-                type: 'rich',
-                image: {
-                  url: 'http://localhost:8000/spinner.gif',
-                },
+                type: 10,
+                content: '<@user_id>',
+              },
+              {
+                type: 17,
+                components: [
+                  {
+                    type: 12,
+                    items: [
+                      {
+                        media: {
+                          url: 'http://localhost:8000/spinner.gif',
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             ],
-            attachments: [],
-            components: [],
           },
         });
       } finally {
@@ -2008,18 +2032,30 @@ describe('Components Handler', () => {
         expect(json).toEqual({
           type: 4,
           data: {
+            flags: 32768,
             allowed_mentions: { parse: [] },
-            content: '<@user_id>',
-            embeds: [
+            attachments: [],
+            components: [
               {
-                type: 'rich',
-                image: {
-                  url: 'http://localhost:8000/spinner.gif',
-                },
+                type: 10,
+                content: '<@user_id>',
+              },
+              {
+                type: 17,
+                components: [
+                  {
+                    type: 12,
+                    items: [
+                      {
+                        media: {
+                          url: 'http://localhost:8000/spinner.gif',
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             ],
-            attachments: [],
-            components: [],
           },
         });
       } finally {
