@@ -198,12 +198,6 @@ export const commands = [
         type: Type.STRING,
       }),
       Option({
-        name: 'debug',
-        description: '$debug',
-        type: Type.BOOLEAN,
-        optional: true,
-      }),
-      Option({
         name: 'characters',
         description: '$media-characters',
         type: Type.BOOLEAN,
@@ -220,12 +214,6 @@ export const commands = [
         description: '$character-name',
         autocomplete: true,
         type: Type.STRING,
-      }),
-      Option({
-        name: 'debug',
-        description: '$debug',
-        type: Type.BOOLEAN,
-        optional: true,
       }),
     ],
   }),

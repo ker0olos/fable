@@ -1614,214 +1614,6 @@ describe('/media', () => {
   });
 });
 
-describe('/media debug', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-    vi.clearAllTimers();
-    delete config.appId;
-    delete config.origin;
-  });
-
-  it('normal', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      description: 'long description',
-      popularity: 0,
-      title: {
-        english: 'english title',
-        alternative: ['romaji title', 'native title'],
-      },
-      images: [
-        {
-          url: 'image_url',
-        },
-      ],
-    };
-
-    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
-    vi.spyOn(db, 'getGuild').mockReturnValue('' as any);
-    vi.spyOn(packs, 'searchOneMedia').mockResolvedValue(media);
-    vi.spyOn(packs, 'all').mockResolvedValue([
-      { manifest: { id: 'anilist' } },
-    ] as any);
-    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-    vi.spyOn(packs, 'aggregate').mockImplementation(
-      async (t) => t.media ?? t.character
-    );
-    vi.spyOn(utils, 'proxy').mockImplementation(
-      async (t) =>
-        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    await search.media({
-      token: 'test_token',
-      guildId: 'guild_id',
-      search: 'english title',
-      debug: true,
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalledWith(
-      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      expect.objectContaining({
-        method: 'PATCH',
-      })
-    );
-
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
-
-    expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          description: 'romaji title\nnative title',
-          fields: [
-            {
-              name: 'Id',
-              value: 'pack-id:1',
-            },
-            {
-              inline: true,
-              name: 'Type',
-              value: 'Anime',
-            },
-            {
-              inline: true,
-              name: 'Format',
-              value: 'TV',
-            },
-            {
-              inline: true,
-              name: 'Popularity',
-              value: '0',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-          title: 'english title',
-        },
-      ],
-      components: [],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
-    });
-  });
-
-  it('default image', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'english title',
-      },
-    };
-
-    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
-    vi.spyOn(db, 'getGuild').mockReturnValue('' as any);
-    vi.spyOn(packs, 'searchOneMedia').mockResolvedValue(media);
-    vi.spyOn(packs, 'all').mockResolvedValue([
-      { manifest: { id: 'anilist' } },
-    ] as any);
-    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-    vi.spyOn(packs, 'aggregate').mockImplementation(
-      async (t) => t.media ?? t.character
-    );
-    vi.spyOn(utils, 'proxy').mockImplementation(
-      async (t) =>
-        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    await search.media({
-      token: 'test_token',
-      guildId: 'guild_id',
-      search: 'english title',
-      debug: true,
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalledWith(
-      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      expect.objectContaining({
-        method: 'PATCH',
-      })
-    );
-
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
-
-    expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'Id',
-              value: 'pack-id:1',
-            },
-            {
-              inline: true,
-              name: 'Type',
-              value: 'Anime',
-            },
-            {
-              inline: true,
-              name: 'Format',
-              value: 'TV',
-            },
-            {
-              inline: true,
-              name: 'Popularity',
-              value: '0',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://default.webp',
-          },
-          title: 'english title',
-        },
-      ],
-      components: [],
-      attachments: [{ filename: 'default.webp', id: '0' }],
-    });
-  });
-
-  it('no titles', async () => {
-    vi.spyOn(db, 'getGuild').mockReturnValue('' as any);
-
-    const media: Media = {
-      id: '1',
-      packId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {},
-    };
-
-    await expect(() => search.mediaDebugMessage(media)).rejects.toThrowError(
-      '404'
-    );
-  });
-});
-
 describe('/character', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -1887,31 +1679,47 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name\n\u200B',
-              value: 'long description',
+              type: 10,
+              content:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+            },
+            {
+              type: 10,
+              content: '**full name**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+            {
+              type: 10,
+              content: '-# Male, 420',
             },
           ],
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-          footer: {
-            text: 'Male, 420',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -1924,7 +1732,6 @@ describe('/character', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -1987,28 +1794,43 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name\n\u200B',
-              value: 'long description',
+              type: 10,
+              content:
+                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**full name**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
             },
           ],
-          image: {
-            url: 'attachment://image-url.webp',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -2021,7 +1843,6 @@ describe('/character', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -2091,28 +1912,43 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<@user_id><@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name\n\u200B',
-              value: 'long description',
+              type: 10,
+              content:
+                '<@user_id><@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**full name**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
             },
           ],
-          image: {
-            url: 'attachment://image-url.webp',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -2125,7 +1961,6 @@ describe('/character', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -2195,28 +2030,43 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<@another_user_id_2><@another_user_id_1>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name\n\u200B',
-              value: 'long description',
+              type: 10,
+              content:
+                '<@another_user_id_2><@another_user_id_1>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**full name**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
             },
           ],
-          image: {
-            url: 'attachment://image-url.webp',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -2229,7 +2079,6 @@ describe('/character', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -2299,28 +2148,43 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<@another_user_id_2><@another_user_id_1>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name\n\u200B',
-              value: 'long description',
+              type: 10,
+              content:
+                '<@another_user_id_2><@another_user_id_1>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**full name**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
             },
           ],
-          image: {
-            url: 'attachment://image-url.webp',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -2333,7 +2197,6 @@ describe('/character', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -2389,31 +2252,47 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name\n\u200B',
-              value: 'long description',
+              type: 10,
+              content:
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**full name**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+            {
+              type: 10,
+              content: '-# Female',
             },
           ],
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-          footer: {
-            text: 'Female',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -2426,7 +2305,6 @@ describe('/character', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -2483,31 +2361,47 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      attachments: [{ filename: 'image-url.webp', id: '0' }],
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name\n\u200B',
-              value: 'long description',
+              type: 10,
+              content:
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**full name**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+            {
+              type: 10,
+              content: '-# 18+',
             },
           ],
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-          footer: {
-            text: '18+',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -2520,7 +2414,6 @@ describe('/character', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -2588,29 +2481,43 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
       attachments: [{ filename: 'image-url.webp', id: '0' }],
-      embeds: [
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name\n\u200B',
-              value: 'long description',
+              type: 10,
+              content:
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**full name**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
             },
           ],
-          image: {
-            url: 'attachment://image-url.webp',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -2678,28 +2585,43 @@ describe('/character', () => {
       })
     );
 
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
+    const fetchStub = vi.mocked(utils.fetchWithRetry);
 
-    expect(payload).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      attachments: [{ filename: 'default.webp', id: '0' }],
+      allowed_mentions: { parse: [] },
+      components: [
         {
-          type: 'rich',
-          description:
-            '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'full name',
-              value: '\u200B',
+              type: 10,
+              content:
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**full name**',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+              ],
             },
           ],
-          image: {
-            url: 'attachment://default.webp',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -2712,7 +2634,6 @@ describe('/character', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'default.webp', id: '0' }],
     });
   });
 
@@ -2750,12 +2671,17 @@ describe('/character', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      components: [],
+      flags: 32768,
       attachments: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description: 'Found _nothing_ matching that query!',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: 'Found _nothing_ matching that query!',
+            },
+          ],
         },
       ],
     });
@@ -3202,448 +3128,6 @@ describe('character embed', () => {
         url: 'attachment://default.webp',
       },
       type: 'rich',
-    });
-  });
-});
-
-describe('/character debug', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-    vi.clearAllTimers();
-    delete config.appId;
-    delete config.origin;
-  });
-
-  it('no media', async () => {
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      packId: 'pack-id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [
-        {
-          url: 'image_url',
-        },
-      ],
-      age: '420',
-      gender: 'male',
-      rating: 5,
-    };
-
-    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
-    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
-    vi.spyOn(db, 'findCharacter').mockReturnValue(undefined as any);
-    vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
-    vi.spyOn(packs, 'all').mockResolvedValue([
-      { manifest: { id: 'anilist' } },
-    ] as any);
-    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-    vi.spyOn(packs, 'aggregate').mockImplementation(
-      async (t) => t.media ?? t.character
-    );
-    vi.spyOn(utils, 'proxy').mockImplementation(
-      async (t) =>
-        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
-    );
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    await search.character({
-      token: 'test_token',
-      guildId: 'guild_id',
-      userId: 'user_id',
-      search: 'full name',
-      debug: true,
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalledWith(
-      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      expect.objectContaining({
-        method: 'PATCH',
-      })
-    );
-
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
-
-    expect(payload).toEqual({
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
-      components: [],
-      embeds: [
-        {
-          type: 'rich',
-          title: 'full name',
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-          fields: [
-            {
-              name: 'Id',
-              value: 'pack-id:1',
-            },
-            {
-              name: 'Rating',
-              value: '5*',
-            },
-            {
-              inline: true,
-              name: 'Gender',
-              value: 'male',
-            },
-            {
-              inline: true,
-              name: 'Age',
-              value: '420',
-            },
-            {
-              inline: true,
-              name: 'Media',
-              value: 'undefined:undefined',
-            },
-            {
-              inline: true,
-              name: 'Role',
-              value: 'undefined',
-            },
-            {
-              name: '**WARN**',
-              value:
-                'Character not available in gacha.\nAdd at least one media to the character.',
-            },
-          ],
-        },
-      ],
-    });
-  });
-
-  it('no media nor popularity', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'pack-id',
-      rating: 1,
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [
-        {
-          url: 'image_url',
-        },
-      ],
-      age: '420',
-      gender: 'male',
-    };
-
-    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
-    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
-    vi.spyOn(db, 'findCharacter').mockReturnValue(undefined as any);
-    vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
-    vi.spyOn(packs, 'all').mockResolvedValue([
-      { manifest: { id: 'anilist' } },
-    ] as any);
-    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-    vi.spyOn(packs, 'aggregate').mockImplementation(
-      async (t) => t.media ?? t.character
-    );
-    vi.spyOn(utils, 'proxy').mockImplementation(
-      async (t) =>
-        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
-    );
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    await search.character({
-      token: 'test_token',
-      guildId: 'guild_id',
-      userId: 'user_id',
-      search: 'full name',
-      debug: true,
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalledWith(
-      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      expect.objectContaining({
-        method: 'PATCH',
-      })
-    );
-
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
-
-    expect(payload).toEqual({
-      components: [],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
-      embeds: [
-        {
-          type: 'rich',
-          title: 'full name',
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-          fields: [
-            {
-              name: 'Id',
-              value: 'pack-id:1',
-            },
-            {
-              name: 'Rating',
-              value: '1*',
-            },
-            {
-              inline: true,
-              name: 'Gender',
-              value: 'male',
-            },
-            {
-              inline: true,
-              name: 'Age',
-              value: '420',
-            },
-            {
-              inline: true,
-              name: 'Media',
-              value: 'undefined:undefined',
-            },
-            {
-              inline: true,
-              name: 'Role',
-              value: 'undefined',
-            },
-            {
-              name: '**WARN**',
-              value:
-                'Character not available in gacha.\nAdd at least one media to the character.',
-            },
-          ],
-        },
-      ],
-    });
-  });
-
-  it('with media', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'pack-id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [
-        {
-          url: 'image_url',
-        },
-      ],
-      rating: 1,
-      age: '420',
-      gender: 'male',
-      media: {
-        edges: [
-          {
-            role: CharacterRole.Main,
-            node: {
-              id: '5',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              popularity: 10,
-              title: {
-                english: 'title',
-              },
-            },
-          },
-        ],
-      },
-    };
-
-    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
-    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
-    vi.spyOn(db, 'findCharacter').mockReturnValue(undefined as any);
-    vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
-    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-    vi.spyOn(packs, 'aggregate').mockImplementation(
-      async (t) => t.media ?? t.character
-    );
-    vi.spyOn(utils, 'proxy').mockImplementation(
-      async (t) =>
-        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
-    );
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    await search.character({
-      token: 'test_token',
-      guildId: 'guild_id',
-      userId: 'user_id',
-      search: 'full name',
-      debug: true,
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalledWith(
-      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      expect.objectContaining({
-        method: 'PATCH',
-      })
-    );
-
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
-
-    expect(payload).toEqual({
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
-      components: [],
-      embeds: [
-        {
-          type: 'rich',
-          title: 'full name',
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-          fields: [
-            {
-              name: 'Id',
-              value: 'pack-id:1',
-            },
-            {
-              name: 'Rating',
-              value: '1*',
-            },
-            {
-              inline: true,
-              name: 'Gender',
-              value: 'male',
-            },
-            {
-              inline: true,
-              name: 'Age',
-              value: '420',
-            },
-            {
-              inline: true,
-              name: 'Media',
-              value: 'pack-id:5',
-            },
-            {
-              inline: true,
-              name: 'Role',
-              value: 'Main',
-            },
-          ],
-        },
-      ],
-    });
-  });
-
-  it('default image', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'pack-id',
-      rating: 1,
-      name: {
-        english: 'full name',
-      },
-    };
-
-    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
-    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
-    vi.spyOn(db, 'findCharacter').mockReturnValue(undefined as any);
-    vi.spyOn(packs, 'searchOneCharacter').mockResolvedValue(character);
-    vi.spyOn(packs, 'all').mockResolvedValue([
-      { manifest: { id: 'anilist' } },
-    ] as any);
-    vi.spyOn(packs, 'isDisabled').mockReturnValue(false);
-    vi.spyOn(packs, 'aggregate').mockImplementation(
-      async (t) => t.media ?? t.character
-    );
-    vi.spyOn(utils, 'proxy').mockImplementation(
-      async (t) =>
-        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
-    );
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    await search.character({
-      token: 'test_token',
-      guildId: 'guild_id',
-      userId: 'user_id',
-      search: 'full name',
-      debug: true,
-    });
-
-    await vi.runAllTimersAsync();
-
-    expect(utils.fetchWithRetry).toHaveBeenCalledWith(
-      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      expect.objectContaining({
-        method: 'PATCH',
-      })
-    );
-
-    const fetchCall = vi.mocked(utils.fetchWithRetry).mock.calls[0][1];
-    const formData = fetchCall?.body as FormData;
-    const payload = JSON.parse(formData?.get('payload_json') as any);
-
-    expect(payload).toEqual({
-      attachments: [{ filename: 'default.webp', id: '0' }],
-      components: [],
-      embeds: [
-        {
-          type: 'rich',
-          title: 'full name',
-          thumbnail: {
-            url: 'attachment://default.webp',
-          },
-          fields: [
-            {
-              name: 'Id',
-              value: 'pack-id:1',
-            },
-            {
-              name: 'Rating',
-              value: '1*',
-            },
-            {
-              inline: true,
-              name: 'Gender',
-              value: 'undefined',
-            },
-            {
-              inline: true,
-              name: 'Age',
-              value: 'undefined',
-            },
-            {
-              inline: true,
-              name: 'Media',
-              value: 'undefined:undefined',
-            },
-            {
-              inline: true,
-              name: 'Role',
-              value: 'undefined',
-            },
-            {
-              name: '**WARN**',
-              value:
-                'Character not available in gacha.\nAdd at least one media to the character.',
-            },
-          ],
-        },
-      ],
     });
   });
 });

@@ -304,7 +304,6 @@ export const handler = async (r: Request, ctx: any) => {
                 token,
                 guildId,
                 search: title,
-                debug: Boolean(options['debug']),
                 id: title.startsWith(idPrefix)
                   ? title.substring(idPrefix.length)
                   : undefined,
@@ -322,14 +321,13 @@ export const handler = async (r: Request, ctx: any) => {
                 guildId,
                 userId: member.user.id,
                 search: name,
-                debug: Boolean(options['debug']),
                 id: name.startsWith(idPrefix)
                   ? name.substring(idPrefix.length)
                   : undefined,
               })
             );
 
-            return discord.Message.spinner().send();
+            return discordV2.Message.spinner().send();
           }
           case 'party':
           case 'team':

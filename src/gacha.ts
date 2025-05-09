@@ -13,7 +13,6 @@ import db, { ObjectId } from '~/db/index.ts';
 
 import packs from '~/src/packs.ts';
 
-import * as discord from '~/src/discord.ts';
 import * as discordV2 from '~/src/discordV2.ts';
 
 import {
@@ -423,20 +422,24 @@ async function pullAnimation({
     });
 
     if (pings.size > 0) {
-      const message = new discord.Message();
+      const message = new discordV2.Message();
 
-      const embed = await search.characterEmbed(message, pull.character, {
-        userId,
-        mode: 'thumbnail',
-        description: false,
-        footer: true,
-        media: { title: true },
-        overwrite: { userId, rating: pull.rating.stars },
-      });
+      const container = await search.characterContainer(
+        message,
+        pull.character,
+        {
+          userId,
+          mode: 'thumbnail',
+          description: false,
+          footer: true,
+          media: { title: true },
+          overwrite: { userId, rating: pull.rating.stars },
+        }
+      );
 
       await message
-        .addEmbed(embed)
-        .setContent(Array.from(pings).join(' '))
+        .addComponent(new discordV2.TextDisplay(Array.from(pings).join(' ')))
+        .addComponent(container)
         .followup(token);
     }
   }

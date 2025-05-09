@@ -1038,7 +1038,7 @@ export class Message {
 
     formData.append('payload_json', JSON.stringify(this.json()));
 
-    // console.log('message:', JSON.stringify(this.json()));
+    // console.log('message:', JSON.stringify(this.json(), null, 2));
 
     // NOTE discord timeouts responds after 3 seconds
     // if an upload will take longer than 3 seconds
@@ -1059,7 +1059,7 @@ export class Message {
 
     formData.append('payload_json', JSON.stringify(this.json().data));
 
-    console.log('message:', JSON.stringify(this.json()));
+    // console.log('message:', JSON.stringify(this.json(), null, 2));
 
     Object.entries(this.#files).forEach(([name, blob], index) => {
       formData.append(`files[${index}]`, blob, name);
@@ -1098,8 +1098,8 @@ export class Message {
       'PATCH'
     );
     // .then((r) => {
-    //   console.log(r, r.status, r.statusText);
-    //   r.text().then(console.log);
+    //   // console.log(r, r.status, r.statusText);
+    //   r.json().then((obj) => console.log(JSON.stringify(obj, null, 2)));
     // });
   }
 

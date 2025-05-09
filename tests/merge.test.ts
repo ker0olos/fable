@@ -534,6 +534,7 @@ describe('synthesis confirmed', () => {
       )
     ).toEqual({
       flags: 32768,
+      allowed_mentions: { parse: [] },
       attachments: [{ filename: 'character-image-url.webp', id: '0' }],
       components: [
         {
@@ -709,23 +710,35 @@ describe('synthesis confirmed', () => {
         ) as any
       )
     ).toEqual({
-      components: [],
+      flags: 32768,
       attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-      content: '<@another_user_id>',
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description:
-            '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
+          content: '<@another_user_id>',
+          type: 10,
+        },
+        {
+          type: 17,
+          components: [
             {
-              name: 'title',
-              value: '**name**',
+              type: 10,
+              content:
+                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: { url: 'attachment://character-image-url.webp' },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: 'title\n**name**',
+                },
+              ],
             },
           ],
-          thumbnail: {
-            url: 'attachment://character-image-url.webp',
-          },
         },
       ],
     });
