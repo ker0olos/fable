@@ -700,16 +700,28 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            title: 'title',
-            image: {
-              url: 'attachment://media-image-url.webp',
-            },
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '### title',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://media-image-url.webp',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [{ filename: 'media-image-url.webp', id: '0' }],
       });
 
@@ -729,15 +741,24 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/stars/1.gif',
-            },
+            type: 17,
+            components: [
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'http://localhost:8000/stars/1.gif',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [],
       });
 
@@ -757,23 +778,34 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
+        flags: 32768,
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        embeds: [
+        allowed_mentions: { parse: [] },
+        components: [
           {
-            type: 'rich',
-            description: new Rating({ stars: 1 }).emotes,
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 10,
+                content: 'title\n**name**',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://character-image-url.webp',
+                    },
+                  },
+                ],
               },
             ],
-            image: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
-        ],
-        components: [
           {
             type: 1,
             components: [
@@ -907,16 +939,28 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            title: 'title',
-            image: {
-              url: 'attachment://media-image-url.webp',
-            },
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '### title',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://media-image-url.webp',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [{ filename: 'media-image-url.webp', id: '0' }],
       });
 
@@ -936,15 +980,24 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/stars/1.gif',
-            },
+            type: 17,
+            components: [
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'http://localhost:8000/stars/1.gif',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [],
       });
 
@@ -964,23 +1017,34 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
+        flags: 32768,
+        allowed_mentions: { parse: [] },
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: new Rating({ stars: 1 }).emotes,
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 10,
+                content: 'title\n**name**',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://character-image-url.webp',
+                    },
+                  },
+                ],
               },
             ],
-            image: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
-        ],
-        components: [
           {
             type: 1,
             components: [
@@ -997,8 +1061,8 @@ describe('/gacha', () => {
                 type: 2,
               },
               {
-                custom_id: 'dupe=pack-id-2:2',
                 disabled: true,
+                custom_id: 'dupe=pack-id-2:2',
                 label: 'Already owned',
                 style: 2,
                 type: 2,
@@ -1121,19 +1185,34 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        content: '<@user_id>',
+        flags: 32768,
         allowed_mentions: { parse: [] },
-        components: [],
-        attachments: [{ filename: 'media-image-url.webp', id: '0' }],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            title: 'title',
-            image: {
-              url: 'attachment://media-image-url.webp',
-            },
+            type: 10,
+            content: '<@user_id>',
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '### title',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://media-image-url.webp',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
+        attachments: [{ filename: 'media-image-url.webp', id: '0' }],
       });
 
       expect(fetchStub).toHaveBeenNthCalledWith(
@@ -1152,18 +1231,30 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        content: '<@user_id>',
+        flags: 32768,
         allowed_mentions: { parse: [] },
-        components: [],
-        attachments: [],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/stars/1.gif',
-            },
+            type: 10,
+            content: '<@user_id>',
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'http://localhost:8000/stars/1.gif',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
+        attachments: [],
       });
 
       expect(fetchStub).toHaveBeenNthCalledWith(
@@ -1182,25 +1273,38 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        content: '<@user_id>',
+        flags: 32768,
         allowed_mentions: { parse: [] },
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: new Rating({ stars: 1 }).emotes,
-            fields: [
+            type: 10,
+            content: '<@user_id>',
+          },
+          {
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 10,
+                content: 'title\n**name**',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://character-image-url.webp',
+                    },
+                  },
+                ],
               },
             ],
-            image: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
-        ],
-        components: [
           {
             type: 1,
             components: [
@@ -1334,23 +1438,34 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
+        flags: 32768,
+        allowed_mentions: { parse: [] },
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: new Rating({ stars: 1 }).emotes,
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 10,
+                content: 'title\n**name**',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://character-image-url.webp',
+                    },
+                  },
+                ],
               },
             ],
-            image: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
-        ],
-        components: [
           {
             type: 1,
             components: [
@@ -1485,16 +1600,28 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            title: 'title',
-            image: {
-              url: 'attachment://media-image-url.webp',
-            },
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '### title',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://media-image-url.webp',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [{ filename: 'media-image-url.webp', id: '0' }],
       });
 
@@ -1514,15 +1641,24 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/stars/1.gif',
-            },
+            type: 17,
+            components: [
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'http://localhost:8000/stars/1.gif',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [],
       });
 
@@ -1542,23 +1678,34 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
+        flags: 32768,
+        allowed_mentions: { parse: [] },
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: new Rating({ stars: 1 }).emotes,
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 10,
+                content: 'title\n**name**',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://character-image-url.webp',
+                    },
+                  },
+                ],
               },
             ],
-            image: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
-        ],
-        components: [
           {
             type: 1,
             components: [
@@ -1601,23 +1748,35 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        components: [],
+        flags: 32768,
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        content: '<@another_user_id>',
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description:
-              '<@user_id>\n\n<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            fields: [
+            content: '<@another_user_id>',
+            type: 10,
+          },
+          {
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<@user_id>\n\n<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: { url: 'attachment://character-image-url.webp' },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: 'title\n**name**',
+                  },
+                ],
               },
             ],
-            thumbnail: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
         ],
       });
@@ -1730,16 +1889,28 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            title: 'title',
-            image: {
-              url: 'attachment://media-image-url.webp',
-            },
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '### title',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://media-image-url.webp',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [{ filename: 'media-image-url.webp', id: '0' }],
       });
 
@@ -1759,15 +1930,24 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/stars/1.gif',
-            },
+            type: 17,
+            components: [
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'http://localhost:8000/stars/1.gif',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [],
       });
 
@@ -1787,23 +1967,34 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
+        flags: 32768,
+        allowed_mentions: { parse: [] },
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: new Rating({ stars: 1 }).emotes,
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 10,
+                content: 'title\n**name**',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://character-image-url.webp',
+                    },
+                  },
+                ],
               },
             ],
-            image: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
-        ],
-        components: [
           {
             type: 1,
             components: [
@@ -1846,23 +2037,35 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        components: [],
+        flags: 32768,
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        content: '<@another_user_id>',
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description:
-              '<@user_id>\n\n<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            fields: [
+            content: '<@another_user_id>',
+            type: 10,
+          },
+          {
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<@user_id>\n\n<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: { url: 'attachment://character-image-url.webp' },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: 'title\n**name**',
+                  },
+                ],
               },
             ],
-            thumbnail: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
         ],
       });
@@ -1990,16 +2193,28 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            title: 'title',
-            image: {
-              url: 'attachment://media-image-url.webp',
-            },
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '### title',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://media-image-url.webp',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [{ filename: 'media-image-url.webp', id: '0' }],
       });
 
@@ -2019,15 +2234,24 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/stars/1.gif',
-            },
+            type: 17,
+            components: [
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'http://localhost:8000/stars/1.gif',
+                    },
+                  },
+                ],
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [],
       });
 
@@ -2047,23 +2271,34 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
+        flags: 32768,
+        allowed_mentions: { parse: [] },
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: new Rating({ stars: 1 }).emotes,
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 10,
+                content: 'title\n**name**',
+              },
+              {
+                type: 12,
+                items: [
+                  {
+                    media: {
+                      url: 'attachment://character-image-url.webp',
+                    },
+                  },
+                ],
               },
             ],
-            image: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
-        ],
-        components: [
           {
             type: 1,
             components: [
@@ -2106,23 +2341,35 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        components: [],
+        flags: 32768,
         attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-        content: '<@another_user_id>',
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description:
-              '<@user_id>\n\n<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-            fields: [
+            content: '<@another_user_id>',
+            type: 10,
+          },
+          {
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**name**',
+                type: 10,
+                content:
+                  '<@user_id>\n\n<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: { url: 'attachment://character-image-url.webp' },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: 'title\n**name**',
+                  },
+                ],
               },
             ],
-            thumbnail: {
-              url: 'attachment://character-image-url.webp',
-            },
           },
         ],
       });
@@ -2180,14 +2427,19 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            description: "You don't have any more pulls!",
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content:
+                  "You don't have any more pulls!\n-# +1 pull <t:1675732989:R>",
+              },
+            ],
           },
-          { type: 'rich', description: '+1 pull <t:1675732989:R>' },
         ],
-        components: [],
         attachments: [],
       });
     } finally {
@@ -2246,27 +2498,31 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        attachments: [],
+        flags: 32768,
         components: [
           {
-            type: 1,
+            type: 17,
             components: [
               {
-                custom_id: 'buy=bguaranteed=user_id=5',
-                label: '/buy guaranteed 5',
-                style: 2,
-                type: 2,
+                type: 9,
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      "You don't have any 5<:smolstar:1107503653956374638>pulls",
+                  },
+                ],
+                accessory: {
+                  custom_id: 'buy=bguaranteed=user_id=5',
+                  label: '/buy',
+                  style: 2,
+                  type: 2,
+                },
               },
             ],
           },
         ],
-        embeds: [
-          {
-            type: 'rich',
-            description:
-              'You don`t have any 5<:smolstar:1107503653956374638>pulls',
-          },
-        ],
+        attachments: [],
       });
     } finally {
       delete config.appId;
@@ -2322,13 +2578,18 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            description: 'There are no more characters left in this range',
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: 'There are no more characters left in this range',
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [],
       });
     } finally {
@@ -2385,14 +2646,19 @@ describe('/gacha', () => {
           ) as any
         )
       ).toEqual({
-        embeds: [
+        flags: 32768,
+        components: [
           {
-            type: 'rich',
-            description:
-              'There are no more 5<:smolstar:1107503653956374638>characters left',
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content:
+                  'There are no more 5<:smolstar:1107503653956374638>characters left',
+              },
+            ],
           },
         ],
-        components: [],
         attachments: [],
       });
     } finally {

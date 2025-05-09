@@ -7,6 +7,7 @@ import utils from '~/src/utils.ts';
 import user from '~/src/user.ts';
 
 import * as discord from '~/src/discord.ts';
+import * as discordV2 from '~/src/discordV2.ts';
 
 import config from '~/src/config.ts';
 
@@ -52,13 +53,11 @@ function media({
   token,
   id,
   search,
-  debug,
   guildId,
 }: {
   token: string;
   id?: string;
   search?: string;
-  debug?: boolean;
   guildId: string;
 }) {
   const locale = user.cachedGuilds[guildId]?.locale;
@@ -80,11 +79,6 @@ function media({
       });
     })
     .then(async (media) => {
-      if (debug) {
-        const message = await mediaDebugMessage(media);
-        return await message.patch(token);
-      }
-
       const message = await mediaMessage(media);
       return await message.patch(token);
     })
@@ -247,58 +241,18 @@ async function mediaEmbed(
     .setDescription(description);
 }
 
-async function mediaDebugMessage(
-  media: Media | DisaggregatedMedia
-): Promise<discord.Message> {
-  const titles = packs.aliasToArray(media.title);
-
-  if (!titles?.length) {
-    throw new Error('404');
-  }
-
-  const message = new discord.Message();
-
-  const embed = new discord.Embed()
-    .setTitle(titles.shift())
-    .setDescription(titles.join('\n'))
-    .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
-    .addField({
-      name: 'Type',
-      value: `${utils.capitalize(media.type)}`,
-      inline: true,
-    })
-    .addField({
-      name: 'Format',
-      value: `${utils.capitalize(media.format)}`,
-      inline: true,
-    })
-    .addField({
-      name: 'Popularity',
-      value: `${utils.comma(media.popularity || 0)}`,
-      inline: true,
-    });
-
-  const image = await embed.setThumbnailWithProxy({
-    url: media.images?.[0]?.url,
-  });
-
-  return message.addEmbed(embed).addAttachment(image);
-}
-
 function character({
   token,
   guildId,
   userId,
   search,
   id,
-  debug,
 }: {
   token: string;
   guildId: string;
   userId: string;
   id?: string;
   search?: string;
-  debug?: boolean;
 }) {
   const locale =
     user.cachedGuilds[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
@@ -321,36 +275,26 @@ function character({
       ]);
     })
     .then(async ([character, existing]) => {
-      const characterId = `${character.packId}:${character.id}`;
-
       const media = character.media?.edges?.[0]?.node;
 
       if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
         throw new Error('404');
       }
 
-      if (debug) {
-        const message = await characterDebugMessage(character);
-        return await message.patch(token);
-      }
-
-      const message = await characterMessage(character, {
+      const message = await characterMessageV2(character, {
+        like: true,
         existing,
         userId,
       });
-
-      message.insertComponents([
-        new discord.Component().setLabel('/like').setId(`like`, characterId),
-      ]);
 
       return await message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale)
+        return await new discordV2.Message()
+          .addComponent(
+            new discordV2.Container().addComponent(
+              new discordV2.TextDisplay(i18n.get('found-nothing', locale))
             )
           )
           .patch(token);
@@ -362,7 +306,7 @@ function character({
 
       const refId = utils.captureException(err);
 
-      await discord.Message.internal(refId).patch(token);
+      await discordV2.Message.internal(refId).patch(token);
     });
 }
 
@@ -557,57 +501,230 @@ async function characterEmbed(
   return embed;
 }
 
-async function characterDebugMessage(
-  character: Character
-): Promise<discord.Message> {
-  const media = character.media?.edges?.[0];
+async function characterMessageV2(
+  character: Character | DisaggregatedCharacter,
+  options?: CharacterEmbed & {
+    externalLinks?: boolean;
+    relations?: boolean | DisaggregatedMedia[];
+    like?: boolean;
+  }
+): Promise<discordV2.Message> {
+  options = {
+    externalLinks: true,
+    relations: true,
+    ...options,
+  };
 
-  const role = media?.role;
+  const message = new discordV2.Message().setPing();
 
-  const rating = new Rating({ stars: character.rating });
+  const container = await characterContainer(message, character, options);
 
-  const titles = packs.aliasToArray(character.name);
+  message.addComponent(container);
 
-  const message = new discord.Message();
+  const group: discordV2.Button[] = [];
 
-  const embed = new discord.Embed()
-    .setTitle(titles.splice(0, 1)[0])
-    .setDescription(titles.join('\n'))
-    .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
-    .addField({
-      name: 'Rating',
-      value: `${rating.stars}*`,
-    })
-    .addField({
-      name: 'Gender',
-      value: `${character.gender}`,
-      inline: true,
-    })
-    .addField({ name: 'Age', value: `${character.age}`, inline: true })
-    .addField({
-      name: 'Media',
-      value: `${media?.node.packId}:${media?.node.id}`,
-      inline: true,
-    })
-    .addField({
-      name: 'Role',
-      value: `${utils.capitalize(role)}`,
-      inline: true,
-    });
+  // link components
+  if (options.externalLinks) {
+    character.externalLinks?.forEach((link) => {
+      const component = new discordV2.Button()
+        .setLabel(link.site)
+        .setUrl(link.url);
 
-  const image = await embed.setThumbnailWithProxy({
-    url: character.images?.[0]?.url,
-  });
-
-  if (!media) {
-    embed.addField({
-      name: '**WARN**',
-      value:
-        'Character not available in gacha.\nAdd at least one media to the character.',
+      group.push(component);
     });
   }
 
-  return message.addEmbed(embed).addAttachment(image);
+  let relations: (Media | DisaggregatedMedia)[] = [];
+
+  // relation components
+  // sort media by popularity
+
+  if (Array.isArray(options.relations)) {
+    relations = options.relations.slice(0, 1);
+  } else if (
+    options.relations &&
+    character.media &&
+    'edges' in character.media
+  ) {
+    const edges = character.media.edges.slice(0, 1);
+
+    relations = edges.map(({ node }) => node);
+  }
+
+  const actionRow = new discordV2.ActionRow();
+
+  relations.forEach((media) => {
+    const label = packs.mediaToString({ media });
+
+    const component = new discordV2.Button()
+      .setLabel(label)
+      .setId('media', `${media.packId}:${media.id}`);
+
+    group.push(component);
+  });
+
+  if (options.like) {
+    actionRow.addComponent(
+      new discordV2.Button()
+        .setLabel('/like')
+        .setId(`like`, `${character.packId}:${character.id}`)
+    );
+  }
+  if (group.length > 0) {
+    actionRow.addComponents(...group);
+  }
+
+  if (group.length > 0 || options.like) {
+    message.addComponent(actionRow);
+  }
+
+  return message;
+}
+
+async function characterContainer(
+  message: discordV2.Message,
+  character: Character | DisaggregatedCharacter,
+  options?: CharacterEmbed
+): Promise<discordV2.Container> {
+  options = {
+    ...{
+      mode: 'full',
+      rating: true,
+      description: true,
+      footer: true,
+    },
+    ...options,
+  };
+
+  const container = new discordV2.Container();
+
+  options.existing = options.existing?.sort((a, b) => {
+    if (
+      options.userId &&
+      a.userId === options.userId &&
+      b.userId !== options.userId
+    ) {
+      return -1;
+    }
+
+    if (a.rating !== b.rating) {
+      return b.rating - a.rating;
+    }
+
+    return a.createdAt.getTime() - b.createdAt.getTime();
+  });
+
+  const exists = options.overwrite ?? options.existing?.[0];
+
+  const image = exists?.image ? { url: exists?.image } : character.images?.[0];
+
+  const alias = exists?.nickname ?? packs.aliasToArray(character.name)[0];
+
+  const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
+    ? 25
+    : 32;
+
+  const aliasWrapped = utils.wrap(alias, wrapWidth);
+
+  const userIds = options.overwrite?.userId
+    ? [`<@${options.overwrite.userId}>`]
+    : options.existing?.map(({ userId }) => `<@${userId}>`);
+
+  if (exists?.rating) {
+    // FIXME #63 Media Conflict
+
+    if (options?.rating) {
+      const rating = new Rating({ stars: exists?.rating });
+
+      container.addComponent(
+        new discordV2.TextDisplay(
+          userIds ? `${userIds.join('')}\n\n${rating.emotes}` : rating.emotes
+        )
+      );
+    } else if (userIds) {
+      container.addComponent(new discordV2.TextDisplay(userIds.join('')));
+    }
+  } else if (options?.rating) {
+    if (typeof options.rating === 'boolean' && options.rating) {
+      options.rating = new Rating({ stars: character.rating });
+    }
+
+    if (options.rating instanceof Rating) {
+      container.addComponent(new discordV2.TextDisplay(options.rating.emotes));
+    }
+  }
+
+  const description =
+    options.mode === 'thumbnail'
+      ? utils
+          .truncate(utils.decodeDescription(character.description), 128)
+          ?.replaceAll('\n', ' ')
+      : utils.decodeDescription(character.description);
+
+  let mediaTitle: string | undefined = undefined;
+
+  if (typeof options.media?.title === 'string') {
+    mediaTitle = options.media.title;
+  } else if (
+    options.media?.title &&
+    character.media &&
+    'edges' in character.media &&
+    character.media?.edges[0]
+  ) {
+    mediaTitle = packs.aliasToArray(character.media.edges[0].node.title)[0];
+  }
+
+  if (mediaTitle) {
+    const text = new discordV2.TextDisplay(
+      `${utils.wrap(mediaTitle, wrapWidth)}\n**${aliasWrapped}**\n${options.description && description ? description : ''}`.trim()
+    );
+
+    if (options.mode === 'thumbnail') {
+      const thumbnail = new discordV2.Thumbnail();
+      const attachment = await thumbnail.setWithProxy({ url: image?.url });
+      new discordV2.Section().addText(text).setAccessory(thumbnail);
+      container.addComponent(
+        new discordV2.Section().addText(text).setAccessory(thumbnail)
+      );
+      message.addAttachment(attachment);
+    } else {
+      container.addComponent(text);
+    }
+  } else {
+    const text = new discordV2.TextDisplay(
+      `${`**${aliasWrapped}**`}\n${options.description ? description || '' : options.suffix || ''}`.trim()
+    );
+
+    if (options.mode === 'thumbnail') {
+      const thumbnail = new discordV2.Thumbnail();
+      const attachment = await thumbnail.setWithProxy({ url: image?.url });
+      new discordV2.Section().addText(text).setAccessory(thumbnail);
+      container.addComponent(
+        new discordV2.Section().addText(text).setAccessory(thumbnail)
+      );
+      message.addAttachment(attachment);
+    } else {
+      container.addComponent(text);
+    }
+  }
+
+  if (options.mode === 'full') {
+    const mediaGallery = new discordV2.MediaGallery();
+    const attachment = await mediaGallery.addWithProxy({ url: image?.url });
+    container.addComponent(mediaGallery);
+    message.addAttachment(attachment);
+  }
+
+  const footer = [utils.capitalize(character.gender), character.age]
+    .filter(utils.nonNullable)
+    .join(', ')
+    .trim();
+
+  if (options.footer && footer) {
+    container.addComponent(new discordV2.TextDisplay(`-# ${footer}`));
+  }
+
+  return container;
 }
 
 function mediaCharacters({
@@ -872,11 +989,11 @@ const search = {
   media,
   mediaMessage,
   mediaEmbed,
-  mediaDebugMessage,
   character,
   characterMessage,
   characterEmbed,
-  characterDebugMessage,
+  characterMessageV2,
+  characterContainer,
   mediaCharacters,
   mediaFound,
 };

@@ -78,6 +78,60 @@ describe('db.addCharacter()', () => {
     assertWithinLast5secs(inventory!.lastPull!);
     assertWithinLast5secs(inventory!.rechargeTimestamp!);
 
+    expect(inventory!.lastPullMode).toBe('gacha');
+    expect(inventory!.availablePulls).toBe(9);
+  });
+
+  it('normal pull (quiet mode)', async () => {
+    await db.addCharacter({
+      rating: 3,
+      mediaId: 'media-id',
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-id',
+      guaranteed: false,
+      quiet: true,
+      mongo: client,
+    });
+
+    const character = await client.characters().findOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-id',
+    });
+
+    const inventory = await client.inventories().findOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+    });
+
+    expect(Object.keys(character!)).toEqual([
+      '_id',
+      'createdAt',
+      'inventoryId',
+      'characterId',
+      'guildId',
+      'userId',
+      'mediaId',
+      'rating',
+    ]);
+
+    expect(objectIdRegex.test(character!._id.toHexString())).toBe(true);
+
+    assertWithinLast5secs(character!.createdAt);
+
+    expect(character).toMatchObject({
+      rating: 3,
+      userId: 'user-id',
+      guildId: 'guild-id',
+      characterId: 'character-id',
+      mediaId: 'media-id',
+    });
+
+    assertWithinLast5secs(inventory!.lastPull!);
+    assertWithinLast5secs(inventory!.rechargeTimestamp!);
+
+    expect(inventory!.lastPullMode).toBe('q');
     expect(inventory!.availablePulls).toBe(9);
   });
 
@@ -261,6 +315,27 @@ describe('db.losePull()', () => {
     assertWithinLast5secs(inventory!.lastPull!);
     assertWithinLast5secs(inventory!.rechargeTimestamp!);
 
+    expect(inventory!.lastPullMode).toBe('gacha');
+    expect(inventory!.availablePulls).toBe(9);
+  });
+
+  it('normal (quiet mode)', async () => {
+    await db.losePull({
+      userId: 'user-id',
+      guildId: 'guild-id',
+      quiet: true,
+      mongo: client,
+    });
+
+    const inventory = await client.inventories().findOne({
+      userId: 'user-id',
+      guildId: 'guild-id',
+    });
+
+    assertWithinLast5secs(inventory!.lastPull!);
+    assertWithinLast5secs(inventory!.rechargeTimestamp!);
+
+    expect(inventory!.lastPullMode).toBe('q');
     expect(inventory!.availablePulls).toBe(9);
   });
 });

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import utils from '~/src/utils.ts';
+import utils, { ImageSize, json } from '~/src/utils.ts';
 
 import config from '~/src/config.ts';
 
@@ -42,6 +42,27 @@ export const join = (...args: string[]): string => {
   return args.join(splitter);
 };
 
+export const emotes = {
+  star: '<:star:1061016362832642098>',
+  noStar: '<:no_star:1109377526662434906>',
+  smolStar: '<:smolstar:1107503653956374638>',
+  remove: '<:remove:1099004424111792158>',
+  add: '<:add:1099004747123523644>',
+  all: '<:all:1107511909999181824>',
+  liked: '<:liked:1110491720375873567>',
+  member: '<:partymember:1135706921312206921>',
+  currentFloor: '<:currentfloor:1128724907245711452>',
+  clearedFloor: '<:clearedfloor:1131872032456446053>',
+  undiscoveredFloor: '<:undiscoveredfloor:1128724910609551481>',
+  rightArrow: '<:rarrow:1170533290105655428>',
+  enraged: '<:ENRAGED:1214241073518481428>',
+  stunned: '<:STUNNED:1214576287415541814>',
+  slowed: '<:SLOWED:1215255510706683905>',
+  sneaky: '<:sneaky:1215575668490764288>',
+  skeleton: '<:loading:1227290168688508959>',
+  notice: '<:notice:1370007386135334972>',
+};
+
 class Component {
   // eslint-disable-next-line no-unused-private-class-members
   #data: {
@@ -59,7 +80,7 @@ export class ActionRow extends Component {
     components: Component[];
   };
 
-  constructor(components?: Component[]) {
+  constructor(...components: Component[]) {
     super();
     this.#data = {
       type: ComponentType.ActionRow,
@@ -67,13 +88,18 @@ export class ActionRow extends Component {
     };
   }
 
+  addComponent(component: Component): ActionRow {
+    this.#data.components.push(component);
+    return this;
+  }
+
   addComponents(...components: Component[]): ActionRow {
     this.#data.components.push(...components);
     return this;
   }
 
-  insertComponents(...components: Component[]): ActionRow {
-    this.#data.components.unshift(...components);
+  insertComponent(component: Component): ActionRow {
+    this.#data.components.unshift(component);
     return this;
   }
 
@@ -83,7 +109,10 @@ export class ActionRow extends Component {
   }
 
   json(): any {
-    return this.#data;
+    return {
+      ...this.#data,
+      components: this.#data.components.map((component) => component.json()),
+    };
   }
 }
 
@@ -649,12 +678,17 @@ export class TextDisplay extends Component {
     content: string;
   };
 
-  constructor(content: string) {
+  constructor(content?: string) {
     super();
     this.#data = {
       type: ComponentType.TextDisplay,
-      content,
+      content: content ?? '',
     };
+  }
+
+  setContent(content: string): TextDisplay {
+    this.#data.content = content;
+    return this;
   }
 
   json(): any {
@@ -670,12 +704,37 @@ export class Thumbnail extends Component {
     spoiler?: boolean;
   };
 
-  constructor(media: MediaType) {
+  constructor(media?: MediaType) {
     super();
     this.#data = {
       type: ComponentType.Thumbnail,
-      media,
+      media: media ?? { url: '' },
     };
+  }
+
+  setMedia(url: string): Thumbnail {
+    this.#data.media = { url };
+    return this;
+  }
+
+  async setWithProxy(image: {
+    url?: string;
+    default?: boolean;
+    size?: ImageSize;
+  }): Promise<Attachment | undefined> {
+    image.default ??= true;
+
+    if (config.disableImagesProxy) {
+      this.#data.media = { url: image.url! };
+    } else {
+      const attachment = await utils.proxy(image.url, image.size);
+
+      if (attachment) {
+        this.#data.media = { url: `attachment://${attachment.filename}` };
+      }
+
+      return attachment || undefined;
+    }
   }
 
   setDescription(description: string): Thumbnail {
@@ -713,17 +772,42 @@ export class MediaGallery extends Component {
     };
   }
 
-  addItem(
-    media: MediaType,
-    description?: string,
-    spoiler?: boolean
-  ): MediaGallery {
+  clearItems(): MediaGallery {
+    this.#data.items = [];
+    return this;
+  }
+
+  addItem(url: string, description?: string, spoiler?: boolean): MediaGallery {
     this.#data.items.push({
-      media,
+      media: { url },
       description,
       spoiler,
     });
     return this;
+  }
+
+  async addWithProxy(image: {
+    url?: string;
+    default?: boolean;
+    size?: ImageSize;
+  }): Promise<Attachment | undefined> {
+    image.default ??= true;
+
+    if (config.disableImagesProxy) {
+      this.#data.items.push({
+        media: { url: image.url! },
+      });
+    } else {
+      const attachment = await utils.proxy(image.url, image.size);
+
+      if (attachment) {
+        this.#data.items.push({
+          media: { url: `attachment://${attachment.filename}` },
+        });
+      }
+
+      return attachment || undefined;
+    }
   }
 
   json(): any {
@@ -816,8 +900,18 @@ export class Container extends Component {
     return this;
   }
 
+  clearComponents(): Container {
+    this.#data.components = [];
+    return this;
+  }
+
   addComponent(component: Component): Container {
     this.#data.components.push(component);
+    return this;
+  }
+
+  addComponents(...components: Component[]): Container {
+    this.#data.components.push(...components);
     return this;
   }
 
@@ -919,6 +1013,16 @@ export class Message {
     return this;
   }
 
+  addComponents(...components: Component[]): Message {
+    this.#data.components.push(...components);
+    return this;
+  }
+
+  insertComponent(component: Component): Message {
+    this.#data.components.unshift(component);
+    return this;
+  }
+
   json(): any {
     return {
       type: this.#type,
@@ -934,7 +1038,7 @@ export class Message {
 
     formData.append('payload_json', JSON.stringify(this.json()));
 
-    // console.log('message:', JSON.stringify(this.json()));
+    // console.log('message:', JSON.stringify(this.json(), null, 2));
 
     // NOTE discord timeouts responds after 3 seconds
     // if an upload will take longer than 3 seconds
@@ -954,6 +1058,8 @@ export class Message {
     const formData = new FormData();
 
     formData.append('payload_json', JSON.stringify(this.json().data));
+
+    // console.log('message:', JSON.stringify(this.json(), null, 2));
 
     Object.entries(this.#files).forEach(([name, blob], index) => {
       formData.append(`files[${index}]`, blob, name);
@@ -990,17 +1096,11 @@ export class Message {
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
       'PATCH'
-    ).finally(() => {
-      // // WORKAROUND double patch messages
-      // if (config.deploy) {
-      //   utils.sleep(0.25).then(() => {
-      //     return this.#http(
-      //       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
-      //       'PATCH'
-      //     );
-      //   });
-      // }
-    });
+    );
+    // .then((r) => {
+    //   // console.log(r, r.status, r.statusText);
+    //   r.json().then((obj) => console.log(JSON.stringify(obj, null, 2)));
+    // });
   }
 
   followup(token: string): Promise<Response> {
@@ -1010,27 +1110,27 @@ export class Message {
     );
   }
 
-  // static pong(): Response {
-  //   return json({ type: MessageType.Pong });
-  // }
+  static pong(): Response {
+    return json({ type: MessageType.Pong });
+  }
 
-  // static spinner(landscape?: boolean): Message {
-  //   const mediaGallery = new MediaGallery({
-  //     media: {
-  //       url: landscape
-  //         ? `${config.origin}/spinner3.gif`
-  //         : `${config.origin}/spinner.gif`,
-  //     },
-  //   });
+  static spinner(landscape?: boolean): Message {
+    const mediaGallery = new MediaGallery({
+      media: {
+        url: landscape
+          ? `${config.origin}/spinner3.gif`
+          : `${config.origin}/spinner.gif`,
+      },
+    });
 
-  //   return new Message().addComponents(mediaGallery);
-  // }
+    return new Message().addComponent(new Container(mediaGallery));
+  }
 
-  // static internal(id: string): Message {
-  //   const textDisplay = new TextDisplay(
-  //     `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``
-  //   );
+  static internal(id: string): Message {
+    const text = new TextDisplay(
+      `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``
+    );
 
-  //   return new Message().addComponents(textDisplay);
-  // }
+    return new Message().addComponent(new Container(text));
+  }
 }
