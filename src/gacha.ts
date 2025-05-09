@@ -14,6 +14,7 @@ import db, { ObjectId } from '~/db/index.ts';
 import packs from '~/src/packs.ts';
 
 import * as discord from '~/src/discord.ts';
+import * as discordV2 from '~/src/discordV2.ts';
 
 import {
   Character,
@@ -312,33 +313,44 @@ async function pullAnimation({
 
     const mediaImage = pull.media.images?.[0];
 
-    let embed = new discord.Embed().setTitle(utils.wrap(mediaTitles[0]));
+    const container = new discordV2.Container();
+    const image = new discordV2.MediaGallery();
 
-    const mediaImageAttachment = await embed.setImageWithProxy({
+    const mediaImageAttachment = await image.addWithProxy({
       size: ImageSize.Medium,
       url: mediaImage?.url,
     });
 
-    let message = new discord.Message()
-      .addEmbed(embed)
-      .addAttachment(mediaImageAttachment);
+    container
+      .addComponent(new discordV2.TextDisplay(`### ${mediaTitles[0]}`))
+      .addComponent(image);
+
+    let message = new discordV2.Message()
+      .addAttachment(mediaImageAttachment)
+      .addComponent(container);
 
     if (mention && userId) {
-      message.setContent(`<@${userId}>`).setPing();
+      message
+        .insertComponent(new discordV2.TextDisplay(`<@${userId}>`))
+        .setPing();
     }
 
     await message.patch(token);
 
     await utils.sleep(4);
 
-    embed = new discord.Embed();
+    image
+      .clearItems()
+      .addItem(`${config.origin}/stars/${pull.rating.stars}.gif`);
 
-    embed.setImageUrl(`${config.origin}/stars/${pull.rating.stars}.gif`);
+    container.clearComponents().addComponent(image);
 
-    message = new discord.Message().addEmbed(embed);
+    message = new discordV2.Message().addComponent(container);
 
     if (mention && userId) {
-      message.setContent(`<@${userId}>`).setPing();
+      message
+        .insertComponent(new discordV2.TextDisplay(`<@${userId}>`))
+        .setPing();
     }
 
     await message.patch(token);
@@ -347,42 +359,46 @@ async function pullAnimation({
   }
   //
 
-  const message = await search.characterMessage(pull.character, {
+  const message = await search.characterMessageV2(pull.character, {
     relations: false,
     rating: pull.rating,
     description: false,
     externalLinks: false,
     footer: false,
-    media: {
-      title: true,
-    },
+    media: { title: true },
   });
 
+  const actionRow = new discordV2.ActionRow();
+
   if (components && userId) {
-    const component = new discord.Component()
+    const component = new discordV2.Button()
       .setId(quiet ? 'q' : 'gacha', userId)
       .setLabel(`/${quiet ? 'q' : 'gacha'}`);
 
-    message.addComponents([component]);
+    actionRow.addComponent(component);
   }
 
-  message.addComponents(
-    [
-      new discord.Component()
+  actionRow.addComponents(
+    ...[
+      new discordV2.Button()
         .setLabel('/character')
         .setId(`character`, characterId, '1'),
       pull.dupe
-        ? new discord.Component()
+        ? new discordV2.Button()
             .setLabel(i18n.get('already-owned', locale))
             .setId('dupe', characterId)
             .setDisabled(true)
         : null,
-      new discord.Component().setLabel('/like').setId(`like`, characterId),
+      new discordV2.Button().setLabel('/like').setId(`like`, characterId),
     ].filter(utils.nonNullable)
   );
 
+  message.addComponent(actionRow);
+
   if (mention && userId) {
-    message.setContent(`<@${userId}>`).setPing();
+    message
+      .insertComponent(new discordV2.TextDisplay(`<@${userId}>`))
+      .setPing();
   }
 
   await message.patch(token);
@@ -459,51 +475,55 @@ function start({
     })
     .catch(async (err) => {
       if (err instanceof NoPullsError) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('gacha-no-more-pulls', locale)
-            )
-          )
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`)
+        return new discordV2.Message()
+          .addComponent(
+            new discordV2.Container().addComponent(
+              new discordV2.TextDisplay(
+                `${i18n.get('gacha-no-more-pulls', locale)}\n-# ${i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`)}`
+              )
             )
           )
           .patch(token);
       }
 
       if (err?.message === '403') {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get(
-                'gacha-no-guarantees',
-                locale,
-                `${guarantee}${discord.emotes.smolStar}`
-              )
+        return await new discordV2.Message()
+          .addComponent(
+            new discordV2.Container().addComponent(
+              new discordV2.Section()
+                .addText(
+                  new discordV2.TextDisplay(
+                    i18n.get(
+                      'gacha-no-guarantees',
+                      locale,
+                      `${guarantee}${discordV2.emotes.smolStar}`
+                    )
+                  )
+                )
+                .setAccessory(
+                  new discordV2.Button()
+                    .setId('buy', 'bguaranteed', userId!, `${guarantee}`)
+                    .setLabel('/buy')
+                )
             )
           )
-          .addComponents([
-            new discord.Component()
 
-              .setId('buy', 'bguaranteed', userId!, `${guarantee}`)
-              .setLabel(`/buy guaranteed ${guarantee}`),
-          ])
           .patch(token);
       }
 
       if (err instanceof PoolError) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              typeof guarantee === 'number'
-                ? i18n.get(
-                    'gacha-no-more-characters-left',
-                    locale,
-                    `${guarantee}${discord.emotes.smolStar}`
-                  )
-                : i18n.get('gacha-no-more-in-range', locale)
+        return await new discordV2.Message()
+          .addComponent(
+            new discordV2.Container().addComponent(
+              new discordV2.TextDisplay(
+                typeof guarantee === 'number'
+                  ? i18n.get(
+                      'gacha-no-more-characters-left',
+                      locale,
+                      `${guarantee}${discordV2.emotes.smolStar}`
+                    )
+                  : i18n.get('gacha-no-more-in-range', locale)
+              )
             )
           )
           .patch(token);
@@ -515,7 +535,7 @@ function start({
 
       const refId = utils.captureException(err);
 
-      await discord.Message.internal(refId).patch(token);
+      await discordV2.Message.internal(refId).patch(token);
     });
 }
 

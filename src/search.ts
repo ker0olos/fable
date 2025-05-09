@@ -7,6 +7,7 @@ import utils from '~/src/utils.ts';
 import user from '~/src/user.ts';
 
 import * as discord from '~/src/discord.ts';
+import * as discordV2 from '~/src/discordV2.ts';
 
 import config from '~/src/config.ts';
 
@@ -557,6 +558,213 @@ async function characterEmbed(
   return embed;
 }
 
+async function characterMessageV2(
+  character: Character | DisaggregatedCharacter,
+  options?: CharacterEmbed & {
+    externalLinks?: boolean;
+    relations?: boolean | DisaggregatedMedia[];
+  }
+): Promise<discordV2.Message> {
+  options = {
+    externalLinks: true,
+    relations: true,
+    ...options,
+  };
+
+  const message = new discordV2.Message();
+
+  const container = await characterContainer(message, character, options);
+
+  message.addComponent(container);
+
+  const group: discordV2.Button[] = [];
+
+  // link components
+  if (options.externalLinks) {
+    character.externalLinks?.forEach((link) => {
+      const component = new discordV2.Button()
+        .setLabel(link.site)
+        .setUrl(link.url);
+
+      group.push(component);
+    });
+  }
+
+  let relations: (Media | DisaggregatedMedia)[] = [];
+
+  // relation components
+  // sort media by popularity
+
+  if (Array.isArray(options.relations)) {
+    relations = options.relations.slice(0, 1);
+  } else if (
+    options.relations &&
+    character.media &&
+    'edges' in character.media
+  ) {
+    const edges = character.media.edges.slice(0, 1);
+
+    relations = edges.map(({ node }) => node);
+  }
+
+  relations.forEach((media) => {
+    const label = packs.mediaToString({ media });
+
+    const component = new discordV2.Button()
+      .setLabel(label)
+      .setId('media', `${media.packId}:${media.id}`);
+
+    group.push(component);
+  });
+
+  message.addComponents(...group);
+
+  return message;
+}
+
+async function characterContainer(
+  message: discordV2.Message,
+  character: Character | DisaggregatedCharacter,
+  options?: CharacterEmbed
+): Promise<discordV2.Container> {
+  options = {
+    ...{
+      mode: 'full',
+      rating: true,
+      description: true,
+      footer: true,
+    },
+    ...options,
+  };
+
+  const container = new discordV2.Container();
+
+  options.existing = options.existing?.sort((a, b) => {
+    if (
+      options.userId &&
+      a.userId === options.userId &&
+      b.userId !== options.userId
+    ) {
+      return -1;
+    }
+
+    if (a.rating !== b.rating) {
+      return b.rating - a.rating;
+    }
+
+    return a.createdAt.getTime() - b.createdAt.getTime();
+  });
+
+  const exists = options.overwrite ?? options.existing?.[0];
+
+  const image = exists?.image ? { url: exists?.image } : character.images?.[0];
+
+  const alias = exists?.nickname ?? packs.aliasToArray(character.name)[0];
+
+  const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
+    ? 25
+    : 32;
+
+  const aliasWrapped = utils.wrap(alias, wrapWidth);
+
+  const userIds = options.overwrite?.userId
+    ? [`<@${options.overwrite.userId}>`]
+    : options.existing?.map(({ userId }) => `<@${userId}>`);
+
+  if (exists?.rating) {
+    // FIXME #63 Media Conflict
+
+    if (options?.rating) {
+      const rating = new Rating({ stars: exists?.rating });
+
+      container.addComponent(
+        new discordV2.TextDisplay(
+          userIds ? `${userIds.join('')}\n\n${rating.emotes}` : rating.emotes
+        )
+      );
+    } else if (userIds) {
+      container.addComponent(new discordV2.TextDisplay(userIds.join('')));
+    }
+  } else if (options?.rating) {
+    if (typeof options.rating === 'boolean' && options.rating) {
+      options.rating = new Rating({ stars: character.rating });
+    }
+
+    if (options.rating instanceof Rating) {
+      container.addComponent(new discordV2.TextDisplay(options.rating.emotes));
+    }
+  }
+
+  const description =
+    options.mode === 'thumbnail'
+      ? utils
+          .truncate(utils.decodeDescription(character.description), 128)
+          ?.replaceAll('\n', ' ')
+      : utils.decodeDescription(character.description);
+
+  let mediaTitle: string | undefined = undefined;
+
+  if (typeof options.media?.title === 'string') {
+    mediaTitle = options.media.title;
+  } else if (
+    options.media?.title &&
+    character.media &&
+    'edges' in character.media &&
+    character.media?.edges[0]
+  ) {
+    mediaTitle = packs.aliasToArray(character.media.edges[0].node.title)[0];
+  }
+
+  if (mediaTitle) {
+    container.addComponent(
+      new discordV2.TextDisplay(
+        `${utils.wrap(mediaTitle, wrapWidth)}\n**${aliasWrapped}**`
+      )
+    );
+
+    if (options.description && description) {
+      container.addComponent(new discordV2.TextDisplay(description));
+    }
+  } else {
+    container.addComponent(
+      new discordV2.TextDisplay(
+        `${
+          !description ||
+          !options.description ||
+          (options.description && options.mode === 'thumbnail')
+            ? `${aliasWrapped}`
+            : `${aliasWrapped}\n${discord.empty}`
+        }\n${options.description ? description : options.suffix}`
+      )
+    );
+  }
+
+  if (options.mode === 'full') {
+    const mediaGallery = new discordV2.MediaGallery();
+    const attachment = await mediaGallery.addWithProxy({ url: image?.url });
+    container.addComponent(mediaGallery);
+    message.addAttachment(attachment);
+  } else {
+    throw new Error("'thumbnail' mode not supported");
+
+    // const thumbnail = new discordV2.Thumbnail();
+    // const attachment = await thumbnail.setWithProxy({ url: image?.url });
+    // container.addComponent(thumbnail);
+    // message.addAttachment(attachment);
+  }
+
+  const footer = [utils.capitalize(character.gender), character.age]
+    .filter(utils.nonNullable)
+    .join(', ')
+    .trim();
+
+  if (options.footer && footer) {
+    container.addComponent(new discordV2.TextDisplay(`-# ${footer}`));
+  }
+
+  return container;
+}
+
 async function characterDebugMessage(
   character: Character
 ): Promise<discord.Message> {
@@ -876,6 +1084,8 @@ const search = {
   character,
   characterMessage,
   characterEmbed,
+  characterMessageV2,
+  characterContainer,
   characterDebugMessage,
   mediaCharacters,
   mediaFound,

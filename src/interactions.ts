@@ -1,4 +1,5 @@
 import * as discord from '~/src/discord.ts';
+import * as discordV2 from '~/src/discordV2.ts';
 
 import search, { idPrefix } from '~/src/search.ts';
 
@@ -627,7 +628,7 @@ export const handler = async (r: Request, ctx: any) => {
               })
             );
 
-            return discord.Message.spinner().send();
+            return discordV2.Message.spinner().send();
           }
           case 'nick': {
             const name = options['character'] as string;

@@ -5796,7 +5796,9 @@ describe('gacha command handlers', () => {
     const validateSpy = vi
       .spyOn(utils, 'validateRequest')
       .mockReturnValue({} as any);
-    vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
+    const signatureSpy = vi
+      .spyOn(utils, 'verifySignature')
+      .mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
     const ctxStub = {
       waitUntil: vi.fn(() => Promise.resolve()),
@@ -5814,11 +5816,49 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request, ctxStub as any);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
           headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureSpy).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 32768,
+          attachments: [],
+          components: [
+            {
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    { media: { url: 'http://localhost:8000/spinner.gif' } },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       });
     } finally {
@@ -5845,7 +5885,9 @@ describe('gacha command handlers', () => {
     const validateSpy = vi
       .spyOn(utils, 'validateRequest')
       .mockReturnValue({} as any);
-    vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
+    const signatureSpy = vi
+      .spyOn(utils, 'verifySignature')
+      .mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
     const ctxStub = {
       waitUntil: vi.fn(() => Promise.resolve()),
@@ -5863,11 +5905,49 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request, ctxStub as any);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
           headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureSpy).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 32768,
+          attachments: [],
+          components: [
+            {
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    { media: { url: 'http://localhost:8000/spinner.gif' } },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       });
     } finally {
@@ -5900,7 +5980,9 @@ describe('gacha command handlers', () => {
     const validateSpy = vi
       .spyOn(utils, 'validateRequest')
       .mockReturnValue({} as any);
-    vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
+    const signatureSpy = vi
+      .spyOn(utils, 'verifySignature')
+      .mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
     const ctxStub = {
       waitUntil: vi.fn(() => Promise.resolve()),
@@ -5918,11 +6000,49 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request, ctxStub as any);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
           headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureSpy).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 32768,
+          attachments: [],
+          components: [
+            {
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    { media: { url: 'http://localhost:8000/spinner.gif' } },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       });
     } finally {
@@ -5955,7 +6075,9 @@ describe('gacha command handlers', () => {
     const validateSpy = vi
       .spyOn(utils, 'validateRequest')
       .mockReturnValue({} as any);
-    vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
+    const signatureSpy = vi
+      .spyOn(utils, 'verifySignature')
+      .mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
     const ctxStub = {
       waitUntil: vi.fn(() => Promise.resolve()),
@@ -5973,11 +6095,49 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request, ctxStub as any);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
           headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureSpy).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 32768,
+          attachments: [],
+          components: [
+            {
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    { media: { url: 'http://localhost:8000/spinner.gif' } },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       });
     } finally {
@@ -6004,7 +6164,9 @@ describe('gacha command handlers', () => {
     const validateSpy = vi
       .spyOn(utils, 'validateRequest')
       .mockReturnValue({} as any);
-    vi.spyOn(utils, 'verifySignature').mockReturnValue({ valid: true, body });
+    const signatureSpy = vi
+      .spyOn(utils, 'verifySignature')
+      .mockReturnValue({ valid: true, body });
     vi.spyOn(gacha, 'start').mockReturnValue({ send: () => true } as any);
     const ctxStub = {
       waitUntil: vi.fn(() => Promise.resolve()),
@@ -6022,11 +6184,49 @@ describe('gacha command handlers', () => {
         },
       });
 
-      await handler(request, ctxStub as any);
+      const response = await handler(request, ctxStub as any);
 
       expect(validateSpy).toHaveBeenCalledWith(request, {
         POST: {
           headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureSpy).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(response?.ok).toBe(true);
+      expect(response?.redirected).toBe(false);
+
+      expect(response?.status).toBe(200);
+      expect(response?.statusText).toBe('OK');
+
+      const json = JSON.parse(
+        (await response?.formData()).get('payload_json')!.toString()
+      );
+
+      expect(json).toEqual({
+        type: 4,
+        data: {
+          flags: 32768,
+          attachments: [],
+          components: [
+            {
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    { media: { url: 'http://localhost:8000/spinner.gif' } },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       });
     } finally {

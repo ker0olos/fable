@@ -450,72 +450,118 @@ describe('synthesis confirmed', () => {
       expect.objectContaining({ method: 'PATCH' })
     );
 
-    const firstCallBody = JSON.parse(
-      (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
-    );
-    expect(firstCallBody).toEqual({
-      attachments: [{ filename: 'media-image-url.webp', id: '0' }],
-      components: [],
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      components: [
         {
-          type: 'rich',
-          title: 'title',
-          image: {
-            url: 'attachment://media-image-url.webp',
-          },
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '### title',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://media-image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
         },
       ],
+      attachments: [{ filename: 'media-image-url.webp', id: '0' }],
     });
 
     expect(fetchStub).toHaveBeenNthCalledWith(
       2,
       'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      expect.objectContaining({ method: 'PATCH' })
+      expect.objectContaining({
+        method: 'PATCH',
+        body: expect.any(FormData),
+      })
     );
 
-    const secondCallBody = JSON.parse(
-      (fetchStub.mock.calls[1][1]?.body as FormData)?.get('payload_json') as any
-    );
-    expect(secondCallBody).toEqual({
-      embeds: [
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[1][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
+      components: [
         {
-          type: 'rich',
-          image: {
-            url: 'http://localhost:8000/stars/2.gif',
-          },
+          type: 17,
+          components: [
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'http://localhost:8000/stars/2.gif',
+                  },
+                },
+              ],
+            },
+          ],
         },
       ],
-      components: [],
       attachments: [],
     });
 
     expect(fetchStub).toHaveBeenNthCalledWith(
       3,
       'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      expect.objectContaining({ method: 'PATCH' })
+      expect.objectContaining({
+        method: 'PATCH',
+        body: expect.any(FormData),
+      })
     );
 
-    const thirdCallBody = JSON.parse(
-      (fetchStub.mock.calls[2][1]?.body as FormData)?.get('payload_json') as any
-    );
-    expect(thirdCallBody).toEqual({
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[2][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      flags: 32768,
       attachments: [{ filename: 'character-image-url.webp', id: '0' }],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description: new Rating({ stars: 2 }).emotes,
-          fields: [
+          type: 17,
+          components: [
             {
-              name: 'title',
-              value: '**name**',
+              type: 10,
+              content:
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: 'title\n**name**',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://character-image-url.webp',
+                  },
+                },
+              ],
             },
           ],
-          image: {
-            url: 'attachment://character-image-url.webp',
-          },
         },
-      ],
-      components: [
         {
           type: 1,
           components: [
@@ -658,10 +704,13 @@ describe('synthesis confirmed', () => {
       expect.objectContaining({ method: 'POST' })
     );
 
-    const fourthCallBody = JSON.parse(
-      (fetchStub.mock.calls[3][1]?.body as FormData)?.get('payload_json') as any
-    );
-    expect(fourthCallBody).toEqual({
+    expect(
+      JSON.parse(
+        (fetchStub.mock.calls[3][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
       components: [],
       attachments: [{ filename: 'character-image-url.webp', id: '0' }],
       content: '<@another_user_id>',
