@@ -92,7 +92,6 @@ describe('search command handlers', () => {
         token: 'token',
         guildId: 'guild_id',
         search: 'title',
-        debug: false,
         id: undefined,
       });
 
@@ -187,7 +186,6 @@ describe('search command handlers', () => {
         token: 'token',
         guildId: 'guild_id',
         search: 'title',
-        debug: false,
         id: undefined,
       });
 
@@ -282,7 +280,6 @@ describe('search command handlers', () => {
         token: 'token',
         guildId: 'guild_id',
         search: 'title',
-        debug: false,
         id: undefined,
       });
 
@@ -377,7 +374,6 @@ describe('search command handlers', () => {
         token: 'token',
         guildId: 'guild_id',
         search: 'title',
-        debug: false,
         id: undefined,
       });
 
@@ -472,106 +468,6 @@ describe('search command handlers', () => {
         token: 'token',
         guildId: 'guild_id',
         search: 'title',
-        debug: false,
-        id: undefined,
-      });
-
-      expect(response?.ok).toBe(true);
-      expect(response?.redirected).toBe(false);
-
-      expect(response?.status).toBe(200);
-      expect(response?.statusText).toBe('OK');
-
-      const json = JSON.parse(
-        (await response?.formData()).get('payload_json')!.toString()
-      );
-
-      expect(json).toEqual({
-        type: 4,
-        data: {
-          embeds: [
-            {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner.gif',
-              },
-            },
-          ],
-          attachments: [],
-          components: [],
-        },
-      });
-    } finally {
-      delete config.publicKey;
-    }
-  });
-
-  test('debug', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      data: {
-        name: 'search',
-        options: [
-          {
-            name: 'title',
-            value: 'title',
-          },
-          {
-            name: 'debug',
-            value: true,
-          },
-        ],
-      },
-    });
-
-    const validateSpy = vi
-      .spyOn(utils, 'validateRequest')
-      .mockReturnValue({} as any);
-    const signatureSpy = vi
-      .spyOn(utils, 'verifySignature')
-      .mockReturnValue({ valid: true, body });
-    const searchSpy = vi
-      .spyOn(search, 'media')
-      .mockReturnValue({ send: () => true } as any);
-    const ctxStub = {
-      waitUntil: vi.fn(() => Promise.resolve()),
-    };
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request, ctxStub as any);
-
-      expect(validateSpy).toHaveBeenCalledWith(request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-        },
-      });
-
-      expect(signatureSpy).toHaveBeenCalledWith({
-        body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      });
-
-      expect(searchSpy).toHaveBeenCalledWith({
-        token: 'token',
-        guildId: 'guild_id',
-        search: 'title',
-        debug: true,
         id: undefined,
       });
 
@@ -666,7 +562,6 @@ describe('search command handlers', () => {
         token: 'token',
         guildId: 'guild_id',
         search: 'id=uuid',
-        debug: false,
         id: 'uuid',
       });
 
@@ -983,121 +878,6 @@ describe('character command handlers', () => {
         guildId: 'guild_id',
         userId: 'user_id',
         search: 'name',
-        debug: false,
-        id: undefined,
-      });
-
-      expect(response?.ok).toBe(true);
-      expect(response?.redirected).toBe(false);
-
-      expect(response?.status).toBe(200);
-      expect(response?.statusText).toBe('OK');
-
-      const json = JSON.parse(
-        (await response?.formData()).get('payload_json')!.toString()
-      );
-
-      expect(json).toEqual({
-        type: 4,
-        data: {
-          flags: 32768,
-          attachments: [],
-          components: [
-            {
-              type: 17,
-              components: [
-                {
-                  type: 12,
-                  items: [
-                    {
-                      media: {
-                        url: 'http://localhost:8000/spinner.gif',
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      });
-    } finally {
-      delete config.publicKey;
-    }
-  });
-
-  test('debug', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        name: 'character',
-        options: [
-          {
-            name: 'name',
-            value: 'name',
-          },
-          {
-            name: 'debug',
-            value: true,
-          },
-        ],
-      },
-    });
-
-    const validateSpy = vi
-      .spyOn(utils, 'validateRequest')
-      .mockReturnValue({} as any);
-    const signatureSpy = vi
-      .spyOn(utils, 'verifySignature')
-      .mockReturnValue({ valid: true, body });
-    const searchSpy = vi
-      .spyOn(search, 'character')
-      .mockReturnValue({ send: () => true } as any);
-    const ctxStub = {
-      waitUntil: vi.fn(() => Promise.resolve()),
-    };
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request, ctxStub as any);
-
-      expect(validateSpy).toHaveBeenCalledWith(request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-        },
-      });
-
-      expect(signatureSpy).toHaveBeenCalledWith({
-        body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      });
-
-      expect(searchSpy).toHaveBeenCalledWith({
-        token: 'token',
-        guildId: 'guild_id',
-        userId: 'user_id',
-        search: 'name',
-        debug: true,
         id: undefined,
       });
 
@@ -1207,7 +987,6 @@ describe('character command handlers', () => {
         guildId: 'guild_id',
         userId: 'user_id',
         search: 'id=uuid',
-        debug: false,
         id: 'uuid',
       });
 
