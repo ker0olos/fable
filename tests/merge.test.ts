@@ -8,8 +8,6 @@ import gacha from '~/src/gacha.ts';
 
 import config from '~/src/config.ts';
 
-import Rating from '~/src/rating.ts';
-
 import merge from '~/src/merge.ts';
 
 import db from '~/db/index.ts';
