@@ -999,8 +999,10 @@ export const handler = async (r: Request, ctx: any) => {
               })
             );
 
-            return discord.Message.spinner()
-              .setContent(`<@${member.user.id}>`)
+            return discordV2.Message.spinner()
+              .insertComponent(
+                new discordV2.TextDisplay(`<@${member.user.id}>`)
+              )
               .setPing()
               .send();
           }
