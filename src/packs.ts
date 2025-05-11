@@ -19,6 +19,7 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
+  MediaType,
 } from '~/src/types.ts';
 
 import type { Pack } from '~/db/schema.ts';
@@ -770,9 +771,9 @@ function aliasToArray(alias: Alias, max?: number): string[] {
   return Array.from(set) as string[];
 }
 
-function formatToString(format?: MediaFormat): string {
+function formatToString(type?: MediaType, format?: MediaFormat): string {
   if (!format || format === MediaFormat.Music) {
-    return '';
+    return utils.capitalize(type) ?? '';
   }
 
   return utils.capitalize(
@@ -799,7 +800,7 @@ function mediaToString({
     case MediaRelation.SideStory:
       return [title, `(${utils.capitalize(relation)})`].join(' ');
     default: {
-      const format = formatToString(media.format);
+      const format = formatToString(undefined, media.format);
 
       if (!format) {
         return title;

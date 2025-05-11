@@ -7,12 +7,15 @@ import config from '~/src/config.ts';
 import {
   AllowedPings,
   Attachment,
+  AvailableLocales,
   ButtonStyle,
   Emote,
   MessageFlags,
   MessageType,
   TextInputStyle,
 } from '~/src/discord.ts';
+
+import i18n from '~/src/i18n.ts';
 
 export enum ComponentType {
   ActionRow = 1,
@@ -122,7 +125,7 @@ export class Button extends Component {
     style: ButtonStyle;
     label?: string;
     emoji?: Emote;
-    custom_id: string;
+    custom_id?: string;
     sku_id?: string;
     url?: string;
     disabled?: boolean;
@@ -133,7 +136,6 @@ export class Button extends Component {
     this.#data = {
       type: ComponentType.Button,
       style: ButtonStyle.Grey,
-      custom_id: '',
     };
   }
 
@@ -175,6 +177,7 @@ export class Button extends Component {
   }
 
   setUrl(url: string): Button {
+    this.#data.style = ButtonStyle.Url;
     this.#data.url = url;
     return this;
   }
@@ -1124,6 +1127,101 @@ export class Message {
     });
 
     return new Message().addComponent(new Container(mediaGallery));
+  }
+
+  static page({
+    actionRow,
+    type,
+    target,
+    index,
+    total,
+    next,
+    locale,
+  }: {
+    type: string;
+    actionRow: ActionRow;
+    index: number;
+    target?: string;
+    next?: boolean;
+    total?: number;
+    locale?: AvailableLocales;
+  }) {
+    const prevId = index - 1 >= 0 ? index - 1 : total! - 1;
+
+    const nextId = next ? index + 1 : 0;
+
+    if (next || total) {
+      actionRow.insertComponent(
+        new Button()
+          .setId(type, target ?? '', `${nextId}`, 'next')
+          .setLabel(i18n.get('next', locale))
+      );
+    }
+
+    actionRow.insertComponent(
+      new Button()
+        .setId('_')
+        .setLabel(`${index + 1}${total ? `/${total}` : ''}`)
+        .toggle()
+    );
+
+    if (index - 1 >= 0 || total) {
+      actionRow.insertComponent(
+        new Button()
+          .setId(type, target ?? '', `${prevId}`, 'prev')
+          .setLabel(i18n.get('prev', locale))
+      );
+    }
+  }
+
+  static dialog({
+    type,
+    description,
+    message,
+    confirm,
+    confirmText,
+    cancelText,
+    userId,
+    targetId,
+    locale,
+  }: {
+    type?: string;
+    userId?: string;
+    targetId?: string;
+    description?: string;
+    confirm: string | string[];
+    message: Message;
+    confirmText?: string;
+    cancelText?: string;
+    locale?: AvailableLocales;
+  }): Message {
+    const confirmBtn = new Button().setLabel(
+      confirmText ?? i18n.get('confirm', locale)
+    );
+
+    const cancelComponent = new Button()
+      .setStyle(ButtonStyle.Red)
+      .setLabel(cancelText ?? i18n.get('cancel', locale));
+
+    if (Array.isArray(confirm)) {
+      confirmBtn.setId(...confirm);
+    } else {
+      confirmBtn.setId(type!, confirm);
+    }
+
+    if (userId && targetId) {
+      cancelComponent.setId('cancel', userId, targetId);
+    } else if (userId) {
+      cancelComponent.setId('cancel', userId);
+    } else {
+      cancelComponent.setId('cancel');
+    }
+
+    if (description) {
+      message.addComponent(new TextDisplay(description));
+    }
+
+    return message.addComponent(new ActionRow(confirmBtn, cancelComponent));
   }
 
   static internal(id: string): Message {

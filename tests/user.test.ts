@@ -5973,8 +5973,48 @@ describe('/like', () => {
           ) as any
         )
       ).toEqual({
-        attachments: [{ filename: 'default.webp', id: '0' }],
+        flags: 32768,
+        attachments: [
+          {
+            id: '0',
+            filename: 'default.webp',
+          },
+        ],
         components: [
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '**Liked**',
+              },
+            ],
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: 'title\n**character**',
+                  },
+                ],
+              },
+            ],
+          },
           {
             type: 1,
             components: [
@@ -5985,26 +6025,6 @@ describe('/like', () => {
                 type: 2,
               },
             ],
-          },
-        ],
-        embeds: [
-          {
-            type: 'rich',
-            description: 'Liked',
-          },
-          {
-            type: 'rich',
-            fields: [
-              {
-                name: 'title',
-                value: '**character**',
-              },
-            ],
-            thumbnail: {
-              url: 'attachment://default.webp',
-            },
-            description:
-              '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
           },
         ],
       });
@@ -6089,9 +6109,55 @@ describe('/like', () => {
           ) as any
         )
       ).toEqual({
-        allowed_mentions: { parse: [] },
-        attachments: [{ filename: 'default.webp', id: '0' }],
+        flags: 32768,
+        allowed_mentions: {
+          parse: [],
+        },
+        attachments: [
+          {
+            id: '0',
+            filename: 'default.webp',
+          },
+        ],
         components: [
+          {
+            type: 10,
+            content: '<@user_id>',
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '**Liked**',
+              },
+            ],
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: 'title\n**character**',
+                  },
+                ],
+              },
+            ],
+          },
           {
             type: 1,
             components: [
@@ -6102,27 +6168,6 @@ describe('/like', () => {
                 type: 2,
               },
             ],
-          },
-        ],
-        content: '<@user_id>',
-        embeds: [
-          {
-            type: 'rich',
-            description: 'Liked',
-          },
-          {
-            type: 'rich',
-            fields: [
-              {
-                name: 'title',
-                value: '**character**',
-              },
-            ],
-            thumbnail: {
-              url: 'attachment://default.webp',
-            },
-            description:
-              '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
           },
         ],
       });
@@ -6205,26 +6250,47 @@ describe('/like', () => {
           ) as any
         )
       ).toEqual({
-        attachments: [{ filename: 'default.webp', id: '0' }],
-        components: [],
-        embeds: [
+        flags: 32768,
+        attachments: [
           {
-            type: 'rich',
-            description: 'Unliked',
+            id: '0',
+            filename: 'default.webp',
           },
+        ],
+        components: [
           {
-            type: 'rich',
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**character**',
+                type: 10,
+                content: '**Unliked**',
               },
             ],
-            thumbnail: {
-              url: 'attachment://default.webp',
-            },
-            description:
-              '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: 'title\n**character**',
+                  },
+                ],
+              },
+            ],
           },
         ],
       });
@@ -6308,26 +6374,47 @@ describe('/like', () => {
           ) as any
         )
       ).toEqual({
-        attachments: [{ filename: 'default.webp', id: '0' }],
-        components: [],
-        embeds: [
+        flags: 32768,
+        attachments: [
           {
-            type: 'rich',
-            description: 'Unliked',
+            id: '0',
+            filename: 'default.webp',
           },
+        ],
+        components: [
           {
-            type: 'rich',
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**character**',
+                type: 10,
+                content: '**Unliked**',
               },
             ],
-            thumbnail: {
-              url: 'attachment://default.webp',
-            },
-            description:
-              '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: 'title\n**character**',
+                  },
+                ],
+              },
+            ],
           },
         ],
       });
@@ -6411,26 +6498,47 @@ describe('/like', () => {
           ) as any
         )
       ).toEqual({
-        attachments: [{ filename: 'default.webp', id: '0' }],
-        components: [],
-        embeds: [
+        flags: 32768,
+        attachments: [
           {
-            type: 'rich',
-            description: 'Unliked',
+            id: '0',
+            filename: 'default.webp',
           },
+        ],
+        components: [
           {
-            type: 'rich',
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'title',
-                value: '**character**',
+                type: 10,
+                content: '**Unliked**',
               },
             ],
-            thumbnail: {
-              url: 'attachment://default.webp',
-            },
-            description:
-              '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content:
+                  '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: 'title\n**character**',
+                  },
+                ],
+              },
+            ],
           },
         ],
       });
@@ -6484,12 +6592,17 @@ describe('/like', () => {
           ) as any
         )
       ).toEqual({
-        components: [],
+        flags: 32768,
         attachments: [],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: 'Found _nothing_ matching that query!',
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: 'Found _nothing_ matching that query!',
+              },
+            ],
           },
         ],
       });
@@ -6570,10 +6683,48 @@ describe('/likeall', () => {
           ) as any
         )
       ).toEqual({
-        attachments: [{ filename: 'default.webp', id: '0' }],
+        flags: 32768,
+        attachments: [
+          {
+            id: '0',
+            filename: 'default.webp',
+          },
+        ],
         components: [
           {
-            type: 1,
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '**Liked**',
+              },
+            ],
+          },
+          {
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '-# Anime',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: '**title**',
+                  },
+                ],
+              },
+            ],
+          },
+          {
             components: [
               {
                 custom_id: 'media=pack-id:1',
@@ -6582,19 +6733,7 @@ describe('/likeall', () => {
                 type: 2,
               },
             ],
-          },
-        ],
-        embeds: [
-          {
-            type: 'rich',
-            description: 'Liked',
-          },
-          {
-            type: 'rich',
-            title: 'title',
-            thumbnail: {
-              url: 'attachment://default.webp',
-            },
+            type: 1,
           },
         ],
       });
@@ -6650,7 +6789,6 @@ describe('/likeall', () => {
       await user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
-
         token: 'test_token',
         search: 'title',
         undo: true,
@@ -6671,19 +6809,41 @@ describe('/likeall', () => {
           ) as any
         )
       ).toEqual({
+        flags: 32768,
         attachments: [{ filename: 'default.webp', id: '0' }],
-        components: [],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: 'Unliked',
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '**Unliked**',
+              },
+            ],
           },
           {
-            type: 'rich',
-            title: 'title',
-            thumbnail: {
-              url: 'attachment://default.webp',
-            },
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: '-# Anime',
+              },
+              {
+                type: 9,
+                accessory: {
+                  type: 11,
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+                components: [
+                  {
+                    type: 10,
+                    content: '**title**',
+                  },
+                ],
+              },
+            ],
           },
         ],
       });
@@ -6740,12 +6900,17 @@ describe('/likeall', () => {
           ) as any
         )
       ).toEqual({
-        components: [],
+        flags: 32768,
         attachments: [],
-        embeds: [
+        components: [
           {
-            type: 'rich',
-            description: 'Found _nothing_ matching that query!',
+            type: 17,
+            components: [
+              {
+                type: 10,
+                content: 'Found _nothing_ matching that query!',
+              },
+            ],
           },
         ],
       });
