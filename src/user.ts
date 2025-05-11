@@ -462,7 +462,7 @@ function like({
         throw new Error('404');
       }
 
-      const message = new discord.Message();
+      const message = new discordV2.Message();
 
       const characterId = `${character.packId}:${character.id}`;
 
@@ -472,15 +472,21 @@ function like({
         await db.unlikeCharacter(userId, characterId);
       }
 
-      message.addEmbed(
-        new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked')
-      );
-
       if (mention) {
-        message.setContent(`<@${userId}>`).setPing();
+        message
+          .addComponent(new discordV2.TextDisplay(`<@${userId}>`))
+          .setPing();
       }
 
-      const embed = await srch.characterEmbed(message, character, {
+      message.addComponent(
+        new discordV2.Container(
+          new discordV2.TextDisplay(
+            `**${!undo ? i18n.get('liked', locale) : i18n.get('unliked', locale)}**`
+          )
+        )
+      );
+
+      const container = await srch.characterContainer(message, character, {
         footer: true,
         description: false,
         mode: 'thumbnail',
@@ -488,24 +494,26 @@ function like({
         rating: true,
       });
 
-      message.addEmbed(embed);
+      message.addComponent(container);
 
       if (!undo) {
-        message.addComponents([
-          new discord.Component()
-            .setId(`character`, characterId)
-            .setLabel('/character'),
-        ]);
+        message.addComponent(
+          new discordV2.ActionRow(
+            new discordV2.Button()
+              .setId(`character`, characterId)
+              .setLabel('/character')
+          )
+        );
       }
 
       return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale)
+        return await new discordV2.Message()
+          .addComponent(
+            new discordV2.Container(
+              new discordV2.TextDisplay(i18n.get('found-nothing', locale))
             )
           )
           .patch(token);
@@ -517,7 +525,7 @@ function like({
 
       const refId = utils.captureException(err);
 
-      await discord.Message.internal(refId).patch(token);
+      await discordV2.Message.internal(refId).patch(token);
     });
 }
 
@@ -545,7 +553,7 @@ function likeall({
         throw new Error('404');
       }
 
-      const message = new discord.Message();
+      const message = new discordV2.Message();
 
       const mediaId = `${results[0].packId}:${results[0].id}`;
 
@@ -555,8 +563,12 @@ function likeall({
         await db.unlikeMedia(userId, mediaId);
       }
 
-      message.addEmbed(
-        new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked')
+      message.addComponent(
+        new discordV2.Container(
+          new discordV2.TextDisplay(
+            `**${!undo ? i18n.get('liked', locale) : i18n.get('unliked', locale)}**`
+          )
+        )
       );
 
       const media = await packs.aggregate<Media>({
@@ -564,28 +576,30 @@ function likeall({
         media: results[0],
       });
 
-      const embed = await srch.mediaEmbed(message, media, {
+      const container = await srch.mediaContainer(message, media, {
         mode: 'thumbnail',
       });
 
-      message.addEmbed(embed);
+      message.addComponent(container);
 
       if (!undo) {
-        message.addComponents([
-          new discord.Component()
-            .setId(`media`, mediaId)
-            .setLabel(`/${media.type.toString().toLowerCase()}`),
-        ]);
+        message.addComponent(
+          new discordV2.ActionRow(
+            new discordV2.Button()
+              .setId(`media`, mediaId)
+              .setLabel(`/${media.type.toString().toLowerCase()}`)
+          )
+        );
       }
 
       return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get('found-nothing', locale)
+        return await new discordV2.Message()
+          .addComponent(
+            new discordV2.Container(
+              new discordV2.TextDisplay(i18n.get('found-nothing', locale))
             )
           )
           .patch(token);
@@ -597,7 +611,7 @@ function likeall({
 
       const refId = utils.captureException(err);
 
-      await discord.Message.internal(refId).patch(token);
+      await discordV2.Message.internal(refId).patch(token);
     });
 }
 

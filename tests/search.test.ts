@@ -2,11 +2,13 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import utils from '~/src/utils.ts';
-import * as discord from '~/src/discord.ts';
 import packs from '~/src/packs.ts';
 import config from '~/src/config.ts';
 import search from '~/src/search.ts';
 import db from '~/db/index.ts';
+
+import * as discord from '~/src/discord.ts';
+import * as discordV2 from '~/src/discordV2.ts';
 
 import {
   Character,
@@ -87,21 +89,33 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
+      components: [
         {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
         },
       ],
-      components: [],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -161,21 +175,33 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
+      components: [
         {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'native title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**native title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
         },
       ],
-      components: [],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -235,21 +261,33 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
+      components: [
         {
-          type: 'rich',
-          author: {
-            name: 'Novel',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Novel',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
         },
       ],
-      components: [],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -315,20 +353,32 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-      ],
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -353,7 +403,6 @@ describe('/media', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -406,20 +455,33 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'default.webp' }],
+      components: [
         {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          image: {
-            url: 'attachment://default.webp',
-          },
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+              ],
+            },
+          ],
         },
       ],
-      components: [],
-      attachments: [{ filename: 'default.webp', id: '0' }],
     });
   });
 
@@ -483,20 +545,32 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-      ],
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -509,7 +583,6 @@ describe('/media', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -626,47 +699,88 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
+      flags: 32768,
+      attachments: [
+        { id: '0', filename: 'image-url.webp' },
         {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
+          id: '1',
+          filename: 'main character url.webp',
         },
         {
-          type: 'rich',
-          footer: {
-            text: 'Male, 69',
-          },
-          fields: [
-            {
-              name: 'main character name',
-              value: 'main character description',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://main character url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'supporting character name',
-              value: 'supporting character description',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://supporting character url.webp',
-          },
+          id: '2',
+          filename: 'supporting character url.webp',
         },
       ],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://main character url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content:
+                    '**main character name**\nmain character description',
+                },
+              ],
+            },
+            {
+              type: 10,
+              content: '-# Male, 69',
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://supporting character url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content:
+                    '**supporting character name**\nsupporting character description',
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -678,11 +792,6 @@ describe('/media', () => {
             },
           ],
         },
-      ],
-      attachments: [
-        { filename: 'image-url.webp', id: '0' },
-        { filename: 'main character url.webp', id: '1' },
-        { filename: 'supporting character url.webp', id: '2' },
       ],
     });
   });
@@ -824,20 +933,32 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-      ],
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -868,7 +989,6 @@ describe('/media', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -983,20 +1103,32 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-      ],
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -1027,7 +1159,6 @@ describe('/media', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -1102,20 +1233,32 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-      ],
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -1128,7 +1271,6 @@ describe('/media', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -1233,20 +1375,32 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-      ],
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -1265,7 +1419,6 @@ describe('/media', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -1367,20 +1520,32 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
-        {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-      ],
+      flags: 32768,
+      attachments: [{ id: '0', filename: 'image-url.webp' }],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -1405,7 +1570,6 @@ describe('/media', () => {
           ],
         },
       ],
-      attachments: [{ filename: 'image-url.webp', id: '0' }],
     });
   });
 
@@ -1501,44 +1665,82 @@ describe('/media', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      embeds: [
+      flags: 32768,
+      attachments: [
+        { id: '0', filename: 'image-url.webp' },
         {
-          type: 'rich',
-          author: {
-            name: 'Anime',
-          },
-          title: 'english title',
-          description: 'long description',
-          image: {
-            url: 'attachment://image-url.webp',
-          },
+          id: '1',
+          filename: 'default.webp',
         },
         {
-          type: 'rich',
-          fields: [
-            {
-              name: 'main character name',
-              value: '\u200B',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://default.webp',
-          },
-        },
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'supporting character name',
-              value: '\u200B',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://default.webp',
-          },
+          id: '2',
+          filename: 'default.webp',
         },
       ],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '-# Anime',
+            },
+            {
+              type: 10,
+              content: '**english title**\nlong description',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://image-url.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://default.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**main character name**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://default.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**supporting character name**',
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -1550,11 +1752,6 @@ describe('/media', () => {
             },
           ],
         },
-      ],
-      attachments: [
-        { filename: 'image-url.webp', id: '0' },
-        { filename: 'default.webp', id: '1' },
-        { filename: 'default.webp', id: '2' },
       ],
     });
   });
@@ -1610,7 +1807,9 @@ describe('/media', () => {
       title: {},
     };
 
-    await expect(() => search.mediaMessage(media)).rejects.toThrowError('404');
+    await expect(() => search.mediaMessageV2(media)).rejects.toThrowError(
+      '404'
+    );
   });
 });
 
@@ -2688,7 +2887,7 @@ describe('/character', () => {
   });
 });
 
-describe('media embed', () => {
+describe('media container', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -2725,20 +2924,32 @@ describe('media embed', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = new discord.Message();
+    const message = new discordV2.Message();
 
-    const embed = await search.mediaEmbed(message, media);
+    const embed = await search.mediaContainer(message, media);
 
     expect(embed.json()).toEqual({
-      type: 'rich',
-      title: 'full title',
-      description: 'long description',
-      image: {
-        url: 'attachment://image-url.webp',
-      },
-      author: {
-        name: 'Anime',
-      },
+      type: 17,
+      components: [
+        {
+          type: 10,
+          content: '-# Anime',
+        },
+        {
+          type: 10,
+          content: '**full title**\nlong description',
+        },
+        {
+          type: 12,
+          items: [
+            {
+              media: {
+                url: 'attachment://image-url.webp',
+              },
+            },
+          ],
+        },
+      ],
     });
   });
 
@@ -2771,22 +2982,35 @@ describe('media embed', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = new discord.Message();
+    const message = new discordV2.Message();
 
-    const embed = await search.mediaEmbed(message, media, {
+    const embed = await search.mediaContainer(message, media, {
       mode: 'thumbnail',
     });
 
     expect(embed.json()).toEqual({
-      type: 'rich',
-      title: 'full title',
-      description: 'long description',
-      thumbnail: {
-        url: 'attachment://image-url.webp',
-      },
-      author: {
-        name: 'Anime',
-      },
+      type: 17,
+      components: [
+        {
+          type: 10,
+          content: '-# Anime',
+        },
+        {
+          type: 9,
+          accessory: {
+            type: 11,
+            media: {
+              url: 'attachment://image-url.webp',
+            },
+          },
+          components: [
+            {
+              type: 10,
+              content: '**full title**\nlong description',
+            },
+          ],
+        },
+      ],
     });
   });
 
@@ -2814,20 +3038,32 @@ describe('media embed', () => {
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
-    const message = new discord.Message();
+    const message = new discordV2.Message();
 
-    const embed = await search.mediaEmbed(message, media);
+    const embed = await search.mediaContainer(message, media);
 
     expect(embed.json()).toEqual({
-      type: 'rich',
-      title: 'full title',
-      description: 'long description',
-      image: {
-        url: 'attachment://default.webp',
-      },
-      author: {
-        name: 'Anime',
-      },
+      type: 17,
+      components: [
+        {
+          type: 10,
+          content: '-# Anime',
+        },
+        {
+          type: 10,
+          content: '**full title**\nlong description',
+        },
+        {
+          type: 12,
+          items: [
+            {
+              media: {
+                url: 'attachment://default.webp',
+              },
+            },
+          ],
+        },
+      ],
     });
   });
 });
@@ -3132,6 +3368,348 @@ describe('character embed', () => {
   });
 });
 
+describe('character container', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.clearAllTimers();
+    delete config.appId;
+    delete config.origin;
+  });
+
+  it('normal', async () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      packId: 'pack-id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [
+        {
+          url: 'image_url',
+        },
+      ],
+      rating: 5,
+      age: '420',
+      gender: 'male',
+    };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = new discordV2.Message();
+
+    const embed = await search.characterContainer(message, character, {
+      mode: 'full',
+      description: true,
+      footer: true,
+      rating: false,
+    });
+
+    expect(embed.json()).toEqual({
+      type: 17,
+      components: [
+        {
+          type: 10,
+          content: '**full name**\nlong description',
+        },
+        {
+          type: 12,
+          items: [
+            {
+              media: {
+                url: 'attachment://image-url.webp',
+              },
+            },
+          ],
+        },
+        {
+          type: 10,
+          content: '-# Male, 420',
+        },
+      ],
+    });
+  });
+
+  it('media title', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'pack-id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [
+        {
+          url: 'image_url',
+        },
+      ],
+      rating: 5,
+      age: '420',
+      gender: 'male',
+      media: {
+        edges: [
+          {
+            role: CharacterRole.Main,
+            node: {
+              id: 'media_id',
+              packId: 'pack-id',
+              title: { english: 'media title' },
+              type: MediaType.Anime,
+            },
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = new discordV2.Message();
+
+    const embed = await search.characterContainer(message, character, {
+      mode: 'thumbnail',
+      description: true,
+      media: { title: true },
+      footer: true,
+      rating: false,
+    });
+
+    expect(embed.json()).toEqual({
+      type: 17,
+      components: [
+        {
+          type: 9,
+          accessory: {
+            type: 11,
+            media: {
+              url: 'attachment://image-url.webp',
+            },
+          },
+          components: [
+            {
+              type: 10,
+              content: 'media title\n**full name**\nlong description',
+            },
+          ],
+        },
+        {
+          type: 10,
+          content: '-# Male, 420',
+        },
+      ],
+    });
+  });
+
+  it('minimized', async () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      packId: 'pack-id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [
+        {
+          url: 'image_url',
+        },
+      ],
+      rating: 5,
+      age: '420',
+      gender: 'male',
+    };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = new discordV2.Message();
+
+    const embed = await search.characterContainer(message, character, {
+      mode: 'thumbnail',
+      description: false,
+      footer: false,
+      rating: false,
+    });
+
+    expect(embed.json()).toEqual({
+      type: 17,
+      components: [
+        {
+          type: 9,
+          accessory: {
+            type: 11,
+            media: {
+              url: 'attachment://image-url.webp',
+            },
+          },
+          components: [
+            {
+              type: 10,
+              content: '**full name**',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('custom', async () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      packId: 'pack-id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [
+        {
+          url: 'image_url',
+        },
+      ],
+      rating: 5,
+      age: '420',
+      gender: 'male',
+    };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = new discordV2.Message();
+
+    const embed = await search.characterContainer(message, character, {
+      mode: 'thumbnail',
+      description: false,
+      footer: false,
+      rating: false,
+      existing: [
+        {
+          nickname: 'nickname',
+          image: 'custom_image_url',
+          createdAt: new Date(),
+          rating: 1,
+          userId: 'user_id',
+        } as any,
+      ],
+    });
+
+    expect(embed.json()).toEqual({
+      type: 17,
+      components: [
+        {
+          type: 10,
+          content: '<@user_id>',
+        },
+        {
+          type: 9,
+          accessory: {
+            type: 11,
+            media: {
+              url: 'attachment://custom-image-url.webp',
+            },
+          },
+          components: [
+            {
+              type: 10,
+              content: '**nickname**',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('default image', async () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      rating: 5,
+      packId: 'pack-id',
+      age: '420',
+      gender: 'male',
+    };
+
+    vi.spyOn(packs, 'aggregate').mockImplementation(
+      async (t) => t.media ?? t.character
+    );
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    const message = new discordV2.Message();
+
+    const embed = await search.characterContainer(message, character, {
+      mode: 'thumbnail',
+      description: false,
+      footer: false,
+      rating: false,
+    });
+
+    expect(embed.json()).toEqual({
+      type: 17,
+      components: [
+        {
+          type: 9,
+          accessory: {
+            type: 11,
+            media: {
+              url: 'attachment://default.webp',
+            },
+          },
+          components: [
+            {
+              type: 10,
+              content: '**full name**',
+            },
+          ],
+        },
+      ],
+    });
+  });
+});
+
 describe('media characters', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -3203,8 +3781,39 @@ describe('media characters', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      attachments: [{ filename: 'default.webp', id: '0' }],
+      flags: 32768,
+      allowed_mentions: { parse: [] },
+      attachments: [
+        {
+          id: '0',
+          filename: 'default.webp',
+        },
+      ],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**name**',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -3234,22 +3843,6 @@ describe('media characters', () => {
               type: 2,
             },
           ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          description:
-            '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
-            {
-              name: 'name',
-              value: '\u200B',
-            },
-          ],
-          image: {
-            url: 'attachment://default.webp',
-          },
         },
       ],
     });
@@ -3321,8 +3914,39 @@ describe('media characters', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
-      attachments: [{ filename: 'default.webp', id: '0' }],
+      flags: 32768,
+      allowed_mentions: { parse: [] },
+      attachments: [
+        {
+          id: '0',
+          filename: 'default.webp',
+        },
+      ],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content:
+                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+            {
+              type: 10,
+              content: '**name**',
+            },
+            {
+              type: 12,
+              items: [
+                {
+                  media: {
+                    url: 'attachment://default.webp',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -3352,22 +3976,6 @@ describe('media characters', () => {
               type: 2,
             },
           ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          description:
-            '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
-          fields: [
-            {
-              name: 'name',
-              value: '\u200B',
-            },
-          ],
-          image: {
-            url: 'attachment://default.webp',
-          },
         },
       ],
     });
@@ -3426,12 +4034,17 @@ describe('media characters', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
+      flags: 32768,
       attachments: [],
-      components: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description: 'Found _nothing_ matching that query!',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: 'Found _nothing_ matching that query!',
+            },
+          ],
         },
       ],
     });
@@ -3482,12 +4095,17 @@ describe('media characters', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
+      flags: 32768,
       attachments: [],
-      components: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description: 'title contains no characters',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: 'title contains no characters',
+            },
+          ],
         },
       ],
     });
@@ -3535,12 +4153,17 @@ describe('media characters', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
+      flags: 32768,
       attachments: [],
-      components: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description: 'title contains no characters',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: 'title contains no characters',
+            },
+          ],
         },
       ],
     });
@@ -3578,12 +4201,17 @@ describe('media characters', () => {
     const payload = JSON.parse(formData?.get('payload_json') as any);
 
     expect(payload).toEqual({
+      flags: 32768,
       attachments: [],
-      components: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description: 'Found _nothing_ matching that query!',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: 'Found _nothing_ matching that query!',
+            },
+          ],
         },
       ],
     });

@@ -296,7 +296,7 @@ export const handler = async (r: Request, ctx: any) => {
                 })
               );
 
-              return discord.Message.spinner().send();
+              return discordV2.Message.spinner().send();
             }
 
             ctx.waitUntil(
@@ -310,7 +310,7 @@ export const handler = async (r: Request, ctx: any) => {
               })
             );
 
-            return discord.Message.spinner().send();
+            return discordV2.Message.spinner().send();
           }
           case 'character': {
             const name = options['name'] as string;
@@ -474,7 +474,7 @@ export const handler = async (r: Request, ctx: any) => {
               })
             );
 
-            return discord.Message.spinner().send();
+            return discordV2.Message.spinner().send();
           }
           case 'likeall':
           case 'unlikeall': {
@@ -494,7 +494,7 @@ export const handler = async (r: Request, ctx: any) => {
               })
             );
 
-            return discord.Message.spinner().send();
+            return discordV2.Message.spinner().send();
           }
           case 'likes':
           case 'likeslist': {
@@ -834,7 +834,7 @@ export const handler = async (r: Request, ctx: any) => {
 
             ctx.waitUntil(search.media({ id, guildId, token }));
 
-            return discord.Message.spinner()
+            return discordV2.Message.spinner()
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -875,7 +875,7 @@ export const handler = async (r: Request, ctx: any) => {
               })
             );
 
-            return discord.Message.spinner()
+            return discordV2.Message.spinner()
               .setType(discord.MessageType.Update)
               .send();
           }

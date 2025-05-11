@@ -41,6 +41,9 @@
   "character": "character",
   "characters": "characters",
 
+  "liked": "Liked",
+  "unliked": "Unliked",
+
   "undiscovered": "Undiscovered",
   "cleared": "Cleared",
   "current": "Current",
