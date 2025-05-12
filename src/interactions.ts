@@ -852,7 +852,7 @@ export const handler = async (r: Request, ctx: any) => {
               })
             );
 
-            return discord.Message.spinner()
+            return discordV2.Message.spinner()
               .setType(
                 type === '1'
                   ? discord.MessageType.New
