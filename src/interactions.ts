@@ -938,7 +938,7 @@ export const handler = async (r: Request, ctx: any) => {
               })
             );
 
-            return discord.Message.spinner().send();
+            return discordV2.Message.spinner().send();
           }
           case 'likes': {
             const userId = customValues![0];

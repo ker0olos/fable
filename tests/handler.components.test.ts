@@ -1089,16 +1089,25 @@ describe('Components Handler', () => {
         expect(json).toEqual({
           type: 4,
           data: {
-            embeds: [
+            flags: 32768,
+            attachments: [],
+            components: [
               {
-                type: 'rich',
-                image: {
-                  url: 'http://localhost:8000/spinner.gif',
-                },
+                type: 17,
+                components: [
+                  {
+                    type: 12,
+                    items: [
+                      {
+                        media: {
+                          url: 'http://localhost:8000/spinner.gif',
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             ],
-            attachments: [],
-            components: [],
           },
         });
       } finally {
@@ -1192,16 +1201,25 @@ describe('Components Handler', () => {
         expect(json).toEqual({
           type: 4,
           data: {
-            embeds: [
+            flags: 32768,
+            attachments: [],
+            components: [
               {
-                type: 'rich',
-                image: {
-                  url: 'http://localhost:8000/spinner.gif',
-                },
+                type: 17,
+                components: [
+                  {
+                    type: 12,
+                    items: [
+                      {
+                        media: {
+                          url: 'http://localhost:8000/spinner.gif',
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             ],
-            attachments: [],
-            components: [],
           },
         });
       } finally {
