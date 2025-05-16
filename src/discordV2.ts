@@ -1210,11 +1210,11 @@ export class Message {
     }
 
     if (userId && targetId) {
-      cancelComponent.setId('cancel', userId, targetId);
+      cancelComponent.setId('cancelv2', userId, targetId);
     } else if (userId) {
-      cancelComponent.setId('cancel', userId);
+      cancelComponent.setId('cancelv2', userId);
     } else {
-      cancelComponent.setId('cancel');
+      cancelComponent.setId('cancelv2');
     }
 
     if (description) {

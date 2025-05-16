@@ -8611,16 +8611,25 @@ describe('merge/automerge command handlers', () => {
       expect(json).toEqual({
         type: 4,
         data: {
-          embeds: [
+          flags: 32768,
+          attachments: [],
+          components: [
             {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    {
+                      media: {
+                        url: 'http://localhost:8000/spinner3.gif',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           ],
-          attachments: [],
-          components: [],
         },
       });
     } finally {
@@ -8713,16 +8722,25 @@ describe('merge/automerge command handlers', () => {
       expect(json).toEqual({
         type: 4,
         data: {
-          embeds: [
+          flags: 32768,
+          attachments: [],
+          components: [
             {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    {
+                      media: {
+                        url: 'http://localhost:8000/spinner3.gif',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           ],
-          attachments: [],
-          components: [],
         },
       });
     } finally {
@@ -8814,16 +8832,25 @@ describe('merge/automerge command handlers', () => {
       expect(json).toEqual({
         type: 4,
         data: {
-          embeds: [
+          flags: 32768,
+          attachments: [],
+          components: [
             {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    {
+                      media: {
+                        url: 'http://localhost:8000/spinner3.gif',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           ],
-          attachments: [],
-          components: [],
         },
       });
     } finally {
@@ -8915,16 +8942,25 @@ describe('merge/automerge command handlers', () => {
       expect(json).toEqual({
         type: 4,
         data: {
-          embeds: [
+          flags: 32768,
+          attachments: [],
+          components: [
             {
-              type: 'rich',
-              image: {
-                url: 'http://localhost:8000/spinner3.gif',
-              },
+              type: 17,
+              components: [
+                {
+                  type: 12,
+                  items: [
+                    {
+                      media: {
+                        url: 'http://localhost:8000/spinner3.gif',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           ],
-          attachments: [],
-          components: [],
         },
       });
     } finally {

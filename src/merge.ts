@@ -1,6 +1,7 @@
 import config from '~/src/config.ts';
 
-import * as discord from '~/src/discord.ts';
+import * as discord from '~/src/discordV2.ts';
+import { AvailableLocales } from '~/src/discord.ts';
 
 import packs from '~/src/packs.ts';
 import user from '~/src/user.ts';
@@ -69,7 +70,7 @@ function getSacrifices(
   characters: CharacterWithId[],
   mode: 'target' | 'min' | 'max',
   target?: number,
-  locale?: discord.AvailableLocales
+  locale?: AvailableLocales
 ): { sacrifices: CharacterWithId[]; target: number } {
   // I'm sure there is a faster way to do this with just math
   // but i am not smart enough to figure it out
@@ -176,7 +177,7 @@ async function characterPreview(
   message: discord.Message,
   character: Character,
   existing: Partial<CharacterWithId>
-): Promise<discord.Embed> {
+): Promise<discord.Container> {
   const image = existing?.image
     ? { url: existing?.image }
     : character.images?.[0];
@@ -187,25 +188,29 @@ async function characterPreview(
     existing?.nickname ?? packs.aliasToArray(character.name)[0]
   )}`;
 
-  const embed = new discord.Embed();
+  const container = new discord.Container();
+  const thumbnail = new discord.Thumbnail();
+  const section = new discord.Section();
 
-  const attachment = await embed.setThumbnailWithProxy({
-    size: ImageSize.Preview,
+  const attachment = await thumbnail.setWithProxy({
+    size: ImageSize.Thumbnail,
     url: image?.url,
   });
 
-  message.addAttachment(attachment);
-
   if (media) {
-    embed.addField({
-      name: utils.wrap(packs.aliasToArray(media.title)[0]),
-      value: name,
-    });
+    section.addText(
+      new discord.TextDisplay(
+        `${utils.wrap(packs.aliasToArray(media.title)[0])}\n**${name}**`
+      )
+    );
   } else {
-    embed.setDescription(name);
+    section.addText(new discord.TextDisplay(`**${name}**`));
   }
 
-  return embed;
+  message.addAttachment(attachment);
+  section.setAccessory(thumbnail);
+
+  return container.addComponent(section);
 }
 
 function synthesize({
@@ -251,9 +256,11 @@ function synthesize({
         guildId,
       });
 
-      message.addEmbed(
-        new discord.Embed().setDescription(
-          i18n.get('merge-sacrifice', locale, sacrifices.length)
+      message.addComponent(
+        new discord.Container().addComponent(
+          new discord.TextDisplay(
+            i18n.get('merge-sacrifice', locale, sacrifices.length)
+          )
         )
       );
 
@@ -278,20 +285,22 @@ function synthesize({
             continue;
           }
 
-          const embed = await synthesis.characterPreview(
+          const container = await synthesis.characterPreview(
             message,
             character,
             existing
           );
 
-          message.addEmbed(embed);
+          message.addComponent(container);
         }
       }
 
       if (sacrifices.length - highlightedCharacters.length) {
-        message.addEmbed(
-          new discord.Embed().setDescription(
-            `_+${sacrifices.length - highlightedCharacters.length} others..._`
+        message.addComponent(
+          new discord.Container().addComponent(
+            new discord.TextDisplay(
+              `_+${sacrifices.length - highlightedCharacters.length} others..._`
+            )
           )
         );
       }
@@ -306,7 +315,11 @@ function synthesize({
     .catch(async (err) => {
       if (err instanceof NonFetalError) {
         return await new discord.Message()
-          .addEmbed(new discord.Embed().setDescription(err.message))
+          .addComponent(
+            new discord.Container().addComponent(
+              new discord.TextDisplay(err.message)
+            )
+          )
           .patch(token);
       }
 
@@ -361,12 +374,14 @@ function confirmed({
     .catch(async (err) => {
       if (err instanceof PoolError) {
         return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              i18n.get(
-                'gacha-no-more-characters-left',
-                locale,
-                `${target}${discord.emotes.smolStar}`
+          .addComponent(
+            new discord.Container().addComponent(
+              new discord.TextDisplay(
+                i18n.get(
+                  'gacha-no-more-characters-left',
+                  locale,
+                  `${target}${discord.emotes.smolStar}`
+                )
               )
             )
           )
@@ -375,7 +390,11 @@ function confirmed({
 
       if (err instanceof NonFetalError) {
         return await new discord.Message()
-          .addEmbed(new discord.Embed().setDescription(err.message))
+          .addComponent(
+            new discord.Container().addComponent(
+              new discord.TextDisplay(err.message)
+            )
+          )
           .patch(token);
       }
 

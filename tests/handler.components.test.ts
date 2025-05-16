@@ -3381,16 +3381,25 @@ describe('Components Handler', () => {
         expect(json).toEqual({
           type: 7,
           data: {
-            embeds: [
+            flags: 32768,
+            attachments: [],
+            components: [
               {
-                type: 'rich',
-                image: {
-                  url: 'http://localhost:8000/spinner.gif',
-                },
+                type: 17,
+                components: [
+                  {
+                    type: 12,
+                    items: [
+                      {
+                        media: {
+                          url: 'http://localhost:8000/spinner.gif',
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             ],
-            attachments: [],
-            components: [],
           },
         });
       } finally {
@@ -4412,6 +4421,376 @@ describe('Components Handler', () => {
         },
         data: {
           custom_id: 'cancel=another_user_id=target_id',
+        },
+      });
+
+      const validateStub = vi
+        .spyOn(utils, 'validateRequest')
+        .mockReturnValue({} as any);
+
+      const signatureStub = vi
+        .spyOn(utils, 'verifySignature')
+        .mockImplementation(
+          ({ body }) =>
+            ({
+              valid: true,
+              body,
+            }) as any
+        );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
+
+      config.publicKey = 'publicKey';
+
+      try {
+        const request = new Request('http://localhost:8000', {
+          body,
+          method: 'POST',
+          headers: {
+            'X-Signature-Ed25519': 'ed25519',
+            'X-Signature-Timestamp': 'timestamp',
+          },
+        });
+
+        const response = await handler(request, ctxStub as any);
+
+        expect(validateStub).toHaveBeenCalledWith(request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        });
+
+        expect(signatureStub).toHaveBeenCalledWith({
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        });
+
+        expect(response?.ok).toBe(true);
+        expect(response?.redirected).toBe(false);
+
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 4,
+          data: {
+            flags: 64,
+            content: '',
+            embeds: [
+              {
+                type: 'rich',
+                description:
+                  "You don't have permission to complete this interaction!",
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
+      } finally {
+        delete config.publicKey;
+      }
+    });
+  });
+
+  describe('cancel v2 dialog', () => {
+    it('should handle canceled dialog', async () => {
+      const body = JSON.stringify({
+        id: 'id',
+        token: 'token',
+        type: discord.InteractionType.Component,
+        guild_id: 'guild_id',
+        member: {
+          user: {
+            id: 'user_id',
+          },
+        },
+        data: {
+          custom_id: 'cancelv2',
+        },
+      });
+
+      const validateStub = vi
+        .spyOn(utils, 'validateRequest')
+        .mockReturnValue({} as any);
+
+      const signatureStub = vi
+        .spyOn(utils, 'verifySignature')
+        .mockImplementation(
+          ({ body }) =>
+            ({
+              valid: true,
+              body,
+            }) as any
+        );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
+
+      config.publicKey = 'publicKey';
+
+      try {
+        const request = new Request('http://localhost:8000', {
+          body,
+          method: 'POST',
+          headers: {
+            'X-Signature-Ed25519': 'ed25519',
+            'X-Signature-Timestamp': 'timestamp',
+          },
+        });
+
+        const response = await handler(request, ctxStub as any);
+
+        expect(validateStub).toHaveBeenCalledWith(request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        });
+
+        expect(signatureStub).toHaveBeenCalledWith({
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        });
+
+        expect(response?.ok).toBe(true);
+        expect(response?.redirected).toBe(false);
+
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            flags: 32768,
+            attachments: [],
+            components: [
+              {
+                type: 17,
+                components: [
+                  {
+                    type: 10,
+                    content: 'Cancelled',
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      } finally {
+        delete config.publicKey;
+      }
+    });
+
+    it('should handle declined dialog', async () => {
+      const body = JSON.stringify({
+        id: 'id',
+        token: 'token',
+        type: discord.InteractionType.Component,
+        guild_id: 'guild_id',
+        member: {
+          user: {
+            id: 'target_id',
+          },
+        },
+        data: {
+          custom_id: 'cancelv2=user_id=target_id',
+        },
+      });
+
+      const validateStub = vi
+        .spyOn(utils, 'validateRequest')
+        .mockReturnValue({} as any);
+
+      const signatureStub = vi
+        .spyOn(utils, 'verifySignature')
+        .mockImplementation(
+          ({ body }) =>
+            ({
+              valid: true,
+              body,
+            }) as any
+        );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
+
+      config.publicKey = 'publicKey';
+
+      try {
+        const request = new Request('http://localhost:8000', {
+          body,
+          method: 'POST',
+          headers: {
+            'X-Signature-Ed25519': 'ed25519',
+            'X-Signature-Timestamp': 'timestamp',
+          },
+        });
+
+        const response = await handler(request, ctxStub as any);
+
+        expect(validateStub).toHaveBeenCalledWith(request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        });
+
+        expect(signatureStub).toHaveBeenCalledWith({
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        });
+
+        expect(response?.ok).toBe(true);
+        expect(response?.redirected).toBe(false);
+
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 7,
+          data: {
+            flags: 32768,
+            attachments: [],
+            components: [
+              {
+                type: 17,
+                components: [
+                  {
+                    type: 10,
+                    content: 'Declined',
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      } finally {
+        delete config.publicKey;
+      }
+    });
+
+    it('should handle cancel dialog with no permission 1', async () => {
+      const body = JSON.stringify({
+        id: 'id',
+        token: 'token',
+        type: discord.InteractionType.Component,
+        guild_id: 'guild_id',
+        member: {
+          user: {
+            id: 'user_id',
+          },
+        },
+        data: {
+          custom_id: 'cancel=another_user_id',
+        },
+      });
+
+      const validateStub = vi
+        .spyOn(utils, 'validateRequest')
+        .mockReturnValue({} as any);
+
+      const signatureStub = vi
+        .spyOn(utils, 'verifySignature')
+        .mockImplementation(
+          ({ body }) =>
+            ({
+              valid: true,
+              body,
+            }) as any
+        );
+      const ctxStub = {
+        waitUntil: vi.fn(() => Promise.resolve()),
+      };
+
+      config.publicKey = 'publicKey';
+
+      try {
+        const request = new Request('http://localhost:8000', {
+          body,
+          method: 'POST',
+          headers: {
+            'X-Signature-Ed25519': 'ed25519',
+            'X-Signature-Timestamp': 'timestamp',
+          },
+        });
+
+        const response = await handler(request, ctxStub as any);
+
+        expect(validateStub).toHaveBeenCalledWith(request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        });
+
+        expect(signatureStub).toHaveBeenCalledWith({
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        });
+
+        expect(response?.ok).toBe(true);
+        expect(response?.redirected).toBe(false);
+
+        expect(response?.status).toBe(200);
+        expect(response?.statusText).toBe('OK');
+
+        const json = JSON.parse(
+          (await response?.formData()).get('payload_json')!.toString()
+        );
+
+        expect(json).toEqual({
+          type: 4,
+          data: {
+            flags: 64,
+            content: '',
+            embeds: [
+              {
+                type: 'rich',
+                description:
+                  "You don't have permission to complete this interaction!",
+              },
+            ],
+            attachments: [],
+            components: [],
+          },
+        });
+      } finally {
+        delete config.publicKey;
+      }
+    });
+
+    it('should handle cancel dialog with no permission 2', async () => {
+      const body = JSON.stringify({
+        id: 'id',
+        token: 'token',
+        type: discord.InteractionType.Component,
+        guild_id: 'guild_id',
+        member: {
+          user: {
+            id: 'user_id',
+          },
+        },
+        data: {
+          custom_id: 'cancelv2=another_user_id=target_id',
         },
       });
 

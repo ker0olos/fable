@@ -788,16 +788,22 @@ describe('synthesis confirmed', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
-      embeds: [
+      flags: 32768,
+      attachments: [],
+      components: [
         {
-          type: 'rich',
-          description:
-            'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content:
+                'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
         },
       ],
-      components: [],
-      attachments: [],
     });
   });
 
@@ -850,16 +856,22 @@ describe('synthesis confirmed', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
-      embeds: [
+      flags: 32768,
+      attachments: [],
+      components: [
         {
-          type: 'rich',
-          description:
-            'There are no more 2<:smolstar:1107503653956374638>characters left',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content:
+                'There are no more 2<:smolstar:1107503653956374638>characters left',
+            },
+          ],
         },
       ],
-      components: [],
-      attachments: [],
     });
   });
 });
@@ -1044,30 +1056,144 @@ describe('/merge', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
+      flags: 32768,
       attachments: [
         {
-          filename: 'image-url.webp',
           id: '0',
+          filename: 'image-url.webp',
         },
         {
-          filename: 'image-url.webp',
           id: '1',
+          filename: 'image-url.webp',
         },
         {
-          filename: 'image-url.webp',
           id: '2',
+          filename: 'image-url.webp',
         },
         {
-          filename: 'image-url.webp',
           id: '3',
+          filename: 'image-url.webp',
         },
         {
-          filename: 'image-url.webp',
           id: '4',
+          filename: 'image-url.webp',
         },
       ],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: 'Sacrifice **5** characters?',
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content:
+                    'media title\n**1<:smolstar:1107503653956374638>character 1**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content:
+                    'media title\n**1<:smolstar:1107503653956374638>character 2**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content:
+                    'media title\n**1<:smolstar:1107503653956374638>character 3**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>character 4**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>character 5**',
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -1078,68 +1204,12 @@ describe('/merge', () => {
               type: 2,
             },
             {
-              custom_id: 'cancel=user_id',
+              custom_id: 'cancelv2=user_id',
               label: 'Cancel',
               style: 4,
               type: 2,
             },
           ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          description: 'Sacrifice **5** characters?',
-        },
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'media title',
-              value: '1<:smolstar:1107503653956374638>character 1',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'media title',
-              value: '1<:smolstar:1107503653956374638>character 2',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          fields: [
-            {
-              name: 'media title',
-              value: '1<:smolstar:1107503653956374638>character 3',
-            },
-          ],
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>character 4',
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>character 5',
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
         },
       ],
     });
@@ -1275,30 +1345,141 @@ describe('/merge', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
+      flags: 32768,
       attachments: [
         {
-          filename: 'custom-image-url.webp',
           id: '0',
+          filename: 'custom-image-url.webp',
         },
         {
-          filename: 'custom-image-url.webp',
           id: '1',
+          filename: 'custom-image-url.webp',
         },
         {
-          filename: 'custom-image-url.webp',
           id: '2',
+          filename: 'custom-image-url.webp',
         },
         {
-          filename: 'custom-image-url.webp',
           id: '3',
+          filename: 'custom-image-url.webp',
         },
         {
-          filename: 'custom-image-url.webp',
           id: '4',
+          filename: 'custom-image-url.webp',
         },
       ],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: 'Sacrifice **5** characters?',
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://custom-image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>nickname 1**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://custom-image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>nickname 2**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://custom-image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>nickname 3**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://custom-image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>nickname 4**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://custom-image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>nickname 5**',
+                },
+              ],
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -1309,53 +1490,12 @@ describe('/merge', () => {
               type: 2,
             },
             {
-              custom_id: 'cancel=user_id',
+              custom_id: 'cancelv2=user_id',
               label: 'Cancel',
               style: 4,
               type: 2,
             },
           ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          description: 'Sacrifice **5** characters?',
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>nickname 1',
-          thumbnail: {
-            url: 'attachment://custom-image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>nickname 2',
-          thumbnail: {
-            url: 'attachment://custom-image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>nickname 3',
-          thumbnail: {
-            url: 'attachment://custom-image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>nickname 4',
-          thumbnail: {
-            url: 'attachment://custom-image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>nickname 5',
-          thumbnail: {
-            url: 'attachment://custom-image-url.webp',
-          },
         },
       ],
     });
@@ -1485,22 +1625,102 @@ describe('/merge', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
+      flags: 32768,
       attachments: [
         {
-          filename: 'image-url.webp',
           id: '0',
+          filename: 'image-url.webp',
         },
         {
-          filename: 'image-url.webp',
           id: '1',
+          filename: 'image-url.webp',
         },
         {
-          filename: 'image-url.webp',
           id: '2',
+          filename: 'image-url.webp',
         },
       ],
       components: [
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: 'Sacrifice **5** characters?',
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>character 3**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>character 4**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 9,
+              accessory: {
+                type: 11,
+                media: {
+                  url: 'attachment://image-url.webp',
+                },
+              },
+              components: [
+                {
+                  type: 10,
+                  content: '**1<:smolstar:1107503653956374638>character 5**',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content: '_+2 others..._',
+            },
+          ],
+        },
         {
           type: 1,
           components: [
@@ -1511,43 +1731,12 @@ describe('/merge', () => {
               type: 2,
             },
             {
-              custom_id: 'cancel=user_id',
+              custom_id: 'cancelv2=user_id',
               label: 'Cancel',
               style: 4,
               type: 2,
             },
           ],
-        },
-      ],
-      embeds: [
-        {
-          type: 'rich',
-          description: 'Sacrifice **5** characters?',
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>character 3',
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>character 4',
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '1<:smolstar:1107503653956374638>character 5',
-          thumbnail: {
-            url: 'attachment://image-url.webp',
-          },
-        },
-        {
-          type: 'rich',
-          description: '_+2 others..._',
         },
       ],
     });
@@ -1655,14 +1844,20 @@ describe('/merge', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
+      flags: 32768,
       attachments: [],
-      components: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description:
-            'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content:
+                'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
         },
       ],
     });
@@ -1764,14 +1959,20 @@ describe('/merge', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
+      flags: 32768,
       attachments: [],
-      components: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description:
-            'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content:
+                'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
         },
       ],
     });
@@ -1865,14 +2066,20 @@ describe('/merge', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
+      flags: 32768,
       attachments: [],
-      components: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description:
-            'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content:
+                'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
         },
       ],
     });
@@ -1920,14 +2127,20 @@ describe('/merge', () => {
     const callBody = JSON.parse(
       (fetchStub.mock.calls[0][1]?.body as FormData)?.get('payload_json') as any
     );
+
     expect(callBody).toEqual({
+      flags: 32768,
       attachments: [],
-      components: [],
-      embeds: [
+      components: [
         {
-          type: 'rich',
-          description:
-            'You only have **0 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+          type: 17,
+          components: [
+            {
+              type: 10,
+              content:
+                'You only have **0 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+            },
+          ],
         },
       ],
     });

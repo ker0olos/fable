@@ -683,7 +683,8 @@ export const handler = async (r: Request, ctx: any) => {
                 target,
               })
             );
-            return discord.Message.spinner(true).send();
+
+            return discordV2.Message.spinner(true).send();
           }
           case 'automerge': {
             switch (subcommand!) {
@@ -697,7 +698,8 @@ export const handler = async (r: Request, ctx: any) => {
                     mode: subcommand,
                   })
                 );
-                return discord.Message.spinner(true).send();
+
+                return discordV2.Message.spinner(true).send();
               default:
                 break;
             }
@@ -1130,12 +1132,11 @@ export const handler = async (r: Request, ctx: any) => {
                   token,
                   target,
                   guildId,
-
                   userId: member.user.id,
                 })
               );
 
-              return discord.Message.spinner()
+              return discordV2.Message.spinner()
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1261,6 +1262,37 @@ export const handler = async (r: Request, ctx: any) => {
                   targetId === member.user.id
                     ? i18n.get('declined', locale)
                     : i18n.get('cancelled', locale)
+                )
+              )
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'cancelv2': {
+            const userId = customValues![0];
+
+            const targetId = customValues![1];
+
+            if (userId && !targetId && userId !== member.user.id) {
+              throw new NoPermissionError();
+            }
+
+            if (
+              userId &&
+              targetId &&
+              ![userId, targetId].includes(member.user.id)
+            ) {
+              throw new NoPermissionError();
+            }
+
+            return new discordV2.Message()
+
+              .addComponent(
+                new discordV2.Container().addComponent(
+                  new discordV2.TextDisplay(
+                    targetId === member.user.id
+                      ? i18n.get('declined', locale)
+                      : i18n.get('cancelled', locale)
+                  )
                 )
               )
               .setType(discord.MessageType.Update)
