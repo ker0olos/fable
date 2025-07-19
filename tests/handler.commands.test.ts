@@ -9547,7 +9547,7 @@ describe('server options command handlers', () => {
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
     const packsSpy = vi.spyOn(serverOptions, 'view').mockReturnValue({
-      setFlags: () => ({
+      addFlags: () => ({
         send: () => true,
       }),
     } as any);

@@ -137,10 +137,11 @@ function pre({
           character: results[0],
           end: 1,
         }),
+        db.getGuild(guildId),
         db.findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
       ]);
     })
-    .then(async ([character, existing]) => {
+    .then(async ([character, guild, existing]) => {
       const message = new discord.Message();
 
       const characterId = `${character.packId}:${character.id}`;
@@ -148,6 +149,10 @@ function pre({
       const characterName = packs.aliasToArray(character.name)[0];
 
       const media = character.media?.edges?.[0]?.node;
+
+      if (guild.options && !guild.options.steal) {
+        throw new NonFetalError(i18n.get('stealing-is-disabled', locale));
+      }
 
       if (!existing?.length) {
         message.addEmbed(

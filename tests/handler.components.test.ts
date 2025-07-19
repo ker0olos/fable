@@ -3961,6 +3961,88 @@ describe('Components Handler', () => {
         delete config.publicKey;
       }
     });
+
+    it('should handle steal server options', async () => {
+      const body = JSON.stringify({
+        id: 'id',
+        token: 'token',
+        type: discord.InteractionType.Component,
+        guild_id: 'guild_id',
+        member: {
+          user: {
+            id: 'user_id',
+          },
+        },
+        data: {
+          custom_id: 'options=steal',
+        },
+      });
+
+      const validateStub = vi
+        .spyOn(utils, 'validateRequest')
+        .mockReturnValue({} as any);
+
+      const signatureStub = vi
+        .spyOn(utils, 'verifySignature')
+        .mockImplementation(
+          ({ body }) =>
+            ({
+              valid: true,
+              body,
+            }) as any
+        );
+
+      const setTypeSpy = vi.fn(() => ({
+        send: () => true,
+      }));
+
+      const invertStealStub = vi
+        .spyOn(serverOptions, 'invertSteal')
+        .mockImplementation(
+          () =>
+            ({
+              setType: setTypeSpy,
+            }) as any
+        );
+      const ctxStub = {};
+
+      config.publicKey = 'publicKey';
+
+      try {
+        const request = new Request('http://localhost:8000', {
+          body,
+          method: 'POST',
+          headers: {
+            'X-Signature-Ed25519': 'ed25519',
+            'X-Signature-Timestamp': 'timestamp',
+          },
+        });
+
+        const response = await handler(request, ctxStub as any);
+
+        expect(validateStub).toHaveBeenCalledWith(request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        });
+
+        expect(signatureStub).toHaveBeenCalledWith({
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        });
+
+        expect(invertStealStub).toHaveBeenCalledWith({
+          userId: 'user_id',
+          guildId: 'guild_id',
+        });
+
+        expect(response).toBe(true);
+      } finally {
+        delete config.publicKey;
+      }
+    });
   });
 
   describe('passign components', () => {

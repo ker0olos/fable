@@ -562,6 +562,10 @@ describe('/steal', () => {
       },
     ] as any);
 
+    vi.spyOn(db, 'getGuild').mockResolvedValue({
+      options: undefined,
+    } as any);
+
     vi.spyOn(utils, 'proxy').mockImplementation(
       async (t) =>
         ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
@@ -718,6 +722,10 @@ describe('/steal', () => {
       },
     ] as any);
 
+    vi.spyOn(db, 'getGuild').mockResolvedValue({
+      options: undefined,
+    } as any);
+
     vi.spyOn(utils, 'proxy').mockImplementation(
       async (t) =>
         ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
@@ -823,6 +831,10 @@ describe('/steal', () => {
       },
     ] as any);
 
+    vi.spyOn(db, 'getGuild').mockResolvedValue({
+      options: undefined,
+    } as any);
+
     vi.spyOn(utils, 'proxy').mockImplementation(
       async (t) =>
         ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
@@ -909,6 +921,10 @@ describe('/steal', () => {
         inventory: { party: {}, lastPull: new Date('1999-1-1') },
       },
     ] as any);
+
+    vi.spyOn(db, 'getGuild').mockResolvedValue({
+      options: undefined,
+    } as any);
 
     vi.spyOn(utils, 'proxy').mockImplementation(
       async (t) =>
@@ -1006,6 +1022,10 @@ describe('/steal', () => {
         inventory: { party: {} },
       },
     ] as any);
+
+    vi.spyOn(db, 'getGuild').mockResolvedValue({
+      options: undefined,
+    } as any);
 
     config.stealing = true;
     config.appId = 'app_id';
@@ -1107,6 +1127,10 @@ describe('/steal', () => {
 
     vi.spyOn(db, 'findCharacter').mockResolvedValue(undefined as any);
 
+    vi.spyOn(db, 'getGuild').mockResolvedValue({
+      options: undefined,
+    } as any);
+
     vi.spyOn(utils, 'proxy').mockImplementation(
       async (t) =>
         ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
@@ -1158,6 +1182,69 @@ describe('/steal', () => {
           thumbnail: {
             url: 'attachment://image-url.webp',
           },
+        },
+      ],
+    });
+  });
+
+  test('stealing disabled on server', async () => {
+    const fetchMock = vi
+      .spyOn(utils, 'fetchWithRetry')
+      .mockResolvedValueOnce(undefined as any)
+      .mockResolvedValueOnce(undefined as any);
+
+    vi.spyOn(packs, 'all').mockResolvedValue([]);
+    vi.spyOn(packs, 'characters').mockResolvedValue([character]);
+
+    vi.spyOn(db, 'rechargeConsumables').mockResolvedValue({
+      party: {},
+      user: { discordId: 'user-id' },
+      stealTimestamp: undefined,
+    } as any);
+
+    vi.spyOn(db, 'findCharacter').mockResolvedValue(undefined as any);
+
+    vi.spyOn(db, 'getGuild').mockResolvedValue({
+      options: { steal: false },
+    } as any);
+
+    vi.spyOn(utils, 'proxy').mockImplementation(
+      async (t) =>
+        ({ filename: `${(t ?? 'default')?.replace(/_/g, '-')}.webp` }) as any
+    );
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    await steal.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      id: 'character_id',
+    });
+
+    await vi.runAllTimersAsync();
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original'
+    );
+
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('PATCH');
+
+    expect(
+      JSON.parse(
+        (fetchMock.mock.calls[0][1]?.body as FormData)?.get(
+          'payload_json'
+        ) as any
+      )
+    ).toEqual({
+      attachments: [],
+      components: [],
+      embeds: [
+        {
+          description: 'Stealing is disabled on this server.',
+          type: 'rich',
         },
       ],
     });

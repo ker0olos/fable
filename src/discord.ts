@@ -73,12 +73,6 @@ export const emotes = {
   currentFloor: '<:currentfloor:1128724907245711452>',
   clearedFloor: '<:clearedfloor:1131872032456446053>',
   undiscoveredFloor: '<:undiscoveredfloor:1128724910609551481>',
-  rightArrow: '<:rarrow:1170533290105655428>',
-  enraged: '<:ENRAGED:1214241073518481428>',
-  stunned: '<:STUNNED:1214576287415541814>',
-  slowed: '<:SLOWED:1215255510706683905>',
-  sneaky: '<:sneaky:1215575668490764288>',
-  skeleton: '<:loading:1227290168688508959>',
   notice: '<:notice:1370007386135334972>',
 };
 
