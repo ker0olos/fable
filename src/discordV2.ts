@@ -951,6 +951,11 @@ export class Message {
     this.#files = [];
   }
 
+  addFlags(flags: MessageFlags): Message {
+    this.#data.flags! += flags;
+    return this;
+  }
+
   setType(type: MessageType): Message {
     this.#type = type;
     return this;

@@ -5,7 +5,7 @@ const db = new Mongo(process.env.MONGO_URI);
 const update = await db.guilds().updateMany(
   {},
   {
-    $set: { options: { dupes: false } },
+    $set: { 'options.steal': true },
   }
 );
 

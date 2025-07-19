@@ -6,7 +6,7 @@ export interface Guild {
   discordId: string;
   excluded: boolean;
   packIds: string[];
-  options: { dupes: boolean };
+  options: { dupes: boolean; steal: boolean };
 }
 
 export type PopulatedGuild = WithId<Guild> & {

@@ -34,27 +34,44 @@ describe('/server options', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
+        flags: 32768,
         attachments: [],
         components: [
           {
-            type: 1,
+            type: 17,
             components: [
               {
-                custom_id: 'options=dupes',
-                label: 'Disallow Dupes',
-                style: 2,
-                type: 2,
+                type: 9,
+                accessory: {
+                  custom_id: 'options=dupes',
+                  label: 'Disable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Dupes are enabled (Experimental)**\n-# Multiple users can own the same character.',
+                  },
+                ],
               },
-            ],
-          },
-        ],
-        embeds: [
-          {
-            type: 'rich',
-            fields: [
+              { type: 14 },
               {
-                name: 'Dupes are allowed (Experimental)',
-                value: 'Multiple users can own the same character.',
+                type: 9,
+                accessory: {
+                  custom_id: 'options=steal',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      "**Stealing is disabled**\n-# Users can't steal characters.",
+                  },
+                ],
               },
             ],
           },
@@ -79,27 +96,106 @@ describe('/server options', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
+        flags: 32768,
         attachments: [],
         components: [
           {
-            type: 1,
+            type: 17,
             components: [
               {
-                custom_id: 'options=dupes',
-                label: 'Allow Dupes',
-                style: 2,
-                type: 2,
+                type: 9,
+                accessory: {
+                  custom_id: 'options=dupes',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Dupes are disabled**\n-# Only one user can own a character.',
+                  },
+                ],
+              },
+              { type: 14 },
+              {
+                type: 9,
+                accessory: {
+                  custom_id: 'options=steal',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      "**Stealing is disabled**\n-# Users can't steal characters.",
+                  },
+                ],
               },
             ],
           },
         ],
-        embeds: [
+      },
+    });
+  });
+
+  it('steal allowed', async () => {
+    vi.spyOn(db, 'getGuild').mockResolvedValue({
+      options: { steal: true },
+    } as any);
+    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
+
+    const message = await serverOptions.view({
+      guildId: 'guild_id',
+      userId: 'user_id',
+    });
+
+    expect(db.getGuild).toHaveBeenCalledWith('guild_id');
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        flags: 32768,
+        attachments: [],
+        components: [
           {
-            type: 'rich',
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'Dupes are disallowed',
-                value: 'Only one user can own a character.',
+                type: 9,
+                accessory: {
+                  custom_id: 'options=dupes',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Dupes are disabled**\n-# Only one user can own a character.',
+                  },
+                ],
+              },
+              { type: 14 },
+              {
+                type: 9,
+                accessory: {
+                  custom_id: 'options=steal',
+                  label: 'Disable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Stealing is enabled**\n-# Users can steal characters from each other.',
+                  },
+                ],
               },
             ],
           },
@@ -122,27 +218,44 @@ describe('/server options', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
+        flags: 32768,
         attachments: [],
         components: [
           {
-            type: 1,
+            type: 17,
             components: [
               {
-                custom_id: 'options=dupes',
-                label: 'Allow Dupes',
-                style: 2,
-                type: 2,
+                type: 9,
+                accessory: {
+                  custom_id: 'options=dupes',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Dupes are disabled**\n-# Only one user can own a character.',
+                  },
+                ],
               },
-            ],
-          },
-        ],
-        embeds: [
-          {
-            type: 'rich',
-            fields: [
+              { type: 14 },
               {
-                name: 'Dupes are disallowed',
-                value: 'Only one user can own a character.',
+                type: 9,
+                accessory: {
+                  custom_id: 'options=steal',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      "**Stealing is disabled**\n-# Users can't steal characters.",
+                  },
+                ],
               },
             ],
           },
@@ -180,27 +293,119 @@ describe('invert dupes', () => {
     expect(message.json()).toEqual({
       type: 4,
       data: {
+        flags: 32768,
         attachments: [],
         components: [
           {
-            type: 1,
+            type: 17,
             components: [
               {
-                custom_id: 'options=dupes',
-                label: 'Disallow Dupes',
-                style: 2,
-                type: 2,
+                type: 9,
+                accessory: {
+                  custom_id: 'options=dupes',
+                  label: 'Disable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Dupes are enabled (Experimental)**\n-# Multiple users can own the same character.',
+                  },
+                ],
+              },
+              { type: 14 },
+              {
+                type: 9,
+                accessory: {
+                  custom_id: 'options=steal',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      "**Stealing is disabled**\n-# Users can't steal characters.",
+                  },
+                ],
               },
             ],
           },
         ],
-        embeds: [
+      },
+    });
+  });
+});
+
+describe('invert steal', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    config.origin = 'http://localhost:8000';
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.clearAllTimers();
+    delete config.origin;
+  });
+
+  it('normal', async () => {
+    vi.spyOn(db, 'invertSteal').mockResolvedValue({
+      options: { steal: true },
+    } as any);
+    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
+
+    const message = await serverOptions.invertSteal({
+      guildId: 'guild_id',
+      userId: 'user_id',
+    });
+
+    expect(db.invertSteal).toHaveBeenCalledWith('guild_id');
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        flags: 32768,
+        attachments: [],
+        components: [
           {
-            type: 'rich',
-            fields: [
+            type: 17,
+            components: [
               {
-                name: 'Dupes are allowed (Experimental)',
-                value: 'Multiple users can own the same character.',
+                type: 9,
+                accessory: {
+                  custom_id: 'options=dupes',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Dupes are disabled**\n-# Only one user can own a character.',
+                  },
+                ],
+              },
+              { type: 14 },
+              {
+                type: 9,
+                accessory: {
+                  custom_id: 'options=steal',
+                  label: 'Disable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Stealing is enabled**\n-# Users can steal characters from each other.',
+                  },
+                ],
               },
             ],
           },

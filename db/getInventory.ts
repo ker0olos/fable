@@ -39,7 +39,7 @@ export const newGuild = (
   const guild: Schema.Guild = {
     excluded: false,
     discordId: guildId,
-    options: { dupes: false },
+    options: { dupes: false, steal: true },
     packIds: ['anilist', 'vtubers'],
   };
 

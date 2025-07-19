@@ -774,7 +774,7 @@ export const handler = async (r: Request, ctx: any) => {
                     userId: member.user.id,
                   })
                 )
-                  .setFlags(discord.MessageFlags.Ephemeral)
+                  .addFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
             }
@@ -1227,6 +1227,15 @@ export const handler = async (r: Request, ctx: any) => {
               case 'dupes':
                 return (
                   await serverOptions.invertDupes({
+                    guildId,
+                    userId: member.user.id,
+                  })
+                )
+                  .setType(discord.MessageType.Update)
+                  .send();
+              case 'steal':
+                return (
+                  await serverOptions.invertSteal({
                     guildId,
                     userId: member.user.id,
                   })
