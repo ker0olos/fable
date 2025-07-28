@@ -79,6 +79,10 @@ Fable has no in-app purchases, no premiums, and no bullshit.
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
+> [!IMPORTANT]
+> Fable is now only in maintenance mode
+> No new features will be added, only bug fixes.  
+
 Fable is a free, open-source gacha bot — a great alternative to bots like Mudae,
 Sofi, Karuta. Like those bots, you can pull anime characters, customize, and
 upgrade them.
