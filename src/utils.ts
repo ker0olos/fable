@@ -581,7 +581,32 @@ async function proxy(
 
     const photon = await import('@cf-wasm/photon/node');
 
-    const image = photon.PhotonImage.new_from_byteslice(new Uint8Array(data));
+    let image: any;
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      try {
+        image = photon.PhotonImage.new_from_byteslice(new Uint8Array(data));
+        break;
+      } catch (err) {
+        attempts++;
+        console.warn(
+          `Failed to create PhotonImage (attempt ${attempts}):`,
+          err
+        );
+
+        if (attempts >= maxAttempts) {
+          console.warn('Falling back to default image');
+          const defaultData = await fs.promises.readFile(
+            './assets/default.webp'
+          );
+          image = photon.PhotonImage.new_from_byteslice(
+            new Uint8Array(defaultData)
+          );
+        }
+      }
+    }
 
     const resizeToFit = async ([desiredWidth, desiredHeight]: [
       number,
