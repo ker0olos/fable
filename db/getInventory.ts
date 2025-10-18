@@ -289,13 +289,14 @@ export async function rechargeConsumables(
 
     const currentPulls = inventory.availablePulls;
     const maxPulls = guild.options.maxPulls ?? MAX_PULLS;
+    const rechargeMins = guild.options.rechargeMins ?? RECHARGE_MINS;
 
     const newPulls = Math.max(
       0,
       Math.min(
         maxPulls - currentPulls,
         Math.trunc(
-          utils.diffInMinutes(pullsTimestamp, new Date()) / RECHARGE_MINS
+          utils.diffInMinutes(pullsTimestamp, new Date()) / rechargeMins
         )
       )
     );
@@ -328,7 +329,7 @@ export async function rechargeConsumables(
 
     if (rechargedPulls < MAX_PULLS) {
       $set.rechargeTimestamp = new Date(
-        pullsTimestamp.getTime() + newPulls * RECHARGE_MINS * 60000
+        pullsTimestamp.getTime() + newPulls * rechargeMins * 60000
       );
     } else {
       $unset.rechargeTimestamp = '';

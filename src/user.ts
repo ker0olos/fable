@@ -1,6 +1,6 @@
 import config from '~/src/config.ts';
 
-import db, { COSTS, MAX_PULLS } from '~/db/index.ts';
+import db, { COSTS, MAX_PULLS, RECHARGE_MINS } from '~/db/index.ts';
 
 import i18n from '~/src/i18n.ts';
 import utils from '~/src/utils.ts';
@@ -57,10 +57,14 @@ async function now({
 
   const message = new discordV2.Message();
 
-  const recharge = utils.rechargeTimestamp(rechargeTimestamp);
   const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
   const lastPullMode = inventory.lastPullMode ?? 'gacha';
   const maxPulls = guild.options.maxPulls ?? MAX_PULLS;
+  const rechargeMins = guild.options.rechargeMins ?? RECHARGE_MINS;
+  const recharge = utils.rechargeTimestamp(
+    rechargeTimestamp ?? new Date(),
+    rechargeMins
+  );
 
   const guarantees = Array.from(new Set(user.guarantees ?? [])).sort(
     (a, b) => b - a
