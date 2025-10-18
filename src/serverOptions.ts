@@ -1,7 +1,7 @@
 import * as discord from '~/src/discord.ts';
 import * as discordV2 from '~/src/discordV2.ts';
 
-import db from '~/db/index.ts';
+import db, { MAX_PULLS, RECHARGE_MINS } from '~/db/index.ts';
 import i18n from '~/src/i18n.ts';
 
 import user from '~/src/user.ts';
@@ -66,6 +66,28 @@ const getOptions = (
       )
   );
 
+  container.addComponent(new discordV2.Separator());
+
+  container.addComponent(
+    new discordV2.TextDisplay(
+      `**${i18n.get('max-pulls', locale)}**\n-# ${i18n.get(
+        '$set-server-max-pulls',
+        locale
+      )}\n**${guild.options?.maxPulls ?? MAX_PULLS}**`
+    )
+  );
+
+  container.addComponent(new discordV2.Separator());
+
+  container.addComponent(
+    new discordV2.TextDisplay(
+      `**${i18n.get('recharge-mins', locale)}**\n-# ${i18n.get(
+        '$set-server-recharge-mins',
+        locale
+      )}\n**${i18n.get('recharge-time', locale, guild.options?.rechargeMins ?? RECHARGE_MINS)}**`
+    )
+  );
+
   message.addComponent(container);
 
   return message;
@@ -76,6 +98,27 @@ async function view({ userId, guildId }: { userId: string; guildId: string }) {
     user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
 
   const guild = await db.getGuild(guildId);
+
+  const message = getOptions(guild, locale);
+
+  return message;
+}
+
+async function changeGachaOptions({
+  userId,
+  guildId,
+  maxPulls,
+  rechargeMins,
+}: {
+  userId: string;
+  guildId: string;
+  maxPulls: number;
+  rechargeMins: number;
+}) {
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
+
+  const guild = await db.changeGachaOptions(guildId, maxPulls, rechargeMins);
 
   const message = getOptions(guild, locale);
 
@@ -118,6 +161,7 @@ async function invertSteal({
 
 const serverOptions = {
   view,
+  changeGachaOptions,
   invertDupes,
   invertSteal,
 };

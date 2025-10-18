@@ -777,6 +777,18 @@ export const handler = async (r: Request, ctx: any) => {
                   .addFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
+              case 'gacha': {
+                return (
+                  await serverOptions.changeGachaOptions({
+                    guildId,
+                    userId: member.user.id,
+                    maxPulls: options['max-pulls'] as number,
+                    rechargeMins: options['recharge-mins'] as number,
+                  })
+                )
+                  .addFlags(discord.MessageFlags.Ephemeral)
+                  .send();
+              }
             }
             break;
           }

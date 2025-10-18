@@ -430,10 +430,10 @@ function normalTimestamp(v?: Date): string {
   return Math.floor(ts / 1000).toString();
 }
 
-function rechargeTimestamp(v?: Date): string {
+function rechargeTimestamp(v?: Date, rechargeMins?: number): string {
   const parsed = v ?? new Date();
 
-  parsed.setMinutes(parsed.getMinutes() + RECHARGE_MINS);
+  parsed.setMinutes(parsed.getMinutes() + (rechargeMins ?? RECHARGE_MINS));
 
   const ts = parsed.getTime();
 

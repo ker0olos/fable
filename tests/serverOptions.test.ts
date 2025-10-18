@@ -73,6 +73,16 @@ describe('/server options', () => {
                   },
                 ],
               },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Max Pulls**\n-# The maximum amount of pulls a user can have\n**5**`,
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+1 every 30 mins**`,
+              },
             ],
           },
         ],
@@ -134,6 +144,16 @@ describe('/server options', () => {
                       "**Stealing is disabled**\n-# Users can't steal characters.",
                   },
                 ],
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Max Pulls**\n-# The maximum amount of pulls a user can have\n**5**`,
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+1 every 30 mins**`,
               },
             ],
           },
@@ -197,6 +217,16 @@ describe('/server options', () => {
                   },
                 ],
               },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Max Pulls**\n-# The maximum amount of pulls a user can have\n**5**`,
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+1 every 30 mins**`,
+              },
             ],
           },
         ],
@@ -256,6 +286,16 @@ describe('/server options', () => {
                       "**Stealing is disabled**\n-# Users can't steal characters.",
                   },
                 ],
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Max Pulls**\n-# The maximum amount of pulls a user can have\n**5**`,
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+1 every 30 mins**`,
               },
             ],
           },
@@ -332,6 +372,16 @@ describe('invert dupes', () => {
                   },
                 ],
               },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Max Pulls**\n-# The maximum amount of pulls a user can have\n**5**`,
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+1 every 30 mins**`,
+              },
             ],
           },
         ],
@@ -406,6 +456,103 @@ describe('invert steal', () => {
                       '**Stealing is enabled**\n-# Users can steal characters from each other.',
                   },
                 ],
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Max Pulls**\n-# The maximum amount of pulls a user can have\n**5**`,
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+1 every 30 mins**`,
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+});
+
+describe('change gacha options', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    config.origin = 'http://localhost:8000';
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.clearAllTimers();
+    delete config.origin;
+  });
+
+  it('normal', async () => {
+    vi.spyOn(db, 'changeGachaOptions').mockResolvedValue({
+      options: { maxPulls: 99, rechargeMins: 1 },
+    } as any);
+    vi.spyOn(utils, 'fetchWithRetry').mockReturnValue(undefined as any);
+
+    const message = await serverOptions.changeGachaOptions({
+      guildId: 'guild_id',
+      userId: 'user_id',
+      maxPulls: 99,
+      rechargeMins: 1,
+    });
+
+    expect(db.changeGachaOptions).toHaveBeenCalledWith('guild_id', 99, 1);
+
+    expect(message.json()).toEqual({
+      type: 4,
+      data: {
+        flags: 32768,
+        attachments: [],
+        components: [
+          {
+            type: 17,
+            components: [
+              {
+                type: 9,
+                accessory: {
+                  custom_id: 'options=dupes',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      '**Dupes are disabled**\n-# Only one user can own a character.',
+                  },
+                ],
+              },
+              { type: 14 },
+              {
+                type: 9,
+                accessory: {
+                  custom_id: 'options=steal',
+                  label: 'Enable',
+                  style: 2,
+                  type: 2,
+                },
+                components: [
+                  {
+                    type: 10,
+                    content:
+                      "**Stealing is disabled**\n-# Users can't steal characters.",
+                  },
+                ],
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Max Pulls**\n-# The maximum amount of pulls a user can have\n**99**`,
+              },
+              { type: 14 },
+              {
+                type: 10,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+1 every 1 mins**`,
               },
             ],
           },

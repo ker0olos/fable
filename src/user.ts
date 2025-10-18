@@ -1,6 +1,6 @@
 import config from '~/src/config.ts';
 
-import db, { COSTS, MAX_PULLS } from '~/db/index.ts';
+import db, { COSTS, MAX_PULLS, RECHARGE_MINS } from '~/db/index.ts';
 
 import i18n from '~/src/i18n.ts';
 import utils from '~/src/utils.ts';
@@ -46,7 +46,10 @@ async function now({
 }): Promise<discordV2.Message> {
   const locale = cachedUsers[userId]?.locale ?? cachedGuilds[guildId]?.locale;
 
-  const { user, ...inventory } = await db.rechargeConsumables(guildId, userId);
+  const [guild, { user, ...inventory }] = await Promise.all([
+    db.getGuild(guildId),
+    db.rechargeConsumables(guildId, userId),
+  ]);
 
   const { availablePulls, rechargeTimestamp } = inventory;
 
@@ -54,9 +57,14 @@ async function now({
 
   const message = new discordV2.Message();
 
-  const recharge = utils.rechargeTimestamp(rechargeTimestamp);
   const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
   const lastPullMode = inventory.lastPullMode ?? 'gacha';
+  const maxPulls = guild.options?.maxPulls ?? MAX_PULLS;
+  const rechargeMins = guild.options?.rechargeMins ?? RECHARGE_MINS;
+  const recharge = utils.rechargeTimestamp(
+    rechargeTimestamp ?? new Date(),
+    rechargeMins
+  );
 
   const guarantees = Array.from(new Set(user.guarantees ?? [])).sort(
     (a, b) => b - a
@@ -90,7 +98,7 @@ async function now({
             availablePulls === 1
               ? i18n.get('available-pull', locale)
               : i18n.get('available-pulls', locale)
-          }   ${availablePulls < MAX_PULLS ? `+1 <t:${recharge}:R>` : ''}`.trim()
+          }   ${availablePulls < maxPulls ? `+1 <t:${recharge}:R>` : ''}`.trim()
         )
       )
       .setAccessory(
@@ -108,7 +116,7 @@ async function now({
             availablePulls === 1
               ? i18n.get('available-pull', locale)
               : i18n.get('available-pulls', locale)
-          }   ${availablePulls < MAX_PULLS ? `+1 <t:${recharge}:R>` : ''}`.trim()
+          }   ${availablePulls < maxPulls ? `+1 <t:${recharge}:R>` : ''}`.trim()
         )
       )
     );

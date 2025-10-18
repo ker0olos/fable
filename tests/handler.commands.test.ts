@@ -9593,6 +9593,88 @@ describe('server options command handlers', () => {
   });
 });
 
+describe('server gacha options command handlers', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'server',
+        options: [
+          {
+            type: 1,
+            name: 'gacha',
+          },
+        ],
+      },
+    });
+
+    const validateSpy = vi
+      .spyOn(utils, 'validateRequest')
+      .mockReturnValue({} as any);
+    const signatureSpy = vi
+      .spyOn(utils, 'verifySignature')
+      .mockReturnValue({ valid: true, body });
+    const packsSpy = vi
+      .spyOn(serverOptions, 'changeGachaOptions')
+      .mockReturnValue({
+        addFlags: () => ({
+          send: () => true,
+        }),
+      } as any);
+
+    const ctxStub = {};
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request, ctxStub as any);
+
+      expect(validateSpy).toHaveBeenCalledWith(request, {
+        POST: {
+          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        },
+      });
+
+      expect(signatureSpy).toHaveBeenCalledWith({
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      });
+
+      expect(packsSpy).toHaveBeenCalledWith({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      expect(response).toBe(true);
+    } finally {
+      delete config.publicKey;
+    }
+  });
+});
+
 describe('invalid request', () => {
   afterEach(() => {
     vi.restoreAllMocks();

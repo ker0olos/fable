@@ -211,6 +211,10 @@
   "admin-permission": "_> Those commands require the `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._",
   "make-your-own-pack": "> To create your own community pack visit <https://packs.fable.ing>",
 
+  "max-pulls": "Max Pulls",
+  "recharge-mins": "Recharge Time",
+  "recharge-time": "+1 every {0} mins",
+
   "/gacha": "start a new gacha pull",
   "/q": "start a gacha pull but with no animations",
   "/pull": "use a guaranteed pull you have",
@@ -259,6 +263,7 @@
   "/packs uninstall": "uninstall a community pack",
 
   "/server options": "manage your server",
+  "/server gacha": "manage your server's gacha",
 
   "/help": "need more information? we got you",
 
@@ -279,6 +284,9 @@
   "$trade-give-character": "a character to give away",
   "$trade-take-character": "a character to take for yourself",
   "$steal-sacrifices-boost": "the amount of stars to sacrifice for a boost",
+
+  "$set-server-max-pulls": "The maximum amount of pulls a user can have",
+  "$set-server-recharge-mins": "The amount of minutes it takes to recharge a pull",
 
   "$stars": "the star rating",
   "$merge-star-target": "the target star rating of the merge",
