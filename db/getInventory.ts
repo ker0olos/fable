@@ -278,18 +278,22 @@ export async function rechargeConsumables(
   try {
     if (!manual) await db.connect();
 
-    const inventory = await getInventory(guildId, userId, db, true);
+    const [guild, inventory] = await Promise.all([
+      getGuild(guildId, db, true),
+      getInventory(guildId, userId, db, true),
+    ]);
 
     const { user } = inventory;
 
     const pullsTimestamp = inventory.rechargeTimestamp ?? new Date();
 
     const currentPulls = inventory.availablePulls;
+    const maxPulls = guild.options.maxPulls ?? MAX_PULLS;
 
     const newPulls = Math.max(
       0,
       Math.min(
-        MAX_PULLS - currentPulls,
+        maxPulls - currentPulls,
         Math.trunc(
           utils.diffInMinutes(pullsTimestamp, new Date()) / RECHARGE_MINS
         )
