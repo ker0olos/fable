@@ -81,7 +81,7 @@ describe('/server options', () => {
               { type: 14 },
               {
                 type: 10,
-                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**30 mins/per**`,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+3 every 30 mins**`,
               },
             ],
           },
@@ -153,7 +153,7 @@ describe('/server options', () => {
               { type: 14 },
               {
                 type: 10,
-                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**30 mins/per**`,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+3 every 30 mins**`,
               },
             ],
           },
@@ -225,7 +225,7 @@ describe('/server options', () => {
               { type: 14 },
               {
                 type: 10,
-                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**30 mins/per**`,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+3 every 30 mins**`,
               },
             ],
           },
@@ -295,7 +295,7 @@ describe('/server options', () => {
               { type: 14 },
               {
                 type: 10,
-                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**30 mins/per**`,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+3 every 30 mins**`,
               },
             ],
           },
@@ -380,7 +380,7 @@ describe('invert dupes', () => {
               { type: 14 },
               {
                 type: 10,
-                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**30 mins/per**`,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+3 every 30 mins**`,
               },
             ],
           },
@@ -465,7 +465,7 @@ describe('invert steal', () => {
               { type: 14 },
               {
                 type: 10,
-                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**30 mins/per**`,
+                content: `**Recharge Time**\n-# The amount of minutes it takes to recharge a pull\n**+3 every 30 mins**`,
               },
             ],
           },
