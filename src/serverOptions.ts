@@ -1,7 +1,7 @@
 import * as discord from '~/src/discord.ts';
 import * as discordV2 from '~/src/discordV2.ts';
 
-import db from '~/db/index.ts';
+import db, { MAX_PULLS, RECHARGE_MINS } from '~/db/index.ts';
 import i18n from '~/src/i18n.ts';
 
 import user from '~/src/user.ts';
@@ -64,6 +64,28 @@ const getOptions = (
           )
           .setId('options', 'steal')
       )
+  );
+
+  container.addComponent(new discordV2.Separator());
+
+  container.addComponent(
+    new discordV2.TextDisplay(
+      `**${i18n.get('max-pulls', locale)}**\n-# ${i18n.get(
+        '$set-server-max-pulls',
+        locale
+      )}\n**${guild.options?.maxPulls ?? MAX_PULLS}**`
+    )
+  );
+
+  container.addComponent(new discordV2.Separator());
+
+  container.addComponent(
+    new discordV2.TextDisplay(
+      `**${i18n.get('recharge-mins', locale)}**\n-# ${i18n.get(
+        '$set-server-recharge-mins',
+        locale
+      )}\n**${i18n.get('recharge-time', locale, guild.options?.rechargeMins ?? RECHARGE_MINS)}**`
+    )
   );
 
   message.addComponent(container);
