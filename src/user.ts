@@ -59,8 +59,8 @@ async function now({
 
   const dailyTokenRecharge = utils.rechargeDailyTimestamp(dailyTimestamp);
   const lastPullMode = inventory.lastPullMode ?? 'gacha';
-  const maxPulls = guild.options.maxPulls ?? MAX_PULLS;
-  const rechargeMins = guild.options.rechargeMins ?? RECHARGE_MINS;
+  const maxPulls = guild.options?.maxPulls ?? MAX_PULLS;
+  const rechargeMins = guild.options?.rechargeMins ?? RECHARGE_MINS;
   const recharge = utils.rechargeTimestamp(
     rechargeTimestamp ?? new Date(),
     rechargeMins

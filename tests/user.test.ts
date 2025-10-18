@@ -33,6 +33,8 @@ describe('/now', () => {
       user: {},
     } as any);
 
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+
     config.appId = 'app_id';
 
     try {
@@ -96,6 +98,8 @@ describe('/now', () => {
       user: {},
     } as any);
 
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+
     config.appId = 'app_id';
 
     try {
@@ -147,6 +151,8 @@ describe('/now', () => {
       rechargeTimestamp: time,
       user: {},
     } as any);
+
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
     config.appId = 'app_id';
 
@@ -208,6 +214,8 @@ describe('/now', () => {
       },
     } as any);
 
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+
     config.appId = 'app_id';
 
     try {
@@ -262,6 +270,8 @@ describe('/now', () => {
       },
     } as any);
 
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+
     config.appId = 'app_id';
 
     try {
@@ -313,6 +323,8 @@ describe('/now', () => {
       rechargeTimestamp: time,
       user: { availableTokens: 28 },
     } as any);
+
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
     config.appId = 'app_id';
 
@@ -387,6 +399,8 @@ describe('/now', () => {
       rechargeTimestamp: time,
       user: { availableTokens: 27 },
     } as any);
+
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
     config.appId = 'app_id';
 
@@ -464,6 +478,8 @@ describe('/now', () => {
         guarantees: [5, 5, 4, 4, 3],
       },
     } as any);
+
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
     config.appId = 'app_id';
 
@@ -610,6 +626,8 @@ describe('/now', () => {
       user: {},
     } as any);
 
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
+
     config.appId = 'app_id';
     config.notice = '**test**\\n_message_';
 
@@ -672,6 +690,8 @@ describe('/now', () => {
         dailyTimestamp: time,
       },
     } as any);
+
+    vi.spyOn(db, 'getGuild').mockReturnValue('guild' as any);
 
     config.appId = 'app_id';
 
