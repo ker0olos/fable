@@ -9627,7 +9627,7 @@ describe('server gacha options command handlers', () => {
       .spyOn(utils, 'verifySignature')
       .mockReturnValue({ valid: true, body });
     const packsSpy = vi
-      .spyOn(serverOptions, 'changePullSettings')
+      .spyOn(serverOptions, 'changeGachaOptions')
       .mockReturnValue({
         addFlags: () => ({
           send: () => true,
