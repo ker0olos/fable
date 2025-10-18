@@ -65,7 +65,11 @@ import {
 
 import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
-import { invertDupes, invertSteal } from '~/db/manageGuild.ts';
+import {
+  invertDupes,
+  invertSteal,
+  changeGachaOptions,
+} from '~/db/manageGuild.ts';
 
 import { ratingPool, fallbackPool, likesPool } from '~/db/charactersPool.ts';
 
@@ -188,6 +192,7 @@ const db = {
   //
   invertDupes,
   invertSteal,
+  changeGachaOptions,
 };
 
 export {

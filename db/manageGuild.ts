@@ -67,3 +67,37 @@ export async function invertSteal(
     await db.close();
   }
 }
+
+export async function changeGachaOptions(
+  guildId: string,
+  maxPulls: number,
+  rechargeMins: number
+): Promise<WithId<Schema.Guild>> {
+  const db = new Mongo();
+
+  try {
+    await db.connect();
+
+    const guild = await db.guilds().findOne({ discordId: guildId });
+
+    if (!guild) {
+      throw new Error();
+    }
+
+    guild.options ??= defaultOptions;
+
+    guild.options.maxPulls = maxPulls;
+    guild.options.rechargeMins = rechargeMins;
+
+    await db.guilds().updateOne(
+      { discordId: guildId },
+      {
+        $set: { options: guild.options },
+      }
+    );
+
+    return guild;
+  } finally {
+    await db.close();
+  }
+}

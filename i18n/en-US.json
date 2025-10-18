@@ -213,7 +213,7 @@
 
   "max-pulls": "Max Pulls",
   "recharge-mins": "Recharge Time",
-  "recharge-time": "{0} mins/per",
+  "recharge-time": "+1 every {0} mins",
 
   "/gacha": "start a new gacha pull",
   "/q": "start a gacha pull but with no animations",

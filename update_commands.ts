@@ -864,6 +864,28 @@ export const commands = [
         type: Type.SUB_COMMAND,
         optional: true,
       }),
+      Option({
+        name: 'gacha',
+        description: '/server gacha',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            min_value: 1,
+            max_value: 99,
+            name: 'max-pulls',
+            description: '$set-server-max-pulls',
+            type: Type.INTEGER,
+          }),
+          Option({
+            min_value: 1,
+            max_value: 120,
+            name: 'recharge-mins',
+            description: '$set-server-recharge-minutes',
+            type: Type.INTEGER,
+          }),
+        ],
+      }),
     ],
   }),
   // admin rewards system

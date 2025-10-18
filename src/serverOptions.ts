@@ -104,6 +104,27 @@ async function view({ userId, guildId }: { userId: string; guildId: string }) {
   return message;
 }
 
+async function changeGachaOptions({
+  userId,
+  guildId,
+  maxPulls,
+  rechargeMins,
+}: {
+  userId: string;
+  guildId: string;
+  maxPulls: number;
+  rechargeMins: number;
+}) {
+  const locale =
+    user.cachedUsers[userId]?.locale ?? user.cachedGuilds[guildId]?.locale;
+
+  const guild = await db.changeGachaOptions(guildId, maxPulls, rechargeMins);
+
+  const message = getOptions(guild, locale);
+
+  return message;
+}
+
 async function invertDupes({
   userId,
   guildId,
@@ -140,6 +161,7 @@ async function invertSteal({
 
 const serverOptions = {
   view,
+  changeGachaOptions,
   invertDupes,
   invertSteal,
 };
