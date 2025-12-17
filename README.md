@@ -4,8 +4,6 @@
 
 <i align="center">
 
-[![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg]
-
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20community%20server&color=blue)][discord]
 
@@ -187,6 +185,5 @@ single dollar, it will help a lot.
 </details>
 
 [discord]: https://discord.gg/ceKyEfhyPQ
-[topgg]: https://top.gg/bot/1041970851559522304
-[invite]: https://fable.ing/invite
+[invite]: [https://fable.ing/invite](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot)
 [buymeacoffee]: https://www.buymeacoffee.com/ker0olos
