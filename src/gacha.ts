@@ -50,43 +50,43 @@ const variables: Variables = {
   },
 };
 
-async function likedPool({
-  userId,
-  guildId,
-}: {
-  userId: string;
-  guildId: string;
-}): Promise<DisaggregatedCharacter[]> {
-  const user = await db.getUser(userId);
+// async function likedPool({
+//   userId,
+//   guildId,
+// }: {
+//   userId: string;
+//   guildId: string;
+// }): Promise<DisaggregatedCharacter[]> {
+//   const user = await db.getUser(userId);
 
-  const likes = user.likes ?? [];
+//   const likes = user.likes ?? [];
 
-  if (!likes.length) {
-    return gacha.rngPool({ guildId });
-  }
+//   if (!likes.length) {
+//     return gacha.rngPool({ guildId });
+//   }
 
-  const charLikes = likes
-    .map((like) => like.characterId)
-    .filter(utils.nonNullable);
+//   const charLikes = likes
+//     .map((like) => like.characterId)
+//     .filter(utils.nonNullable);
 
-  const mediaLikes = likes
-    .map((like) => like.mediaId)
-    .filter(utils.nonNullable);
+//   const mediaLikes = likes
+//     .map((like) => like.mediaId)
+//     .filter(utils.nonNullable);
 
-  const pool = await db.likesPool({
-    guildId,
-    characterIds: charLikes,
-    mediaIds: mediaLikes,
-  });
+//   const pool = await db.likesPool({
+//     guildId,
+//     characterIds: charLikes,
+//     mediaIds: mediaLikes,
+//   });
 
-  console.log('initial likes pool length', pool.length);
+//   console.log('initial likes pool length', pool.length);
 
-  if (!pool.length) {
-    return gacha.rngPool({ guildId });
-  }
+//   if (!pool.length) {
+//     return gacha.rngPool({ guildId });
+//   }
 
-  return pool;
-}
+//   return pool;
+// }
 
 async function rngPool({
   guildId,
@@ -121,12 +121,14 @@ async function rngPull({
   userId,
   guarantee,
   sacrifices,
+  forceAllPool,
   quiet,
 }: {
   guildId: string;
   userId?: string;
   guarantee?: number;
   sacrifices?: ObjectId[];
+  forceAllPool?: boolean;
   quiet?: boolean;
 }): Promise<Pull> {
   const mongo = await db.newMongo().connect();
@@ -141,7 +143,9 @@ async function rngPull({
   let pool =
     typeof guarantee === 'number'
       ? await gacha.guaranteedPool({ guildId, guarantee })
-      : await gacha.rngPool({ guildId });
+      : forceAllPool
+        ? await db.fallbackPool({ guildId })
+        : await rngPool({ guildId });
 
   const [guild, existing] = await Promise.all([
     db.getGuild(guildId, mongo, true),
@@ -260,7 +264,19 @@ async function rngPull({
   }
 
   if (!character || !media) {
-    throw new PoolError();
+    if (forceAllPool || guarantee) {
+      throw new PoolError();
+    } else {
+      console.log('forcing fallback pool');
+      return rngPull({
+        guildId,
+        userId,
+        guarantee,
+        sacrifices,
+        quiet,
+        forceAllPool: true,
+      });
+    }
   }
 
   media = await packs.aggregate<Media>({ media, guildId });
@@ -548,7 +564,6 @@ const gacha = {
   rngPull,
   pullAnimation,
   guaranteedPool,
-  likedPool,
   rngPool,
   start,
 };
