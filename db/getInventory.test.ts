@@ -520,6 +520,70 @@ describe('db.rechargeConsumables()', () => {
     expect(inventory.rechargeTimestamp).toBeDefined();
     assertWithinLastMins(inventory.rechargeTimestamp!, 1);
   });
+
+  it('recharge with custom maxPulls (3) lower than default should cap at 3', async () => {
+    await client.guilds().insertOne({
+      discordId: 'guild-id',
+      options: { maxPulls: 3, rechargeMins: 30 },
+    } as any);
+
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 1,
+      rechargeTimestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago (10 recharges worth)
+    } as any);
+
+    const inventory = await db.rechargeConsumables('guild-id', 'user-id');
+
+    // rechargeTimestamp should not be present when at max pulls
+    expect(Object.keys(inventory).sort()).toEqual(
+      ['_id', 'guildId', 'userId', 'availablePulls', 'user', 'party'].sort()
+    );
+
+    // Should cap at server's max (3), not default MAX_PULLS (5) or higher
+    expect(inventory.availablePulls).toBe(3);
+
+    // rechargeTimestamp should be undefined when at max
+    expect(inventory.rechargeTimestamp).toBeUndefined();
+  });
+
+  it('recharge with custom maxPulls (3) and custom rechargeMins (120)', async () => {
+    await client.guilds().insertOne({
+      discordId: 'guild-id',
+      options: { maxPulls: 3, rechargeMins: 120 },
+    } as any);
+
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 1,
+      rechargeTimestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago (120 minutes)
+    } as any);
+
+    const inventory = await db.rechargeConsumables('guild-id', 'user-id');
+
+    // With 120 min recharge: 120 mins / 120 = 1 recharge
+    // 1 (starting) + 1 (recharged) = 2 (not at max yet)
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'rechargeTimestamp',
+        'user',
+        'party',
+      ].sort()
+    );
+
+    // Should be 2 pulls (1 + 1 recharge), not at max (3) yet
+    expect(inventory.availablePulls).toBe(2);
+
+    // rechargeTimestamp should still be present since not at max
+    expect(inventory.rechargeTimestamp).toBeDefined();
+    assertWithinLastMins(inventory.rechargeTimestamp!, 1);
+  });
 });
 
 describe('db.getActiveUsersIfLiked()', () => {
