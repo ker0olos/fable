@@ -327,7 +327,7 @@ export async function rechargeConsumables(
 
     $set.availablePulls = Math.min(99, rechargedPulls);
 
-    if (rechargedPulls < MAX_PULLS) {
+    if (rechargedPulls < maxPulls) {
       $set.rechargeTimestamp = new Date(
         pullsTimestamp.getTime() + newPulls * rechargeMins * 60000
       );
