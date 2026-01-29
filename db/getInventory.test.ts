@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// deno-lint-ignore-file no-explicit-any
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
 
@@ -459,6 +460,65 @@ describe('db.rechargeConsumables()', () => {
     expect(Object.keys(inventory).sort()).toEqual(
       ['_id', 'guildId', 'userId', 'availablePulls', 'user', 'party'].sort()
     );
+  });
+
+  it('recharge with custom maxPulls (10) should respect server limit', async () => {
+    await client.guilds().insertOne({
+      discordId: 'guild-id',
+      options: { maxPulls: 10, rechargeMins: 30 },
+    } as any);
+
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 5,
+      rechargeTimestamp: new Date(Date.now() - 5 * 30 * 60 * 1000), // 2.5 hours ago (5 recharges)
+    } as any);
+
+    const inventory = await db.rechargeConsumables('guild-id', 'user-id');
+
+    expect(Object.keys(inventory).sort()).toEqual(
+      ['_id', 'guildId', 'userId', 'availablePulls', 'user', 'party'].sort()
+    );
+
+    expect(inventory.availablePulls).toBe(10);
+
+    expect(inventory.rechargeTimestamp).toBeUndefined();
+  });
+
+  it('recharge with custom maxPulls (10) should keep timestamp when not at max', async () => {
+    await client.guilds().insertOne({
+      discordId: 'guild-id',
+      options: { maxPulls: 10, rechargeMins: 30 },
+    } as any);
+
+    await client.inventories().insertOne({
+      guildId: 'guild-id',
+      userId: 'user-id',
+      availablePulls: 5,
+      rechargeTimestamp: new Date(Date.now() - 2 * 30 * 60 * 1000), // 1 hour ago (2 recharges)
+    } as any);
+
+    const inventory = await db.rechargeConsumables('guild-id', 'user-id');
+
+    expect(Object.keys(inventory).sort()).toEqual(
+      [
+        '_id',
+        'guildId',
+        'userId',
+        'availablePulls',
+        'rechargeTimestamp',
+        'user',
+        'party',
+      ].sort()
+    );
+
+    // Should have 7 pulls now (5 + 2)
+    expect(inventory.availablePulls).toBe(7);
+
+    // rechargeTimestamp should still exist since not at max (10)
+    expect(inventory.rechargeTimestamp).toBeDefined();
+    assertWithinLastMins(inventory.rechargeTimestamp!, 1);
   });
 });
 
