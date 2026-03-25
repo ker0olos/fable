@@ -5,7 +5,6 @@
 <i align="center">
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
-[![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20community%20server&color=blue)][discord]
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deploy.yml?branch=main&label=tests&logo=github)
 
@@ -115,7 +114,6 @@ Fable to install, wanna start creating your own pack? Visit
 - [Roadmap](https://github.com/ker0olos/fable/issues/1)
 - [How to Contribute](https://github.com/ker0olos/fable/wiki)
 - [How to Create Packs](https://packs.fable.ing)
-- [Discord Support Server][discord]
 - [Donate](https://www.buymeacoffee.com/ker0olos)
 
 <br/>
@@ -184,6 +182,5 @@ single dollar, it will help a lot.
 </p>
 </details>
 
-[discord]: https://discord.gg/ceKyEfhyPQ
 [invite]: https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot
 [buymeacoffee]: https://www.buymeacoffee.com/ker0olos
