@@ -62,18 +62,15 @@ export const colors = {
 };
 
 export const emotes = {
-  star: '<:star:1061016362832642098>',
-  noStar: '<:no_star:1109377526662434906>',
-  smolStar: '<:smolstar:1107503653956374638>',
-  remove: '<:remove:1099004424111792158>',
-  add: '<:add:1099004747123523644>',
-  all: '<:all:1107511909999181824>',
-  liked: '<:liked:1110491720375873567>',
-  member: '<:partymember:1135706921312206921>',
-  currentFloor: '<:currentfloor:1128724907245711452>',
-  clearedFloor: '<:clearedfloor:1131872032456446053>',
-  undiscoveredFloor: '<:undiscoveredfloor:1128724910609551481>',
-  notice: '<:notice:1370007386135334972>',
+  star: '<:star:1486442134507622724>',
+  noStar: '<:no_star:1486442954905223231>',
+  smolStar: '<:smolstar:1486442948139683951>',
+  remove: '<:remove:1486442871669391482>',
+  add: '<:add:1486443113739325521>',
+  all: '<:all:1486443115274567680>',
+  liked: '<:liked:1486442949922525255>',
+  member: '<:member:1486442951436402803>',
+  notice: '<:notice:1486443648341246032>',
 };
 
 export const join = (...args: string[]): string => {
