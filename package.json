@@ -24,7 +24,7 @@
     "@eslint/js": "^9.24.0",
     "@types/node": "^22.14.1",
     "dotenv": "^16.5.0",
-    "eslint": "^9.24.0",
+    "eslint": "^10.7.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
     "mongodb-memory-server": "^10.1.4",
@@ -32,7 +32,7 @@
     "prettier": "^3.5.3",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.29.1",
+    "typescript-eslint": "^8.65.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.1",
     "vitest-mock-extended": "^3.1.0"
